@@ -3,6 +3,11 @@ import type {Category, ResponseCollection, Workflow} from "./_models.ts";
 
 class ImportAutomations {
 
+    locals = [
+        'fr-FR',
+        'fr-CA',
+        'zh-CN',
+    ]
 
     getCategories(workflow: Workflow): Array<Category> {
 
@@ -11,30 +16,40 @@ class ImportAutomations {
     }
 
     async getAutomations() {
+        const workflows: Array<Workflow> = []
+
         const data: ResponseCollection<Workflow> = await getTemplates('')
-
-        const categories: Array<Category> = []
-
         for (const w of data.workflows) {
             const wf = await getWorkflow(w?.id)
-            const workflow: Workflow = {...w, ...wf.workflow}
-
-            categories.concat(workflow.categories)
+            workflows.push({...w, ...wf.workflow})
         }
 
-        console.log(categories)
+        return workflows
     }
 
-    translate() {
+    translate(workflows: Array<Workflow>, local: string): Array<Workflow> {
+
+        return []
+    }
+
+    saveCategories(categories: Array<Category>, path: string = 'automation') {
 
     }
 
-    save() {
+    save(workflows: Array<Workflow>, path: string = 'automation') {
 
     }
 
-    run() {
-        this.getAutomations()
+    async run() {
+        let categories: Array<Category> = []
+        const workflows: Array<Workflow> = await this.getAutomations()
+
+        // categories = categories.concat(workflow.categories)
+
+        await this.save(workflows)
+        await this.saveCategories(categories)
+
+
     }
 }
 
