@@ -5,8 +5,8 @@ const HOST = process.env.N8N_HOST
 const WORKFLOW_TEMPLATES = HOST + '/api/templates/search/'
 const WORKFLOW = HOST + '/api/templates/workflows'
 
-export const getTemplates = (query: string): Promise<ResponseCollection<Workflow>> => {
-    return axios.get(WORKFLOW_TEMPLATES)
+export const getTemplates = (query: string = ''): Promise<ResponseCollection<Workflow>> => {
+    return axios.get(`${WORKFLOW_TEMPLATES}?${query}`)
         .then((response: AxiosResponse<ResponseCollection<Workflow>>) => response.data)
 }
 
