@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { get, set } from "lodash-es";
-import type { Category, Workflow } from "../src/_models";
+import type { Category, Workflow } from "./_models";
 
 type TranslateConfig = {
   modelName?: string;
@@ -15,6 +15,7 @@ const defaultConfig: Required<TranslateConfig> = {
   selectors: [
     "name", // The workflow name
     "description", // The workflow description
+    "[].name", // Category names when translating a root array of categories
     "categories[].name", // Category names in the categories array
     "nodes[].defaults.name", // Node default names
     "nodes[].defaults.content", // Node default content (for sticky notes)
@@ -41,7 +42,7 @@ const extractValues = (
       const parts = selector.split("[]");
       const arrayPath = parts[0] || "";
       const fieldPath = parts[1] || "";
-      const array = get(obj, arrayPath);
+      const array = arrayPath ? get(obj, arrayPath) : obj; // Support root arrays when arrayPath is empty (e.g., '[]')
 
       if (Array.isArray(array)) {
         array.forEach((item, index) => {
