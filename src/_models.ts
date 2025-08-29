@@ -102,6 +102,7 @@ export type Workflow = {
             }
         }
     }
+    __originalName?: string
 }
 
 export type ResponseCollection<T> = {

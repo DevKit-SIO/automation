@@ -1,56 +1,121 @@
-import {getTemplates, getWorkflow} from "./_requests.ts";
-import type {Category, ResponseCollection, Workflow} from "./_models.ts";
+import { getTemplates, getWorkflow } from "./_requests.ts";
+import type { Category, ResponseCollection, Workflow } from "./_models.ts";
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { translateJSON } from "../scripts/i18n.ts";
 
 class ImportAutomations {
+  locals = ["en-US", "fr-FR", "es-ES", "pt-PT", "de-DE", "it-IT", "ar-MA"];
 
-    locals = [
-        'fr-FR',
-        'fr-CA',
-        'zh-CN',
-    ]
+  // getCategories(workflow: Workflow): Array<Category> {
+  //   return [];
+  // }
 
-    getCategories(workflow: Workflow): Array<Category> {
+  async getAutomations() {
+    const workflows: Array<Workflow> = [];
+    let page = 1;
+    const rows = 20;
+    let hasMorePages = true;
 
+    while (hasMorePages) {
+      console.info(`Fetching page ${page}...`);
+      const data: ResponseCollection<Workflow> = await getTemplates(
+        `?page=${page}&rows=${rows}`
+      );
 
-        return []
+      if (!data.workflows || data.workflows.length === 0) {
+        hasMorePages = false;
+        break;
+      }
+
+      for (const w of data.workflows) {
+        const wf = await getWorkflow(w?.id);
+        workflows.push({ ...w, ...wf.workflow });
+      }
+
+      // Check if we have more pages
+      if (data.workflows.length === 0) {
+        hasMorePages = false;
+      } else {
+        page++;
+      }
     }
 
-    async getAutomations() {
-        const workflows: Array<Workflow> = []
+    console.info(`Total workflows fetched: ${workflows.length}`);
+    return workflows;
+  }
 
-        const data: ResponseCollection<Workflow> = await getTemplates('')
-        for (const w of data.workflows) {
-            const wf = await getWorkflow(w?.id)
-            workflows.push({...w, ...wf.workflow})
+  async translate(
+    workflows: Array<Workflow>,
+    locale: string
+  ): Promise<Array<Workflow>> {
+    const translated: Array<Workflow> = [];
+    for (const wf of workflows) {
+      const payload = { ...wf } as any;
+      (payload as any).__originalName = wf.name;
+      const t = (await translateJSON(payload, locale)) as Workflow;
+      if (!t.__originalName) {
+        t.__originalName = wf.name;
+      }
+      translated.push(t);
+    }
+    return translated;
+  }
+
+  async saveCategories(
+    categories: Array<Category>,
+    path: string = "automation"
+  ) {
+    const baseDir = path;
+    const sorted = [...categories].sort((a, b) => a.id - b.id);
+    const filePath = join(baseDir, "Categories.json");
+    await writeFile(filePath, JSON.stringify(sorted, null, 2), "utf8");
+  }
+
+  async save(workflows: Array<Workflow>, path: string = "automation") {
+    const baseDir = path;
+
+    const tasks = workflows.map(async (workflow) => {
+      const originalName = workflow.__originalName ?? workflow.name;
+      delete workflow.__originalName;
+      const fileName = `${originalName}.json`;
+      const filePath = join(baseDir, fileName);
+      await writeFile(filePath, JSON.stringify(workflow, null, 2), "utf8");
+    });
+
+    await Promise.all(tasks);
+  }
+
+  async run() {
+    const workflows: Array<Workflow> = await this.getAutomations();
+
+    const categoryMap = new Map<number, Category>();
+    for (const wf of workflows) {
+      for (const c of wf.categories || []) {
+        if (!categoryMap.has(c.id)) {
+          categoryMap.set(c.id, c);
         }
-
-        return workflows
+      }
     }
+    const categories: Array<Category> = Array.from(categoryMap.values());
 
-    translate(workflows: Array<Workflow>, local: string): Array<Workflow> {
+    await this.save(workflows);
+    await this.saveCategories(categories);
 
-        return []
+    for (const locale of this.locals) {
+      const localeDir = join("automation", "i18n", locale);
+      await mkdir(localeDir, { recursive: true });
+
+      const translatedWorkflows = await this.translate(workflows, locale);
+      await this.save(translatedWorkflows, localeDir);
+
+      const translatedCategories = (await translateJSON(
+        categories,
+        locale
+      )) as Array<Category>;
+      await this.saveCategories(translatedCategories, localeDir);
     }
-
-    saveCategories(categories: Array<Category>, path: string = 'automation') {
-
-    }
-
-    save(workflows: Array<Workflow>, path: string = 'automation') {
-
-    }
-
-    async run() {
-        let categories: Array<Category> = []
-        const workflows: Array<Workflow> = await this.getAutomations()
-
-        // categories = categories.concat(workflow.categories)
-
-        await this.save(workflows)
-        await this.saveCategories(categories)
-
-
-    }
+  }
 }
 
-(new ImportAutomations()).run()
+new ImportAutomations().run();
