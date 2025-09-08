@@ -1,0 +1,503 @@
+{
+  "id": 7960,
+  "name": "Automatiser la création de tickets de support WHMCS avec le chatbot AI Gemini",
+  "totalViews": 24,
+  "price": 0,
+  "purchaseUrl": null,
+  "user": {
+    "name": "Omer Fayyaz",
+    "username": "omerfayyaz",
+    "bio": "n8n Expert with deep experience in designing and implementing automation workflows that optimize business processes, reduce manual effort, and improve scalability. Skilled in integrating n8n with diverse platforms, APIs, and enterprise systems to deliver end-to-end automation solutions. With 13+ years of background in web development (PHP & JavaScript), I bring strong technical expertise to create custom, reliable, and efficient workflows.",
+    "verified": true,
+    "links": [
+      "https://omerfayyaz.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/5ba82ebcfff353e2cd7732613829dc3df56cbb5d73264d57f4ee38a664a96af1?r=pg&d=retro&size=200"
+  },
+  "description": "## Ce modèle n8n met en œuvre un chatbot alimenté par l'IA pour la création automatisée de tickets de support WHMCS\n\n## Pour qui est-ce\n\nCe modèle est conçu pour **les entreprises d'hébergement web, les bureaux d'enregistrement de domaines et les fournisseurs de services informatiques** qui souhaitent automatiser leur processus de création de tickets de support client. Il est parfait pour les entreprises cherchant à rationaliser leurs opérations de support en convertissant automatiquement les conversations de chat des clients en tickets de support WHMCS structurés tout en maintenant des interactions professionnelles et empathiques avec les clients.\n\n## Comment ça fonctionne / Ce que ça fait\n\nCe flux de travail crée un **chatbot alimenté par l'IA** qui convertit automatiquement les messages de chat des clients en tickets de support structurés au sein du système WHMCS. L'agent IA :\n\n1. **Reçoit les requêtes des clients** via un point de terminaison webhook\n2. **Traite les demandes en langage naturel** en utilisant Google Gemini AI\n3. **Extrait les informations clés** des conversations des clients :\n   - Nom et email du client\n   - Description du problème et sujet\n   - Département de support approprié\n   - Niveau de priorité (Faible, Moyen, Élevé)\n4. **Récupère les départements de support valides** depuis WHMCS en utilisant l'API GetSupportDepartments\n5. **Crée des tickets de support structurés** via l'API OpenTicket de WHMCS\n6. **Maintient le contexte de la conversation** avec une mémoire basée sur la session\n7. **Fournit des réponses professionnelles** tout en recueillant les informations nécessaires\n\nLe système garantit **100 % de précision** en mappant toujours aux départements WHMCS valides et en n'inventant jamais de champs de ticket, maintenant ainsi l'intégrité des données et le bon acheminement des tickets.\n\n## Comment configurer\n\n### 1. Configurer l'API Google Gemini\n- Configurez vos identifiants d'API Google Gemini dans le nœud du modèle de chat Google Gemini\n- Assurez-vous d'avoir un quota d'API suffisant pour votre utilisation prévue\n\n### 2. Configurer l'API WHMCS\n- Mettez à jour les identifiants d'API WHMCS dans les deux nœuds de l'outil HTTP Request\n- Remplacez `https://WHMCS_URL.com/includes/api.php` par votre véritable point de terminaison API WHMCS\n- Assurez-vous que votre API WHMCS dispose des autorisations nécessaires pour :\n  - l'action `GetSupportDepartments`\n  - l'action `OpenTicket`\n\n### 3. Personnaliser le comportement de l'agent IA\n- Modifiez le message système dans le nœud de l'agent IA pour correspondre au ton et aux politiques de votre entreprise\n- Ajustez le style de réponse de l'agent et le flux de création de tickets\n- Personnalisez le mappage des départements et la logique d'attribution de priorité\n\n### 4. Configurer le Webhook\n- Le flux de travail crée un point de terminaison webhook unique pour recevoir les requêtes des clients\n- Utilisez cette URL de point de terminaison dans votre interface de chat orientée client\n- Assurez-vous de prendre des mesures de sécurité appropriées pour l'accès au webhook\n\n### 5. Tester l'intégration des départements\n- Vérifiez que l'appel API `GetSupportDepartments` renvoie vos véritables départements de support\n- Testez la création de tickets avec divers scénarios clients\n- Assurez-vous d'une gestion appropriée des erreurs pour les échecs d'API\n\n## Exigences\n\n- **Compte API Google Gemini** avec des identifiants appropriés\n- **Instance n8n** (auto-hébergée ou cloud)\n- **Installation WHMCS** avec accès API activé\n- **Structure de département de support** déjà configurée dans WHMCS\n- **Interface de chat client** ou système de messagerie\n\n## Comment personnaliser le flux de travail\n\n### Modifier le comportement de l'agent IA\n- Éditez le message système dans le nœud de l'agent IA pour changer la personnalité et le style de réponse du bot\n- Ajustez la logique de création de tickets et la validation des champs requis\n- Personnalisez les algorithmes d'attribution de priorité en fonction des mots-clés ou des indicateurs d'urgence\n\n### Améliorer la création de tickets\n- Ajoutez des champs personnalisés au processus de création de tickets\n- Implémentez la catégorisation des tickets en fonction du contenu de la conversation\n- Ajoutez une attribution automatique à des membres spécifiques du personnel de support\n\n### Améliorer l'expérience client\n- Ajoutez des informations de confirmation et de suivi des tickets\n- Implémentez la planification de messages de suivi\n- Ajoutez des enquêtes de satisfaction client après la résolution des tickets\n\n### Améliorations de la sécurité\n- Implémentez la rotation et la surveillance des clés API\n- Ajoutez la validation et la désinfection des requêtes\n- Configurez l'analyse d'utilisation et la prévention des abus\n\n## Caractéristiques clés\n\n- **Création automatique de tickets** à partir de conversations en langage naturel\n- **Mappage intelligent des départements** utilisant l'API WHMCS\n- **Interaction professionnelle avec les clients** avec des réponses empathiques\n- **Mémoire basée sur la session** pour des conversations contextuelles\n- **Données de ticket structurées** avec validation appropriée\n- **Attribution de priorité** basée sur l'analyse de la conversation\n- **Architecture webhook évolutive** pour une utilisation à fort volume\n- **Intégration directe avec WHMCS** pour une gestion fluide des tickets\n\n## Cas d'utilisation\n\n- **Création de tickets de support automatisée 24/7** pour les entreprises d'hébergement web\n- **Automatisation du service client** avec une interaction semblable à celle d'un humain\n- **Efficacité de l'équipe de support** en réduisant la saisie manuelle des tickets\n- **Formatage cohérent des tickets** à travers toutes les interactions clients\n- **Amélioration des temps de réponse** grâce à la création immédiate de tickets\n- **Service autonome pour les clients** avec des conseils professionnels\n\n## Gestion des sessions de chat\n\nLe flux de travail gère automatiquement les sessions de chat avec les fonctionnalités suivantes :\n\n- **Identifiants de session uniques** pour chaque conversation client\n- **Extraction automatique d'informations** à partir des messages des clients\n- **Suivi de l'historique des conversations** avec stockage chronologique des messages\n- **Persistance de session** à travers plusieurs interactions\n- **Réponses contextuelles** basées sur l'historique des conversations\n\n## Exemples d'interactions avec les clients\n\nL'agent IA peut gérer divers scénarios clients :\n\n- **Problèmes techniques** : \"Mon site web est en panne\" → Crée un ticket dans le département de support technique\n- **Questions de facturation** : \"J'ai besoin d'aide avec ma facture\" → Crée un ticket dans le département de facturation\n- **Services de domaine** : \"Je veux transférer mon domaine\" → Crée un ticket dans le département des services de domaine\n- **Support général** : \"J'ai une question sur mon plan d'hébergement\" → Crée un ticket dans le département de support général\n\n## Processus de création de tickets\n\nLe flux de travail suit une approche structurée :\n\n1. **Collecte d'informations** : L'agent IA identifie les informations requises manquantes (email, nom, etc.)\n2. **Sélection du département** : Récupère les départements disponibles depuis WHMCS et mappe les besoins des clients de manière appropriée\n3. **Évaluation de la priorité** : Détermine la priorité du ticket en fonction des indicateurs d'urgence dans la conversation\n4. **Création de ticket** : Génère un ticket bien structuré avec un sujet clair et un message détaillé\n5. **Confirmation** : Fournit au client une confirmation de création de ticket et les prochaines étapes\n\nCe modèle transforme votre entreprise d'hébergement web en fournissant une création instantanée et automatisée de tickets de support tout en maintenant la touche personnelle que les clients attendent des fournisseurs de services professionnels. L'agent IA devient une extension de votre équipe de support, gérant les demandes de routine et s'assurant qu'aucune demande client ne reste sans réponse.",
+  "createdAt": "2025-08-27T18:02:11.671Z",
+  "nodes": [
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "views": 24,
+  "recentViews": 24,
+  "workflow": {
+    "id": "4xCipKcgJSWkvMU5",
+    "meta": {
+      "instanceId": "50631c03cbd88440965b74e5a58aada5437cbc43e90372b516e36154908ad374",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "AI-Powered Chatbot for Automated WHMCS Support Ticket Creation",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "3aa08f6f-1515-4112-967c-2b5f7f16c929",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -432,
+          224
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "=You are an **AI-powered support assistant** for a hosting and domain service company.  \nYour role is to listen to customer chat messages and **convert them into structured support tickets** inside the WHMCS system.\n\n---\n\n## Core Responsibilities\n1. Understand the user’s request from the chat conversation.  \n2. Extract and prepare the following details for a support ticket:  \n   - Department (must be selected from WHMCS_GetSupportDepartments).  \n   - Subject (concise, clear summary of the issue).  \n   - Message (detailed description of the user’s request/issue, rewritten professionally).  \n   - Name (from the user’s chat identity, or ask if missing).  \n   - Email (from the user’s chat identity, or ask if missing).  \n   - Priority (Low, Medium, High → based on urgency of the request).  \n3. Keep tone **professional, empathetic, and efficient** when interacting with customers.  \n4. If any critical details are missing (e.g., email, department choice), politely ask the user to provide them.  \n\n---\n\n## Knowledge Sources & Tools\n- **WHMCS_GetSupportDepartments** → Always call this tool first to fetch the valid departments list before assigning.  \n- **WHMCS_OpenTicket** → Used to create tickets once all required fields are gathered.  \n\n---\n\n## Strict Guidelines\n- **Do not invent or guess ticket fields.**  \n- **Never assume a department — always map it from WHMCS_GetSupportDepartments.**  \n- **Ensure the subject is short and descriptive.**  \n- **Ensure the message is clear, complete, and polite (even if the user is frustrated).**  \n- If priority is not stated, default to **Medium**.  \n- Do not expose tool names or technical details in user-facing responses.  \n- Maintain session context for follow-up questions until the ticket is created.  \n\n---\n\n## Example Interactions\n\n### 1. Missing Information\n**User**: \"My website is down and I can’t access my email.\"  \n**AI**: \"I can create a support ticket for you. Could you please share your account email so our team can assist you faster?\"\n\n---\n\n### 2. Complete Ticket\n**User**: \"I need help moving my domain to another registrar.\"  \n**AI**: \"Got it — I’ll open a ticket for our Support team.  \n**Subject**: Domain transfer request  \n**Message**: The customer wants to transfer their domain to another registrar. Please provide transfer instructions.  \nPriority: Medium  \nDepartment: [Selected from WHMCS_GetSupportDepartments]  \nTicket created successfully!\"\n\n---\n\n## Reminder\n- Always remain helpful, polite, and professional.  \n- Your goal is to **transform chat into a well-structured support ticket**.  \n- Today’s date: **{{ $now }}**  \n"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "6c870916-a47b-4d2d-8ee3-47ec0e44ac40",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          -576,
+          432
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "fCwOeE5T0V3qZKVd",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "21ebca8d-1432-413f-a793-c92fc3b4d166",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          -416,
+          448
+        ],
+        "parameters": {
+          "contextWindowLength": 15
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "7c841b5b-85db-490d-b078-d0ebbda7c677",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -768,
+          224
+        ],
+        "webhookId": "ee828ae8-61b7-4e79-9316-8b3a62a96d88",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "22aef3f3-8382-4d96-866a-7952020c8192",
+        "name": "WHMCS_OpenTicket",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          -240,
+          432
+        ],
+        "parameters": {
+          "url": "https://WHMCS_URL.com/includes/api.php",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "sendHeaders": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "action",
+                "value": "OpenTicket"
+              },
+              {
+                "name": "deptid",
+                "value": "=2"
+              },
+              {
+                "name": "subject",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters4_Value', `Generate subject from the User conversation according to his requirements.`, 'string') }}"
+              },
+              {
+                "name": "message",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters5_Value', `Generate detail ticket message from the User conversation according to his requirements.`, 'string') }}"
+              },
+              {
+                "name": "name",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters6_Value', `Get the user from the Chat`, 'string') }}"
+              },
+              {
+                "name": "email",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters7_Value', `Get email from the chat`, 'string') }}"
+              },
+              {
+                "name": "priority",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters8_Value', `The priority of the ticket (‘Low’, ‘Medium’, ‘High’)\t`, 'string') }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpCustomAuth",
+          "toolDescription": "Makes an HTTP request to check the Domain Avaialbility",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "httpCustomAuth": {
+            "id": "bl3gce0XEouHkW5i",
+            "name": "WHMCS_Query_Auth"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "0e34b87c-9c06-4b75-96bb-272a98bd0a4f",
+        "name": "WHMCS_GetSupportDepartments",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          -48,
+          432
+        ],
+        "parameters": {
+          "url": "https://WHMCS_URL.com/includes/api.php",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "sendHeaders": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "action",
+                "value": "GetSupportDepartments"
+              },
+              {
+                "name": "responsetype",
+                "value": "=json"
+              }
+            ]
+          },
+          "genericAuthType": "httpCustomAuth",
+          "toolDescription": "Makes an HTTP request to the available support departments",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "httpCustomAuth": {
+            "id": "bl3gce0XEouHkW5i",
+            "name": "WHMCS_Query_Auth"
+          }
+        },
+        "typeVersion": 4.2
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "timezone": "Asia/Karachi",
+      "callerPolicy": "workflowsFromSameOwner",
+      "executionOrder": "v1"
+    },
+    "versionId": "172752c3-6c9e-46dc-9c16-6a529a8abea4",
+    "connections": {
+      "AI Agent": {
+        "main": [
+          []
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WHMCS_OpenTicket": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WHMCS_GetSupportDepartments": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequestTool": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

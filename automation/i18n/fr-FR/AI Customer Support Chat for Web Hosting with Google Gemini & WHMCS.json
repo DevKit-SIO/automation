@@ -1,0 +1,1063 @@
+{
+  "id": 7631,
+  "name": "Chat de support client IA pour l'hébergement web avec Google Gemini et WHMCS",
+  "totalViews": 187,
+  "price": 0,
+  "purchaseUrl": null,
+  "user": {
+    "name": "Omer Fayyaz",
+    "username": "omerfayyaz",
+    "bio": "n8n Expert with deep experience in designing and implementing automation workflows that optimize business processes, reduce manual effort, and improve scalability. Skilled in integrating n8n with diverse platforms, APIs, and enterprise systems to deliver end-to-end automation solutions. With 13+ years of background in web development (PHP & JavaScript), I bring strong technical expertise to create custom, reliable, and efficient workflows.",
+    "verified": true,
+    "links": [
+      "https://omerfayyaz.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/5ba82ebcfff353e2cd7732613829dc3df56cbb5d73264d57f4ee38a664a96af1?r=pg&d=retro&size=200"
+  },
+  "description": "## Ce modèle n8n met en œuvre un agent de chat de support client pour les entreprises d'hébergement web avec Google Gemini, une base de connaissances Google Sheets et l'API WHMCS pour vérifier la disponibilité des noms de domaine \n\n## Pour qui est-ce\n\nCe modèle est conçu pour **les entreprises d'hébergement web, les bureaux d'enregistrement de domaines et les fournisseurs de services informatiques** qui souhaitent automatiser leur support client avec un chatbot alimenté par l'IA. Il est parfait pour les entreprises cherchant à fournir une assistance client 24/7 pour les plans d'hébergement, les services de domaine et le support technique tout en maintenant une expérience d'interaction professionnelle et humaine.\n\n## Comment ça fonctionne / Ce que ça fait\n\nCe flux de travail crée un **chatbot de support client alimenté par l'IA** qui fournit une assistance complète pour les services d'hébergement web et de domaine. L'agent IA (nommé Matt) automatiquement :\n\n1. **Reçoit les requêtes des clients** via un point de terminaison webhook\n2. **Capture les informations des clients** (nom et email) au début de chaque session\n3. **Traite les demandes en langage naturel** en utilisant Google Gemini AI\n4. **Accède à des informations en temps réel** provenant de plusieurs bases de connaissances Google Sheets :\n   - Plans d'hébergement partagé (tarification, caractéristiques, spécifications)\n   - Prix des domaines (coûts d'enregistrement, de transfert, de renouvellement)\n   - Caractéristiques d'hébergement (capacités techniques et spécifications)\n   - FAQ (questions et réponses courantes)\n   - Détails des méthodes de paiement (options de paiement acceptées)\n   - Offres de l'entreprise (produits et services disponibles)\n5. **Vérifie la disponibilité des domaines** via l'intégration de l'API WHMCS\n6. **Fournit des réponses précises et contextuelles** basées sur la base de connaissances\n7. **Maintient l'historique des conversations** avec une mémoire basée sur la session\n8. **Stocke les sessions de chat complètes** dans Google Sheets pour analyse et suivi\n\nLe système garantit **100 % de précision** en ne fournissant que des informations qui existent dans la base de connaissances, éliminant les conjectures et maintenant la cohérence de la marque.\n\n## Comment configurer\n\n### 1. Configurer la base de connaissances Google Sheets\n- Configurez un document Google Sheets avec les feuilles suivantes :\n  - **Plans_Hébergement_Partagé** : Détails des plans d'hébergement, tarification et spécifications\n  - **Prix_Domaines** : Tarification de l'enregistrement et du renouvellement des domaines\n  - **Caractéristiques_Hébergement** : Caractéristiques techniques et capacités\n  - **FAQ** : Questions et réponses fréquemment posées\n  - **Détails_Méthode_Paiement** : Options de paiement et instructions\n  - **Offres** : Produits et services disponibles\n- Mettez à jour les identifiants Google Sheets dans chaque nœud d'outil\n\n### 2. Configurer l'API Google Gemini\n- Configurez vos identifiants d'API Google Gemini dans le nœud du modèle de chat Google Gemini\n- Assurez-vous d'avoir un quota d'API suffisant pour votre utilisation prévue\n\n### 3. Configurer l'API WHMCS (Optionnel)\n- Remplacez `Votre_Identifiant_WHMCS` par votre véritable identifiant d'API WHMCS\n- Remplacez `Votre_Secret_WHMCS` par votre véritable secret d'API WHMCS\n- Mettez à jour `https://votre_url_whmcs.com/includes/api.php` avec votre domaine WHMCS\n- Cela permet de vérifier la disponibilité des domaines pour les clients\n\n### 4. Configurer le stockage des chats\n- Créez une feuille Google pour stocker les demandes de chat\n- Mettez à jour l'ID du document et les identifiants dans le nœud des Demandes_de_Chat\n- Cela stockera automatiquement toutes les conversations des clients pour analyse\n\n### 5. Déployer le Webhook\n- Le flux de travail crée un point de terminaison webhook unique pour recevoir les requêtes des clients\n- Utilisez cette URL de point de terminaison dans votre application ou interface de chat orientée client\n\n## Exigences\n\n- **Compte Google Sheets** avec la base de connaissances configurée\n- **Compte API Google Gemini** avec les identifiants appropriés\n- **Instance n8n** (auto-hébergée ou cloud)\n- **Installation WHMCS** (optionnelle, pour la vérification de la disponibilité des domaines)\n- **Entreprise de services d'hébergement ou de domaine**\n\n## Comment personnaliser le flux de travail\n\n### Modifier le comportement de l'agent IA\n- Modifiez le message système dans le nœud de l'agent IA pour changer la personnalité et le style de réponse du bot\n- Ajustez la longueur et le ton des réponses pour correspondre à la voix de votre marque\n- Personnalisez le nom de l'agent (actuellement \"Matt\")\n\n### Améliorer la base de connaissances\n- Ajoutez plus d'outils Google Sheets pour des sources d'informations supplémentaires\n- Incluez des catalogues de produits, des tableaux de tarification ou de la documentation technique\n- Ajoutez un support multilingue pour les clients internationaux\n\n### Améliorer l'expérience client\n- Ajoutez des algorithmes de suggestion de domaine basés sur les entrées des clients\n- Intégrez votre base de données client existante pour des recommandations personnalisées\n- Ajoutez des systèmes de notification (email, Slack, SMS) pour les demandes de grande valeur\n\n### Améliorations de la sécurité\n- Mettez en œuvre la rotation et la surveillance des clés API\n- Ajoutez la validation et la désinfection des requêtes\n- Configurez des analyses d'utilisation et des mesures de prévention des abus\n\n## Caractéristiques clés\n\n- **Accès à des informations en temps réel** depuis la base de connaissances Google Sheets\n- **Traitement du langage naturel alimenté par l'IA** pour les requêtes des clients\n- **Mémoire basée sur la session** pour des conversations contextuelles\n- **Vérification automatique de la disponibilité des domaines** via l'API WHMCS\n- **Réponses professionnelles et axées sur le client** qui maintiennent les normes de la marque\n- **Stockage complet de l'historique des chats** pour analyse et suivi\n- **Architecture webhook évolutive** pour une utilisation à fort volume\n- **Intégration multi-outils** pour un support client complet\n\n## Cas d'utilisation\n\n- **Automatisation du support client 24/7** pour les entreprises d'hébergement web\n- **Assistance à l'équipe de vente** avec des informations produit en temps réel\n- **Portails de service client en libre-service** avec assistance intelligente\n- **Génération de leads** grâce à des recommandations de service proactives\n- **Fidélisation des clients** grâce à une expérience de support améliorée\n- **Réduction des tickets de support** en gérant automatiquement les requêtes courantes\n\n## Gestion des sessions de chat\n\nLe flux de travail gère automatiquement les sessions de chat avec les fonctionnalités suivantes :\n\n- **Identifiants de session uniques** pour chaque conversation client\n- **Capture automatique des informations client** (nom et email)\n- **Suivi de l'historique des conversations** avec stockage chronologique des messages\n- **Persistance des sessions** à travers plusieurs interactions\n- **Exportation des données** vers Google Sheets pour analyse et suivi\n\n## Exemples d'interactions client\n\nL'agent IA peut gérer divers scénarios clients :\n\n- **Demandes de plans d'hébergement** : Informations détaillées sur les plans d'hébergement partagé, les caractéristiques et la tarification\n- **Services de domaine** : Vérification de la disponibilité des domaines, tarification et conseils d'enregistrement\n- **Support technique** : Explications des fonctionnalités, conseils de configuration et dépannage\n- **Informations de paiement** : Méthodes de paiement acceptées et processus de transaction\n- **Support général** : Informations sur l'entreprise, offres de services et réponses aux FAQ\n\nCe modèle transforme votre entreprise d'hébergement web en fournissant un support client instantané et précis tout en maintenant la touche personnelle que les clients attendent des fournisseurs de services professionnels. L'agent IA devient une extension de votre équipe de support, gérant les demandes de routine et permettant aux agents humains de se concentrer sur des problèmes techniques complexes.",
+  "createdAt": "2025-08-20T07:33:18.443Z",
+  "nodes": [
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 535,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.respondToWebhook",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Répondre au Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Respond to Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire Simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "views": 187,
+  "recentViews": 13,
+  "workflow": {
+    "meta": {
+      "instanceId": "50631c03cbd88440965b74e5a58aada5437cbc43e90372b516e36154908ad374"
+    },
+    "name": "My workflow 7",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "09960517-0679-4cdf-9571-2a1fe1946285",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          576,
+          -96
+        ],
+        "parameters": {
+          "text": "={{ $json.body.message }}",
+          "options": {
+            "systemMessage": "=You are an AI-powered customer support assistant for a web hosting company. Your name is Matt. Your role is to provide accurate, helpful, and friendly answers to customer queries regarding company’s services, based strictly on the provided knowledge base and tools.\n\nCore Responsibilities:\n1. Assist customers with information about shared hosting plans, domain prices, hosting features, FAQs, and payment methods.\n2. Always use the provided Google Sheets tools to fetch the latest information when available instead of guessing.\n3. Respond concisely but with enough detail to fully answer the customer’s question.\n4. Maintain a professional, approachable, and customer-focused tone.\n\nKnowledge Sources & Tools:\n- **Offerings** → Details of products and services offered.\n- **Shared_Hosting_Plans** → Details of hosting plans, pricing, and specifications.\n- **Domain_Prices** → Domain registration, transfer, and renewal prices.\n- **Hosting_Features** → Technical features and capabilities of hosting.\n- **FAQs** → Commonly asked questions and answers.\n- **Payment_Method_Details** → Accepted payment options, instructions, and currency details.\n- **Domain_Availability_Checker** → Use this tool to check the domain name availability\n- **Chat_Inquiries** → Store all chat messages for each session.\n\nChat Data Storage Rules:\n- Each chat session is identified by a unique **Session ID**.\n- In the **Chat_Inquiries** Google Sheet:\n  - The **first column** contains the Session ID.\n  - The **second column** contains the Name.\n  - The **third column** contains the Email.\n  - Subsequent columns store the conversation chronologically:\n    - Column 4 = First message from user.\n    - Column 5 = First reply from chatbot.\n    - Column 6 = Next user message.\n    - Column 7 = Next chatbot reply.\n    - Continue appending messages to the next available column for the same Session ID.\n- Never overwrite existing messages — always append in the next empty column for that row (session).\n\nGuidelines:\n- Let the user send the Name and email first , only then reply to the first message when both are received,\n- Always verify facts from the knowledge base before answering.\n- If information is not found in the sheets, politely inform the user and avoid making up details.\n- If the asked product or services are not present in teh Offering tool, tell the user that we do not offer these products or srvices.\n- Provide step-by-step guidance when explaining processes (e.g., how to order hosting, how to pay).\n- Be proactive — if the user’s question implies they might need related information (e.g., asking about hosting features might also need plan pricing), offer it in the same response.\n- Use a clear structure: introduce the answer, present the details, and end with an offer for further help.\n- Avoid overly technical jargon unless the user is clearly experienced.\n- Do not mention that you are an AI/Virtual assistant in your chat replys.\n- Do not provide names of teh tools or refrence them in your chat replys.\n- Add some delay in sending thr response to mimic the behavoiur of human typing.\n- Do not use steric sign(*) to style the reply (i.e., *   **.com:** PKR 4444 for 1 Year ). Replace the steric sign with the html tags where needed.\n- Do not mention the products or services we are not offering untill unless asked for those products or services explicitly.\n- If someone mentions any domain name and show interest in buying domain, first of all check the domain availability before suggesting the domain prices.\n- If the domain name is not available, do not show apologetic tone. Show the positive tone instead.\n- Ensure complete chat history for the session is stored and updated in the sheet in the same row for that Session ID.\n\n\nExample Interactions:\n\n1. **Capturing Name and Email before first reply**\nUser: \"Hi there\"\nErik: \"Hello! Before we get started, could you please share your <b>full name</b> and <b>email address</b> so I can assist you better?\"\nUser: \"John Smith, john@example.com\"\nErik: \"Thank you, John. How can I help you today?\"\n\n---\n\n2. **Domain Price Inquiry (Available Domain)**\nUser: \"Can you tell me the price for example.com?\"\nErik: \"Let me first check the availability of <b>example.com</b> for you...  \nGreat news! <b>example.com</b> is available. According to our latest pricing, it’s $9.99/year for registration and renewal. Would you like me to guide you through the registration process?\"\n\n---\n\n3. **Domain Price Inquiry (Unavailable Domain – Positive Tone)**\nUser: \"I want to buy myshop.com\"\nErik: \"I’ve checked for you — <b>myshop.com</b> is already taken.  \nBut no worries! We can explore great alternatives like <b>myshop.net</b> or <b>myshop.online</b>, which are both available right now. Would you like me to share their prices?\"\n\n---\n\n4. **Shared Hosting Plan Inquiry**\nUser: \"What are your shared hosting plans?\"\nErik: \"We have multiple shared hosting plans designed for different needs:  \n<b>Basic Plan</b> — Perfect for small websites, includes 1 domain, 10GB SSD storage, and free SSL.  \n<b>Pro Plan</b> — Ideal for growing businesses, includes unlimited domains, 50GB SSD storage, free SSL, and priority support.  \n<b>Business Plan</b> — Best for high-traffic sites, unlimited everything plus dedicated resources.  \nWould you like me to check if there are any discounts available for annual payments?\"\n\n---\n\n5. **Unavailable Service Inquiry**\nUser: \"Do you offer VPS hosting?\"\nErik: \"Currently, we do not offer VPS hosting services. We specialize in shared hosting, domain registration, and related solutions. Would you like me to recommend the best shared hosting plan for your needs?\"\n\n---\n\n6. **Payment Method Inquiry**\nUser: \"How can I pay for my hosting plan?\"\nErik: \"We accept a variety of payment methods including <b>PayPal</b>, <b>credit/debit cards</b>, and <b>bank transfers</b>. Once you choose your plan, I can guide you through the payment steps in detail. Which method would you like to use?\"\n\n---\n\n7. **Proactive Cross-Sell**\nUser: \"I’m interested in a domain name.\"\nErik: \"Sure! Could you share the domain name you have in mind? Once I check its availability, I can also let you know about hosting plan discounts you can get if you register the domain with us.\"\n\n---\n\n8. **Follow-up within the same session**\nUser: \"Tell me more about the Pro Plan.\"\nErik: \"Our <b>Pro Plan</b> includes unlimited domains, 50GB SSD storage, free SSL certificates, and priority support. It’s ideal for small to medium businesses with growing traffic. Would you like me to prepare a complete cost breakdown including domain registration?\"\n\n\nRemember: Always be accurate, friendly, and efficient. Your primary goal is to help the user make quick, informed decisions about company’s services.\n\nNote:\nToday is {{ $now }}\n"
+          },
+          "promptType": "define"
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "4803a5f0-d58c-4c1d-9ad8-c52712c27e7e",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          0,
+          128
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "fCwOeE5T0V3qZKVd",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6cbc434c-668f-4fed-b887-89265d2c74ef",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          192,
+          128
+        ],
+        "parameters": {
+          "sessionKey": "={{ $('Webhook').item.json.body.sessionId }}",
+          "sessionIdType": "customKey",
+          "contextWindowLength": 15
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "131460d0-9882-4526-9638-fbbe67f21c1c",
+        "name": "Shared_Hosting_Plans",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          384,
+          128
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 2043456934,
+            "cachedResultUrl": "",
+            "cachedResultName": "Shared_Hosting_Plans"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SOFmoAm8uJ6bADAMH0OnX1NxDtG3DZs3wwt5Ojnr510",
+            "cachedResultUrl": "",
+            "cachedResultName": "knowledge_base"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "m7KJWht6snJWUiJc",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "1c79ffed-dd69-41db-8038-558d97c87025",
+        "name": "Domain_Prices",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          544,
+          128
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 105151249,
+            "cachedResultUrl": "",
+            "cachedResultName": "Domain_Prices"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SOFmoAm8uJ6bADAMH0OnX1NxDtG3DZs3wwt5Ojnr510",
+            "cachedResultUrl": "",
+            "cachedResultName": "knowledge_base"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "m7KJWht6snJWUiJc",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "29214e9b-e987-46d4-ba70-20ab5d10aee2",
+        "name": "Hosting_Features",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          688,
+          128
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1112678828,
+            "cachedResultUrl": "",
+            "cachedResultName": "Hosting_Features"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SOFmoAm8uJ6bADAMH0OnX1NxDtG3DZs3wwt5Ojnr510",
+            "cachedResultUrl": "",
+            "cachedResultName": "knowledge_base"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "m7KJWht6snJWUiJc",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "e36c643d-1717-4beb-8ae7-5a235c89169c",
+        "name": "FAQs",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          800,
+          128
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 335311410,
+            "cachedResultUrl": "",
+            "cachedResultName": "FAQs"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SOFmoAm8uJ6bADAMH0OnX1NxDtG3DZs3wwt5Ojnr510",
+            "cachedResultUrl": "",
+            "cachedResultName": "knowledge_base"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "m7KJWht6snJWUiJc",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "04d9e9f0-d8c8-4157-9e3d-3ffffcd32fac",
+        "name": "Payment_Method_Details",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          928,
+          128
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 499178757,
+            "cachedResultUrl": "",
+            "cachedResultName": "Payment_Method_Details"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SOFmoAm8uJ6bADAMH0OnX1NxDtG3DZs3wwt5Ojnr510",
+            "cachedResultUrl": "",
+            "cachedResultName": "knowledge_base"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "m7KJWht6snJWUiJc",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "6894ddca-ff8b-46a8-b384-1563fed361d3",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          0,
+          -96
+        ],
+        "webhookId": "2636ab69-9b01-4d0a-9146-178947f0c5cf",
+        "parameters": {
+          "path": "2636ab69-9b01-4d0a-9146-178947f0c5cf",
+          "options": {},
+          "httpMethod": "POST",
+          "responseMode": "responseNode"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "eb46101b-975a-4509-b4e8-162297b847e2",
+        "name": "Respond to Webhook1",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          1392,
+          -96
+        ],
+        "parameters": {
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, x-api-key"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "POST, OPTIONS"
+                }
+              ]
+            }
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "52b4df1f-3f77-43d2-852c-23261091219a",
+        "name": "Offerings",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          1056,
+          128
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1058340463,
+            "cachedResultUrl": "",
+            "cachedResultName": "Offerings"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SOFmoAm8uJ6bADAMH0OnX1NxDtG3DZs3wwt5Ojnr510",
+            "cachedResultUrl": "",
+            "cachedResultName": "knowledge_base"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "m7KJWht6snJWUiJc",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "d7ef0d76-dfe7-4288-854c-9d2b3c9c4504",
+        "name": "Domain_Availability_Checker",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          1232,
+          128
+        ],
+        "parameters": {
+          "url": "https://your_whmcs_url.com/includes/api.php",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "identifier",
+                "value": "Your_WHMCS_Identifier"
+              },
+              {
+                "name": "secret",
+                "value": "Your_WHMCS_Secret"
+              },
+              {
+                "name": "action",
+                "value": "DomainWhois"
+              },
+              {
+                "name": "domain",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters3_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "toolDescription": "Makes an HTTP request to check the Domain Avaialbility",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "79a71156-3772-4a3c-9951-f3471f524af3",
+        "name": "Chat_Inquiries",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          1424,
+          128
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Chat": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Chat', ``, 'string') }}",
+              "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+              "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}",
+              "Session Id": "={{ $('Webhook').item.json.body.sessionId }}",
+              "Start Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Date', ``, 'string') }}",
+              "Start Time (Pak Time)": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time__Pak_Time_', ``, 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "Session Id",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Session Id",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Start Date",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Start Date",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Start Time (Pak Time)",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Start Time (Pak Time)",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Name",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Email",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Email",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Chat",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Chat",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Session Id"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "appendOrUpdate",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "14ETwMLE0K_oigu-Xuu3exw6fVUP8rsWKZ4QlyGTsKwU",
+            "cachedResultUrl": "",
+            "cachedResultName": "Chat Inquiries"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "m7KJWht6snJWUiJc",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "02a0718e-a89c-41f1-b839-710af6ba6168",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -16,
+          -560
+        ],
+        "parameters": {
+          "width": 736,
+          "height": 448,
+          "content": "## Customer Support Chat Agent for Web Hosting Companies\nThis template is designed for **web hosting companies, domain registrars, and IT service providers** who want to automate their customer support with an AI-powered chatbot. It's perfect for businesses looking to provide 24/7 customer assistance for hosting plans, domain services, and technical support while maintaining a professional, human-like interaction experience.\n\n## Use Cases\n- **24/7 customer support automation** for web hosting companies\n- **Sales team assistance** with real-time product information\n- **Customer self-service portals** with intelligent assistance\n- **Lead generation** through proactive service recommendations\n- **Customer retention** via improved support experience\n- **Support ticket reduction** by handling common queries automatically"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "791f2157-a761-4126-b74c-12aa862625b2",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          736,
+          -560
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 816,
+          "height": 448,
+          "content": "## How it works / What it does\n\nThis workflow creates an **AI-powered customer support chatbot** that provides comprehensive assistance for web hosting and domain services. The AI agent (named Matt) automatically:\n\n1. **Receives customer queries** through a webhook endpoint\n2. **Captures customer information** (name and email) at the start of each session\n3. **Processes natural language requests** using Google Gemini AI\n4. **Accesses real-time information** from multiple Google Sheets knowledge bases:\n   - Shared Hosting Plans (pricing, features, specifications)\n   - Domain Prices (registration, transfer, renewal costs)\n   - Hosting Features (technical capabilities and specifications)\n   - FAQs (common questions and answers)\n   - Payment Method Details (accepted payment options)\n   - Company Offerings (available products and services)\n5. **Checks domain availability** via WHMCS API integration\n6. **Provides accurate, contextual responses** based on the knowledge base\n7. **Maintains conversation history** with session-based memory\n8. **Stores complete chat sessions** in Google Sheets for analysis and follow-up"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "",
+    "connections": {
+      "FAQs": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Offerings": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Domain_Prices": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat_Inquiries": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Hosting_Features": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Shared_Hosting_Plans": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Payment_Method_Details": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Domain_Availability_Checker": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 15,
+    "nodeTypes": {
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequestTool": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheetsTool": {
+        "count": 7
+      },
+      "n8n-nodes-base.respondToWebhook": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 48,
+      "name": "IA RAG"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": []
+}

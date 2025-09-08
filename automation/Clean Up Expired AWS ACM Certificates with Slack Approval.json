@@ -1,0 +1,707 @@
+{
+  "id": 7626,
+  "name": "Clean Up Expired AWS ACM Certificates with Slack Approval",
+  "totalViews": 5,
+  "price": 0,
+  "purchaseUrl": null,
+  "user": {
+    "name": "Trung Tran",
+    "username": "trungtran",
+    "bio": "Empowering small and medium businesses with smart automation and practical AI, no big tech team required.",
+    "verified": true,
+    "links": [
+      "https://www.automatewith.me"
+    ],
+    "avatar": "https://gravatar.com/avatar/716d5835286b57fb642fb00972b432f63c72f3a0258e1f6a476ceb02829d21bd?r=pg&d=retro&size=200"
+  },
+  "description": "# Automatic Clean Up Expired AWS ACM Certificates with Human Approval\n&gt; Automate the cleanup of expired AWS ACM certificates with Slack-based approval. This workflow helps maintain a secure and tidy AWS environment by detecting expired SSL certs, sending detailed Slack notifications to admins, and deleting them upon approval, ensuring full visibility and control over certificate lifecycle management.\n## 🧑‍💼 Who’s it for\n\nThis workflow is designed for:\n- **AWS administrators** who want to keep their environment clean and secure  \n- **DevOps teams** managing SSL lifecycle in AWS ACM  \n- **IT Admins** needing visibility and control over expired cert removal  \n- Teams that use **Slack for collaboration and approvals**\n\n## ⚙️ How it works / What it does\n\nThis automated workflow performs the following tasks on a **daily schedule**:\n1. **Fetch all ACM certificates** in your AWS account.\n2. **Filter out the expired ones** by comparing expiration date and status.\n3. **Send a Slack approval message** with certificate details to the admin team.\n4. **Wait for approval response** directly in Slack (`✅` to approve deletion).\n5. If approved, it **deletes the expired certificate** using AWS ACM.\n6. Finally, it **notifies the IT admin** about the action taken.\n\n## 🔧 How to set up\n\n1. **Create the Workflow**\n   - Add the nodes as shown:\n     - `Schedule Trigger`\n     - `AWS - ACM: listCertificates`\n     - `AWS - ACM: describeCertificate` (loop per cert)\n     - `IF Node` to filter expired certs\n     - `Slack - Send & Wait for Reaction`\n     - `AWS - ACM: deleteCertificate`\n     - `Slack - Post Message` to notify\n\n2. **Configure Slack**\n   - Create a **Slack Bot Token** with:\n     - `chat:write`\n     - `reactions:read`\n     - `channels:read`\n   - Connect it in your Slack nodes.\n\n3. **Configure AWS Credentials**\n   - Use IAM User or Role with:\n     - `acm:ListCertificates`\n     - `acm:DescribeCertificate`\n     - `acm:DeleteCertificate`\n\n4. **Set schedule**\n   - Daily, Weekly, or custom cron expression.\n\n## 📋 Requirements\n\n| Component         | Description                          |\n|------------------|--------------------------------------|\n| AWS ACM Access   | IAM permissions for ACM actions      |\n| Slack Bot Token  | With `chat:write` & `reactions:read` |\n| n8n Environment  | Self-hosted or n8n Cloud             |\n| Slack Channel    | Where approval messages will be sent |\n\n## 🛠️ How to customize the workflow\n\n### 🕒 Change waiting time\nAdjust the wait time before checking Slack reactions in the `sendAndWait` node (default 1 hour).\n\n### 👥 Change Slack target\nChange the Slack channel or tag specific people (`&lt;@U123456&gt;`).\n\n### 📓 Add logging\nAdd Google Sheets, Notion, or DynamoDB to log certificate details and approval decisions.\n\n### 🧪 Add dry-run/test mode\nUse an IF node before deletion to simulate removal when `ENV === dry-run`.\n",
+  "createdAt": "2025-08-20T05:18:19.201Z",
+  "nodes": [
+    {
+      "id": 40,
+      "icon": "file:slack.svg",
+      "name": "n8n-nodes-base.slack",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/slack/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Slack"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgMTUwLjg1MiAxNTAuODUyIj48dXNlIHhsaW5rOmhyZWY9IiNhIiB4PSIuOTI2IiB5PSIuOTI2Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZS13aWR0aD0iMS44NTIiPjxwYXRoIGZpbGw9IiNlMDFlNWEiIHN0cm9rZT0iI2UwMWU1YSIgZD0iTTQwLjc0MSA5My41NWMwLTguNzM1IDYuNjA3LTE1Ljc3MiAxNC44MTUtMTUuNzcyczE0LjgxNSA3LjAzNyAxNC44MTUgMTUuNzcydjM4LjgyNGMwIDguNzM3LTYuNjA3IDE1Ljc3NC0xNC44MTUgMTUuNzc0cy0xNC44MTUtNy4wMzctMTQuODE1LTE1Ljc3MnoiLz48cGF0aCBmaWxsPSIjZWNiMjJkIiBzdHJva2U9IiNlY2IyMmQiIGQ9Ik05My41NSAxMDcuNDA4Yy04LjczNSAwLTE1Ljc3Mi02LjYwNy0xNS43NzItMTQuODE1czcuMDM3LTE0LjgxNSAxNS43NzItMTQuODE1aDM4LjgyNmM4LjczNSAwIDE1Ljc3MiA2LjYwNyAxNS43NzIgMTQuODE1cy03LjAzNyAxNC44MTUtMTUuNzcyIDE0LjgxNXoiLz48cGF0aCBmaWxsPSIjMmZiNjdjIiBzdHJva2U9IiMyZmI2N2MiIGQ9Ik03Ny43NzggMTUuNzcyQzc3Ljc3OCA3LjAzNyA4NC4zODUgMCA5Mi41OTMgMHMxNC44MTUgNy4wMzcgMTQuODE1IDE1Ljc3MnYzOC44MjZjMCA4LjczNS02LjYwNyAxNS43NzItMTQuODE1IDE1Ljc3MnMtMTQuODE1LTcuMDM3LTE0LjgxNS0xNS43NzJ6Ii8+PHBhdGggZmlsbD0iIzM2YzVmMSIgc3Ryb2tlPSIjMzZjNWYxIiBkPSJNMTUuNzcyIDcwLjM3MUM3LjAzNyA3MC4zNzEgMCA2My43NjMgMCA1NS41NTZzNy4wMzctMTQuODE1IDE1Ljc3Mi0xNC44MTVoMzguODI2YzguNzM1IDAgMTUuNzcyIDYuNjA3IDE1Ljc3MiAxNC44MTVzLTcuMDM3IDE0LjgxNS0xNS43NzIgMTQuODE1eiIvPjxnIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiPjxwYXRoIGZpbGw9IiNlY2IyMmQiIHN0cm9rZT0iI2VjYjIyZCIgZD0iTTc3Ljc3OCAxMzMuMzMzYzAgOC4yMDggNi42MDcgMTQuODE1IDE0LjgxNSAxNC44MTVzMTQuODE1LTYuNjA3IDE0LjgxNS0xNC44MTUtNi42MDctMTQuODE1LTE0LjgxNS0xNC44MTVINzcuNzc4eiIvPjxwYXRoIGZpbGw9IiMyZmI2N2MiIHN0cm9rZT0iIzJmYjY3YyIgZD0iTTEzMy4zMzQgNzAuMzcxaC0xNC44MTVWNTUuNTU2YzAtOC4yMDcgNi42MDctMTQuODE1IDE0LjgxNS0xNC44MTVzMTQuODE1IDYuNjA3IDE0LjgxNSAxNC44MTUtNi42MDcgMTQuODE1LTE0LjgxNSAxNC44MTV6Ii8+PHBhdGggZmlsbD0iI2UwMWU1YSIgc3Ryb2tlPSIjZTAxZTVhIiBkPSJNMTQuODE1IDc3Ljc3OEgyOS42M3YxNC44MTVjMCA4LjIwNy02LjYwNyAxNC44MTUtMTQuODE1IDE0LjgxNVMwIDEwMC44IDAgOTIuNTkzczYuNjA3LTE0LjgxNSAxNC44MTUtMTQuODE1eiIvPjxwYXRoIGZpbGw9IiMzNmM1ZjEiIHN0cm9rZT0iIzM2YzVmMSIgZD0iTTcwLjM3MSAxNC44MTVWMjkuNjNINTUuNTU2Yy04LjIwNyAwLTE0LjgxNS02LjYwNy0xNC44MTUtMTQuODE1UzQ3LjM0OCAwIDU1LjU1NiAwczE0LjgxNSA2LjYwNyAxNC44MTUgMTQuODE1eiIvPjwvZz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Slack",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Sticky Note",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 828,
+      "icon": "file:acm.svg",
+      "name": "n8n-nodes-base.awsCertificateManager",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.awscertificatemanager/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/aws/"
+              }
+            ]
+          },
+          "categories": [
+            "Development"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "AWS Certificate Manager"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODUgODUiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9IjIuNSIgeT0iMi41Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzc1OWMzZSIgZD0ibTgwIDQ3LjAwNS00MC4wMTIgNC45NjJWMjcuOTlMODAgMzIuOTUyeiIvPjxwYXRoIGZpbGw9IiM0YjYxMmMiIGQ9Im0wIDQ3LjAwNSAzOS45ODggNC45NjJWMjcuOTlMMCAzMi45NTJ6Ii8+PHBhdGggZmlsbD0iIzY0ODMzOSIgZD0iTTEwIDBoNjB2MTVIMTB6Ii8+PHBhdGggZmlsbD0iIzNjNDkyOSIgZD0ibTY1IDIwLTQ4Ljk3Ni4yMTJMMTAgMTVoNjB6Ii8+PHBhdGggZmlsbD0iIzY0ODMzOSIgZD0iTTEwIDY1aDYwdjE1SDEweiIvPjxwYXRoIGZpbGw9IiNiN2NhOWQiIGQ9Ik02NSA2MEgxNWwtNSA1aDYweiIvPjwvZz48L3N5bWJvbD48L3N2Zz4="
+      },
+      "displayName": "AWS Certificate Manager",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Schedule Trigger",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filter",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "views": 5,
+  "recentViews": 0,
+  "workflow": {
+    "id": "ISewUDgaQCM3Lw59",
+    "meta": {
+      "instanceId": "4a2e6764ba7a6bc9890d9225f4b21d570ce88fc9bd57549c89057fcee58fed0f",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Clean Expired AWS ACM Certs with Slack Approval",
+    "tags": [
+      {
+        "id": "ZWDTpzMgM2j0ZGMO",
+        "name": "acm",
+        "createdAt": "2025-08-20T04:24:13.252Z",
+        "updatedAt": "2025-08-20T04:24:13.252Z"
+      },
+      {
+        "id": "hvp6nueQ4hpIJWbY",
+        "name": "aws",
+        "createdAt": "2025-08-17T05:47:27.209Z",
+        "updatedAt": "2025-08-17T05:47:27.209Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "0fa56096-8872-400b-afa1-5c52090bd33c",
+        "name": "Get many certificates",
+        "type": "n8n-nodes-base.awsCertificateManager",
+        "position": [
+          224,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "operation": "getMany"
+        },
+        "credentials": {
+          "aws": {
+            "id": "IZYsJuHhfVJ3PIrC",
+            "name": "ap-southeast-1"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "849ac135-f381-4a26-a9c5-79e62d20f74d",
+        "name": "Send message and wait for response",
+        "type": "n8n-nodes-base.slack",
+        "disabled": true,
+        "position": [
+          720,
+          0
+        ],
+        "webhookId": "a2040fd8-4de2-4eb9-ad51-fa9a5b974afc",
+        "parameters": {
+          "user": {
+            "__rl": true,
+            "mode": "list",
+            "value": "U054RMBTVBM",
+            "cachedResultName": "trung.tran"
+          },
+          "message": "=:warning: *Expired SSL Certificate Detected*\nAn SSL certificate in AWS ACM has expired. Please review the details below and approve deletion to keep the environment clean.\n*📄 Certificate Summary:*\n• *Domain Name:* `{{ $json.DomainName }}`\n• *Certificate ARN:* `{{ $json.CertificateArn }}`\n• *Issueed Date:* `{{ $json.IssuedAt.toDateTime('s').toString() }}`\n• *Expiration Date:* `{{ $json.NotAfter.toDateTime('s').toString() }}`\n\n👉 *Next Step:*  \nReact to this message with:\n:white_check_mark: to approve deletion  \n:x: to keep the certificate\n\n_(This message will be auto-checked in 1 hour for reactions.)_",
+          "options": {
+            "limitWaitTime": {
+              "values": {
+                "resumeUnit": "minutes",
+                "resumeAmount": 60
+              }
+            }
+          },
+          "operation": "sendAndWait",
+          "authentication": "oAuth2",
+          "approvalOptions": {
+            "values": {
+              "approvalType": "double"
+            }
+          }
+        },
+        "credentials": {
+          "slackOAuth2Api": {
+            "id": "4JSKt9sIRV1KGswQ",
+            "name": "Slack account"
+          }
+        },
+        "typeVersion": 2.3
+      },
+      {
+        "id": "203fe369-3299-46e3-a076-99d0b8dd1c00",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1264,
+          -672
+        ],
+        "parameters": {
+          "width": 1056,
+          "height": 1744,
+          "content": "# Clean Up Expired AWS ACM Certificates with Human Approval\n> Automate the cleanup of expired AWS ACM certificates with Slack-based approval. This workflow helps maintain a secure and tidy AWS environment by detecting expired SSL certs, sending detailed Slack notifications to admins, and deleting them upon approval, ensuring full visibility and control over certificate lifecycle management.\n## 🧑‍💼 Who’s it for\n\nThis workflow is designed for:\n- **AWS administrators** who want to keep their environment clean and secure  \n- **DevOps teams** managing SSL lifecycle in AWS ACM  \n- **IT Admins** needing visibility and control over expired cert removal  \n- Teams that use **Slack for collaboration and approvals**\n\n## ⚙️ How it works / What it does\n\nThis automated workflow performs the following tasks on a **daily schedule**:\n1. **Fetch all ACM certificates** in your AWS account.\n2. **Filter out the expired ones** by comparing expiration date and status.\n3. **Send a Slack approval message** with certificate details to the admin team.\n4. **Wait for approval response** directly in Slack (`✅` to approve deletion).\n5. If approved, it **deletes the expired certificate** using AWS ACM.\n6. Finally, it **notifies the IT admin** about the action taken.\n\n## 🔧 How to set up\n\n1. **Create the Workflow**\n   - Add the nodes as shown:\n     - `Schedule Trigger`\n     - `AWS - ACM: listCertificates`\n     - `AWS - ACM: describeCertificate` (loop per cert)\n     - `IF Node` to filter expired certs\n     - `Slack - Send & Wait for Reaction`\n     - `AWS - ACM: deleteCertificate`\n     - `Slack - Post Message` to notify\n\n2. **Configure Slack**\n   - Create a **Slack Bot Token** with:\n     - `chat:write`\n     - `reactions:read`\n     - `channels:read`\n   - Connect it in your Slack nodes.\n\n3. **Configure AWS Credentials**\n   - Use IAM User or Role with:\n     - `acm:ListCertificates`\n     - `acm:DescribeCertificate`\n     - `acm:DeleteCertificate`\n\n4. **Set schedule**\n   - Daily, Weekly, or custom cron expression.\n\n## 📋 Requirements\n\n| Component         | Description                          |\n|------------------|--------------------------------------|\n| AWS ACM Access   | IAM permissions for ACM actions      |\n| Slack Bot Token  | With `chat:write` & `reactions:read` |\n| n8n Environment  | Self-hosted or n8n Cloud             |\n| Slack Channel    | Where approval messages will be sent |\n\n## 🛠️ How to customize the workflow\n\n### 🕒 Change waiting time\nAdjust the wait time before checking Slack reactions in the `sendAndWait` node (default 1 hour).\n\n### 👥 Change Slack target\nChange the Slack channel or tag specific people (`<@U123456>`).\n\n### 📓 Add logging\nAdd Google Sheets, Notion, or DynamoDB to log certificate details and approval decisions.\n\n### 🧪 Add dry-run/test mode\nUse an IF node before deletion to simulate removal when `ENV === dry-run`.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4539a804-c2ca-4591-9b7c-5c018cffdf97",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -176,
+          192
+        ],
+        "parameters": {
+          "width": 272,
+          "height": 128,
+          "content": "### 1. Schedule Trigger\nThe workflow starts on a scheduled basis (e.g., daily at 09:00) to automatically check ACM certificates without manual intervention."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0333abeb-5624-4b50-a25e-15ea74211a5a",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          144,
+          192
+        ],
+        "parameters": {
+          "width": 208,
+          "content": "### 2. Get Certificates\nFetches all ACM certificates in the configured AWS region(s), including details such as domain names, status, and expiration dates."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b09e50cd-01bd-4901-ad4c-136d30352564",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          400,
+          192
+        ],
+        "parameters": {
+          "width": 192,
+          "content": "### 3. Filter Expired Certificates Only\nChecks each certificate and keeps only those that expired already.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0084a198-5701-4af9-b009-293951900c2a",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          624,
+          192
+        ],
+        "parameters": {
+          "height": 176,
+          "content": "### 4. Notify via Slack and Wait for Approval\nSends a Slack message with certificate details (domain, ARN, expiration date, status).  \nThe workflow pauses here until a user clicks **Approve** or **Reject**."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0c6903b4-8ddc-4c94-bb11-9e2ef518e5a9",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          896,
+          192
+        ],
+        "parameters": {
+          "width": 304,
+          "content": "### 5. Delete Expired Certificate\nIf **Approve** is selected in Slack, the workflow triggers AWS ACM to delete the certificate automatically.  \nIf **Reject** is clicked, no action is taken, and the workflow ends."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "079cb3e6-73cc-41ad-95a5-c0af457b25bf",
+        "name": "Inform IT Admin",
+        "type": "n8n-nodes-base.slack",
+        "position": [
+          1296,
+          0
+        ],
+        "webhookId": "7ea60ebd-bef7-4a22-ba58-4009b32b63b4",
+        "parameters": {
+          "text": "=:white_check_mark: *ACM Certificate Deleted Successfully*\n\n*Domain:* {{ $('Get expired certification only').item.json.DomainName }}\n*ARN:* {{ $('Get expired certification only').item.json.CertificateArn }}\n*Deleted At:* {{ $now }}\n\nApproved by: {{ $('Send message and wait for response').item.json.user?.name || $('Send message and wait for response').item.json.username || 'N/A' }}",
+          "user": {
+            "__rl": true,
+            "mode": "list",
+            "value": "U054RMBTVBM",
+            "cachedResultName": "trung.tran"
+          },
+          "select": "user",
+          "otherOptions": {},
+          "authentication": "oAuth2"
+        },
+        "credentials": {
+          "slackOAuth2Api": {
+            "id": "4JSKt9sIRV1KGswQ",
+            "name": "Slack account"
+          }
+        },
+        "typeVersion": 2.3
+      },
+      {
+        "id": "347da160-cca8-4d35-9e50-64f538dd4b46",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          640,
+          -496
+        ],
+        "parameters": {
+          "width": 608,
+          "height": 416,
+          "content": "![](https://wisestackai.s3.ap-southeast-1.amazonaws.com/Screenshot+2025-08-20+at+11.31.13%E2%80%AFAM.png)"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8a2d6219-969d-4b6f-9c1b-9c818f12e9c0",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1280,
+          192
+        ],
+        "parameters": {
+          "content": "### 6. Notify admin via Slack"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "58b1a7e2-765c-4fe7-8831-cdab2eda3932",
+        "name": "Get expired certification only",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          448,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "or",
+            "conditions": [
+              {
+                "id": "fe1b749d-3046-465e-b60a-786f5b0e2f99",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.Status }}",
+                "rightValue": "=EXPIRED"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "c948316a-c28f-40b0-a320-927efbd8883b",
+        "name": "Daily Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ebb985a7-ba79-4690-8892-976b19fe2941",
+        "name": "Delete a certificate",
+        "type": "n8n-nodes-base.awsCertificateManager",
+        "position": [
+          992,
+          0
+        ],
+        "parameters": {
+          "operation": "delete",
+          "certificateArn": "={{ $json.CertificateArn }}"
+        },
+        "credentials": {
+          "aws": {
+            "id": "d62669OP9bvnmE4n",
+            "name": "us-east-1"
+          }
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "bfa1e782-637f-49eb-8c58-fbd6e4540d77",
+    "connections": {
+      "Delete a certificate": {
+        "main": [
+          [
+            {
+              "node": "Inform IT Admin",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many certificates": {
+        "main": [
+          [
+            {
+              "node": "Get expired certification only",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Daily Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get many certificates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get expired certification only": {
+        "main": [
+          [
+            {
+              "node": "Send message and wait for response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send message and wait for response": {
+        "main": [
+          [
+            {
+              "node": "Delete a certificate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 14,
+    "nodeTypes": {
+      "n8n-nodes-base.slack": {
+        "count": 2
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 8
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.awsCertificateManager": {
+        "count": 2
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 16,
+      "name": "DevOps"
+    },
+    {
+      "id": 51,
+      "name": "Multimodal AI"
+    }
+  ],
+  "image": []
+}

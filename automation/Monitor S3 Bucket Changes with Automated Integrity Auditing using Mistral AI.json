@@ -1,0 +1,3008 @@
+{
+  "id": 7547,
+  "name": "Monitor S3 Bucket Changes with Automated Integrity Auditing using Mistral AI",
+  "totalViews": 16,
+  "price": 125,
+  "purchaseUrl": "https://siennadata.gumroad.com/l/aws_s3_bucket_integrity_auditor",
+  "user": {
+    "name": "SIENNA",
+    "username": "sienna",
+    "bio": "French's leading data storage startup ! \n\nOffline Data Storage, Archival Storage, Cloud to Tape, Data Integrity assurance, multi-source backup, ... all automated with N8N ;)",
+    "verified": true,
+    "links": [
+      "sienna.dev"
+    ],
+    "avatar": "https://gravatar.com/avatar/fd1bea5262825d79d809f0c9ac7b8511dad5825cbcfc5720b3374dbe227a8c35?r=pg&d=retro&size=200"
+  },
+  "description": "# Automated and Periodic AWS S3 Bucket Object Integrity Audit to detect unexpected changes (by Humans, Tenants or Ransomwares)\n\n\n$\\mapsto$ Working with AWS S3, but could also be working with Microsoft Azure, Google Storage Plateform or any other Cloud Provider ! Interested ? Send us an email : contact@sienna.dev\n\n## What this workflow does ?\n\nThis workflow performs automated, periodic audits of an AWS S3 bucket containing objects (files) that can be added, deleted, modified, renamed, or moved at any time by people, tenants, applications, or even ransomware, which could corrupt your resources. \n\nAudits are performed on a single bucket and use optical character recognition (OCR) and artificial intelligence (AI) to characterize changes that may have been made to specific files (TXT, PDF, and logs) in order to determine their sensitivity and integrity (is the file sensitive and complete/intact).\n\n\n## Who's this intended for ?\n\nStorage administrators, cloud architects, or DevOps who need a solution to audit movements on remote cloud storage spaces (such as AWS S3).\n\nThis helps prevent data loss and ensures your compliance level!\n\n## How it works ?\n\nEverything is explained in the workflow. It is taking a \"picture\" of your bucket at a given moment, and then, every X Hours/Days/Weeks, it's taking another picture. \n\nAfter that, we will compare the two photos (like a game of spot the difference) to determine which objects are present in one of the two photos (added or deleted), or present in both but modified.\n\nThe workflow will extract and download added and modified files, select those in text format (PDF, TXT, and logs), and characterize the changes that have been made to these files to ensure that their integrity level is sufficient.\n\nYou can obviously modify this workflow to only get Added or Modified Files, and change prompts (ex : tell if the file is containing specific informations, ...).\n\n## Requirements\n\n- An access to an AWS S3 Bucket obviously;\n- A MinIO S3 Bucket running locally on the Host, or on a different VM/LXC/Container (Using PVE ? Check this : https://community-scripts.github.io/ProxmoxVE/scripts?id=minio) ;\n- Permissions for your N8N Docker Container to write/read on the Host FS (using SSH Nodes with the “execute command” option) ;\n- A Python Script (here : https://sienna.dev/bitnami/wordpress/wp-content/uploads/assets/fileFormatter.py) for the final AI Report Creation\n- A Mistral Account for OCR and LLM with API Keys (or an OCR running locally with Ollama for example\n- MongoDB running on a separate container to get all reports saved\n\nNeed help with something ? Contact us by Mail !\n\n\n## Need a similar Workflow to audit Files & Objects on another Cloud Storage Provider ?\n\nGood news, we have what you need! We can work with any cloud provider, audit files and objects on remote spaces (Backblaze, Wasabi, Scaleway, OVH, IBM, Oracle, Storadera, etc.) using custom scripts and open-source tools!\n\nSimply contact us by email to get in touch with a cloud storage expert and find out today how you can mitigate your cloud storage issues or recover data from the cloud to an on-premises infrastructure.\n",
+  "createdAt": "2025-08-18T12:49:52.918Z",
+  "nodes": [
+    {
+      "id": 11,
+      "icon": "fa:envelope",
+      "name": "n8n-nodes-base.emailSend",
+      "codex": {
+        "data": {
+          "alias": [
+            "SMTP",
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.sendemail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/credentials/sendemail/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Send Email",
+        "color": "#00bb88"
+      },
+      "iconData": {
+        "icon": "envelope",
+        "type": "icon"
+      },
+      "displayName": "Send Email",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Edit Fields"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Loop Over Items",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "icon": "file:mongodb.svg",
+      "name": "n8n-nodes-base.mongoDb",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.mongodb/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/mongoDb/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "MongoDB"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDMyIDMyIj48cGF0aCBmaWxsPSIjNTk5NjM2IiBkPSJtMTUuOS4wODcuODU0IDEuNjA0Yy4xOTIuMjk2LjQuNTU4LjY0NS44MDJhMjIgMjIgMCAwIDEgMi4wMDQgMi4yNjZjMS40NDcgMS45IDIuNDIzIDQuMDEgMy4xMiA2LjI5Mi40MTggMS4zOTQuNjQ1IDIuODI0LjY2MiA0LjI3LjA3IDQuMzIzLTEuNDEyIDguMDM1LTQuNCAxMS4xMmExMyAxMyAwIDAgMS0xLjU3IDEuMzQyYy0uMjk2IDAtLjQzNi0uMjI3LS41NTgtLjQzNmEzLjYgMy42IDAgMCAxLS40MzYtMS4yNTVjLS4xMDUtLjUyMy0uMTc0LTEuMDQ2LS4xNC0xLjU4NnYtLjI0NEMxNi4wNTcgMjQuMjEgMTUuNzk2LjIxIDE1LjkuMDg3Ii8+PHBhdGggZmlsbD0iIzZjYWM0OCIgZD0iTTE1LjkuMDM0Yy0uMDM1LS4wNy0uMDctLjAxNy0uMTA1LjAxNy4wMTcuMzUtLjEwNS42NjItLjI5Ni45Ni0uMjEuMjk2LS40ODguNTIzLS43NjcuNzY3LTEuNTUgMS4zNDItMi43NyAyLjk2My0zLjc0NyA0Ljc3Ni0xLjMgMi40NC0xLjk3IDUuMDU1LTIuMTYgNy44MDgtLjA4Ny45OTMuMzE0IDQuNDk3LjYyNyA1LjUwOC44NTQgMi42ODQgMi4zODggNC45MzMgNC4zNzUgNi44ODUuNDg4LjQ3IDEuMDEuOTA2IDEuNTUgMS4zMjUuMTU3IDAgLjE3NC0uMTQuMjEtLjI0NGE1IDUgMCAwIDAgLjE1Ny0uNjhsLjM1LTIuNjE0eiIvPjxwYXRoIGZpbGw9IiNjMmJmYmYiIGQ9Ik0xNi43NTQgMjguODQ1Yy4wMzUtLjQuMjI3LS43MzIuNDM2LTEuMDYzLS4yMS0uMDg3LS4zNjYtLjI2LS40ODgtLjQ1M2EzLjIgMy4yIDAgMCAxLS4yNi0uNTc1Yy0uMjQ0LS43MzItLjI5Ni0xLjUtLjM2Ni0yLjI0OHYtLjQ1M2MtLjA4Ny4wNy0uMTA1LjY2Mi0uMTA1Ljc1YTE3IDE3IDAgMCAxLS4zMTQgMi4zNTNjLS4wNTIuMzE0LS4wODcuNjI3LS4yOC45MDYgMCAuMDM1IDAgLjA3LjAxNy4xMjIuMzE0LjkyNC40IDEuODY1LjQ1MyAyLjgyNHYuMzVjMCAuNDE4LS4wMTcuMzMuMzMuNDcuMTQuMDUyLjI5Ni4wNy40MzYuMTc0LjEwNSAwIC4xMjItLjA4Ny4xMjItLjE1N2wtLjA1Mi0uNTc1di0xLjYwNGMtLjAxNy0uMjguMDM1LS41NTguMDctLjgyeiIvPjwvc3ZnPg=="
+      },
+      "displayName": "MongoDB",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 5,
+          "name": "Development"
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.switch",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "If",
+            "Path",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Branch",
+            "Case"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.switch/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Switch",
+        "color": "#506000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "Switch",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 264,
+      "icon": "fa:key",
+      "name": "n8n-nodes-base.crypto",
+      "codex": {
+        "data": {
+          "alias": [
+            "Encrypt",
+            "SHA",
+            "Hash"
+          ],
+          "details": "The Crypto node allows you to hash and Hmac string in a specified format and sign a string using a private key. Use this node when you want to encrypt your data.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.crypto/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Crypto",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "key",
+        "type": "icon"
+      },
+      "displayName": "Crypto",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 307,
+      "icon": "file:s3.svg",
+      "name": "n8n-nodes-base.awsS3",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.awss3/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/aws/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "AWS S3"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDY1IiBoZWlnaHQ9IjI1MDAiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIiB2aWV3Qm94PSIwIDAgMjU2IDMxMCI+PHBhdGggZmlsbD0iIzhDMzEyMyIgZD0iTTIwLjYyNCA1My42ODYgMCA2NHYxODEuMDJsMjAuNjI0IDEwLjI1NC4xMjQtLjE0OVY1My44Mjh6Ii8+PHBhdGggZmlsbD0iI0UwNTI0MyIgZD0iTTEzMSAyMjkgMjAuNjI0IDI1NS4yNzRWNTMuNjg2TDEzMSA3OS4zODd6Ii8+PHBhdGggZmlsbD0iIzhDMzEyMyIgZD0ibTgxLjE3OCAxODcuODY2IDQ2LjgxOCA1Ljk2LjI5NC0uNjc4LjI2My03Ni43Ny0uNTU3LS42LTQ2LjgxOCA1Ljg3NHoiLz48cGF0aCBmaWxsPSIjOEMzMTIzIiBkPSJtMTI3Ljk5NiAyMjkuMjk1IDEwNy4zNzEgMjYuMDM1LjE2OS0uMjY5LS4wMDMtMjAxLjE5NS0uMTctLjE4LTEwNy4zNjcgMjUuOTk2eiIvPjxwYXRoIGZpbGw9IiNFMDUyNDMiIGQ9Im0xNzQuODI3IDE4Ny44NjYtNDYuODMxIDUuOTZ2LTc4LjA0OGw0Ni44MzEgNS44NzR6Ii8+PHBhdGggZmlsbD0iIzVFMUYxOCIgZD0ibTE3NC44MjcgODkuNjMxLTQ2LjgzMSA4LjUzNS00Ni44MTgtOC41MzUgNDYuNzU5LTEyLjI1NnoiLz48cGF0aCBmaWxsPSIjRjJCMEE5IiBkPSJtMTc0LjgyNyAyMTkuODAxLTQ2LjgzMS04LjU5MS00Ni44MTggOC41OTEgNDYuNzYxIDEzLjA1M3oiLz48cGF0aCBmaWxsPSIjOEMzMTIzIiBkPSJtODEuMTc4IDg5LjYzMSA0Ni44MTgtMTEuNTg2LjM3OS0uMTE3Vi4zMTNMMTI3Ljk5NiAwIDgxLjE3OCAyMy40MTN6Ii8+PHBhdGggZmlsbD0iI0UwNTI0MyIgZD0ibTE3NC44MjcgODkuNjMxLTQ2LjgzMS0xMS41ODZWMGw0Ni44MzEgMjMuNDEzeiIvPjxwYXRoIGZpbGw9IiM4QzMxMjMiIGQ9Im0xMjcuOTk2IDMwOS40MjgtNDYuODIzLTIzLjQwNXYtNjYuMjE3bDQ2LjgyMyAxMS41ODIuNjg5Ljc4My0uMTg3IDc1LjkwNnoiLz48cGF0aCBmaWxsPSIjRTA1MjQzIiBkPSJtMTI3Ljk5NiAzMDkuNDI4IDQ2LjgyNy0yMy40MDV2LTY2LjIxN2wtNDYuODI3IDExLjU4MnpNMjM1LjM2NyA1My42ODYgMjU2IDY0djE4MS4wMmwtMjAuNjMzIDEwLjMxeiIvPjwvc3ZnPg=="
+      },
+      "displayName": "AWS S3",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 5,
+          "name": "Development"
+        }
+      ]
+    },
+    {
+      "id": 365,
+      "icon": "file:s3.png",
+      "name": "n8n-nodes-base.s3",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.s3/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/s3/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "S3"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAABDlBMVEUAAAATbrMSbbQTbbQSbbQTbrQTbrQUbrQTbrQSbrQTbbQSbbQSbbQTbrMSbbQTbrQTbrQTbbQSbbMTbbQSbbQSbbQSbbQTbrQTbbQTbrQSbrQSbrQSbbQSbbMTbrQUbrQTbbMSbbQSbbQSbbQTbLQTbbQTbbQTbrQSbbQTbbQSbbQTbrQTbrQTbbQSbbQSbbQOarITbbQUbrT///8KaLEQa7MNarISbbN3q9MFZa+81uqfxOFyqNIbc7cUbrWNudsvf7wkd7m10ehin81IjsUIZ7H7/f71+fzw9vvd6vTE2+x9r9VrpNBVlslOksfR4vCnyeORu9uCsdc+iMI8h8Ho8PfL4O+ry+SSvNxnoc6vyMA5AAAAMnRSTlMACARbK/r177Z20ZlGk1HYxb9oYiQVEPfyy41LHBnr6KtlQTsvDOPeraKBem43Hob+sqyldq4AAALoSURBVEjH7ZbndqJAFICHKh1EsPfek4ygbjZuYkmvm+3v/yILKgITiPhrz9mT7989zuctDlfAB/8QLE9WCTbbOVE4uVkqFktNmVNOOlmWqJJ5DITTqKkiI9MwBFpmRLXWCDJxgedicC8xjhdwtFqCg5HJEL769TY8iLbuunkeHghf2MmkcqiskO6wJPowNy15hyZkDnEzgkfFk9a4mVI0s8RYw066mZNEzu68wiuxPb+ywlfsbnNE0lN1WtTW30IKfZHhYimK8joUlYpxjNgXyLWj8Wlv3ck0pMuEhm27wAr1qkSofdairxJStV7AtnViGlGmYTrpbToOLYpMNlHLg1DytUSWKU6sk3HfDc3uumpl2mIvkauRQ72BWTT0IVnLJXpiO9PaTeQIeJGgBdJmiqbTaZpO2QNAkHxy/aBbQtd9sn7YJdGBjw5EMD45jN/IHeCHhQhP99MN9ysTIrCILCFDmXweOfw2EDclIbLWCpXPUbmlAQQluqwAFD66zAOURHQ5AVBIKqpMkQAFa0aVmxh4QzmqXAZvYcPkr4jMBsgC9DG9O91w94DcTyFA1pAF+MUBXYBagNyIw0jEA/8nxWiyCIJQvU+jGSqrgXJ1s6JMczW9X859UzIn7uquBsq6DC2O5y83o9HV86Nrm7PlfFeJrINAmPXBxWjNzcrYtfF0tdwFDAjmyPrs8mG0ZTHbZVuMnmcTZOuiSHZzL458893YJn60ojMndS5ELtBW1acjh9XltuM7K7jdTpAuhMg4B034y3Gv7cxuI6+biMNBCLx19MyRTzc9j+c/1+HtxRjdIug2ceu+ftykMqa+hysRKg8oy75YXNmJlnYiO/zhtPHNqoQahMp52a5z9vR6/ufCgFt5erZhastyPlTGy+vzxrFpuPdr7LDeIjgIpQv30AXhDON7nuUheAesEi+GmcV4BQPvg9crWYaLoS/KTLZSx0EUsAI5yBEq2+t2e6xK5AZkAQP/D38B/zR2KYIltgQAAAAASUVORK5CYII="
+      },
+      "displayName": "S3",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 5,
+          "name": "Development"
+        }
+      ]
+    },
+    {
+      "id": 490,
+      "icon": "fa:terminal",
+      "name": "n8n-nodes-base.ssh",
+      "codex": {
+        "data": {
+          "alias": [
+            "remote"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.ssh/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Development"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": [
+            "Helpers"
+          ]
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "SSH",
+        "color": "#000000"
+      },
+      "iconData": {
+        "icon": "terminal",
+        "type": "icon"
+      },
+      "displayName": "SSH",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Wait",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Sticky Note",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 836,
+      "icon": "file:compare.svg",
+      "name": "n8n-nodes-base.compareDatasets",
+      "codex": {
+        "data": {
+          "alias": [
+            "Join",
+            "Concatenate",
+            "Compare",
+            "Dataset",
+            "Split",
+            "Sync",
+            "Syncing"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-sync-data-between-two-systems/",
+                "icon": "🏬",
+                "label": "How to synchronize data between two systems (one-way vs. two-way sync"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.comparedatasets/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Compare Datasets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzODQiIGhlaWdodD0iNTEyIj48cGF0aCBmaWxsPSIjZWQyMzBkIiBkPSJNMzUyIDQ0OEgzMmMtMTcuNjkgMC0zMiAxNC4zMS0zMiAzMnMxNC4zMSAzMS4xIDMyIDMxLjFoMzIwYzE3LjY5IDAgMzItMTQuMzEgMzItMzEuMXMtMTQuMy0zMi0zMi0zMiIvPjxwYXRoIGZpbGw9IiM2MmY3MzAiIGQ9Ik00OCAyMDhoMTEydjExMS4xYzAgMTcuNjkgMTQuMzEgMzEuMSAzMiAzMS4xczMyLTE0LjMxIDMyLTMxLjFWMjA4aDExMmMxNy42OSAwIDMyLTE0LjMyIDMyLTMyLjAxUzM1My42OSAxNDQgMzM2IDE0NEgyMjRWMzJjMC0xNy42OS0xNC4zMS0zMi4wMS0zMi0zMi4wMXMtMzIgMTQuMzQtMzIgMzIuMDJ2MTEySDQ4Yy0xNy42OSAwLTMyIDE0LjMxLTMyIDMxLjk5czE0LjMxIDMyIDMyIDMyIi8+PC9zdmc+"
+      },
+      "displayName": "Compare Datasets",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "When clicking ‘Execute workflow’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Schedule Trigger",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filter",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Basic LLM Chain",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1234,
+      "icon": "file:convertToFile.svg",
+      "name": "n8n-nodes-base.convertToFile",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "Excel",
+            "xls",
+            "xlsx",
+            "ods",
+            "tabular",
+            "encode",
+            "encoding",
+            "Move Binary Data",
+            "Binary",
+            "File",
+            "JSON",
+            "HTML",
+            "ICS",
+            "iCal",
+            "RTF",
+            "64",
+            "Base64"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.converttofile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Convert to File"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzLjc2MTkgMkMxMy4yNDM3IDIgMTIuODIzNiAyLjQyMDA5IDEyLjgyMzYgMi45MzgzMVYxNS4yNTI2QzEzLjMxOTkgMTUuNDY0MyAxMy43ODUxIDE1Ljc3MiAxNC4xOTEgMTYuMTc1N0wyMS4yMjgzIDIzLjE3MzlDMjIuMDU0OCAyMy45OTU4IDIyLjUxOTUgMjUuMTEzMiAyMi41MTk1IDI2LjI3ODhDMjIuNTE5NSAyNy40NDQzIDIyLjA1NDggMjguNTYxOCAyMS4yMjgzIDI5LjM4MzdMMTQuMTkxIDM2LjM4MTlDMTMuNzg1IDM2Ljc4NTYgMTMuMzE5OSAzNy4wOTMyIDEyLjgyMzYgMzcuMzA1VjM3LjM1MjdDMTIuODIzNiAzNy44NzA5IDEzLjI0MzcgMzguMjkxIDEzLjc2MTkgMzguMjkxSDM5LjA2MTdDMzkuNTc5OSAzOC4yOTEgNDAgMzcuODcwOSA0MCAzNy4zNTI3TDQwIDE1Ljc5NEgyNy4xNDQzQzI2LjYyNjEgMTUuNzk0IDI2LjIwNiAxNS4zNzM5IDI2LjIwNiAxNC44NTU3VjJIMTMuNzYxOVoiIGZpbGw9IiMzQTQyRTkiLz4KPHBhdGggZD0iTTI4Ljg2NDUgMkMyOC43NzgxIDIgMjguNzA4MSAyLjA3MDAyIDI4LjcwODEgMi4xNTYzOVYxMi44MjI3QzI4LjcwODEgMTMuMDgxOCAyOC45MTgyIDEzLjI5MTkgMjkuMTc3MyAxMy4yOTE5SDM5Ljg0MzZDMzkuOTMgMTMuMjkxOSA0MCAxMy4yMjE5IDQwIDEzLjEzNTVMNDAgMTIuNjI2M0M0MCAxMi4zNzc4IDM5LjkwMTQgMTIuMTM5NSAzOS43MjYgMTEuOTYzNkwzMC4wNjEgMi4yNzU2MUMyOS44ODUgMi4wOTkxNiAyOS42NDYgMiAyOS4zOTY3IDJIMjguODY0NVoiIGZpbGw9IiMzQTQyRTkiLz4KPHBhdGggZD0iTTkuNzcyNjggMzQuNjAwM0M5LjA0MTg2IDMzLjg2NTQgOS4wNDUxNyAzMi42NzcyIDkuNzgwMDcgMzEuOTQ2NEwxMy42MzE1IDI4LjExNjNMMC45MzgzMTEgMjguMTE2M0MwLjQyMDA5NiAyOC4xMTYzIC0yLjI2NTE5ZS0wOCAyNy42OTYyIDAgMjcuMTc4TDguMjAyOTdlLTA4IDI1LjMwMTRDMS4wNDY4MmUtMDcgMjQuNzgzMiAwLjQyMDA5NSAyNC4zNjMxIDAuOTM4MzExIDI0LjM2MzFIMTMuNTUyOUw5Ljc4MDA3IDIwLjYxMTJDOS4wNDUxNyAxOS44ODA0IDkuMDQxODYgMTguNjkyMiA5Ljc3MjY4IDE3Ljk1NzNDMTAuNTAzNSAxNy4yMjI0IDExLjY5MTcgMTcuMjE5MSAxMi40MjY2IDE3Ljk0OTlMMTkuNDYzOSAyNC45NDgxQzE5LjgxODEgMjUuMzAwNCAyMC4wMTczIDI1Ljc3OTMgMjAuMDE3MyAyNi4yNzg4QzIwLjAxNzMgMjYuNzc4MyAxOS44MTgxIDI3LjI1NzIgMTkuNDYzOSAyNy42MDk1TDEyLjQyNjYgMzQuNjA3N0MxMS42OTE3IDM1LjMzODUgMTAuNTAzNSAzNS4zMzUyIDkuNzcyNjggMzQuNjAwM1oiIGZpbGw9IiMzQTQyRTkiLz4KPC9zdmc+Cg=="
+      },
+      "displayName": "Convert to File",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1235,
+      "icon": "file:extractFromFile.svg",
+      "name": "n8n-nodes-base.extractFromFile",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "Excel",
+            "xls",
+            "xlsx",
+            "ods",
+            "tabular",
+            "decode",
+            "decoding",
+            "Move Binary Data",
+            "Binary",
+            "File",
+            "PDF",
+            "JSON",
+            "HTML",
+            "ICS",
+            "iCal",
+            "txt",
+            "Text",
+            "RTF",
+            "XML",
+            "64",
+            "Base64",
+            "Convert"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.extractfromfile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Extract from File"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuOTM3NSAyQzAuNDE5NzMzIDIgMCAyLjQxOTczIDAgMi45Mzc1VjM3LjMyMjFDMCAzNy44Mzk5IDAuNDE5NzMzIDM4LjI1OTYgMC45Mzc1IDM4LjI1OTZIMjYuMjE1NEMyNi43MzMyIDM4LjI1OTYgMjcuMTUyOSAzNy44Mzk5IDI3LjE1MjkgMzcuMzIyMUwyNy4xNTI5IDMwLjY3MTlMMTYuNzk2OSAzMC42NzE5QzE0Ljg5ODQgMzAuNjcxOSAxMy4zNTk0IDI5LjEzMjkgMTMuMzU5NCAyNy4yMzQ0VjI1LjM1OTRDMTMuMzU5NCAyMy40NjA5IDE0Ljg5ODQgMjEuOTIxOSAxNi43OTY5IDIxLjkyMTlIMjcuMTUyOUwyNy4xNTI5IDE1Ljc4MjFIMTQuMzA4M0MxMy43OTA2IDE1Ljc4MjEgMTMuMzcwOCAxNS4zNjI0IDEzLjM3MDggMTQuODQ0NlYySDAuOTM3NVoiIGZpbGw9IiMzNTNGNkUiLz4KPHBhdGggZD0iTTE2LjAyNzEgMkMxNS45NDA4IDIgMTUuODcwOCAyLjA2OTk2IDE1Ljg3MDggMi4xNTYyNVYxMi44MTM0QzE1Ljg3MDggMTMuMDcyMyAxNi4wODA3IDEzLjI4MjEgMTYuMzM5NiAxMy4yODIxSDI2Ljk5NjdDMjcuMDgzIDEzLjI4MjEgMjcuMTUyOSAxMy4yMTIyIDI3LjE1MjkgMTMuMTI1OUwyNy4xNTI5IDEyLjYxNzFDMjcuMTUyOSAxMi4zNjg4IDI3LjA1NDUgMTIuMTMwNyAyNi44NzkxIDExLjk1NUwxNy4yMjI1IDIuMjc1MzhDMTcuMDQ2NiAyLjA5OTA4IDE2LjgwNzkgMiAxNi41NTg4IDJIMTYuMDI3MVoiIGZpbGw9IiMzNTNGNkUiLz4KPHBhdGggZD0iTTI5Ljc2NDIgMzQuNjUwM0MyOS4wMzQgMzMuOTE2IDI5LjAzNzQgMzIuNzI4OCAyOS43NzE2IDMxLjk5ODZMMzMuNjE5NyAyOC4xNzE5TDE2Ljc5NjkgMjguMTcxOUMxNi4yNzkxIDI4LjE3MTkgMTUuODU5NCAyNy43NTIxIDE1Ljg1OTQgMjcuMjM0NFYyNS4zNTk0QzE1Ljg1OTQgMjQuODQxNiAxNi4yNzkxIDI0LjQyMTkgMTYuNzk2OSAyNC40MjE5TDMzLjU0MTIgMjQuNDIxOUwyOS43NzE2IDIwLjY3MzNDMjkuMDM3NCAxOS45NDMxIDI5LjAzNCAxOC43NTU5IDI5Ljc2NDIgMTguMDIxNkMzMC40OTQ0IDE3LjI4NzQgMzEuNjgxNiAxNy4yODQgMzIuNDE1OSAxOC4wMTQyTDM5LjQ0NzEgMjUuMDA2NEMzOS44MDEgMjUuMzU4MyA0MCAyNS44MzY4IDQwIDI2LjMzNTlDNDAgMjYuODM1IDM5LjgwMSAyNy4zMTM1IDM5LjQ0NzEgMjcuNjY1NUwzMi40MTU5IDM0LjY1NzZDMzEuNjgxNiAzNS4zODc4IDMwLjQ5NDQgMzUuMzg0NSAyOS43NjQyIDM0LjY1MDNaIiBmaWxsPSIjMzUzRjZFIi8+Cjwvc3ZnPgo="
+      },
+      "displayName": "Extract from File",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1238,
+      "icon": "file:removeDuplicates.svg",
+      "name": "n8n-nodes-base.removeDuplicates",
+      "codex": {
+        "data": {
+          "alias": [
+            "Dedupe",
+            "Deduplicate",
+            "Duplicates",
+            "Remove",
+            "Unique",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.removeduplicates/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Remove Duplicates"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjNTRCOEM5IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGQ9Ik0xMzQuMDk3IDExMWgzOC44Mjl2MzIuNTA4SDEzOC4xNnYzNC42MzVoLTMyLjUwOHYtMzguNjk5YzAtMTUuNzA5IDEyLjczNS0yOC40NDQgMjguNDQ1LTI4LjQ0NG03Ny42NTggMzIuNTA4VjExMWg3Ny42NTd2MzIuNTA4em0xMTYuNDg2IDBWMTExaDc3LjY1OHYzMi41MDh6bTExNi40ODcgMFYxMTFoMzguODI5YzE1LjcxIDAgMjguNDQ1IDEyLjczNSAyOC40NDUgMjguNDQ0djM4LjY5OWgtMzIuNTA4di0zNC42MzV6bTM0Ljc2NiA3My4yMzhoMzIuNTA4djM4LjY5OGMwIDE1LjcxLTEyLjczNSAyOC40NDUtMjguNDQ1IDI4LjQ0NWgtMzguODI5di0zMi41MDhoMzQuNzY2ek0wIDI0NC41MzdDMCAyMjkuMzI5IDEyLjczNSAyMTcgMjguNDQ0IDIxN2gzNDkuNDYxYzE1LjcwOSAwIDI4LjQ0NCAxMi4zMjkgMjguNDQ0IDI3LjUzN3YxMjkuODE1YzAgMTUuMjA4LTEyLjczNSAyNy41MzctMjguNDQ0IDI3LjUzN0gyOC40NDVDMTIuNzM0IDQwMS44ODkgMCAzODkuNTYgMCAzNzQuMzUyeiIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoNTEydjUxMkgweiIvPjwvY2xpcFBhdGg+PC9kZWZzPjwvc3ZnPg=="
+      },
+      "displayName": "Remove Duplicates",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Split Out"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1245,
+      "icon": "file:mistral.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatmistralcloud/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mistral Cloud Chat Model"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgd2lkdGg9IjIxNiIKICAgaGVpZ2h0PSIyMTYiCiAgIHZlcnNpb249IjEuMSIKICAgaWQ9InN2ZzQxIgogICBzb2RpcG9kaTpkb2NuYW1lPSJtaXN0cmFsLnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4zLjIgKDA5MWUyMGVmMGYsIDIwMjMtMTEtMjUsIGN1c3RvbSkiCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NDEiCiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjMDAwMDAwIgogICAgIGJvcmRlcm9wYWNpdHk9IjAuMjUiCiAgICAgaW5rc2NhcGU6c2hvd3BhZ2VzaGFkb3c9IjIiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAuMCIKICAgICBpbmtzY2FwZTpwYWdlY2hlY2tlcmJvYXJkPSIwIgogICAgIGlua3NjYXBlOmRlc2tjb2xvcj0iI2QxZDFkMSIKICAgICBpbmtzY2FwZTp6b29tPSIxLjkzNjQ4OCIKICAgICBpbmtzY2FwZTpjeD0iMTk3Ljc4MDcyIgogICAgIGlua3NjYXBlOmN5PSI3OS4wMDkwMSIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjE5MjAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTAxNyIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzQxIiAvPgogIDxzdHlsZQogICAgIGlkPSJzdHlsZTEiPjwhW0NEQVRBWy5Je2ZpbGw6I2ZmNzAwMH0uSntmaWxsOiNmZjQ5MDB9Lkt7ZmlsbDojZmZhMzAwfS5Me2ZpbGw6IzFjMWMxYiBpY2MtY29sb3IoYWRvYmUtcmdiLTE5OTgsIDAuMTMyOTk1NjEsIDAuMTMyOTk1NjEsIDAuMTI4OTk3OCl9XV0+PC9zdHlsZT4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iQSI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIwNi4yNTEsLTE0MC4xMzkpIgogICAgICAgICBpZD0icGF0aDEiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iQiI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTI0Ny40MzYsLTEwNC44NjUpIgogICAgICAgICBpZD0icGF0aDIiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iQyI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTI4NS45MzgsLTEwMi4wODkpIgogICAgICAgICBpZD0icGF0aDMiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRCI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzNy43NjksLTEzMS44NzcpIgogICAgICAgICBpZD0icGF0aDQiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRSI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTM3Ny4yNDcsLTEzMi4zMTkpIgogICAgICAgICBpZD0icGF0aDUiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRiI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQxOC4xMDcsLTExNC42MzQpIgogICAgICAgICBpZD0icGF0aDYiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRyI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQ1MC4wMjMsLTE0MC4xMzkpIgogICAgICAgICBpZD0icGF0aDciIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iSCI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIxNy42OTQsLTQ0Ljc5NCkiCiAgICAgICAgIGlkPSJwYXRoOCIgLz4KICAgIDwvY2xpcFBhdGg+CiAgICA8Y2xpcFBhdGgKICAgICAgIGlkPSJJIj4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAwLDE4NC4yNTIgSCA0ODEuODkgViAwIEggMCBaIgogICAgICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjQ3LjQzNiwtMzUuMDI1KSIKICAgICAgICAgaWQ9InBhdGg5IiAvPgogICAgPC9jbGlwUGF0aD4KICAgIDxjbGlwUGF0aAogICAgICAgaWQ9IkoiPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDAsMTg0LjI1MiBIIDQ4MS44OSBWIDAgSCAwIFoiCiAgICAgICAgIGlkPSJwYXRoMTAiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPHBhdGgKICAgICAgIGlkPSJLIgogICAgICAgZD0ibSAxNzMuOTg3LDEzNC4zNjIgaCAtMzcuNzk1IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IiAvPgogIDwvZGVmcz4KICA8ZwogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEsMCwwLjI1NDUzNSwxLC01MS4zNjI3OTIsLTcuNDcyNTAwNykiCiAgICAgaWQ9ImczMiI+CiAgICA8ZwogICAgICAgY2xhc3M9IkwiCiAgICAgICBpZD0iZzIyIj4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSA5OC4zOTcsMTM0LjM2MiBIIDYwLjYwMiBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgxMSIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAxMjYuNTU4LDE3Mi4xMzggSCA4OC43NjMgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTM2LjE5MiwxMzQuMzYyIEggOTguMzk3IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgICBpZD0icGF0aDEzIiAvPgogICAgICA8dXNlCiAgICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgICBpZD0idXNlMTMiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTA4LjAzMSw5Ni41ODUgSCA3MC4yMzYgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTQiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjkuNjMzOTk5OCIKICAgICAgICAgeT0iLTM3Ljc3NyIKICAgICAgICAgaWQ9InVzZTE0IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDYwLjYwMiwxMzQuMzYyIEggMjIuODA3IEwgMzIuNDQsOTYuNTg2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTUiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNzAuMjM2LDk2LjU4NSBIIDMyLjQ0MSBMIDQyLjA3NCw1OC44MDkgSCA3OS44NyBaIgogICAgICAgICBpZD0icGF0aDE2IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDc5Ljg3LDU4LjgwOSBIIDQyLjA3NSBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgxNyIgLz4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iNTcuMDYzIgogICAgICAgICB5PSItNzUuNTUzMDAxIgogICAgICAgICBpZD0idXNlMTciIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNTAuOTY4LDE3Mi4xMzggSCAxMy4xNzMgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNDEuMzM0LDIwOS45MTUgSCAzLjUzOSBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgxOSIgLz4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iMzcuNzk0OTk4IgogICAgICAgICBpZD0idXNlMTkiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjQ3LjQyOTAwMSIKICAgICAgICAgeT0iLTM3Ljc3NyIKICAgICAgICAgaWQ9InVzZTIwIiAvPgogICAgICA8dXNlCiAgICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgICB4PSIyOC4xNjA5OTkiCiAgICAgICAgIHk9IjM3Ljc3NjAwMSIKICAgICAgICAgaWQ9InVzZTIxIiAvPgogICAgICA8dXNlCiAgICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgICB4PSIxOC41MjciCiAgICAgICAgIHk9Ijc1LjU1MzAwMSIKICAgICAgICAgaWQ9InVzZTIyIiAvPgogICAgPC9nPgogICAgPHBhdGgKICAgICAgIGQ9Ik0gMTE0LjExNSwxMzQuMzU5IEggNzYuMzIxIGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IkkiCiAgICAgICBpZD0icGF0aDIyIiAvPgogICAgPHVzZQogICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICB4PSItMzEuNzA5OTk5IgogICAgICAgeT0iMzcuNzcyOTk5IgogICAgICAgY2xhc3M9IkoiCiAgICAgICBpZD0idXNlMjMiIC8+CiAgICA8ZwogICAgICAgY2xhc3M9IkkiCiAgICAgICBpZD0iZzI1Ij4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iLTIyLjA3NiIKICAgICAgICAgeT0iLTAuMDAzIgogICAgICAgICBpZD0idXNlMjQiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjE1LjcxOSIKICAgICAgICAgeT0iLTAuMDAzIgogICAgICAgICBpZD0idXNlMjUiIC8+CiAgICA8L2c+CiAgICA8ZwogICAgICAgY2xhc3M9IksiCiAgICAgICBpZD0iZzI2Ij4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAxMjMuNzQ5LDk2LjU4MiBIIDg1Ljk1NSBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgyNSIgLz4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iMjUuMzUzMDAxIgogICAgICAgICB5PSItMzcuNzc5OTk5IgogICAgICAgICBpZD0idXNlMjYiIC8+CiAgICA8L2c+CiAgICA8cGF0aAogICAgICAgZD0iTSA3Ni4zMiwxMzQuMzU5IEggMzguNTI2IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IkkiCiAgICAgICBpZD0icGF0aDI2IiAvPgogICAgPHBhdGgKICAgICAgIGQ9Ik0gODUuOTU0LDk2LjU4MiBIIDQ4LjE2IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IksiCiAgICAgICBpZD0icGF0aDI3IiAvPgogICAgPGcKICAgICAgIGZpbGw9IiNmZmNlMDAiCiAgICAgICBpZD0iZzI4Ij4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSA5NS41ODgsNTguODA2IEggNTcuNzk0IEwgNjcuNDI3LDIxLjAzIGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMjgiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjcyLjc4MTk5OCIKICAgICAgICAgeT0iLTc1LjU1NiIKICAgICAgICAgaWQ9InVzZTI4IiAvPgogICAgPC9nPgogICAgPHBhdGgKICAgICAgIGQ9Ik0gNjYuNjg2LDE3Mi4xMzUgSCAyOC44OTIgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICBjbGFzcz0iSiIKICAgICAgIGlkPSJwYXRoMjkiIC8+CiAgICA8cGF0aAogICAgICAgZD0iTSA1Ny4wNTIsMjA5LjkxMiBIIDE5LjI1OCBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgIGZpbGw9IiNmZjAxMDciCiAgICAgICBpZD0icGF0aDMwIiAvPgogICAgPHVzZQogICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICB4PSI1My41MTQiCiAgICAgICB5PSItMC4wMDMiCiAgICAgICBjbGFzcz0iSSIKICAgICAgIGlkPSJ1c2UzMCIgLz4KICAgIDxwYXRoCiAgICAgICBkPSJNIDIzNy4xMzUsOTYuNTgyIEggMTk5LjM0IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IksiCiAgICAgICBpZD0icGF0aDMxIiAvPgogICAgPHVzZQogICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICB4PSI0My44ODAwMDEiCiAgICAgICB5PSIzNy43NzI5OTkiCiAgICAgICBjbGFzcz0iSiIKICAgICAgIGlkPSJ1c2UzMSIgLz4KICAgIDx1c2UKICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgeD0iMzQuMjQ1OTk4IgogICAgICAgeT0iNzUuNTUwMDAzIgogICAgICAgZmlsbD0iI2ZmMDEwNyIKICAgICAgIGlkPSJ1c2UzMiIgLz4KICA8L2c+Cjwvc3ZnPgo="
+      },
+      "displayName": "Mistral Cloud Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1307,
+      "icon": "file:mistralAi.svg",
+      "name": "n8n-nodes-base.mistralAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.mistralai/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/mistral/"
+              }
+            ]
+          },
+          "categories": [
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mistral AI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgd2lkdGg9IjIxNiIKICAgaGVpZ2h0PSIyMTYiCiAgIHZlcnNpb249IjEuMSIKICAgaWQ9InN2ZzQxIgogICBzb2RpcG9kaTpkb2NuYW1lPSJtaXN0cmFsLnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4zLjIgKDA5MWUyMGVmMGYsIDIwMjMtMTEtMjUsIGN1c3RvbSkiCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NDEiCiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjMDAwMDAwIgogICAgIGJvcmRlcm9wYWNpdHk9IjAuMjUiCiAgICAgaW5rc2NhcGU6c2hvd3BhZ2VzaGFkb3c9IjIiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAuMCIKICAgICBpbmtzY2FwZTpwYWdlY2hlY2tlcmJvYXJkPSIwIgogICAgIGlua3NjYXBlOmRlc2tjb2xvcj0iI2QxZDFkMSIKICAgICBpbmtzY2FwZTp6b29tPSIxLjkzNjQ4OCIKICAgICBpbmtzY2FwZTpjeD0iMTk3Ljc4MDcyIgogICAgIGlua3NjYXBlOmN5PSI3OS4wMDkwMSIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjE5MjAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTAxNyIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzQxIiAvPgogIDxzdHlsZQogICAgIGlkPSJzdHlsZTEiPjwhW0NEQVRBWy5Je2ZpbGw6I2ZmNzAwMH0uSntmaWxsOiNmZjQ5MDB9Lkt7ZmlsbDojZmZhMzAwfS5Me2ZpbGw6IzFjMWMxYiBpY2MtY29sb3IoYWRvYmUtcmdiLTE5OTgsIDAuMTMyOTk1NjEsIDAuMTMyOTk1NjEsIDAuMTI4OTk3OCl9XV0+PC9zdHlsZT4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iQSI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIwNi4yNTEsLTE0MC4xMzkpIgogICAgICAgICBpZD0icGF0aDEiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iQiI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTI0Ny40MzYsLTEwNC44NjUpIgogICAgICAgICBpZD0icGF0aDIiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iQyI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTI4NS45MzgsLTEwMi4wODkpIgogICAgICAgICBpZD0icGF0aDMiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRCI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzNy43NjksLTEzMS44NzcpIgogICAgICAgICBpZD0icGF0aDQiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRSI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTM3Ny4yNDcsLTEzMi4zMTkpIgogICAgICAgICBpZD0icGF0aDUiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRiI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQxOC4xMDcsLTExNC42MzQpIgogICAgICAgICBpZD0icGF0aDYiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iRyI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQ1MC4wMjMsLTE0MC4xMzkpIgogICAgICAgICBpZD0icGF0aDciIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoCiAgICAgICBpZD0iSCI+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMCwxODQuMjUyIEggNDgxLjg5IFYgMCBIIDAgWiIKICAgICAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIxNy42OTQsLTQ0Ljc5NCkiCiAgICAgICAgIGlkPSJwYXRoOCIgLz4KICAgIDwvY2xpcFBhdGg+CiAgICA8Y2xpcFBhdGgKICAgICAgIGlkPSJJIj4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAwLDE4NC4yNTIgSCA0ODEuODkgViAwIEggMCBaIgogICAgICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjQ3LjQzNiwtMzUuMDI1KSIKICAgICAgICAgaWQ9InBhdGg5IiAvPgogICAgPC9jbGlwUGF0aD4KICAgIDxjbGlwUGF0aAogICAgICAgaWQ9IkoiPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDAsMTg0LjI1MiBIIDQ4MS44OSBWIDAgSCAwIFoiCiAgICAgICAgIGlkPSJwYXRoMTAiIC8+CiAgICA8L2NsaXBQYXRoPgogICAgPHBhdGgKICAgICAgIGlkPSJLIgogICAgICAgZD0ibSAxNzMuOTg3LDEzNC4zNjIgaCAtMzcuNzk1IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IiAvPgogIDwvZGVmcz4KICA8ZwogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEsMCwwLjI1NDUzNSwxLC01MS4zNjI3OTIsLTcuNDcyNTAwNykiCiAgICAgaWQ9ImczMiI+CiAgICA8ZwogICAgICAgY2xhc3M9IkwiCiAgICAgICBpZD0iZzIyIj4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSA5OC4zOTcsMTM0LjM2MiBIIDYwLjYwMiBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgxMSIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAxMjYuNTU4LDE3Mi4xMzggSCA4OC43NjMgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTM2LjE5MiwxMzQuMzYyIEggOTguMzk3IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgICBpZD0icGF0aDEzIiAvPgogICAgICA8dXNlCiAgICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgICBpZD0idXNlMTMiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTA4LjAzMSw5Ni41ODUgSCA3MC4yMzYgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTQiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjkuNjMzOTk5OCIKICAgICAgICAgeT0iLTM3Ljc3NyIKICAgICAgICAgaWQ9InVzZTE0IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDYwLjYwMiwxMzQuMzYyIEggMjIuODA3IEwgMzIuNDQsOTYuNTg2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTUiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNzAuMjM2LDk2LjU4NSBIIDMyLjQ0MSBMIDQyLjA3NCw1OC44MDkgSCA3OS44NyBaIgogICAgICAgICBpZD0icGF0aDE2IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDc5Ljg3LDU4LjgwOSBIIDQyLjA3NSBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgxNyIgLz4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iNTcuMDYzIgogICAgICAgICB5PSItNzUuNTUzMDAxIgogICAgICAgICBpZD0idXNlMTciIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNTAuOTY4LDE3Mi4xMzggSCAxMy4xNzMgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMTgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNDEuMzM0LDIwOS45MTUgSCAzLjUzOSBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgxOSIgLz4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iMzcuNzk0OTk4IgogICAgICAgICBpZD0idXNlMTkiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjQ3LjQyOTAwMSIKICAgICAgICAgeT0iLTM3Ljc3NyIKICAgICAgICAgaWQ9InVzZTIwIiAvPgogICAgICA8dXNlCiAgICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgICB4PSIyOC4xNjA5OTkiCiAgICAgICAgIHk9IjM3Ljc3NjAwMSIKICAgICAgICAgaWQ9InVzZTIxIiAvPgogICAgICA8dXNlCiAgICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgICB4PSIxOC41MjciCiAgICAgICAgIHk9Ijc1LjU1MzAwMSIKICAgICAgICAgaWQ9InVzZTIyIiAvPgogICAgPC9nPgogICAgPHBhdGgKICAgICAgIGQ9Ik0gMTE0LjExNSwxMzQuMzU5IEggNzYuMzIxIGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IkkiCiAgICAgICBpZD0icGF0aDIyIiAvPgogICAgPHVzZQogICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICB4PSItMzEuNzA5OTk5IgogICAgICAgeT0iMzcuNzcyOTk5IgogICAgICAgY2xhc3M9IkoiCiAgICAgICBpZD0idXNlMjMiIC8+CiAgICA8ZwogICAgICAgY2xhc3M9IkkiCiAgICAgICBpZD0iZzI1Ij4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iLTIyLjA3NiIKICAgICAgICAgeT0iLTAuMDAzIgogICAgICAgICBpZD0idXNlMjQiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjE1LjcxOSIKICAgICAgICAgeT0iLTAuMDAzIgogICAgICAgICBpZD0idXNlMjUiIC8+CiAgICA8L2c+CiAgICA8ZwogICAgICAgY2xhc3M9IksiCiAgICAgICBpZD0iZzI2Ij4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAxMjMuNzQ5LDk2LjU4MiBIIDg1Ljk1NSBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgICAgaWQ9InBhdGgyNSIgLz4KICAgICAgPHVzZQogICAgICAgICB4bGluazpocmVmPSIjSyIKICAgICAgICAgeD0iMjUuMzUzMDAxIgogICAgICAgICB5PSItMzcuNzc5OTk5IgogICAgICAgICBpZD0idXNlMjYiIC8+CiAgICA8L2c+CiAgICA8cGF0aAogICAgICAgZD0iTSA3Ni4zMiwxMzQuMzU5IEggMzguNTI2IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IkkiCiAgICAgICBpZD0icGF0aDI2IiAvPgogICAgPHBhdGgKICAgICAgIGQ9Ik0gODUuOTU0LDk2LjU4MiBIIDQ4LjE2IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IksiCiAgICAgICBpZD0icGF0aDI3IiAvPgogICAgPGcKICAgICAgIGZpbGw9IiNmZmNlMDAiCiAgICAgICBpZD0iZzI4Ij4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSA5NS41ODgsNTguODA2IEggNTcuNzk0IEwgNjcuNDI3LDIxLjAzIGggMzcuNzk2IHoiCiAgICAgICAgIGlkPSJwYXRoMjgiIC8+CiAgICAgIDx1c2UKICAgICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICAgIHg9IjcyLjc4MTk5OCIKICAgICAgICAgeT0iLTc1LjU1NiIKICAgICAgICAgaWQ9InVzZTI4IiAvPgogICAgPC9nPgogICAgPHBhdGgKICAgICAgIGQ9Ik0gNjYuNjg2LDE3Mi4xMzUgSCAyOC44OTIgbCA5LjYzMywtMzcuNzc2IGggMzcuNzk2IHoiCiAgICAgICBjbGFzcz0iSiIKICAgICAgIGlkPSJwYXRoMjkiIC8+CiAgICA8cGF0aAogICAgICAgZD0iTSA1Ny4wNTIsMjA5LjkxMiBIIDE5LjI1OCBsIDkuNjMzLC0zNy43NzYgaCAzNy43OTYgeiIKICAgICAgIGZpbGw9IiNmZjAxMDciCiAgICAgICBpZD0icGF0aDMwIiAvPgogICAgPHVzZQogICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICB4PSI1My41MTQiCiAgICAgICB5PSItMC4wMDMiCiAgICAgICBjbGFzcz0iSSIKICAgICAgIGlkPSJ1c2UzMCIgLz4KICAgIDxwYXRoCiAgICAgICBkPSJNIDIzNy4xMzUsOTYuNTgyIEggMTk5LjM0IGwgOS42MzMsLTM3Ljc3NiBoIDM3Ljc5NiB6IgogICAgICAgY2xhc3M9IksiCiAgICAgICBpZD0icGF0aDMxIiAvPgogICAgPHVzZQogICAgICAgeGxpbms6aHJlZj0iI0siCiAgICAgICB4PSI0My44ODAwMDEiCiAgICAgICB5PSIzNy43NzI5OTkiCiAgICAgICBjbGFzcz0iSiIKICAgICAgIGlkPSJ1c2UzMSIgLz4KICAgIDx1c2UKICAgICAgIHhsaW5rOmhyZWY9IiNLIgogICAgICAgeD0iMzQuMjQ1OTk4IgogICAgICAgeT0iNzUuNTUwMDAzIgogICAgICAgZmlsbD0iI2ZmMDEwNyIKICAgICAgIGlkPSJ1c2UzMiIgLz4KICA8L2c+Cjwvc3ZnPgo="
+      },
+      "displayName": "Mistral AI",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        }
+      ]
+    }
+  ],
+  "views": 16,
+  "recentViews": 1,
+  "workflow": {
+    "id": "L1GwMC9RqS6cwzGB",
+    "meta": {
+      "instanceId": "d62d7a3fb314923e2cdedec19423e9669591b9c9c87901bc9332b7c59c101257",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "AWS S3 Object Integrity Auditor copy",
+    "tags": [
+      {
+        "id": "KidxdCDoVXxbaau2",
+        "name": "Object",
+        "createdAt": "2025-08-15T16:00:29.051Z",
+        "updatedAt": "2025-08-15T16:00:29.051Z"
+      },
+      {
+        "id": "zUFFVirfegrtIjyE",
+        "name": "AWS",
+        "createdAt": "2025-08-17T11:19:26.321Z",
+        "updatedAt": "2025-08-17T11:19:26.321Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "42e6ce36-68a5-46f8-a91e-4d270f91ad52",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -1872,
+          -496
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "e0a153b3-a90d-49b6-875a-6083187fa342",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -1856,
+          64
+        ],
+        "parameters": {},
+        "typeVersion": 1.2
+      },
+      {
+        "id": "5e41c321-c939-4d2a-b313-c344684c2fda",
+        "name": "Sticky Note12",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1680,
+          -656
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0d7cd257-cb7e-4da2-8422-2bf480301a0c",
+        "name": "Envoi de mail récapitulatif",
+        "type": "n8n-nodes-base.emailSend",
+        "position": [
+          2048,
+          -1104
+        ],
+        "webhookId": "f88da332-ab9e-4170-bd53-3a9cdf8c0b1c",
+        "parameters": {},
+        "typeVersion": 2.1
+      },
+      {
+        "id": "7f798ce1-1e33-4f75-94db-bf8e523f4e87",
+        "name": "Mistral Cloud Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+        "position": [
+          2352,
+          64
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "824d58cf-cf4e-45a4-babf-6cc131f3c34b",
+        "name": "Extract .txt / .log",
+        "type": "n8n-nodes-base.extractFromFile",
+        "onError": "continueErrorOutput",
+        "position": [
+          1808,
+          224
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "31de3da9-d77e-4f7d-b212-b0ec95c381d7",
+        "name": "Extraction des paths",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          432,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "bcd76a54-3c8d-44b0-bec4-7a7d36a25f4b",
+        "name": "Sticky Note18",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          384,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5616fcc0-9f4a-4ede-ad18-f5deba75ad32",
+        "name": "Sticky Note21",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1760,
+          -80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "22c0fd82-3082-4296-8aa5-a7084314a188",
+        "name": "Sticky Note23",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2208,
+          -256
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9d98a7d0-07f4-44cc-a883-221578b3c80d",
+        "name": "Sticky Note27",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2256,
+          -592
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "58063753-6dcd-4092-862f-cb4fd119ca4d",
+        "name": "Remove Duplicates",
+        "type": "n8n-nodes-base.removeDuplicates",
+        "position": [
+          880,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "43b77ebb-7832-425a-afb5-bb9c416ca139",
+        "name": "Switch",
+        "type": "n8n-nodes-base.switch",
+        "position": [
+          1568,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 3.2
+      },
+      {
+        "id": "c19f35c6-251b-493e-8c12-b8efd4ad7853",
+        "name": "Sticky Note30",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2000,
+          -592
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9cb528e9-a1c6-4613-8580-d32ec5f6d386",
+        "name": "Extract text with OCR",
+        "type": "n8n-nodes-base.mistralAi",
+        "onError": "continueErrorOutput",
+        "maxTries": 2,
+        "position": [
+          1808,
+          -16
+        ],
+        "parameters": {},
+        "retryOnFail": true,
+        "typeVersion": 1,
+        "waitBetweenTries": 4000
+      },
+      {
+        "id": "f89c72e0-a698-4666-8dbf-e4cc59b4d319",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          3008,
+          528
+        ],
+        "webhookId": "97ff7719-6f7f-46f0-a544-179326534e37",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "c7712eb3-2be9-42e7-a7bc-768486d78098",
+        "name": "Boucle",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          1360,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "a3c4123b-1f29-47c2-9d48-3d2b20f0e4f6",
+        "name": "AnalyseIA",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "maxTries": 2,
+        "position": [
+          2256,
+          -160
+        ],
+        "parameters": {},
+        "retryOnFail": true,
+        "typeVersion": 1.7,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "df4c27ab-16c0-4117-8886-109ada3efbb4",
+        "name": "Delete a folder1",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          2528,
+          -464
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "25677d58-2eab-4dc4-a747-506856d5d69a",
+        "name": "Create a folder1",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          2752,
+          -464
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "350900e1-ad7a-4db8-a36a-e8aee5366918",
+        "name": "Extract from File",
+        "type": "n8n-nodes-base.extractFromFile",
+        "position": [
+          2048,
+          -784
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "99fe6499-bba4-46ce-8cc6-dbbe94e611b4",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          2272,
+          -784
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "81054cb0-3b6e-42fa-820c-6dc0b0a4becc",
+        "name": "Only keep PDF, TXT and Logs",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          656,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "e845bf21-f921-4455-9175-b3ccb1c46fdd",
+        "name": "Download suspect files",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          1104,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "f3a7802b-e175-47bb-a9cb-ff58ea44a318",
+        "name": "List downloaded objects",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          208,
+          208
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "165e7762-0dde-4b25-8357-8e7f5ac56398",
+        "name": "Ajout à MongoDB",
+        "type": "n8n-nodes-base.mongoDb",
+        "position": [
+          2496,
+          -784
+        ],
+        "parameters": {},
+        "typeVersion": 1.2
+      },
+      {
+        "id": "f7da70a0-9541-44a6-9cb1-0cb44665d277",
+        "name": "Sticky Note13",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          160,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a1767a2c-eee7-4dc4-903e-2e5c7d18cead",
+        "name": "Sticky Note19",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1056,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2712004a-c3bb-4fcc-8972-c64e44126fd6",
+        "name": "Error Message #1",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1808,
+          528
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "fc41bb64-da0c-46cb-af14-0c91be1082df",
+        "name": "Error Message #2",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          2176,
+          528
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "f3535347-945d-4dfa-a0a8-b2bcbe08fae0",
+        "name": "PDF Prompt Creation",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          2032,
+          -160
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "c092777e-e150-4b9d-9aaa-87b731e5b752",
+        "name": "TXT/LOG Prompt Creation",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          2032,
+          64
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "e3bc2006-cb2d-4858-9d01-901892d2f96a",
+        "name": "Result Message Creation",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          2656,
+          -160
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 3.4
+      },
+      {
+        "id": "fef1191f-cc69-431c-9ae7-5c662f996b9e",
+        "name": "Result Saved",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          2816,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b4993129-d8b2-435b-b7b4-1e22f251ecbf",
+        "name": "Delete local files",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          2288,
+          -464
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "6d745574-e2de-4b91-a55a-e8b93aa0f6fd",
+        "name": "Sticky Note24",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2000,
+          -912
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2d142435-d6a7-4c85-bdf4-2c9f44a69312",
+        "name": "Sticky Note31",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2000,
+          -1216
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8876719c-a55a-4a3f-ad7d-78096ca54c0f",
+        "name": "Path Extraction",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          -704,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "79becb79-578d-4011-adc6-8745e13e1a1b",
+        "name": "Objects Listing",
+        "type": "n8n-nodes-base.awsS3",
+        "position": [
+          -1648,
+          -496
+        ],
+        "parameters": {},
+        "retryOnFail": true,
+        "typeVersion": 2,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "3f6a2cb2-29e9-4411-9fb8-365127fa664c",
+        "name": "Objects Download",
+        "type": "n8n-nodes-base.awsS3",
+        "position": [
+          -480,
+          208
+        ],
+        "parameters": {},
+        "retryOnFail": true,
+        "typeVersion": 2,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "24b520f5-177a-4c83-a7ff-2d6bb1888f81",
+        "name": "Generate MD5",
+        "type": "n8n-nodes-base.crypto",
+        "position": [
+          -1424,
+          -496
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "6a7ad4f6-c321-4e46-8a0e-8c769d23aab3",
+        "name": "Create JSON from AWS S3 API Call",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -1200,
+          -496
+        ],
+        "parameters": {},
+        "executeOnce": false,
+        "typeVersion": 3.4
+      },
+      {
+        "id": "b804853c-e64f-478d-9ce6-10317e70971c",
+        "name": "Save Audit Snapshot",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          -752,
+          -496
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "96f380fa-54a1-4fc2-b568-3b855c77ae4e",
+        "name": "Convert to File",
+        "type": "n8n-nodes-base.convertToFile",
+        "position": [
+          -976,
+          -496
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "e6c5fb77-e6ab-40ba-8f07-be69762d68eb",
+        "name": "Compare Datasets",
+        "type": "n8n-nodes-base.compareDatasets",
+        "position": [
+          -960,
+          32
+        ],
+        "parameters": {},
+        "notesInFlow": false,
+        "typeVersion": 2.3
+      },
+      {
+        "id": "c098f872-0628-42a1-9455-1e5eae5b6210",
+        "name": "Audit file to JSON",
+        "type": "n8n-nodes-base.extractFromFile",
+        "position": [
+          -1408,
+          -64
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "e99132f7-97d2-4077-9516-b23758a75dd4",
+        "name": "Split Objects",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          -1184,
+          -64
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "c9c78d8e-c075-44fb-8e72-75096c05ab06",
+        "name": "Upload objects to MinIO",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          -256,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b081c405-682b-4436-81f5-9ee57145a5a3",
+        "name": "Convert to File1",
+        "type": "n8n-nodes-base.convertToFile",
+        "position": [
+          -704,
+          -240
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "c230fe67-2db8-49d7-adac-d5b09b72e296",
+        "name": "Convert to File2",
+        "type": "n8n-nodes-base.convertToFile",
+        "position": [
+          -704,
+          -48
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "1714f21d-f9d0-46ab-833b-5917bf56fe7a",
+        "name": "Sticky Note25",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -288,
+          -128
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "87ff5ac1-f6b8-488d-91c0-838d5e425d51",
+        "name": "Get previous Audit Snapshot",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          -1632,
+          -64
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "dcd69a61-0542-44dd-9210-51606563850a",
+        "name": "List S3 Objects",
+        "type": "n8n-nodes-base.awsS3",
+        "position": [
+          -1632,
+          208
+        ],
+        "parameters": {},
+        "retryOnFail": true,
+        "typeVersion": 2,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "5e826ed0-f7c9-4c4d-94ac-9b98ab43ddbd",
+        "name": "Generate MD6",
+        "type": "n8n-nodes-base.crypto",
+        "position": [
+          -1408,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "5814c850-fd87-4f36-b9ae-d99c011b2466",
+        "name": "Create JSON from results",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -1184,
+          208
+        ],
+        "parameters": {},
+        "executeOnce": false,
+        "typeVersion": 3.4
+      },
+      {
+        "id": "d0b029a4-9f13-43b6-b665-ce5ae7126a15",
+        "name": "Replace previous snapshot with current one",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          -480,
+          -240
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "11cc0edc-96b5-4f3b-ac89-d35a3e405c22",
+        "name": "Save Suspect Objects List",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          -480,
+          -48
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "fc3487fc-975e-4d74-a2e4-74b3572f69ff",
+        "name": "Download current Integrity Snapshot",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          -256,
+          -48
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b81698fe-2a30-4ba0-b98d-c08bd662f35b",
+        "name": "Remove them from Host FS",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          -32,
+          208
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "3d2ecd4d-adad-4faa-b6c0-794230c60127",
+        "name": "Upload Snapshot on Host FS",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          -32,
+          -48
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "28d5a852-419d-418f-82fc-46cad3aad4ce",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -736,
+          128
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b80f6f7e-1f63-4771-91dc-dbfe22d12632",
+        "name": "Sticky Note26",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1664,
+          -128
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4aa3351b-66e8-434f-ad8d-3fab97bdcce3",
+        "name": "Sticky Note28",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1664,
+          128
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c2c8746b-b269-41ed-b01a-b636c6ad9b45",
+        "name": "Report Creation",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          1584,
+          -464
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b3a1da09-7f6e-4a2f-9c46-d16425905364",
+        "name": "Sticky Note14",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1680,
+          -288
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "783ce448-5fbc-43cf-a48d-202761a4992d",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1024,
+          416
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ef2a4201-5312-4d3c-9d2b-b609c4c06177",
+        "name": "Sticky Note20",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1776,
+          400
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b17d286b-90a0-4151-b179-2f91df81d55d",
+        "name": "Getting Report",
+        "type": "n8n-nodes-base.ssh",
+        "position": [
+          1808,
+          -464
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "4f024f0b-b8c2-4616-9fdd-f13d59bcd837",
+        "name": "Upload Report to MinIO",
+        "type": "n8n-nodes-base.s3",
+        "position": [
+          2048,
+          -464
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "c05bd317-ac3d-4b34-8e28-e77253c15848",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1648,
+          -272
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1af0c6e6-39a6-4d11-95cd-f051f2085f40",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2816,
+          -256
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "cc3db854-5b43-4646-b8d2-bbbc7b1055b1",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1584,
+          -672
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "af84ab72-32d9-4f70-9b03-b7bcc03ce82b",
+        "name": "Sticky Note15",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          160,
+          -976
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "70e7c451-e54d-4336-a963-3d7b8140e2be",
+        "name": "workflow running ? ",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          160,
+          -560
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "31c40a84-bb67-47f3-8887-87cacd638367",
+        "name": "Sticky Note16",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          160,
+          -112
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e402127c-6133-44df-94ee-5ba8df5192d1",
+        "name": "Sticky Note17",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1904,
+          -16
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ca6475f4-140a-4ba9-9b13-883fc5349072",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2224,
+          -1216
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "214c2601-db76-4bdb-a92c-bba489141351",
+    "connections": {
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Boucle",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Boucle": {
+        "main": [
+          [
+            {
+              "node": "Report Creation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Extract text with OCR",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Extract .txt / .log",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Error Message #1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AnalyseIA": {
+        "main": [
+          [
+            {
+              "node": "Result Message Creation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Ajout à MongoDB",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate MD5": {
+        "main": [
+          [
+            {
+              "node": "Create JSON from AWS S3 API Call",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate MD6": {
+        "main": [
+          [
+            {
+              "node": "Create JSON from results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Result Saved": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Objects": {
+        "main": [
+          [
+            {
+              "node": "Compare Datasets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Getting Report": {
+        "main": [
+          [
+            {
+              "node": "Envoi de mail récapitulatif",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Upload Report to MinIO",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Save Audit Snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "List S3 Objects": {
+        "main": [
+          [
+            {
+              "node": "Generate MD6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Objects Listing": {
+        "main": [
+          [
+            {
+              "node": "Generate MD5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Path Extraction": {
+        "main": [
+          [
+            {
+              "node": "Objects Download",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Report Creation": {
+        "main": [
+          [
+            {
+              "node": "Getting Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ajout à MongoDB": {
+        "main": [
+          []
+        ]
+      },
+      "Compare Datasets": {
+        "main": [
+          [],
+          [],
+          [],
+          [
+            {
+              "node": "Path Extraction",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Convert to File2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File1": {
+        "main": [
+          [
+            {
+              "node": "Replace previous snapshot with current one",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File2": {
+        "main": [
+          [
+            {
+              "node": "Save Suspect Objects List",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete a folder1": {
+        "main": [
+          [
+            {
+              "node": "Create a folder1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Message #1": {
+        "main": [
+          [
+            {
+              "node": "Result Saved",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Message #2": {
+        "main": [
+          [
+            {
+              "node": "Result Saved",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Objects Download": {
+        "main": [
+          [
+            {
+              "node": "Upload objects to MinIO",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get previous Audit Snapshot",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "List S3 Objects",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates": {
+        "main": [
+          [
+            {
+              "node": "Download suspect files",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Audit file to JSON": {
+        "main": [
+          [
+            {
+              "node": "Split Objects",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete local files": {
+        "main": [
+          [
+            {
+              "node": "Delete a folder1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract .txt / .log": {
+        "main": [
+          [
+            {
+              "node": "TXT/LOG Prompt Creation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Error Message #2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF Prompt Creation": {
+        "main": [
+          [
+            {
+              "node": "AnalyseIA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Audit Snapshot": {
+        "main": [
+          []
+        ]
+      },
+      "Extraction des paths": {
+        "main": [
+          [
+            {
+              "node": "Only keep PDF, TXT and Logs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract text with OCR": {
+        "main": [
+          [
+            {
+              "node": "PDF Prompt Creation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Error Message #2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download suspect files": {
+        "main": [
+          [
+            {
+              "node": "Boucle",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload Report to MinIO": {
+        "main": [
+          [
+            {
+              "node": "Delete local files",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "List downloaded objects": {
+        "main": [
+          [
+            {
+              "node": "Extraction des paths",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Result Message Creation": {
+        "main": [
+          [
+            {
+              "node": "Result Saved",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "TXT/LOG Prompt Creation": {
+        "main": [
+          [
+            {
+              "node": "AnalyseIA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload objects to MinIO": {
+        "main": [
+          [
+            {
+              "node": "Remove them from Host FS",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create JSON from results": {
+        "main": [
+          [
+            {
+              "node": "Convert to File1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Compare Datasets",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Remove them from Host FS": {
+        "main": [
+          [
+            {
+              "node": "List downloaded objects",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mistral Cloud Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AnalyseIA",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Suspect Objects List": {
+        "main": [
+          [
+            {
+              "node": "Download current Integrity Snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get previous Audit Snapshot": {
+        "main": [
+          [
+            {
+              "node": "Audit file to JSON",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Only keep PDF, TXT and Logs": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envoi de mail récapitulatif": {
+        "main": [
+          []
+        ]
+      },
+      "Create JSON from AWS S3 API Call": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download current Integrity Snapshot": {
+        "main": [
+          [
+            {
+              "node": "Upload Snapshot on Host FS",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Objects Listing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 77,
+    "nodeTypes": {
+      "n8n-nodes-base.s3": {
+        "count": 9
+      },
+      "n8n-nodes-base.set": {
+        "count": 7
+      },
+      "n8n-nodes-base.ssh": {
+        "count": 8
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.awsS3": {
+        "count": 3
+      },
+      "n8n-nodes-base.crypto": {
+        "count": 2
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.switch": {
+        "count": 1
+      },
+      "n8n-nodes-base.mongoDb": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 4
+      },
+      "n8n-nodes-base.emailSend": {
+        "count": 1
+      },
+      "n8n-nodes-base.mistralAi": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 25
+      },
+      "n8n-nodes-base.convertToFile": {
+        "count": 3
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.compareDatasets": {
+        "count": 1
+      },
+      "n8n-nodes-base.extractFromFile": {
+        "count": 3
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.removeDuplicates": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatMistralCloud": {
+        "count": 1
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 49,
+      "name": "AI Summarization"
+    },
+    {
+      "id": 51,
+      "name": "Multimodal AI"
+    }
+  ],
+  "image": []
+}

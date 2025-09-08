@@ -1,0 +1,785 @@
+{
+  "id": 7255,
+  "name": "Créer des résumés quotidiens de newsletters à partir de Gmail en utilisant GPT-4.1-mini",
+  "totalViews": 174,
+  "purchaseUrl": null,
+  "user": {
+    "name": "Vlad Arbatov",
+    "username": "vladzima",
+    "bio": "VP of Engineering. Machine Learning, NLP, Computer Vision, Geospatial, Navigation, Data Analysis, Generative Models, Healthcare.\n\nOver 20 years in delivering client-centric tools and driving multinational cross-functional engineering teams. I've been there and everywhere and beyond.",
+    "verified": true,
+    "links": [
+      "https://arbatov.dev"
+    ],
+    "avatar": "https://gravatar.com/avatar/3ea41acb36cd9bbc703294d0e945819b2e248f2bb8d31d43aadcb71bdea486a7?r=pg&d=retro&size=200"
+  },
+  "description": "## Résumé\nChaque jour à une heure fixe, ce flux de travail récupère les newsletters d'hier depuis Gmail, résume chaque e-mail en sujets concis avec un LLM, fusionne tous les sujets, rend un digest HTML propre et l'envoie à votre boîte de réception.\n\n## Ce que fait ce flux de travail\n-  Se déclenche selon un calendrier quotidien (par défaut 16:00, heure du serveur)\n-  Récupère les messages Gmail depuis hier en utilisant une requête de recherche personnalisée avec des filtres d'expéditeur optionnels\n-  Récupère et décode le HTML de chaque e-mail, le sujet, le nom de l'expéditeur et la date\n-  Invite un LLM (GPT‑4.1‑mini) à produire un résumé JSON cohérent des sujets par e-mail\n-  Fusionne les sujets de tous les e-mails en une seule liste\n-  Rend un e-mail HTML stylé avec des éléments numérotés\n-  Envoie le digest HTML à un destinataire spécifié via Gmail\n\n## Applications et identifiants\n-  Gmail OAuth2 : compte Gmail (lecture et envoi)\n-  OpenAI : compte OpenAi\n\n## Cas d'utilisation typiques\n-  Résumés de newsletters quotidiens/hebdomadaires livrés sous forme d'un seul e-mail\n-  Digests sélectionnés de médias ou d'auteurs spécifiques\n-  Briefings d'équipe faciles à lire et à transférer\n\n## Comment cela fonctionne (nœud par nœud)\n-  Déclencheur de calendrier\n  \t- Se déclenche à l'heure configurée (par défaut 16:00).\n-  Obtenir de nombreux messages (Gmail → getAll, returnAll: true)\n  \t- Utilise un filtre comme :\n    =(from:____@____.com) OU (from:____@____.com) OU (from:____@____.com -\"____\") après:{{ $now.minus({ days: 1 }).toFormat('yyyy/MM/dd') }}\n  \t- Renvoie une liste d'IDs de messages de la journée précédente.\n-  Boucle sur les éléments (divisée en lots)\n  \t- Itère à travers chaque ID de message.\n-  Obtenir un message (Gmail → get)\n  \t- Récupère le message/payload complet pour l'e-mail actuel.\n-  Obtenir les données du message (Code)\n  \t- Extrait le HTML des parties MIME de Gmail.\n  \t- Normalise l'expéditeur pour n'avoir que le nom d'affichage.\n \t - Formate la date au format JJ.MM.AAAA.\n \t - Transmet html, sujet, de, date.\n-  Nettoyer (Code)\n  \t- Convertit JJ.MM.AAAA → MM.JJ (pour la brièveté de l'invite).\n  \t- Transmet html, sujet, de, date au LLM.\n-  Message un modèle (OpenAI, modèle : gpt‑4.1‑mini, sortie JSON)\n  \t- L'invite demande :\n    \t\t- Produire JSON : { \"topics\": [ { \"title\", \"descr\", \"subject\", \"from\", \"date\" } ] }\n   \t\t - Diviser les blocs de plusieurs nouvelles en sujets séparés\n    \t\t- Combiner ou ignorer des blocs spécifiques pour des expéditeurs particuliers (espaces réservés ____)\n   \t\t - Garder le sujet non traduit ; autres valeurs en ____ langue\n    \t\t- Injecte sujet/de/date/html de l'e-mail actuel\n-  Boucle sur les éléments (continue)\n \t - Traite tous les e-mails pour la fenêtre temporelle.\n-  Fusionner (Code)\n  \t- Aplati les tableaux de sujets de tous les e-mails traités en une seule liste de sujets combinés.\n-  Créer un modèle (Code)\n  \t- Construit un e-mail HTML complet :\n    \t\t- Éléments numérotés avec titre, description en une ligne\n    \t\t- Sujet original et “de — date”\n    \t\t- Échappe en toute sécurité le HTML et préserve les sauts de ligne\n    \t\t- Styles en ligne, adaptés aux e-mails\n-  Envoyer un message (Gmail → send)\n  \t- Envoie le HTML final à votre destinataire avec un sujet personnalisé.\n\nCarte des nœuds\n| Nœud | Type | But |\n|---|---|---|\n| Déclencheur de calendrier | Déclencheur | Exécuter à une heure spécifique chaque jour |\n| Obtenir de nombreux messages | Gmail (getAll) | Rechercher des e-mails depuis hier avec des filtres |\n| Boucle sur les éléments | Divisée en lots | Itérer les messages un par un |\n| Obtenir un message | Gmail (get) | Récupérer le payload complet du message |\n| Obtenir les données du message | Code | Extraire HTML/sujet/de/date ; normaliser l'expéditeur et la date |\n| Nettoyer | Code | Reformatter la date et transmettre les champs au LLM |\n| Message un modèle | OpenAI | Résumer l'e-mail en sujets JSON |\n| Fusionner | Code | Fusionner les sujets de tous les e-mails |\n| Créer un modèle | Code | Rendre un digest d'e-mail HTML stylé |\n| Envoyer un message | Gmail (send) | Livrer l'e-mail digest |\n\nAvant de commencer\n-  Connectez Gmail OAuth2 dans n8n (assurez-vous qu'il a à la fois des autorisations de lecture et d'envoi)\n-  Ajoutez votre clé API OpenAI\n-  Importez le JSON de flux de travail fourni dans n8n\n\nInstructions de configuration\n1) Calendrier\n-  Nœud Déclencheur de calendrier :\n  - Définissez votre heure préférée (heure du serveur). Par défaut, c'est 16:00.\n\n2) Gmail\n-  Obtenir de nombreux messages :\n  \t- Ajustez filters.q à vos expéditeurs/étiquettes et fenêtre :\n    \t\t- Exemple : =(from:news@publisher.com) OU (from:briefs@media.com -\"promo\") après:{{ $now.minus({ days: 1 }).toFormat('yyyy/MM/dd') }}\n  \t- Vous pouvez utiliser label: ou category: pour restreindre la portée.\n-  Envoyer un message :\n  \t- sendTo = votre e-mail\n  \t- sujet = votre ligne de sujet\n  \t- message = défini sur {{ $json.htmlBody }} (déjà produit par Créer un modèle)\n \t - Le corps HTML utilise des styles en ligne pour un large support des clients de messagerie.\n\n3) OpenAI\n-  Message un modèle :\n  \t- Modèle : gpt‑4.1‑mini (remplacez par gpt‑4o‑mini ou votre préféré)\n  \t- Mettez à jour les espaces réservés de l'invite :\n    \t\t- ____ langue → votre langue cible\n   \t\t - ____ règles d'expéditeur → cas particuliers (combiner des blocs, ignorer des sections)\n\n## Comment utiliser\n-  Le flux de travail s'exécute quotidiennement à l'heure prévue, compilant un digest des e-mails d'hier.\n-  Vous recevrez un e-mail HTML avec tous les sujets soigneusement listés.\n-  Ajustez la fenêtre temporelle ou les filtres pour changer ce qui est inclus.\n\n## Idées de personnalisation\n-  Contrôle de la fenêtre temporelle :\n  \t- après : {{ $now.minus({ days: X }) }} et/ou ajoutez avant :\n-  Filtrer par étiquettes :\n  \t- q = label:Newsletters après:{{ $now.minus({ days: 1 }).toFormat('yyyy/MM/dd') }}\n-  Langue :\n  \t- Définissez la ____ langue dans l'invite LLM\n-  Modèle :\n  \t- Éditez “Créer un modèle” pour ajouter un en-tête, un pied de page, une section héro, un logo/branding\n  \t- Incluez des liens analysés à partir du HTML (ajoutez une étape d'analyse HTML dans “Obtenir les données du message”)\n-  Ligne de sujet :\n  \t- Rendez-la dynamique, par exemple, “Digest pour {{ $now.toFormat('dd.MM.yyyy') }}”\n-  Expéditeur :\n  \t- Utilisez un compte Gmail dédié ou un alias pour la délivrabilité et la séparation\n\n## Limites et notes\n-  La limite de taille de Gmail pour les e-mails sortants est d'environ 25 Mo ; les grands digests peuvent nécessiter un élagage\n-  L'utilisation de LLM entraîne des coûts et une latence proportionnels à la taille et au nombre d'e-mails\n-  Le rendu HTML varie selon les clients ; des styles en ligne sont utilisés pour la compatibilité\n-  Le calendrier utilise le fuseau horaire du serveur n8n ; ajustez si votre serveur fonctionne dans un fuseau horaire différent\n\n## Confidentialité et sécurité\n-  Les e-mails sont envoyés à OpenAI pour résumé - assurez-vous que cela est conforme à vos politiques de données\n-  Limitez la portée de recherche Gmail uniquement aux newsletters que vous souhaitez traiter\n-  Évitez d'inclure des e-mails sensibles dans la fenêtre de recherche\n\n## Exemple de sortie (corps de l'e-mail)\n-  Titre 1\n  \t- Description en une phrase\n  \t- Sujet original\n \t - → Expéditeur — JJ.MM.AAAA\n-  Titre 2\n \t - Description en une phrase\n \t - Sujet original\n \t - → Expéditeur — JJ.MM.AAAA\n\n## Conseils et dépannage\n-  Aucun e-mail trouvé ? Vérifiez filters.q et la fenêtre temporelle (après :)\n-  Le modèle renvoie un JSON vide ? Simplifiez l'invite ou essayez un autre modèle\n-  Caractères étranges dans la sortie ? Le modèle échappe au HTML et préserve les sauts de ligne ; vérifiez votre encodage d'entrée\n-  Problèmes de livraison ? Utilisez un expéditeur vérifié, définissez un sujet clair et évitez les mots-clés spammy\n\n## Étiquettes\n-  gmail, openai, llm, newsletters, digest, résumé, e-mail, automatisation\n\n## Journal des modifications\n-  v1 : Version initiale avec fenêtre horaire programmée, filtres d'expéditeur, résumé LLM, fusion de sujets et rendu de modèle d'e-mail HTML",
+  "createdAt": "2025-08-11T15:09:35.051Z",
+  "nodes": [
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de calendrier",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1250,
+      "icon": "file:openAi.svg",
+      "name": "@n8n/n8n-nodes-langchain.openAi",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "ChatGPT",
+            "DallE",
+            "whisper",
+            "audio",
+            "transcribe",
+            "tts",
+            "assistant"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Miscellaneous",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg1IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NiAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MSA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K"
+      },
+      "displayName": "OpenAI",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "views": 174,
+  "recentViews": 4,
+  "workflow": {
+    "id": "4LGHvpa2PjTNwGc1",
+    "meta": {
+      "instanceId": "93438a4980e64a583ea2325b4dc5eae4c4c531c30461a48c79a4b262b5c53893",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "email → email public",
+    "tags": [
+      {
+        "id": "TIMIlK5hNxVuDAlg",
+        "name": "public",
+        "createdAt": "2025-08-11T13:46:00.810Z",
+        "updatedAt": "2025-08-11T13:46:00.810Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "8636c298-0e5a-494d-9bd1-beace2be380c",
+        "name": "Get many messages",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          368,
+          64
+        ],
+        "webhookId": "e1b897aa-1e4d-4880-8be0-df0c5f5d577c",
+        "parameters": {
+          "filters": {
+            "q": "=(from:____@____.com) OR (from:____@____.com) OR (from:____@____.com -\"____\") after:{{ $now.minus({ days: 1 }).toFormat('yyyy/MM/dd') }}"
+          },
+          "operation": "getAll",
+          "returnAll": true
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "sqe7HFlBnGaSLwH9",
+            "name": "Gmail account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "d77aad78-85fa-4dd1-9227-6636b023dc04",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          592,
+          64
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "3f688cd5-ac4b-4965-a9d4-2220cee11440",
+        "name": "Get a message",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          816,
+          64
+        ],
+        "webhookId": "309187bc-88e5-4174-8aea-e3be7dc0b20e",
+        "parameters": {
+          "simple": false,
+          "options": {},
+          "messageId": "={{ $json.id }}",
+          "operation": "get"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "sqe7HFlBnGaSLwH9",
+            "name": "Gmail account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "104254b9-51ea-4655-9e49-38dd3b200929",
+        "name": "Get message data",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1040,
+          64
+        ],
+        "parameters": {
+          "jsCode": "function extractHtml(payload) {\n  if (!payload) return '';\n  if (payload.body && payload.body.data) {\n    return Buffer.from(payload.body.data, 'base64').toString('utf-8');\n  }\n  function findHtmlPart(parts) {\n    for (const part of parts) {\n      if (part.mimeType === 'text/html' && part.body && part.body.data) {\n        return Buffer.from(part.body.data, 'base64').toString('utf-8');\n      }\n      if (part.parts) {\n        const result = findHtmlPart(part.parts);\n        if (result) return result;\n      }\n    }\n    return '';\n  }\n  if (payload.parts) {\n    const html = findHtmlPart(payload.parts);\n    if (html) return html;\n  }\n  return '';\n}\n\nlet html = $json.html || '';\nif (!html && $json.payload) {\n  html = extractHtml($json.payload);\n}\nif (!html && $json.text) {\n  html = $json.text;\n}\n\n// Clean 'from': keep only the sender's name\nlet from = $json.from?.text || $json.from || '';\nconst match = from.match(/^\\\"?([^\\\"<]+)\\\"?\\s*<[^>]+>$/);\nif (match) {\n  from = match[1].trim();\n}\n\n// Convert date to DD.MM.YYYY format\nlet date = $json.date || '';\nlet formattedDate = date;\nif (date) {\n  const d = new Date(date);\n  const day = String(d.getDate()).padStart(2, '0');\n  const month = String(d.getMonth() + 1).padStart(2, '0');\n  const year = d.getFullYear();\n  formattedDate = `${day}.${month}.${year}`;\n}\n\nconst subject = $json.subject || '';\n\nreturn [{\n  html,\n  subject,\n  from,\n  date: formattedDate\n}];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "31e5402b-7146-4955-ae7b-ee4dd3ecc583",
+        "name": "Merge",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          816,
+          -128
+        ],
+        "parameters": {
+          "jsCode": "/**\n * This code is intended for use in the \"Code\" node in n8n.\n * It merges the 'topics' arrays from several incoming items into a single array.\n *\n * Incoming data (items) have the following structure:\n * [\n * { json: { message: { content: { topics: [...] } } } },\n * { json: { message: { content: { topics: [...] } } } },\n * ...\n * ]\n */\n\n// We use the flatMap method, which is a combination of map and flat.\n// It iterates over each element (item) in the incoming array (items),\n// extracts the 'topics' array and immediately flattens all collected arrays into one.\nconst allTopics = items.flatMap(item => {\n  // We use optional chaining (?.) for safe access to the nested property.\n  // This prevents an error if 'message' or 'content' is missing in any element.\n  // If the path is not found, return an empty array [] so flatMap can work correctly.\n  return item.json?.message?.content?.topics || [];\n});\n\n// The \"Code\" node must return an array of objects.\n// We return one object containing the 'json' property with our merged 'topics' array.\n// This result will be available on the node's output for further use.\nreturn [{\n  json: {\n    topics: allTopics\n  }\n}];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "df46e906-1a21-47c3-9168-900ee58c3730",
+        "name": "Clean",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1264,
+          64
+        ],
+        "parameters": {
+          "jsCode": "/**\n * This code is intended for use in the \"Code\" node in n8n.\n * Its task is to prepare data from the Gmail node for the next node (LLM).\n * It does not parse HTML; it only passes it along with other fields.\n *\n * Incoming data (items) — this is the result of the Gmail node.\n * [\n * { json: { html: \"...\", subject: \"...\", from: \"...\", date: \"DD.MM.YYYY\" } }\n * ]\n *\n * The code converts the date from \"DD.MM.YYYY\" to \"MM.DD\" and passes\n * all the necessary fields (html, subject, from, date) to the next step.\n */\n\n// Use .map() to transform each incoming item.\nconst results = items.map(item => {\n  // Extract the required fields from the incoming JSON.\n  const { html, subject, from, date: originalDate } = item.json;\n\n  // Check for required fields.\n  if (!html || !originalDate) {\n    // If there is no data, return null to filter this item later.\n    return null;\n  }\n\n  // 1. Split the date string into components (day, month, year).\n  const [day, month] = originalDate.split('.').slice(0, 2);\n\n  // 2. Form a new string in the \"MM.DD\" format.\n  const newDate = `${month}.${day}`;\n\n  // 3. Return a new object in the structure expected by\n  // the next node (LLM).\n  return {\n    json: {\n      html,\n      subject,\n      from,\n      date: newDate\n    }\n  };\n});\n\n// Filter out empty results and return the array for the next node.\nreturn results.filter(item => item !== null);\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "4bd967a6-cd5c-4225-a785-fda4f227979a",
+        "name": "Create template",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1040,
+          -128
+        ],
+        "parameters": {
+          "jsCode": "/**\n * This code is intended for use in the \"Code\" node in n8n.\n * It takes an array of topics and creates a single,\n * well-formatted HTML email for sending.\n *\n * This node replaces the nodes \"Formatting\", \"Split\", and \"Sanitizer\".\n */\n\n// Get the array of topics from the previous node.\nconst topics = $json.topics;\n\n// Check if there are topics to process.\nif (!Array.isArray(topics) || topics.length === 0) {\n  return []; // If there are no topics, stop the workflow.\n}\n\n// --- Create HTML markup for each news item ---\nconst topicsHtml = topics.map((topic, index) => {\n  // Escape basic HTML characters in the data to avoid breaking the markup.\n  const escapeHtml = (unsafe) => {\n    if (!unsafe) return '';\n    return unsafe\n         .replace(/&/g, \"&amp;\")\n         .replace(/</g, \"&lt;\")\n         .replace(/>/g, \"&gt;\")\n         .replace(/\\\"/g, \"&quot;\")\n         .replace(/'/g, \"&#039;\");\n  };\n\n  const title = escapeHtml(topic.title);\n  const descr = escapeHtml(topic.descr).replace(/\\n/g, '<br>'); // Preserve line breaks in the description\n  const subject = escapeHtml(topic.subject);\n  const from = escapeHtml(topic.from);\n  const date = escapeHtml(topic.date);\n\n  // Build a nice HTML block for a single news item.\n  return `\n    <div style=\"margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #eeeeee;\">\n      <h3 style=\"margin: 0 0 8px 0; font-size: 18px; color: #1a1a1a;\">\n        ${index + 1}. ${title}\n      </h3>\n      <p style=\"margin: 0 0 12px 0; font-size: 16px; color: #333333; line-height: 1.5;\">\n        ${descr}\n      </p>\n      <p style=\"margin: 0; font-size: 14px; color: #777777; font-style: italic;\">\n        ${subject}<br>\n        → ${from} - ${date}\n      </p>\n    </div>\n  `;\n}).join(''); // Join all HTML blocks into a single string.\n\n// --- Wrap everything in a full HTML document with styles ---\nconst finalHtml = `\n  <!DOCTYPE html>\n  <html>\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Ваш новостной дайджест</title>\n  </head>\n  <body style=\"margin: 0; padding: 0; background-color: #f7f7f7; font-family: Arial, sans-serif;\">\n    <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n      <tr>\n        <td align=\"center\" style=\"padding: 20px;\">\n          <table width=\"600\" border=\"0\" cellpadding=\"20\" cellspacing=\"0\" style=\"background-color: #ffffff; border-radius: 8px;\">\n            <tr>\n              <td>\n                <h1 style=\"text-align: center; color: #1a1a1a;\">Новостной дайджест</h1>\n                ${topicsHtml}\n              </td>\n            </tr>\n          </table>\n        </td>\n      </tr>\n    </table>\n  </body>\n  </html>\n`;\n\n// Return the result. In the \"Send Email\" node use {{ $json.htmlBody }}\nreturn [{ json: { htmlBody: finalHtml } }];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "57cc3b99-7a91-492f-8d5c-cbf0da079d16",
+        "name": "Send a message",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          1264,
+          -128
+        ],
+        "webhookId": "74e87896-9cca-4dc0-98bb-7e8f712c5d01",
+        "parameters": {
+          "sendTo": "your-email@example.com",
+          "message": "={{ $json.htmlBody }}",
+          "options": {},
+          "subject": "Your-subject"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "sqe7HFlBnGaSLwH9",
+            "name": "Gmail account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "363983e4-7be4-4319-8fdb-dd8ff39200e5",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          144,
+          64
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 16
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "06729a53-d537-4a80-8aed-b1032b858390",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          144,
+          -208
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 320,
+          "height": 240,
+          "content": "## Try this out!\nSend a number to your Telegram bot (e.g., 2) and get a neatly formatted digest of all Gmail newsletters received since that date. Each email is summarized by an LLM into concise topics, merged into a single Telegram message, automatically split into chunks to fit Telegram limits, and safely formatted as HTML."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "00d59259-5d92-458d-9b8e-bc7bf0f58979",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          576,
+          0
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 1152,
+          "height": 256,
+          "content": "## Iterates over each message"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "351eb40c-ba0a-4ea6-9f14-d7eabbf956e7",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          800,
+          -192
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 656,
+          "height": 192,
+          "content": "## Clean up the text and forms the final message"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bddb5d4d-629a-4bfd-bf26-b60451949144",
+        "name": "Message a model",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "position": [
+          1488,
+          144
+        ],
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini",
+            "cachedResultName": "GPT-4.1-MINI"
+          },
+          "options": {},
+          "messages": {
+            "values": [
+              {
+                "content": "=You are a specialist in analyzing email newsletters. Create a brief summary of the email in JSON format:\n\n`{ \"topics\": [ { \"title\": ..., \"descr\": ..., \"subject\": ..., \"from\": ..., \"date\": ... } ] }`\n\nFor each news item within a block, create a separate topic with a brief one-sentence description, even if they are listed or under a single headline. Do not combine them into one topic.\n\nHowever, if the email is from ____, combine each block (for example, \"____\") by listing the topics in the description.\n\nIf the email is from ____, ignore the sections \"____\" and \"____\".\n\nAll values in your JSON must be in ____ language, except for the subject. The subject—{{ $json.subject }}—must remain untranslated.\n\nHere is the subject: {{ $json.subject }}\nHere is the from: {{ $json.from }}\nHere is the date: {{ $json.date }}\n\nHere is the email:\n{{ $json.html }}"
+              }
+            ]
+          },
+          "jsonOutput": true
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "UZtYaio4OAcJGlV9",
+            "name": "OpenAi account"
+          }
+        },
+        "typeVersion": 1.8
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "53fdca83-a1b5-4866-bed8-0b3322de6bc5",
+    "connections": {
+      "Clean": {
+        "main": [
+          [
+            {
+              "node": "Message a model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Create template",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a message": {
+        "main": [
+          [
+            {
+              "node": "Get message data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create template": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message a model": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get message data": {
+        "main": [
+          [
+            {
+              "node": "Clean",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get many messages",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many messages": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 13,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 4
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 3
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.openAi": {
+        "count": 1
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 43,
+      "name": "Productivité personnelle"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

@@ -1,0 +1,1513 @@
+{
+  "id": 7372,
+  "name": "Stratégie de contenu automatisée avec Google Trends, News, Firecrawl et Claude AI",
+  "totalViews": 969,
+  "price": 0,
+  "purchaseUrl": null,
+  "user": {
+    "name": "Growth AI",
+    "username": "growthai",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.agence-n8n.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/e93e43e1e71be1aee89eb849a5396be04c95604624b155a29298b9209e2534c3?r=pg&d=retro&size=200"
+  },
+  "description": "*Ce flux de travail contient des nœuds communautaires qui ne sont compatibles qu'avec la version auto-hébergée de n8n.*\n\n# Surveillance automatisée des tendances pour la stratégie de contenu\n\n## À qui cela s'adresse-t-il\nCréateurs de contenu, marketeurs et gestionnaires de médias sociaux qui souhaitent rester en avance sur les tendances émergentes et générer des idées de contenu pertinentes basées sur des insights basés sur les données.\n\n## Ce que cela fait\nCe flux de travail identifie automatiquement les sujets tendance liés à votre secteur, collecte des articles d'actualité récents sur ces tendances et génère des suggestions de contenu. Il transforme les données brutes des tendances en opportunités éditoriales exploitables en analysant la croissance du volume de recherche et la couverture médiatique actuelle.\n\n## Comment cela fonctionne\nLe flux de travail suit un processus d'automatisation en trois étapes :\n\nAnalyse des tendances : Examine les recherches liées à vos sujets et identifie celles ayant la plus forte croissance récente\nCollecte d'articles : Recherche sur Google News des articles actuels sur les tendances émergentes et extrait leur contenu complet\nGénération de contenu : Crée des suggestions de contenu personnalisées basées sur les articles collectés et les données de tendance\n\nLe système exclut automatiquement les recherches géolocalisées pour fournir une perspective mondiale sur les tendances, bien que cela puisse être personnalisé.\n\n## Exigences\n\nCompte SerpAPI (pour les données de tendance et d'actualité)\nClé API Firecrawl (pour extraire le contenu des articles des résultats de Google News)\nAccès à Google Sheets\nClé API du modèle AI (pour l'analyse de contenu et les recommandations - vous pouvez utiliser tout fournisseur LLM de votre choix)\n\n## Comment configurer\n### Étape 1 : Préparez votre feuille de suivi\nDupliquez ce modèle Google Sheets : https://docs.google.com/spreadsheets/d/1z7iP_i98PT9BQuUypAi0c3NHkdhREEPJWkDjyj8Snfw\nRenommez votre copie et assurez-vous qu'elle est accessible\n\n### Étape 2 : Configurez les identifiants API\nAvant d'exécuter le flux de travail, configurez les identifiants suivants dans n8n :\n\nSerpAPI : Pour l'analyse des tendances et la recherche sur Google News\nFirecrawl API : Pour extraire le contenu des articles\nAI Model API : Pour l'analyse de contenu et les recommandations (Anthropic Claude, OpenAI GPT, ou tout autre fournisseur LLM)\nGoogle Sheets OAuth2 : Pour accéder et mettre à jour votre feuille de suivi\n\n### Étape 3 : Configurez le flux de travail\nDans le nœud \"Get Query\", collez l'URL de votre Google Sheets dupliqué dans le champ \"Document\"\nDans votre onglet \"Query\" de Google Sheet, entrez les sujets que vous souhaitez surveiller\n\n### Étape 4 : Personnalisez les paramètres de langue et de localisation\nLe flux de travail est actuellement configuré pour un contenu en français et une localisation en France. Vous pouvez modifier ces paramètres dans les nœuds SerpAPI :\n\nLangue (hl) : Changez de \"fr\" à votre code de langue préféré\nLocalisation géographique (geo/gl) : Changez de \"FR\" à votre code de pays cible\nPlage de dates : Actuellement définie sur \"aujourd'hui 1-m\" (le mois dernier) mais peut être ajustée\n\n### Étape 5 : Ajustez le filtrage (optionnel)\nLe nœud \"Sorting Queries\" exclut par défaut les requêtes géolocalisées. Vous pouvez modifier les instructions de l'agent AI pour inclure des requêtes spécifiques à la localisation ou changer les critères de filtrage en fonction de vos besoins.\n### Étape 6 : Configurez la planification (optionnel)\nLe flux de travail comprend un planificateur automatisé qui s'exécute mensuellement (1er jour de chaque mois à 8h). Vous pouvez modifier l'expression cron 0 8 1 * * dans le nœud Schedule Trigger pour changer :\n\nFréquence (quotidienne, hebdomadaire, mensuelle)\nHeure d'exécution\nJour du mois\n\n## Comment personnaliser le flux de travail\n\nChanger le nombre de tendances : Le flux de travail traite jusqu'à 10 requêtes liées par sujet mais les filtre via l'IA pour sélectionner les plus pertinentes non géolocalisées\nAjuster la collecte d'articles : Actuellement, il collecte exactement 3 articles d'actualité par requête pour analyse\nStyle de contenu : Personnalisez les invites AI dans les nœuds de génération de contenu pour correspondre à la voix de votre marque\nFormat de sortie : Modifiez la structure de Google Sheets pour inclure des points de données supplémentaires\nModèle AI : Remplacez le modèle Anthropic par votre fournisseur LLM préféré\nOptions d'extraction : Configurez les paramètres de Firecrawl pour extraire des éléments de contenu spécifiques des articles\n\n## Interprétation des résultats\n\nPour chaque sujet surveillé, le flux de travail génère une feuille séparée nommée par mois et sujet (par exemple, \"Janvier Marketing Digital\") contenant :\nStructure des données (quatre colonnes) :\n\nRequête : Le terme de recherche tendance classé par croissance\nÉvolution : Pourcentage de croissance au cours du dernier mois\nActualités : Liens vers 3 articles d'actualité pertinents\nIdée : Suggestions de contenu générées par l'IA basées sur une analyse complète des articles\n\nLe flux de travail fournit une analyse rétrospective mensuelle, vous aidant à identifier les sujets émergents avant vos concurrents et à optimiser votre calendrier de contenu avec des sujets à fort potentiel.\n\n## Limitations du flux de travail\n\nTraite jusqu'à 10 requêtes liées par sujet avec filtrage AI\nCollecte exactement 3 articles d'actualité par requête\nLes résultats sont automatiquement organisés dans des feuilles mensuelles\nNécessite une connexion Internet stable pour les appels API",
+  "createdAt": "2025-08-14T09:22:16.685Z",
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chaîne LLM de base",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1145,
+      "icon": "file:anthropic.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "codex": {
+        "data": {
+          "alias": [
+            "claude",
+            "sonnet",
+            "opus"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatanthropic/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Anthropic"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzdEN0Q4NyIgZD0iTTMyLjczIDBoLTYuOTQ1TDM4LjQ1IDMyaDYuOTQ1ek0xMi42NjUgMCAwIDMyaDcuMDgybDIuNTktNi43MmgxMy4yNWwyLjU5IDYuNzJoNy4wODJMMTkuOTI5IDB6bS0uNzAyIDE5LjMzNyA0LjMzNC0xMS4yNDYgNC4zMzQgMTEuMjQ2eiIvPjwvc3ZnPg=="
+      },
+      "displayName": "Anthropic Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1179,
+      "icon": "fa:code",
+      "name": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "codex": {
+        "data": {
+          "alias": [
+            "json",
+            "zod"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.outputparserstructured/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Output Parsers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Analyseur de sortie structuré"
+      },
+      "iconData": {
+        "icon": "code",
+        "type": "icon"
+      },
+      "displayName": "Structured Output Parser",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "views": 969,
+  "recentViews": 38,
+  "workflow": {
+    "meta": {
+      "instanceId": "393ca9e36a1f81b0f643c72792946a5fe5e49eb4864181ba4032e5a408278263",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "1c6e3667-2a2b-43be-ba3e-9b94db926e54",
+        "name": "Structured Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "position": [
+          1072,
+          208
+        ],
+        "parameters": {
+          "jsonSchemaExample": "{\n\t\"query1\": [\"query\", \"évolution\"],\n    \"query2\": [\"query\", \"évolution\"],\n    \"query3\": [\"query\", \"évolution\"]\n}"
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "a6c8f655-2052-4791-b9ba-57e6a3a48397",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          208,
+          0
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "566c1440-e01d-4721-baf2-faf9ed110f98",
+        "name": "Anthropic Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "position": [
+          880,
+          208
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "claude-sonnet-4-20250514",
+            "cachedResultName": "Claude Sonnet 4"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "anthropicApi": {
+            "id": "WXQf5QsxCs3AyxlW",
+            "name": "Anthropic account"
+          }
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "7214cc02-1302-413a-9c90-811dfa916302",
+        "name": "Loop Over Items1",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          2048,
+          0
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "2a0d938c-e799-403f-ac8b-e9f847823a5b",
+        "name": "Anthropic Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "position": [
+          3520,
+          560
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "claude-sonnet-4-20250514",
+            "cachedResultName": "Claude 4 Sonnet"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "anthropicApi": {
+            "id": "WXQf5QsxCs3AyxlW",
+            "name": "Anthropic account"
+          }
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "cef2ba4d-426d-447a-b905-4ad324bf7002",
+        "name": "Search trend",
+        "type": "n8n-nodes-serpapi.serpApi",
+        "position": [
+          480,
+          0
+        ],
+        "parameters": {
+          "q": "={{ $json.Query }}",
+          "operation": "google_trends",
+          "requestOptions": {},
+          "additionalFields": {
+            "hl": "fr",
+            "geo": "FR",
+            "date": "today 1-m",
+            "data_type": "RELATED_QUERIES"
+          }
+        },
+        "credentials": {
+          "serpApi": {
+            "id": "w1oDmQzMKE4Wcj2P",
+            "name": "SerpAPI account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "435c4eb8-6225-4566-af04-6baf8f6743a7",
+        "name": "Création feuille sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1584,
+          0
+        ],
+        "parameters": {
+          "title": "={{ new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString('fr-FR', { month: 'long' }).charAt(0).toUpperCase() + new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString('fr-FR', { month: 'long' }).slice(1) }} {{ $('Loop Over Items').item.json.Query }}",
+          "options": {},
+          "operation": "create",
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://docs.google.com/spreadsheets/d/1z7iP_i98PT9BQuUypAi0c3NHkdhREEPJWkDjyj8Snfw"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "wBRLUCktxqXE6DVJ",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "e85b3aed-3e1d-4ca1-a515-38e576341ed2",
+        "name": "Search GNews",
+        "type": "n8n-nodes-serpapi.serpApi",
+        "position": [
+          2304,
+          0
+        ],
+        "parameters": {
+          "q": "={{ $json.Query }}",
+          "operation": "google_news",
+          "requestOptions": {},
+          "additionalFields": {
+            "gl": "fr",
+            "hl": "fr"
+          }
+        },
+        "credentials": {
+          "serpApi": {
+            "id": "w1oDmQzMKE4Wcj2P",
+            "name": "SerpAPI account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c6f64302-5e32-4aea-aebf-0be722ce2865",
+        "name": "Return URL only",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          2512,
+          0
+        ],
+        "parameters": {
+          "jsCode": "// Récupérer les données d'entrée\nconst inputData = $input.all()[0].json;\n\n// Extraire les résultats de news\nconst newsResults = inputData.news_results || [];\n\n// Trier par position (ordre croissant)\nconst sortedResults = newsResults.sort((a, b) => a.position - b.position);\n\n// Prendre les 3 premiers résultats\nconst top3Results = sortedResults.slice(0, 3);\n\n// Créer un objet avec les 3 liens séparés\nconst separatedLinks = {\n  link1: top3Results[0]?.link || null,\n  link2: top3Results[1]?.link || null,\n  link3: top3Results[2]?.link || null\n};\n\n// Retourner un seul objet avec les 3 liens\nreturn [{ json: separatedLinks }];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "979755ba-7d54-4240-aca7-a9febea049d7",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -224,
+          0
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 8 1 * *"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "05229024-42ae-4f30-bd46-e614abc649af",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1696,
+          -768
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 776,
+          "height": 2292,
+          "content": "# Automated trend monitoring for content strategy\n\n## Who's it for\nContent creators, marketers, and social media managers who want to stay ahead of emerging trends and generate relevant content ideas based on data-driven insights.\n\n## What it does\nThis workflow automatically identifies trending topics related to your industry, collects recent news articles about these trends, and generates content suggestions. It transforms raw trend data into actionable editorial opportunities by analyzing search volume growth and current news coverage.\n\n## How it works\nThe workflow follows a three-step automation process:\n\nTrend Analysis: Examines searches related to your topics and identifies those with the strongest recent growth\nArticle Collection: Searches Google News for current articles about emerging trends and scrapes their full content\nContent Generation: Creates personalized content suggestions based on collected articles and trend data\n\nThe system automatically excludes geo-localized searches to provide a global perspective on trends, though this can be customized.\n\n## Requirements\n\nSerpAPI account (for trend and news data)\nFirecrawl API key (for scraping article content from Google News results)\nGoogle Sheets access\nAI model API key (for content analysis and recommendations - you can use any LLM provider you prefer)\n\n## How to set up\n### Step 1: Prepare your tracking sheet\nDuplicate this [Google Sheets template ](https://docs.google.com/spreadsheets/d/1z7iP_i98PT9BQuUypAi0c3NHkdhREEPJWkDjyj8Snfw)\nRename your copy and ensure it's accessible\n\n### Step 2: Configure API credentials\nBefore running the workflow, set up the following credentials in n8n:\n\nSerpAPI: For trend analysis and Google News search\nFirecrawl API: For scraping article content\nAI Model API: For content analysis and recommendations (Anthropic Claude, OpenAI GPT, or any other LLM provider)\nGoogle Sheets OAuth2: For accessing and updating your tracking spreadsheet\n\n### Step 3: Configure the workflow\nIn the \"Get Query\" node, paste your duplicated Google Sheets URL in the \"Document\" field\nIn your Google Sheet \"Query\" tab, enter the topics you want to monitor\n\n### Step 4: Customize language and location settings\nThe workflow is currently configured for French content and France location. You can modify these settings in the SerpAPI nodes:\n\nLanguage (hl): Change from \"fr\" to your preferred language code\nGeographic location (geo/gl): Change from \"FR\" to your target country code\nDate range: Currently set to \"today 1-m\" (last month) but can be adjusted\n\n### Step 5: Adjust filtering (optional)\nThe \"Sorting Queries\" node excludes geo-localized queries by default. You can modify the AI agent's instructions to include location-specific queries or change filtering criteria based on your requirements.\n### Step 6: Configure scheduling (optional)\nThe workflow includes an automated scheduler that runs monthly (1st day of each month at 8 AM). You can modify the cron expression 0 8 1 * * in the Schedule Trigger node to change:\n\nFrequency (daily, weekly, monthly)\nTime of execution\nDay of the month\n\n## How to customize the workflow\n\nChange trend count: The workflow processes up to 10 related queries per topic but filters them through AI to select the most relevant non-geolocalized ones\nAdjust article collection: Currently collects exactly 3 news articles per query for analysis\nContent style: Customize the AI prompts in content generation nodes to match your brand voice\nOutput format: Modify the Google Sheets structure to include additional data points\nAI model: Replace the Anthropic model with your preferred LLM provider\nScraping options: Configure Firecrawl settings to extract specific content elements from articles\n\n## Results interpretation\n\nFor each monitored topic, the workflow generates a separate sheet named by month and topic (e.g., \"January Digital Marketing\") containing:\nData structure (four columns):\n\nQuery: The trending search term ranked by growth\nÉvolution: Growth percentage over the last month\nNews: Links to 3 relevant news articles\nIdée: AI-generated content suggestions based on comprehensive article analysis\n\nThe workflow provides monthly retrospective analysis, helping you identify emerging topics before competitors and optimize your content calendar with high-potential subjects.\n\n## Workflow limitations\n\nProcesses up to 10 related queries per topic with AI filtering\nCollects exactly 3 news articles per query\nResults are automatically organized in monthly sheets\nRequires stable internet connection for API calls"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8a61dc73-4805-434a-85b9-8088f25bb28d",
+        "name": "Get Query",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -16,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "Query"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "=https://docs.google.com/spreadsheets/d/1z7iP_i98PT9BQuUypAi0c3NHkdhREEPJWkDjyj8Snfw"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "wBRLUCktxqXE6DVJ",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "5a61f1ba-682d-4ce9-9ab5-25b6278c6fd5",
+        "name": "Classing query",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          688,
+          0
+        ],
+        "parameters": {
+          "jsCode": "// N8N Code Node - Create Nested Structure for Related Queries\n// This code creates a nested structure: Topic -> related queries\n// Get the input data (assuming it's the first item)\nconst inputData = $input.all()[0].json;\n// Initialize arrays to store extracted data\nlet relatedQueries = [];\nlet risingQueries = [];\ntry {\n  // Check if the response contains related_queries data\n  if (inputData.related_queries) {\n    \n    // Extract \"top\" related queries if they exist\n    if (inputData.related_queries.top) {\n      relatedQueries = \n        inputData.related_queries.top.map((query, index) => ({\n          query: query.query,\n          value: query.value,\n          extracted_value: query.extracted_value,\n          link: query.link,\n          serpapi_link: query.serpapi_link,\n          type: 'top',\n          rank: index + 1\n        }));\n    }\n    \n    // Extract \"rising\" related queries if they exist\n    if (inputData.related_queries.rising) {\n      risingQueries = \n        inputData.related_queries.rising.map((query, index) => ({\n          query: query.query,\n          value: query.value,\n          extracted_value: query.extracted_value,\n          link: query.link,\n          serpapi_link: query.serpapi_link,\n          type: 'rising',\n          rank: index + 1\n        }));\n    }\n  }\n  \n  // Combine all queries with their types\n  const allQueries = [...relatedQueries, ...risingQueries];\n  \n  // Sort by extracted_value (descending) to get top performers\n  const sortedQueries = allQueries.sort((a, b) => {\n    const aVal = typeof a.extracted_value === 'number' ? a.extracted_value : 0;\n    const bVal = typeof b.extracted_value === 'number' ? b.extracted_value : 0;\n    return bVal - aVal;\n  });\n  \n  // Get top 10 queries\n  const top10Queries = sortedQueries.slice(0, 10);\n  \n  // Return only top 10 queries\n  return [\n    {\n      json: {\n        topic: inputData.search_parameters?.q || 'Unknown',\n        top_10_queries: top10Queries\n      }\n    }\n  ];\n  \n} catch (error) {\n  // Handle errors gracefully\n  return [\n    {\n      json: {\n        error: 'Failed to extract and structure related queries data',\n        error_message: error.message,\n        topic: inputData.search_parameters?.q || 'Unknown'\n      }\n    }\n  ];\n}"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "8b337af3-c190-4113-82aa-ce8fe9abbc12",
+        "name": "Sorting queries",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          912,
+          0
+        ],
+        "parameters": {
+          "text": "=Votre tâche est de sélectionner lister les requêtes qui correspond étroitement au créneau de \"{{ $('Loop Over Items').item.json.Query }}\" mais elle ne doit pas être géolocalisée, par exemple \"{{ $('Loop Over Items').item.json.Query }} Paris\" car nous ne voulons pas de sujets liés à la localisation.\n\nPour chaque requête indique son évolution en pourcentage (sans le +).\n\n{{ JSON.stringify($json.top_10_queries, null, 2) }}\n\n",
+          "batching": {},
+          "promptType": "define",
+          "hasOutputParser": true
+        },
+        "typeVersion": 1.7
+      },
+      {
+        "id": "28bf3218-140a-4eae-9758-5ac06574964a",
+        "name": "Sorting output > table",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1280,
+          0
+        ],
+        "parameters": {
+          "jsCode": "// Récupérer les données d'entrée\nconst inputData = $input.all()[0].json.output;\n\n// Initialiser le tableau de sortie\nlet restructuredData = [];\n\n// Parcourir chaque query dans l'objet\nObject.keys(inputData).forEach(key => {\n  const queryData = inputData[key];\n  \n  restructuredData.push({\n    Query: queryData[0],           // Le nom de la requête\n    Évolution: queryData[1],       // Le pourcentage d'évolution\n    News: \"\",                       // Colonne vide pour l'instant\n    Idée: \"\"                        // Colonne vide pour l'instant\n  }); \n});\n\n// Retourner le tableau restructuré\nreturn restructuredData.map(item => ({ json: item }));"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "a2002422-28b1-4c58-b3a0-850cd6a63591",
+        "name": "Add datas",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1584,
+          176
+        ],
+        "parameters": {
+          "columns": {
+            "value": {},
+            "schema": [],
+            "mappingMode": "autoMapInputData",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString('fr-FR', { month: 'long' }).charAt(0).toUpperCase() + new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString('fr-FR', { month: 'long' }).slice(1) }} {{ $('Loop Over Items').item.json.Query }}"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://docs.google.com/spreadsheets/d/1z7iP_i98PT9BQuUypAi0c3NHkdhREEPJWkDjyj8Snfw"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "wBRLUCktxqXE6DVJ",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "c1134ef9-865b-4cf4-aa96-a14121f10fe0",
+        "name": "Filter queries",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1824,
+          0
+        ],
+        "parameters": {
+          "include": "selected",
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "245bf100-21a3-4de2-9b92-74e09e3347a7",
+                "name": "Query",
+                "type": "string",
+                "value": "={{ $json.Query }}"
+              }
+            ]
+          },
+          "includeOtherFields": true
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "e7aa0bac-7576-4d55-b0be-411cb7c60b7f",
+        "name": "Article analysis",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          3536,
+          304
+        ],
+        "parameters": {
+          "text": "=Source 1\n\n{{ $('Scrape article 1').item.json.data.markdown }}\n\nSource 2 \n\n{{ $('Scrape article 2').item.json.data.markdown }}\n\nSource 3\n\n{{ $json.data.markdown }}\n",
+          "batching": {},
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=Voilà le contenu de 3 article sur le thème \"{{ $('Loop Over Items').item.json.Query }}\", peux tu les analyser en en déduire 3 idée d'article de blog SEO avec à chaque fois une proposition de mot clé associé.\n\nExemple : \nThème de l'article 1, proposition de mot clé 1\nThème de l'article 2, proposition de mot clé 2\nThème de l'article 3, proposition de mot clé 3\n\nNe fais pas d'introduction ou de conclusion à ta réponse répond simplement à la requête"
+              }
+            ]
+          },
+          "promptType": "define"
+        },
+        "typeVersion": 1.7
+      },
+      {
+        "id": "c3918ddb-f7e6-4021-8c0d-71f36e5ae5ff",
+        "name": "Add article datas",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          3904,
+          304
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "News": "={{ $('Search GNews').item.json.news_results[0].link }}\n{{ $('Search GNews').item.json.news_results[1].link }}\n{{ $('Search GNews').item.json.news_results[2].link }}",
+              "Idée": "={{ $json.text }}",
+              "Query": "={{ $('Loop Over Items1').item.json.Query }}"
+            },
+            "schema": [
+              {
+                "id": "Query",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Query",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Évolution",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Évolution",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "News",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "News",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Idée",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Idée",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "row_number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Query"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update",
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString('fr-FR', { month: 'long' }).charAt(0).toUpperCase() + new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString('fr-FR', { month: 'long' }).slice(1) }} {{ $('Loop Over Items').item.json.Query }}"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://docs.google.com/spreadsheets/d/1z7iP_i98PT9BQuUypAi0c3NHkdhREEPJWkDjyj8Snfw"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "wBRLUCktxqXE6DVJ",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "e8deaa80-c2e0-4d71-9c81-d47becaee6fd",
+        "name": "Scrape article 1",
+        "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+        "position": [
+          2752,
+          0
+        ],
+        "parameters": {
+          "url": "={{ $json.link1 }}",
+          "operation": "scrape",
+          "requestOptions": {}
+        },
+        "credentials": {
+          "firecrawlApi": {
+            "id": "E34WDB80ik5VHjiI",
+            "name": "Firecrawl account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b796eab7-42e5-4c68-9410-83567cea1580",
+        "name": "Scrape article 3",
+        "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+        "position": [
+          3264,
+          0
+        ],
+        "parameters": {
+          "url": "={{ $('Return URL only').item.json.link3 }}",
+          "operation": "scrape",
+          "requestOptions": {}
+        },
+        "credentials": {
+          "firecrawlApi": {
+            "id": "E34WDB80ik5VHjiI",
+            "name": "Firecrawl account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e8bea615-e367-493d-a6a1-03621e67763b",
+        "name": "Scrape article 2",
+        "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+        "position": [
+          2992,
+          0
+        ],
+        "parameters": {
+          "url": "={{ $('Return URL only').item.json.link2 }}",
+          "operation": "scrape",
+          "requestOptions": {}
+        },
+        "credentials": {
+          "firecrawlApi": {
+            "id": "E34WDB80ik5VHjiI",
+            "name": "Firecrawl account"
+          }
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {
+      "Schedule Trigger": [
+        {
+          "Hour": "11",
+          "Year": "2025",
+          "Month": "August",
+          "Minute": "33",
+          "Second": "12",
+          "Timezone": "Europe/Berlin (UTC+02:00)",
+          "timestamp": "2025-08-12T11:33:12.449+02:00",
+          "Day of week": "Tuesday",
+          "Day of month": "12",
+          "Readable date": "August 12th 2025, 11:33:12 am",
+          "Readable time": "11:33:12 am"
+        }
+      ]
+    },
+    "connections": {
+      "Add datas": {
+        "main": [
+          [
+            {
+              "node": "Filter queries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Query": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search GNews": {
+        "main": [
+          [
+            {
+              "node": "Return URL only",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search trend": {
+        "main": [
+          [
+            {
+              "node": "Classing query",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Classing query": {
+        "main": [
+          [
+            {
+              "node": "Sorting queries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter queries": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Search trend",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Return URL only": {
+        "main": [
+          [
+            {
+              "node": "Scrape article 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sorting queries": {
+        "main": [
+          [
+            {
+              "node": "Sorting output > table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Article analysis": {
+        "main": [
+          [
+            {
+              "node": "Add article datas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items1": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Search GNews",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Query",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scrape article 1": {
+        "main": [
+          [
+            {
+              "node": "Scrape article 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scrape article 2": {
+        "main": [
+          [
+            {
+              "node": "Scrape article 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scrape article 3": {
+        "main": [
+          [
+            {
+              "node": "Article analysis",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Add article datas": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Sorting queries",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Article analysis",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sorting output > table": {
+        "main": [
+          [
+            {
+              "node": "Création feuille sheets",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Add datas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Création feuille sheets": {
+        "main": [
+          []
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Sorting queries",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 22,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 3
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-serpapi.serpApi": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 4
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 2
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 2
+      },
+      "@mendable/n8n-nodes-firecrawl.firecrawl": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.lmChatAnthropic": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.outputParserStructured": {
+        "count": 1
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

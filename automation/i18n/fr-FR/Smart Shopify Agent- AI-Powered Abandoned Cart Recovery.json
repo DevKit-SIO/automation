@@ -1,0 +1,1449 @@
+{
+  "id": 4396,
+  "name": "Agent Shopify Intelligent : Récupération de Panier Abandonné Alimentée par IA",
+  "totalViews": 1652,
+  "price": 0,
+  "purchaseUrl": null,
+  "user": {
+    "name": "Yaron Been",
+    "username": "yaron-nofluff",
+    "bio": "Building AI Agents and Automations | Growth Marketer | Entrepreneur | Book Author & Podcast Host\n\nIf you need any help with Automations, feel free to reach out via linkedin:\nhttps://www.linkedin.com/in/yaronbeen/\n\nAnd check out my Youtube channel:\nhttps://www.youtube.com/@YaronBeen/videos",
+    "verified": true,
+    "links": [
+      "https://www.nofluff.online/automation-services/"
+    ],
+    "avatar": "https://gravatar.com/avatar/a4e4dcaa1f76ff5266bbf80e8df86d22efda890474c68f7796e72fd82e3f2375?r=pg&d=retro&size=200"
+  },
+  "description": "# 🤖 Agent de Récupération de Panier IA : Assistant Intelligent de Checkout Abandonné\n\nTransformez les paniers abandonnés en ventes récupérées grâce à l'automatisation intelligente. Ce flux de travail n8n sophistiqué surveille l'abandon de checkout, met en œuvre des périodes d'attente intelligentes et envoie des e-mails de récupération personnalisés générés par IA uniquement lorsque cela est nécessaire - maximisant les conversions tout en respectant l'expérience client.\n\n## 🔄 Comment ça fonctionne\n\nCe système de récupération intelligent en 7 étapes récupère automatiquement les ventes perdues :\n\n**Étape 1 : Détection Initiale de l'Abandon**\nLe flux de travail récupère les données actuelles d'abandon de checkout de votre plateforme e-commerce (Shopify, WooCommerce, etc.), identifiant les clients qui ont ajouté des articles mais n'ont pas finalisé leur achat.\n\n**Étape 2 : Période de Grâce Stratégique**\nAu lieu d'envoyer immédiatement des e-mails de récupération, le système attend 1 heure (personnalisable), donnant aux clients le temps naturel de finaliser leur achat sans pression ni interruption.\n\n**Étape 3 : Re-vérification Intelligente**\nAprès la période d'attente, le flux de travail vérifie à nouveau l'état d'abandon en récupérant les données de checkout mises à jour, garantissant l'exactitude avant de passer à l'action.\n\n**Étape 4 : Logique de Décision Intelligente**\nUne logique conditionnelle avancée compare les listes d'abandon initiales et mises à jour, déterminant si les clients sont toujours abandonnés ou ont finalisé leur achat pendant la période de grâce.\n\n**Étape 5 : Génération d'E-mails Alimentée par IA**\nPour les clients montrant toujours un abandon, GPT génère des e-mails de récupération personnalisés comprenant :\n- Le nom réel du client pour une connexion personnelle\n- Les produits spécifiques laissés dans leur panier\n- Un ton de message amical et non pressant\n- Des incitations de réduction optionnelles\n- Un appel à l'action convaincant pour finaliser l'achat\n\n**Étape 6 : Livraison Automatisée des E-mails**\nLes e-mails de récupération personnalisés sont envoyés directement aux clients abandonnés via Gmail ou votre service de messagerie préféré, maintenant une image de marque professionnelle et une bonne délivrabilité.\n\n**Étape 7 : Journalisation Complète des Activités**\nTous les tentatives de récupération sont enregistrées dans Google Sheets pour le suivi, y compris les détails des clients, le contenu des e-mails et les analyses de performance de la campagne.\n\n## ⚙️ Étapes de Configuration\n\n### Prérequis\n- Plateforme e-commerce avec accès API (Shopify, WooCommerce, BigCommerce)\n- Clé API OpenAI pour la génération d'e-mails personnalisés\n- Service de messagerie Gmail ou SMTP pour la livraison\n- Google Sheets pour le suivi des activités et les analyses\n- Instance n8n (cloud ou auto-hébergée)\n\n### Configuration de la Plateforme E-commerce\n\n**Configuration Shopify :**\n```\nPoint de terminaison API : https://your-store.myshopify.com/admin/api/2023-10/checkouts.json\nAuthentification : en-tête X-Shopify-Access-Token\nPermissions Requises : Lire les checkouts, Lire les clients\nParamètres : status=abandoned\n```\n\n**Configuration WooCommerce :**\n```\nPoint de terminaison API : https://your-site.com/wp-json/wc/v3/orders\nAuthentification : Clé/Secret du Consommateur ou JWT\nParamètres : status=pending, status=failed\nPlugins Requis : API REST WooCommerce\n```\n\n### Étapes de Configuration\n\n**1. Configuration des Identifiants**\n- **API E-commerce** : Stocker les jetons d'accès ou clés API administratives\n- **Clé API OpenAI** : Accès GPT-4 pour la génération d'e-mails intelligents\n- **Gmail OAuth2** : Service de livraison d'e-mails professionnel\n- **Google Sheets OAuth2** : Journalisation des activités et suivi des performances\n\n**2. Configuration de la Détection d'Abandon**\n- **Fréquence de Surveillance** : Définir le calendrier de déclenchement du flux de travail (horaire, quotidien)\n- **Durée de la Période de Grâce** : Personnaliser le temps d'attente (par défaut : 1 heure)\n- **Intégration de la Plateforme** : Configurer les points de terminaison API pour votre plateforme spécifique\n- **Filtrage des Données** : Définir les critères de ce qui constitue un abandon\n\n**3. Personnalisation des E-mails IA**\nLa génération d'e-mails par défaut comprend :\n- **Niveau de Personnalisation** : Nom du client, spécificités du produit, valeur du panier\n- **Personnalisation du Ton** : Amical, urgent, utile ou premium\n- **Intégration de Réduction** : Offres de pourcentage ou montants fixes optionnels\n- **Voix de Marque** : Maintenir un message et un style d'entreprise cohérents\n\n**4. Paramètres de Campagne de Récupération**\n- **Timing des E-mails** : Moments d'envoi optimaux en fonction des fuseaux horaires des clients\n- **Limites de Fréquence** : Éviter de trop envoyer d'e-mails avec des périodes de refroidissement\n- **Règles de Segmentation** : Différentes approches pour les paniers de grande valeur par rapport aux paniers standards\n- **Séquences de Suivi** : Campagnes de récupération multi-e-mails avec des incitations croissantes\n\n**5. Configuration du Suivi de Performance**\n- **Tableau de Bord d'Analytique** : Google Sheets avec des métriques de récupération et ROI\n- **Suivi du Succès** : Surveiller les taux de finalisation et les revenus récupérés\n- **Tests A/B** : Comparer différentes approches d'e-mails et de timing\n- **Parcours Client** : Suivre de l'abandon à la finalisation de la récupération\n\n## 🚀 Cas d'Utilisation\n\n### **Détaillants E-commerce**\n- **Mode & Vêtements** : Récupérer des achats de vêtements et d'accessoires de grande valeur\n- **Électronique** : Cibler les achats technologiques abandonnés avec des offres de support technique\n- **Maison & Jardin** : Rappeler aux clients les articles saisonniers ou d'amélioration de la maison\n- **Beauté & Cosmétiques** : Récupérer des achats de soins de la peau et de maquillage abandonnés\n\n### **Entreprises d'Abonnement & SaaS**\n- **Essais de Logiciels** : Convertir les inscriptions d'essai abandonnées en abonnements payants\n- **Sites d'Adhésion** : Récupérer des achats d'adhésion incomplets\n- **Cours en Ligne** : Réengager les apprenants qui ont abandonné des achats de cours\n- **Services Numériques** : Suivre les réservations ou consultations de services abandonnées\n\n### **E-commerce B2B**\n- **Fournitures de Bureau** : Récupérer les abandons de commandes en gros avec des remises sur volume\n- **Équipement Industriel** : Suivre les demandes de devis pour des équipements de grande valeur\n- **Services Professionnels** : Réengager les entreprises qui ont abandonné des réservations de services\n- **Licences de Logiciel** : Récupérer les abandons d'achats de logiciels d'entreprise\n\n### **Détaillants Spécialisés**\n- **Biens de Luxe** : Fournir un service haut de gamme pour les achats abandonnés de grande valeur\n- **Produits Personnalisés** : Suivre les abandons de commandes personnalisées ou sur mesure\n- **Articles Saisonniers** : Récupération sensible au temps pour des produits spécifiques aux vacances ou événements\n- **Édition Limitée** : Créer un sentiment d'urgence pour des articles exclusifs ou à disponibilité limitée\n\n### **Entreprises de Services**\n- **Voyage & Hôtellerie** : Récupérer les réservations d'hôtels, de vols ou de forfaits abandonnées\n- **Billets d'Événements** : Réengager les clients qui ont abandonné des achats de concerts ou d'événements\n- **Services Professionnels** : Suivre les réservations de consultations ou de services abandonnées\n- **Fitness & Bien-être** : Récupérer les achats d'adhésion ou de forfaits de cours abandonnés\n\n## 🔧 Options de Personnalisation Avancées\n\n### **Intégration Multi-Plateforme**\nÉtendre au-delà de la surveillance d'une seule plateforme :\n```\n- Shopify Plus : Analytique avancée de checkout et segmentation des clients\n- WooCommerce : Suivi personnalisé des achats et des abandons\n- Magento : Récupération de panier à l'échelle entreprise avec cartographie du parcours client\n- BigCommerce : Récupération pilotée par API avec personnalisation avancée\n- Plateformes Personnalisées : Détection et récupération d'abandon basée sur Webhook\n```\n\n### **Séquençage d'E-mails Intelligent**\nCréer des campagnes de récupération sophistiquées :\n- **Incitations Progressives** : Remises croissantes sur plusieurs points de contact\n- **Déclencheurs Comportementaux** : Différents e-mails en fonction de la valeur du panier, de l'historique client\n- **Campagnes Saisonnières** : Messages et offres de récupération spécifiques aux vacances\n- **Séquences de Récupération** : Réengagement à long terme des clients au-delà de la récupération immédiate\n\n### **Personnalisation Avancée**\nAméliorer le contenu généré par IA avec :\n- **Analyse de l'Historique d'Achat** : Référencer les achats et préférences précédents\n- **Comportement de Navigation** : Inclure les articles et catégories récemment consultés\n- **Personnalisation Géographique** : Offres locales, options d'expédition ou emplacements de magasins\n- **Ciblage Démographique** : Personnalisation des messages basée sur l'âge, le sexe ou les centres d'intérêt\n\n### **Optimisation de la Performance**\nMettre en œuvre un suivi et une optimisation avancés :\n- **Attribution des Revenus** : Suivre les montants de récupération exacts et les calculs de ROI\n- **Valeur Vie Client** : Prioriser les efforts de récupération des clients de grande valeur\n- **Analyse de l'Entonnoir de Conversion** : Identifier le timing et les stratégies de message optimaux\n- **Analytique Prédictive** : Utiliser l'apprentissage automatique pour prédire la probabilité de récupération et optimiser les approches\n\n## 📊 Exemples d'E-mails de Récupération\n\n### **Exemple de Détaillant de Mode :**\n```\nObjet : Vous avez laissé quelque chose de stylé derrière, Sarah !\n\nSalut Sarah,\n\nJ'ai remarqué que vous consultiez ces magnifiques articles dans votre panier plus tôt - la Robe d'Été Bohémienne et le Sac en Cuir Classique vous attendent !\n\nJe comprends tout à fait si vous avez été occupée ou si vous avez eu besoin de temps pour réfléchir. Ces pièces sont toujours disponibles et prêtes à être expédiées aujourd'hui.\n\nPuisque vous avez montré un si bon goût en sélectionnant ces articles, j'aimerais vous offrir 10 % de réduction sur votre commande pour faciliter la décision. Utilisez simplement le code WELCOME10 lors du checkout.\n\nVotre panier comprend :\n• Robe d'Été Bohémienne (Taille M) - 89,99 €\n• Sac en Cuir Classique (Marron) - 156,99 €\n\nFinalisez votre achat maintenant et bénéficiez de la livraison gratuite chez vous !\n\n[Finaliser Mon Achat] \n\nCordialement,\nL'équipe de StyleHub\n\nP.S. Ces articles sont populaires et les stocks sont limités - ne tardez pas trop !\n```\n\n### **Exemple de Logiciel/SaaS :**\n```\nObjet : Votre essai de ProductivityPro vous attend, Mike\n\nSalut Mike,\n\nVous étiez à un pas de débloquer toute la puissance de ProductivityPro pour votre équipe chez TechStartup Inc.\n\nJ'ai remarqué que vous avez exploré les fonctionnalités de notre Plan Premium - les rapports avancés et les outils de collaboration d'équipe qui pourraient rationaliser votre flux de travail et augmenter la productivité jusqu'à 40 %.\n\nPuisque vous avez investi du temps à explorer notre plateforme, j'aimerais vous offrir une réduction exclusive de 25 % sur votre première année. Cette offre est valable pour les 48 prochaines heures.\n\nVotre plan sélectionné :\n• ProductivityPro Premium (5 utilisateurs) - 99 €/mois\n• Avec 25 % de réduction : 74 €/mois (Économisez 300 €/an !)\n\nPrêt à transformer la productivité de votre équipe ?\n\n[Activer Mon Compte]\n\nDes questions ? Répondez à cet e-mail ou planifiez un rapide appel de démonstration de 15 minutes.\n\nCordialement,\nDavid Chen\nResponsable du Succès Client, ProductivityPro\n```\n\n### **Exemple B2B de Grande Valeur :**\n```\nObjet : Votre devis d'équipement est prêt pour approbation, Jennifer\n\nSalut Jennifer,\n\nMerci de votre intérêt pour notre Système d'Emballage Industriel pour l'expansion de la nouvelle installation de ManuCorp.\n\nJe comprends que les investissements en équipement de cette ampleur nécessitent une réflexion approfondie et un alignement des parties prenantes. Votre système configuré comprend :\n\n• Ligne d'Emballage Modèle X5000 - 45 000 €\n• Forfait d'Installation & de Formation - 8 000 €  \n• Garantie Étendue de 3 Ans - 3 500 €\nInvestissement Total : 56 500 €\n\nÉtant donné l'ampleur de votre projet, j'aimerais vous proposer notre prix promotionnel du T1, qui offre :\n- 15 % de réduction sur l'équipement (économie de 6 750 €)\n- Supervision d'installation gratuite (valeur de 2 000 €)\n- Livraison accélérée en 6 semaines\n\nCela ramène votre total à 48 750 € - une économie de 7 750 €.\n\nJe suis disponible pour un bref appel afin de répondre à toutes vos questions techniques ou d'aider à faciliter les approbations internes. \n\n[Accepter le Devis & Procéder]\n\nCordialement,\nRobert Martinez\nIngénieur Commercial Senior\nSolutions Industrielles Inc.\nDirect : (555) 123-4567\n```\n\n## 🛠️ Dépannage & Meilleures Pratiques\n\n### **Problèmes Courants & Solutions**\n\n**Limitation de Taux API**\n- Mettre en œuvre un retour exponentiel pour les requêtes API\n- Échelonner les temps d'exécution des flux de travail entre différents magasins\n- Surveiller l'utilisation de l'API et mettre à niveau les plans si nécessaire\n- Mettre en cache les données fréquemment accessibles pour réduire les appels API\n\n**Défis de Délivrabilité des E-mails**\n- Utiliser des services SMTP authentifiés avec une configuration SPF/DKIM appropriée\n- Surveiller la réputation de l'expéditeur et les métriques d'engagement des e-mails\n- Mettre en œuvre des mécanismes de désinscription et respecter les demandes de désinscription\n- Segmenter les listes d'e-mails et éviter de trop envoyer d'e-mails aux clients\n\n**Récupérations de Faux Positifs**\n- Étendre les périodes de grâce pour les processus de checkout complexes\n- Mettre en œuvre une logique de détection d'abandon plus sophistiquée\n- Ajouter une analyse du comportement client avant de déclencher la récupération\n- Créer des règles d'exception pour les échecs techniques de checkout\n\n### **Stratégies d'Optimisation**\n\n**Optimisation du Timing de Récupération**\n- Tester A/B différentes durées de période de grâce (30 min, 1 heure, 3 heures)\n- Analyser les modèles de comportement des clients pour optimiser les temps d'envoi\n- Tenir compte des différences de fuseaux horaires pour les bases de clients mondiales\n- Mettre en œuvre des ajustements de timing saisonniers pour les vacances et les événements\n\n**Amélioration de la Personnalisation du Contenu**\n- Affiner continuellement les invites IA en fonction des récupérations réussies\n- Mettre en œuvre des stratégies de remise dynamiques basées sur la valeur du panier\n- Créer des approches de message spécifiques aux segments de clients\n- Ajouter des éléments d'urgence pour des articles sensibles au temps ou à l'inventaire limité\n\n**Mesure de la Performance**\n- Suivre les taux de récupération, l'impact sur les revenus et la satisfaction client\n- Mettre en œuvre une analyse de cohorte pour l'impact à long terme sur la valeur client\n- Surveiller les métriques d'engagement des e-mails et optimiser en conséquence\n- Calculer le véritable ROI incluant les coûts d'acquisition client et la valeur à vie\n\n## 📈 Indicateurs de Succès\n\n### **Indicateurs de Performance de Récupération**\n- **Taux de Récupération** : Pourcentage de paniers abandonnés récupérés avec succès\n- **Récupération de Revenus** : Montant total récupéré des achats abandonnés\n- **Engagement des E-mails** : Taux d'ouverture, taux de clics et taux de conversion\n- **Temps de Récupération** : Temps moyen de l'abandon à l'achat finalisé\n\n### **Mesures d'Impact Commercial**\n- **Calcul du ROI** : Revenus récupérés par rapport aux coûts opérationnels du flux de travail\n- **Rétention Client** : Impact sur les relations clients à long terme\n- **Valeur Moyenne de Commande** : Effet sur les valeurs d'achat globales après récupération\n- **Efficacité Opérationnelle** : Économies d'automatisation par rapport aux efforts de récupération manuels\n\n## 📞 Questions & Support\n\nBesoin d'aide pour mettre en œuvre votre Agent de Récupération de Panier IA ?\n\n**📧 Support Expert en Automatisation E-commerce**\n- **E-mail** : Yaron@nofluff.online\n- **Délai de Réponse** : Dans les 24 heures les jours ouvrables\n- **Spécialisation** : Automatisation e-commerce, optimisation de la récupération de panier, personnalisation d'e-mails IA\n\n**🎥 Ressources Complètes de Mise en Œuvre**\n- **Chaîne YouTube** : [https://www.youtube.com/@YaronBeen/videos](https://www.youtube.com/@YaronBeen/videos)\n  - Guides de configuration complets pour les principales plateformes e-commerce\n  - Techniques avancées de personnalisation d'e-mails IA\n  - Stratégies d'optimisation des campagnes de récupération\n  - Tutoriels d'intégration pour Shopify, WooCommerce et plateformes personnalisées\n  - Suivi de performance et mise en œuvre d'analytique\n\n**🤝 Communauté d'Automatisation E-commerce**\n- **LinkedIn** : [https://www.linkedin.com/in/yaronbeen/](https://www.linkedin.com/in/yaronbeen/)\n  - Connectez-vous pour un soutien continu en automatisation e-commerce et en consulting\n  - Partagez vos histoires de succès en récupération de panier et réalisations de ROI\n  - Accédez à des modèles exclusifs pour différents secteurs d'activité\n  - Rejoignez des discussions sur les tendances et innovations en automatisation e-commerce\n\n**💬 Directives de Demande de Support**\nIncluez dans votre message de support :\n- Votre plateforme e-commerce et vos taux d'abandon de panier actuels\n- Valeurs moyennes des commandes et segments de clients que vous servez\n- Processus de récupération actuels et défis de conversion\n- Exigences d'intégration avec les outils marketing existants\n- Erreurs techniques spécifiques ou problèmes d'exécution de flux de travail\n",
+  "createdAt": "2025-05-26T11:59:22.062Z",
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "icon": "fa:arrow-right",
+      "name": "n8n-nodes-base.noOp",
+      "codex": {
+        "data": {
+          "alias": [
+            "nothing"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.noop/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Aucune opération, ne rien faire",
+        "color": "#b0b0b0"
+      },
+      "iconData": {
+        "icon": "arrow-right",
+        "type": "icon"
+      },
+      "displayName": "No Operation, do nothing",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "views": 1652,
+  "recentViews": 2,
+  "workflow": {
+    "meta": {
+      "instanceId": "5aaf4236c70e34e423fbdb2c7b754d19253a933bb1476d548f75848a01e473cf"
+    },
+    "nodes": [
+      {
+        "id": "ecbb99d3-d896-48cc-b6b1-72e178329a3c",
+        "name": "Generate Recovery Email",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          100,
+          500
+        ],
+        "parameters": {
+          "text": "=Write a friendly and persuasive abandoned cart recovery email for a customer named {{ $json.checkouts[0].customer.first_name }} {{ $json.checkouts[0].customer.last_name }}. The cart contains: {{ $json.checkouts }}. Encourage them to complete their purchase with a subtle reminder and optionally a discount. do not include subject and don't add extra stuff\n",
+          "options": {},
+          "promptType": "define"
+        },
+        "typeVersion": 1.9
+      },
+      {
+        "id": "0b156bce-50ec-4e56-9c67-be4b34791b3e",
+        "name": "Email Writer",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          40,
+          700
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "49b21bce-bece-40a3-b9c0-86e4adc3e167",
+        "name": "Log Email Activity",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          740,
+          500
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "email": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].email }}",
+              "customer": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].customer.first_name }} {{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].customer.last_name }}",
+              "GPT response": "={{ $('Generate Recovery Email').item.json.output }}"
+            },
+            "schema": [
+              {
+                "id": "customer",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "customer",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "email",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "email",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "GPT response",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "GPT response",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H83mXsl_gjgwOWrwNYak6ISihoWsgx-EFxSbPlvQx7M/edit#gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1H83mXsl_gjgwOWrwNYak6ISihoWsgx-EFxSbPlvQx7M",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H83mXsl_gjgwOWrwNYak6ISihoWsgx-EFxSbPlvQx7M/edit?usp=drivesdk",
+            "cachedResultName": "Shopify abandoned checkout"
+          }
+        },
+        "typeVersion": 4.5
+      },
+      {
+        "id": "e55ea939-10fd-423b-99ef-90a89b0effc8",
+        "name": "Send Email to Customer",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          520,
+          500
+        ],
+        "webhookId": "fb71183d-2a4d-4eca-a73b-225d4cfa4d2d",
+        "parameters": {
+          "sendTo": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].email }}",
+          "message": "={{ $json.output }}",
+          "options": {},
+          "subject": "=You left something behind, {{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].customer.first_name }}"
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "b5a6e9ac-6d54-4d6f-bf4d-ced260eecd00",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -680,
+          400
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 420,
+          "height": 520,
+          "content": "🔍 Section 3: Conditional Decision\n5. Is Customer Still Abandoned?\nNode Type: Conditional (If Statement).\n\nLogic: Compares the initial abandoned list with the new one using Customer ID.\n\nOutcome:\n\n✅ Yes – customer is still in the abandoned list → proceed to email.\n\n❌ No – customer has completed checkout → do nothing."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5462049f-2c8d-4f94-9475-33b16cbf4074",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 920,
+          "height": 840,
+          "content": "📧 Section 4: Recovery Email Flow\n6. Create Personalized Recovery Email\nNode Type: AI Content Generation (GPT-based).\n\nInput: Customer name, product(s) left in cart, etc.\n\nOutput: A personalized recovery email message.\n\nPurpose: Increases the chances of recovery through customized messaging.\n\n7. Send Recovery Email\nNode Type: Email Action (e.g., Gmail, SMTP).\n\nPurpose: Sends the generated email to the customer.\n\n8. Log Email Sent\nNode Type: Spreadsheet Append (Google Sheets, etc.).\n\nPurpose: Logs customer email, customer name and Response.\n\nHelps With: Tracking open rates, click-throughs, and future optimizations."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ef86a495-60f4-49c0-a5ca-bbc4b36724b8",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -3520,
+          300
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 1300,
+          "height": 320,
+          "content": "=======================================\n            WORKFLOW ASSISTANCE\n=======================================\nFor any questions or support, please contact:\n    Yaron@nofluff.online\n\nExplore more tips and tutorials here:\n   - YouTube: https://www.youtube.com/@YaronBeen/videos\n   - LinkedIn: https://www.linkedin.com/in/yaronbeen/\n=======================================\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0f722fcc-e05a-4b9d-9250-487a049779eb",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -3520,
+          640
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 1289,
+          "height": 2238,
+          "content": "Here's a full, polished write-up of your **Abandoned Checkout Recovery Workflow** following the format of your **High-Value Order Alert Workflow** example:\n\n---\n\n# 🛒 Abandoned Checkout Recovery Workflow\n\n**Description:**\nThis workflow helps recover lost sales by identifying customers who abandon their checkout process. It begins by fetching abandoned cart data from a store, waits for a specific duration (1 hour), and rechecks to see if the customer has still not completed the purchase. If abandonment persists, the workflow generates a personalized recovery email using AI and sends it to the customer. This increases the chance of conversion and improves overall sales recovery rates.\n\n---\n\n## 🟢 Section 1: Checkout Monitoring & Initial Data Fetch\n\nThe workflow is initiated manually or on a scheduled basis to scan for abandoned checkouts via an API call to the store. This request returns a list of customers who added products to their cart but did not complete the purchase.\n\nThis initial fetch sets the baseline for comparison. The data includes essential customer identifiers and cart details, which will be used later to determine if the customer has recovered on their own.\n\nThis step ensures that the workflow only targets genuine abandonment scenarios and avoids acting on transient or temporary cases.\n\n---\n\n## ⏱️ Section 2: Grace Period Wait\n\nAfter the initial abandoned checkout list is retrieved, the workflow pauses for **1 hour**. This buffer period gives customers time to complete their checkout naturally, without being nudged prematurely.\n\nThis approach respects customer autonomy and avoids sending unnecessary reminders, thereby reducing the risk of annoying users or cluttering inboxes.\n\n---\n\n## 🔄 Section 3: Rechecking Abandonment Status\n\nOnce the wait time has elapsed, the workflow makes a second HTTP request to fetch the latest list of abandoned checkouts. It then uses a conditional check to determine if a particular customer from the initial list still appears in the updated data.\n\n* **If the customer is still present** in the new list, they are considered to still be in an abandoned state.\n* **If the customer is not present**, it is assumed that they completed their purchase and no further action is taken.\n\nThis section acts as a smart filter to prevent sending recovery emails unnecessarily.\n\n---\n\n## ✉️ Section 4: Personalized Recovery Email Flow\n\nIf the customer is confirmed to still have an abandoned cart, the workflow proceeds to engage them with a recovery email.\n\nAn AI email writer generates a **personalized email** based on the abandoned cart data. The message can include specific products, a friendly reminder, and optional incentives such as discounts.\n\nThe email is then sent to the customer via an integrated email service provider. Immediately after, the workflow logs the email activity to a spreadsheet or database for tracking purposes. This helps monitor campaign effectiveness and customer engagement over time.\n\n---\n\n## 🛑 Fallback: Customer Completed Purchase\n\nIf the customer is **not found** in the second check, it means they successfully completed the checkout during the wait period. In this case, the workflow follows a \"do nothing\" path — no email is sent, and the process ends gracefully.\n\nThis fallback mechanism ensures customers aren't contacted unnecessarily, maintaining a respectful user experience.\n\n---\n\n## 🔁 Full Workflow Logic Overview\n\n1. Start the workflow manually or on a schedule.\n2. Fetch a list of current abandoned checkouts.\n3. Wait for 1 hour.\n4. Fetch updated abandoned checkout data.\n5. Compare both datasets:\n\n   * If customer still appears:\n\n     * Use AI to generate a personalized recovery email.\n     * Send the email to the customer.\n     * Log the activity.\n   * If customer no longer appears:\n\n     * End the workflow without taking action.\n\n---\n\nLet me know if you’d like this converted into a PDF or added to a documentation system!\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7a5fce94-6ae8-43a3-9e45-b15e1d6ecf61",
+        "name": "No Operation, do nothing",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          100,
+          1060
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "e8966160-eb7b-470c-9754-52048cb01551",
+        "name": "Start Workflow",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -1720,
+          720
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "7ac542e0-5379-4416-a33e-c2ba13947a30",
+        "name": "Get Initial Abandoned Checkout",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -1420,
+          720
+        ],
+        "parameters": {
+          "url": "https://your-store.myshopify.com/admin/api/2023-10/checkouts.json",
+          "options": {},
+          "sendQuery": true,
+          "sendHeaders": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "status",
+                "value": "abandoned"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Shopify-Access-Token",
+                "value": "your-access-token"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "2409af7c-7df8-4825-b31a-7d2f4bb84a59",
+        "name": "Wait 1 Hour",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          -1120,
+          720
+        ],
+        "webhookId": "12d15136-8aa1-4177-a572-04da4b88b28c",
+        "parameters": {
+          "unit": "hours",
+          "amount": 1
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "449c40d4-e1fa-4984-9b3b-c9dd6863e71a",
+        "name": "Recheck Abandoned Checkouts",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -900,
+          720
+        ],
+        "parameters": {
+          "url": "https://your-store.myshopify.com/admin/api/2023-10/checkouts.json",
+          "options": {},
+          "sendQuery": true,
+          "sendHeaders": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "status",
+                "value": "abandoned"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Shopify-Access-Token",
+                "value": "your-access-token"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "023ea763-155f-4c3c-8c3b-d7de0ef1687a",
+        "name": "Is Customer Still Abandoned?",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -620,
+          720
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "or",
+            "conditions": [
+              {
+                "id": "8119001f-78d5-40b4-bcd7-8f13495b6d51",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+                "rightValue": "={{ $json.checkouts[0].id }}"
+              },
+              {
+                "id": "229cf7e1-5490-4bd0-9004-2baadbe15b4f",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+                "rightValue": "={{ $json.checkouts[1].id }}"
+              },
+              {
+                "id": "163c04b1-6e4b-42da-9a5f-2168c4148023",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+                "rightValue": "={{ $json.checkouts[2].id }}"
+              },
+              {
+                "id": "42461258-29f4-4dc2-9c34-598654debaa6",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+                "rightValue": "={{ $json.checkouts[3].id }}"
+              },
+              {
+                "id": "a0c9d76f-66fc-454b-b59c-990291c85ebf",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+                "rightValue": "={{ $json.checkouts[4].id }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "c0a92444-8d4d-4eeb-8c8f-7757d90dff2c",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1760,
+          320
+        ],
+        "parameters": {
+          "width": 520,
+          "height": 600,
+          "content": "🔁 Section 1: Initialization & First Abandoned Checkout Fetch\n1. Start Abandoned Checkout Recovery\nPurpose: Triggers the workflow.\n\nTrigger Type: Manual or Scheduled.\n\nWhen: Could be set to run periodically (e.g., every hour).\n\n2. Get Initial Abandoned Checkouts\nNode Type: HTTP Request (GET).\n\nURL: https://your_store.myshopify.com/admin/api/...\n\nPurpose: Fetches the list of all abandoned checkouts at the start of the workflow.\n\nOutput: A list of abandoned carts with customer ID."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4748bf2d-732b-48f5-a506-01ab5f5ebbe8",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1180,
+          320
+        ],
+        "parameters": {
+          "width": 460,
+          "height": 600,
+          "content": "⏳ Section 2: Wait and Re-evaluation\n3. Wait 1 Hour\nNode Type: Wait.\n\nDuration: 1 hour.\n\nPurpose: Gives the customer a grace period to complete the checkout naturally before initiating any recovery steps.\n\n4. Recheck Abandoned Checkouts\nNode Type: HTTP Request (GET).\n\nURL: Same as the initial fetch.\n\nPurpose: Fetches the updated list of abandoned checkouts.\n\nOutput: A new list of customer IDs who still haven’t completed their checkout."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Wait 1 Hour": {
+        "main": [
+          [
+            {
+              "node": "Recheck Abandoned Checkouts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email Writer": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Generate Recovery Email",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get Initial Abandoned Checkout",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Email to Customer": {
+        "main": [
+          [
+            {
+              "node": "Log Email Activity",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Recovery Email": {
+        "main": [
+          [
+            {
+              "node": "Send Email to Customer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recheck Abandoned Checkouts": {
+        "main": [
+          [
+            {
+              "node": "Is Customer Still Abandoned?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Customer Still Abandoned?": {
+        "main": [
+          [
+            {
+              "node": "Generate Recovery Email",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Initial Abandoned Checkout": {
+        "main": [
+          [
+            {
+              "node": "Wait 1 Hour",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 16,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.noOp": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 6
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 38,
+      "name": "Nurturing des Leads"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": []
+}

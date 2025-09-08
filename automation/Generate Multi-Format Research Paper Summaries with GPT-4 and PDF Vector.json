@@ -1,0 +1,624 @@
+{
+  "id": 7359,
+  "name": "Generate Multi-Format Research Paper Summaries with GPT-4 and PDF Vector",
+  "totalViews": 83,
+  "purchaseUrl": null,
+  "user": {
+    "name": "PDF Vector",
+    "username": "pdfvector",
+    "bio": "A fully featured PDF APIs for developers - Parse any PDF or Word document, extract structured data, and access millions of academic papers - all through simple APIs.",
+    "verified": true,
+    "links": [
+      "https://www.pdfvector.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/c3284f6b75ccb280de2edf5a173c7f761f64ea1b1f9114ff2ef4c4b72f980675?r=pg&d=retro&size=200"
+  },
+  "description": "*This workflow contains community nodes that are only compatible with the self-hosted version of n8n.*\n\n## Transform Complex Research Papers into Accessible Summaries\n\nThis workflow automatically generates multiple types of summaries from research papers, making complex academic content accessible to different audiences. By combining PDF Vector's advanced parsing capabilities with GPT-4's language understanding, researchers can quickly digest papers outside their expertise, communicate findings to diverse stakeholders, and create social media-friendly research highlights.\n\n### Target Audience & Problem Solved\nThis template is designed for:\n- **Research communicators** translating complex findings for public audiences\n- **Journal editors** creating accessible abstracts and highlights\n- **Science journalists** quickly understanding technical papers\n- **Academic institutions** improving research visibility and impact\n- **Funding agencies** reviewing large volumes of research outputs\n\nIt solves the critical challenge of research accessibility by automatically generating summaries tailored to different audience needs - from technical experts to the general public.\n\n### Prerequisites\n- n8n instance with PDF Vector node installed\n- OpenAI API key with GPT-4 or GPT-3.5 access\n- PDF Vector API credentials\n- Basic understanding of webhook setup\n- Optional: Slack/Email integration for notifications\n- Minimum 20 API credits per paper summarized\n\n### Step-by-Step Setup Instructions\n\n1. **Configure API Credentials**\n   - Navigate to n8n Credentials section\n   - Add PDF Vector credentials with your API key\n   - Add OpenAI credentials with your API key\n   - Test both connections to ensure they work\n\n2. **Set Up the Webhook Endpoint**\n   - Import the workflow template into n8n\n   - Note the webhook URL from the \"Webhook - Paper URL\" node\n   - This URL will receive POST requests with paper URLs\n   - Example request format:\n     ```json\n     {\n       \"paperUrl\": \"https://example.com/paper.pdf\"\n     }\n     ```\n\n3. **Configure Summary Models**\n   - Review the OpenAI model settings in each summary node\n   - GPT-4 recommended for executive and technical summaries\n   - GPT-3.5-turbo suitable for lay and social media summaries\n   - Adjust temperature settings for creativity vs accuracy\n\n4. **Customize Output Formats**\n   - Modify the \"Combine All Summaries\" node for your needs\n   - Add additional fields or metadata as required\n   - Configure response format (JSON, HTML, plain text)\n\n5. **Test the Workflow**\n   - Use a tool like Postman or curl to send a test request\n   - Monitor the execution for any errors\n   - Verify all four summary types are generated\n   - Check response time and adjust timeout if needed\n\n### Implementation Details\n\nThe workflow implements a sophisticated summarization pipeline:\n\n1. **PDF Parsing**: Uses LLM-enhanced parsing for accurate extraction from complex layouts\n2. **Parallel Processing**: Generates all summary types simultaneously for efficiency\n3. **Audience Targeting**: Each summary type uses specific prompts and constraints\n4. **Quality Control**: Structured prompts ensure consistent, high-quality outputs\n5. **Flexible Output**: Returns all summaries in a single API response\n\n### Customization Guide\n\n**Adding Custom Summary Types:**\nCreate new summary nodes with specialized prompts:\n```javascript\n// Example: Policy Brief Summary\n{\n  \"content\": \"Create a policy brief (max 300 words) highlighting:\n  1. Policy-relevant findings\n  2. Recommendations for policymakers\n  3. Societal implications\n  4. Implementation considerations\n  \n  Paper content: {{ $json.content }}\"\n}\n```\n\n**Modifying Summary Lengths:**\nAdjust word limits in each summary prompt:\n```javascript\n// In Executive Summary node:\n\"max 500 words\" // Change to your desired length\n// In Tweet Summary node:\n\"max 280 characters\" // Twitter limit\n```\n\n**Adding Language Translation:**\nExtend the workflow with translation nodes:\n```javascript\n// After summary generation, add:\n\"Translate this summary to Spanish:\n{{ $json.executiveSummary }}\"\n```\n\n**Implementing Caching:**\nAdd a caching layer to avoid reprocessing:\n- Use Redis or n8n's static data\n- Cache based on paper DOI or URL hash\n- Set appropriate TTL for cache entries\n\n**Batch Processing Enhancement:**\nFor multiple papers, modify the workflow:\n- Accept array of paper URLs\n- Use SplitInBatches node for processing\n- Aggregate results before responding\n\n### Summary Types:\n1. **Executive Summary**: 1-page overview for decision makers\n2. **Technical Summary**: Detailed summary for researchers\n3. **Lay Summary**: Plain language for general audience\n4. **Social Media**: Tweet-sized key findings\n\n### Key Features:\n- Parse complex academic PDFs with LLM enhancement\n- Generate multiple summary types simultaneously\n- Extract and highlight key methodology and findings\n- Create audience-appropriate language and depth\n- API-driven for easy integration\n\n### Advanced Features\n\n**Quality Metrics:**\nAdd a quality assessment node:\n```javascript\n// Evaluate summary quality\nconst qualityChecks = {\n  hasKeyFindings: summary.includes('findings'),\n  appropriateLength: summary.length &lt;= maxLength,\n  noJargon: !technicalTerms.some(term =&gt; summary.includes(term))\n};\n```\n\n**Template Variations:**\nCreate field-specific templates:\n- Medical research: Include clinical implications\n- Engineering papers: Focus on technical specifications\n- Social sciences: Emphasize methodology and limitations",
+  "createdAt": "2025-08-14T03:55:51.033Z",
+  "nodes": [
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 535,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.respondToWebhook",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Respond to Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Respond to Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Sticky Note",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 840,
+      "icon": "file:openAi.svg",
+      "name": "n8n-nodes-base.openAi",
+      "codex": {
+        "data": {
+          "alias": [
+            "ChatGPT",
+            "DallE"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/openai/"
+              }
+            ]
+          },
+          "categories": [
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjYwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZD0iTTIzOS4xODQgMTA2LjIwM2E2NC43MiA2NC43MiAwIDAgMC01LjU3Ni01My4xMDNDMjE5LjQ1MiAyOC40NTkgMTkxIDE1Ljc4NCAxNjMuMjEzIDIxLjc0QTY1LjU4NiA2NS41ODYgMCAwIDAgNTIuMDk2IDQ1LjIyYTY0LjcyIDY0LjcyIDAgMCAwLTQzLjIzIDMxLjM2Yy0xNC4zMSAyNC42MDItMTEuMDYxIDU1LjYzNCA4LjAzMyA3Ni43NGE2NC42NyA2NC42NyAwIDAgMCA1LjUyNSA1My4xMDJjMTQuMTc0IDI0LjY1IDQyLjY0NCAzNy4zMjQgNzAuNDQ2IDMxLjM2YTY0LjcyIDY0LjcyIDAgMCAwIDQ4Ljc1NCAyMS43NDRjMjguNDgxLjAyNSA1My43MTQtMTguMzYxIDYyLjQxNC00NS40ODFhNjQuNzcgNjQuNzcgMCAwIDAgNDMuMjI5LTMxLjM2YzE0LjEzNy0yNC41NTggMTAuODc1LTU1LjQyMy04LjA4My03Ni40ODNtLTk3LjU2IDEzNi4zMzhhNDguNCA0OC40IDAgMCAxLTMxLjEwNS0xMS4yNTVsMS41MzUtLjg3IDUxLjY3LTI5LjgyNWE4LjYgOC42IDAgMCAwIDQuMjQ3LTcuMzY3di03Mi44NWwyMS44NDUgMTIuNjM2Yy4yMTguMTExLjM3LjMyLjQwOS41NjN2NjAuMzY3Yy0uMDU2IDI2LjgxOC0yMS43ODMgNDguNTQ1LTQ4LjYwMSA0OC42MDFNMzcuMTU4IDE5Ny45M2E0OC4zNSA0OC4zNSAwIDAgMS01Ljc4MS0zMi41ODlsMS41MzQuOTIxIDUxLjcyMiAyOS44MjZhOC4zNCA4LjM0IDAgMCAwIDguNDQxIDBsNjMuMTgxLTM2LjQyNXYyNS4yMjFhLjg3Ljg3IDAgMCAxLS4zNTguNjY1bC01Mi4zMzUgMzAuMTg0Yy0yMy4yNTcgMTMuMzk4LTUyLjk3IDUuNDMxLTY2LjQwNC0xNy44MDNNMjMuNTQ5IDg1LjM4YTQ4LjUgNDguNSAwIDAgMSAyNS41OC0yMS4zMzN2NjEuMzlhOC4yOSA4LjI5IDAgMCAwIDQuMTk1IDcuMzE2bDYyLjg3NCAzNi4yNzItMjEuODQ1IDEyLjYzNmEuODIuODIgMCAwIDEtLjc2NyAwTDQxLjM1MyAxNTEuNTNjLTIzLjIxMS0xMy40NTQtMzEuMTcxLTQzLjE0NC0xNy44MDQtNjYuNDA1em0xNzkuNDY2IDQxLjY5NS02My4wOC0zNi42M0wxNjEuNzMgNzcuODZhLjgyLjgyIDAgMCAxIC43NjggMGw1Mi4yMzMgMzAuMTg0YTQ4LjYgNDguNiAwIDAgMS03LjMxNiA4Ny42MzV2LTYxLjM5MWE4LjU0IDguNTQgMCAwIDAtNC40LTcuMjEzbTIxLjc0Mi0zMi42OS0xLjUzNS0uOTIyLTUxLjYxOS0zMC4wODFhOC4zOSA4LjM5IDAgMCAwLTguNDkyIDBMOTkuOTggOTkuODA4Vjc0LjU4N2EuNzIuNzIgMCAwIDEgLjMwNy0uNjY1bDUyLjIzMy0zMC4xMzNhNDguNjUyIDQ4LjY1MiAwIDAgMSA3Mi4yMzYgNTAuMzkxek04OC4wNjEgMTM5LjA5N2wtMjEuODQ1LTEyLjU4NWEuODcuODcgMCAwIDEtLjQxLS42MTRWNjUuNjg1YTQ4LjY1MiA0OC42NTIgMCAwIDEgNzkuNzU3LTM3LjM0NmwtMS41MzUuODctNTEuNjcgMjkuODI1YTguNiA4LjYgMCAwIDAtNC4yNDYgNy4zNjd6bTExLjg2OC0yNS41OEwxMjguMDY3IDk3LjNsMjguMTg4IDE2LjIxOHYzMi40MzRsLTI4LjA4NiAxNi4yMTgtMjguMTg4LTE2LjIxOHoiLz48L3N2Zz4="
+      },
+      "displayName": "OpenAI",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        }
+      ]
+    }
+  ],
+  "views": 83,
+  "recentViews": 4,
+  "workflow": {
+    "meta": {
+      "instanceId": "placeholder"
+    },
+    "nodes": [
+      {
+        "id": "info-note",
+        "name": "Summary Types",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          250,
+          150
+        ],
+        "parameters": {
+          "content": "## Paper Summarizer\n\nGenerates multiple summary types:\n- Executive (1 page)\n- Technical (detailed)\n- Lay (plain language)\n- Social (tweet-sized)"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "webhook-trigger",
+        "name": "Webhook - Paper URL",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          450,
+          300
+        ],
+        "parameters": {
+          "path": "summarize",
+          "options": {},
+          "responseMode": "onReceived"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "pdfvector-parse",
+        "name": "PDF Vector - Parse Paper",
+        "type": "n8n-nodes-pdfvector.pdfVector",
+        "position": [
+          650,
+          300
+        ],
+        "parameters": {
+          "useLlm": "always",
+          "resource": "document",
+          "operation": "parse",
+          "documentUrl": "={{ $json.paperUrl }}"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "exec-summary",
+        "name": "Executive Summary",
+        "type": "n8n-nodes-base.openAi",
+        "position": [
+          850,
+          250
+        ],
+        "parameters": {
+          "model": "gpt-4",
+          "messages": {
+            "values": [
+              {
+                "content": "Create an executive summary (max 500 words) of this research paper:\n\n{{ $json.content }}\n\nInclude:\n1. Research question and motivation\n2. Methodology overview\n3. Key findings (3-5 points)\n4. Practical implications\n5. Limitations and future work"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "tech-summary",
+        "name": "Technical Summary",
+        "type": "n8n-nodes-base.openAi",
+        "position": [
+          850,
+          350
+        ],
+        "parameters": {
+          "model": "gpt-4",
+          "messages": {
+            "values": [
+              {
+                "content": "Create a detailed technical summary of this research paper:\n\n{{ $json.content }}\n\nInclude:\n1. Research objectives and hypotheses\n2. Detailed methodology\n3. Data analysis approach\n4. Complete results with statistics\n5. Technical contributions\n6. Comparison with prior work\n7. Future research directions"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "lay-summary",
+        "name": "Lay Summary",
+        "type": "n8n-nodes-base.openAi",
+        "position": [
+          850,
+          450
+        ],
+        "parameters": {
+          "model": "gpt-3.5-turbo",
+          "messages": {
+            "values": [
+              {
+                "content": "Explain this research paper in simple terms that anyone can understand (max 300 words):\n\n{{ $json.content }}\n\nAvoid jargon and technical terms. Use analogies where helpful."
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "tweet-summary",
+        "name": "Tweet Summary",
+        "type": "n8n-nodes-base.openAi",
+        "position": [
+          850,
+          550
+        ],
+        "parameters": {
+          "model": "gpt-3.5-turbo",
+          "messages": {
+            "values": [
+              {
+                "content": "Create a tweet (max 280 characters) summarizing the key finding of this paper:\n\n{{ $json.content }}\n\nMake it engaging and include relevant hashtags."
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "combine-summaries",
+        "name": "Combine All Summaries",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1050,
+          400
+        ],
+        "parameters": {
+          "functionCode": "return {\n  paperUrl: $node['Webhook - Paper URL'].json.paperUrl,\n  summaries: {\n    executive: $node['Executive Summary'].json.content,\n    technical: $node['Technical Summary'].json.content,\n    lay: $node['Lay Summary'].json.content,\n    tweet: $node['Tweet Summary'].json.content\n  },\n  generatedAt: new Date().toISOString()\n};"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "respond-webhook",
+        "name": "Return Summaries",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          1250,
+          400
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "Lay Summary": {
+        "main": [
+          [
+            {
+              "node": "Combine All Summaries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tweet Summary": {
+        "main": [
+          [
+            {
+              "node": "Combine All Summaries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Executive Summary": {
+        "main": [
+          [
+            {
+              "node": "Combine All Summaries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Technical Summary": {
+        "main": [
+          [
+            {
+              "node": "Combine All Summaries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook - Paper URL": {
+        "main": [
+          [
+            {
+              "node": "PDF Vector - Parse Paper",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Combine All Summaries": {
+        "main": [
+          [
+            {
+              "node": "Return Summaries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF Vector - Parse Paper": {
+        "main": [
+          [
+            {
+              "node": "Executive Summary",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Technical Summary",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Lay Summary",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Tweet Summary",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 62,
+  "workflowInfo": {
+    "nodeCount": 9,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.openAi": {
+        "count": 4
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-pdfvector.pdfVector": {
+        "count": 1
+      },
+      "n8n-nodes-base.respondToWebhook": {
+        "count": 1
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": 49,
+      "name": "AI Summarization"
+    },
+    {
+      "id": 51,
+      "name": "Multimodal AI"
+    }
+  ],
+  "image": []
+}
