@@ -1,0 +1,555 @@
+{
+  "id": 4036,
+  "name": "Claude 3.7 Sonnet AI Chatbot Agent avec recherche Web Anthropic et fonctions de réflexion",
+  "views": 2535,
+  "recentViews": 2,
+  "totalViews": 2535,
+  "createdAt": "2025-05-14T09:17:36.639Z",
+  "description": "Ce flux de travail construit un agent de chatbot IA conversationnel utilisant le modèle **Claude 3.7 Sonnet** avec le nouveau. Il améliore les capacités standard des LLM avec les fonctionnalités d'Anthropic : **Recherche Web** et **Réfléchir** :\n\n* **Recherche web en temps réel**, pour répondre à des requêtes factuelles à jour.\n* Une **fonction “Réfléchir”**, pour soutenir le raisonnement interne et un comportement semblable à la mémoire par Anthropic.\n* Un **tampon de mémoire**, permettant à l'agent de maintenir l'historique de la conversation.\n* Un **message système** définissant des règles éthiques, fonctionnelles et de formatage claires pour l'interaction.\n\nLorsqu'un utilisateur envoie un message (déclencheur), le chatbot évalue la requête, effectue éventuellement une recherche web si nécessaire, traite le résultat en utilisant Claude et répond en conséquence.\n\n---\n\n### ✅ **Avantages**\n\n* **🧠 Capacités de Raisonnement Améliorées**\n  L'outil *Réfléchir* permet à l'agent de simuler des processus de pensée profonds ou un stockage de mémoire contextuelle, améliorant l'intelligence conversationnelle.\n\n* **🌐 Connaissances en Temps Réel via Recherche Web**\n  L'outil intégré `web_search` permet à l'agent de récupérer les dernières informations d'Internet, le rendant idéal pour des cas d'utilisation dynamiques ou axés sur l'actualité.\n\n* **🧾 Réponses Contextuelles avec Tampon de Mémoire**\n  L'inclusion d'un tampon de mémoire permet à l'agent de maintenir l'état à travers les messages, améliorant le flux et la continuité du dialogue.\n\n* **🛡️ Directives Éthiques Intégrées**\n  Le message système impose la confidentialité, l'intégrité factuelle, la neutralité et la génération de réponses éthiques, rendant l'agent sûr pour un usage public ou en entreprise.\n\n\n---\n\n### Comment ça fonctionne\n\n1. **Déclencheur de Chat** : Le flux de travail commence lorsqu'un message de chat est reçu via un webhook. Cela déclenche l'Agent IA pour traiter la requête de l'utilisateur.  \n2. **Traitement de l'Agent IA** : L'Agent IA analyse la requête pour déterminer si elle nécessite des informations du site web ou de sources externes. Il suit une approche structurée :  \n   - Pour les requêtes liées au site web, il utilise le contexte fourni.  \n   - Pour les informations externes, il utilise l'outil `web_search` pour récupérer des données à jour d'Internet.  \n   - L'outil `Réfléchir` est utilisé pour le raisonnement interne ou la mise en cache des pensées sans altérer les données.  \n3. **Modèle de Langue** : Le Modèle de Chat Anthropic (Claude 3.7 Sonnet) génère des réponses basées sur la requête analysée, incorporant le contexte du site web ou les résultats de la recherche web.  \n4. **Mémoire** : Un simple tampon de mémoire conserve le contexte des interactions précédentes pour maintenir la continuité des conversations.  \n5. **Sortie** : La réponse finale est livrée à l'utilisateur, excluant les processus internes comme les recherches web ou les étapes de raisonnement.  \n\n--- \n### Étapes de Configuration\n\n1. **Configurer les Nœuds** :  \n   - **Déclencheur de Chat** : Configurez le webhook pour recevoir les messages des utilisateurs.  \n   - **Agent IA** : Définissez le message système et les règles pour traiter les requêtes.  \n   - **Modèle de Chat Anthropic** : Sélectionnez le modèle Claude 3.7 Sonnet et configurez des paramètres comme `maxTokensToSample`.  \n   - **Mémoire** : Initialisez le tampon de mémoire pour stocker le contexte de la conversation.  \n   - **Outils** :  \n     - `web_search` : Configurez la requête HTTP vers l'API Anthropic pour les recherches web, y compris les en-têtes et l'authentification.  \n     - `Réfléchir` : Configurez l'outil pour le raisonnement interne.  \n\n2. **Connecter les Nœuds** :  \n   - Liez le Déclencheur de Chat à l'Agent IA.  \n   - Connectez le Modèle de Chat Anthropic, la Mémoire et les Outils (`web_search` et `Réfléchir`) à l'Agent IA.  \n\n3. **Identifiants** :  \n   - Assurez-vous que les identifiants de l'API Anthropic sont correctement configurés pour le modèle de chat et l'outil `web_search`.  \n\n---\n\n### **Besoin d'aide pour personnaliser ?**  \n[Contactez-moi](mailto:info@n3w.it) pour des conseils et du support ou ajoutez-moi sur [Linkedin](https://www.linkedin.com/in/davideboizza/). \n",
+  "workflow": {
+    "id": "tnR20GpQTEWVMayy",
+    "meta": {
+      "instanceId": "a4bfc93e975ca233ac45ed7c9227d84cf5a2329310525917adaf3312e10d5462",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Claude 3.7 Sonnet AI Agent with web search and Think functions",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "28388e6f-3dfc-4e2b-a367-81104c4ef8af",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -220,
+          -140
+        ],
+        "webhookId": "095537c6-b21a-4cb2-8312-13b1bf1699dc",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "abd6690f-cbf7-4b47-bba9-6856da348d33",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          0,
+          -140
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "=You are an AI-powered chatbot assistant for a website. Your primary function is to assist users by answering their queries and providing relevant information. You have access to a web_search tool that allows you to browse the internet for up-to-date information. Here's how you should operate:\n\n1. Website Information:\nFamiliarize yourself with this information about the website you're assisting. Use this as context for user interactions.\n\n2. Web Search Tool:\nYou have access to a web_search tool that can browse the internet. To use it, write the variable {web_search_question}. The tool will return relevant search results.\n\n3. Handling User Queries:\nWhen a user asks a question, follow these steps:\na) Analyze the query to determine if it's related to the website or requires external information.\nb) If the query is about the website, use the provided website information to answer.\nc) If external information is needed, use the web_search tool to find relevant data.\n\n4. Using web_search:\n- Use web_search for factual, current information that isn't provided in the website info.\n- Formulate clear, concise search queries.\n- If the first search doesn't yield useful results, refine your query and search again.\n- Limit searches to a maximum of three per user query to maintain efficiency.\n\n5. Using Think:\n- Using Think tool to think about something. It will not obtain new information or change the database, but just append the thought to the log. Use it when complex reasoning or some cache memory is needed.\n\n6. Formulating Responses:\n- Begin with information from the website if relevant.\n- Incorporate web search results to provide up-to-date, accurate information.\n- Summarize findings concisely and coherently.\n- If you're unsure or can't find reliable information, be honest about limitations.\n\n7. Ethical Considerations:\n- Respect user privacy. Don't ask for or store personal information.\n- Provide factual information. Avoid speculation or unverified claims.\n- If asked about controversial topics, strive for a balanced, neutral response.\n- Don't engage in or encourage illegal activities.\n\n8. Output Format:\nDo not include your thought process, web searches, or any other tags in the final output.\n"
+          }
+        },
+        "typeVersion": 1.9
+      },
+      {
+        "id": "f862db48-2498-4e8d-8eab-0ecb3d06e5a8",
+        "name": "Anthropic Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "position": [
+          -80,
+          80
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "claude-3-7-sonnet-20250219",
+            "cachedResultName": "Claude 3.7 Sonnet"
+          },
+          "options": {
+            "maxTokensToSample": 1024
+          }
+        },
+        "credentials": {
+          "anthropicApi": {
+            "id": "NNTZAD0Gmf7lcniq",
+            "name": "Anthropic account"
+          }
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "ced144d4-465c-4a8f-8822-97a93111077e",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          80,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "93e6bfb3-6a95-4ecf-af39-aad3ca6019a0",
+        "name": "web_search",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          200,
+          80
+        ],
+        "parameters": {
+          "url": "https://api.anthropic.com/v1/messages",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', `{\n  \"model\": \"claude-3-7-sonnet-latest\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"{web_search_question}\"\n    }\n  ],\n  \"tools\": [\n    {\n      \"type\": \"web_search_20250305\",\n      \"name\": \"web_search\",\n      \"max_uses\": 5\n    }\n  ]\n}\n`, 'json') }}",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "authentication": "predefinedCredentialType",
+          "toolDescription": "Use this tool to search on the web",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "anthropic-version",
+                "value": "2023-06-01"
+              },
+              {
+                "name": "content-type",
+                "value": "application/jso"
+              }
+            ]
+          },
+          "nodeCredentialType": "anthropicApi"
+        },
+        "credentials": {
+          "anthropicApi": {
+            "id": "NNTZAD0Gmf7lcniq",
+            "name": "Anthropic account"
+          },
+          "httpHeaderAuth": {
+            "id": "2CfPPhYGH4peDClc",
+            "name": "Header Auth Anthropic API"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "00335b1e-03b2-4c6c-993a-b452e265cdeb",
+        "name": "Think",
+        "type": "@n8n/n8n-nodes-langchain.toolThink",
+        "position": [
+          320,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "0c493a57-65fa-48b4-a3b3-944b052a4dd5",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -220,
+          -340
+        ],
+        "parameters": {
+          "width": 620,
+          "content": "## Claude 3.7 Sonnet AI Agent with web search and Think functions\nThis workflow builds a conversational AI chatbot agent using **Claude 3.7 Sonnet** model with the new . It enhances standard LLM capabilities with Anthropic’s features: **Web Search** and **Think**."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "0e13b1bb-4231-4d18-80ac-fa155f084a6d",
+    "connections": {
+      "Think": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "web_search": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 7,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequestTool": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.toolThink": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatAnthropic": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Davide",
+    "username": "n3witalia",
+    "bio": "Full-stack Web Developer based in Italy specialising in Marketing & AI-powered automations. For business enquiries, send me an email at info@n3w.it or add me on Linkedin.com/in/davideboizza",
+    "verified": true,
+    "links": [
+      "https://n3w.it"
+    ],
+    "avatar": "https://gravatar.com/avatar/d41b8a0aa81139243509c58870f5b4be292824a507ab57d10ed066d8628ed8da?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1145,
+      "icon": "file:anthropic.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "codex": {
+        "data": {
+          "alias": [
+            "claude",
+            "sonnet",
+            "opus"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatanthropic/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat Anthropic"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzdEN0Q4NyIgZD0iTTMyLjczIDBoLTYuOTQ1TDM4LjQ1IDMyaDYuOTQ1ek0xMi42NjUgMCAwIDMyaDcuMDgybDIuNTktNi43MmgxMy4yNWwyLjU5IDYuNzJoNy4wODJMMTkuOTI5IDB6bS0uNzAyIDE5LjMzNyA0LjMzNC0xMS4yNDYgNC4zMzQgMTEuMjQ2eiIvPjwvc3ZnPg=="
+      },
+      "displayName": "Anthropic Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire Simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1289,
+      "icon": "fa:brain",
+      "name": "@n8n/n8n-nodes-langchain.toolThink",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolthink/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Other Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Réfléchir"
+      },
+      "iconData": {
+        "icon": "brain",
+        "type": "icon"
+      },
+      "displayName": "Think Tool",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 40,
+      "name": "Chatbot de Support"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}

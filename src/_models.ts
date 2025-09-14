@@ -1,3 +1,16 @@
+export type CommandOptions = {
+    refresh: boolean;
+    translate: boolean;
+    help: boolean;
+}
+
+export type ApiWorkflowsParams = {
+    categories?: Array<string>;
+    lang?: string;
+    page: number;
+    items: number;
+}
+
 export type ID = number
 
 export type Category = {

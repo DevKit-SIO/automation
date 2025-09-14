@@ -1,0 +1,447 @@
+{
+  "id": 4704,
+  "name": "Validateur de chaîne JSON via Webhook",
+  "views": 1132,
+  "recentViews": 1,
+  "totalViews": 1132,
+  "createdAt": "2025-06-05T18:12:14.340Z",
+  "description": "Ce modèle n8n fournit un utilitaire simple mais puissant pour valider si une chaîne d'entrée donnée est au format JSON valide. Vous pouvez l'utiliser pour pré-valider les données reçues de sources externes, garantir l'intégrité des données avant un traitement ultérieur, ou fournir un retour immédiat aux utilisateurs soumettant des chaînes JSON.\n\n---\n\n## 🔧 Comment ça fonctionne\n- Webhook : Ce nœud agit comme le point d'entrée pour le flux de travail, écoutant les requêtes POST entrantes. Il attend un corps JSON avec une seule propriété :\n\n  - jsonString : La chaîne que vous souhaitez valider en tant que JSON.\n\n- Code (Validateur JSON) : Ce nœud contient un code JavaScript personnalisé qui tente d'analyser le jsonString fourni dans le corps du webhook.\n\n  - Si le jsonString peut être analysé avec succès, cela signifie qu'il s'agit d'un JSON valide, et le nœud renvoie un élément avec valid: true.\n  - Si l'analyse échoue, il capture l'erreur et renvoie un élément avec valid: false et le message d'erreur spécifique.\n  - Cette logique est appliquée à chaque élément passé par le nœud, garantissant que toutes les entrées sont validées.\n\n- Répondre au Webhook : Ce nœud envoie le résultat de la validation (soit valid: true ou valid: false avec un message d'erreur) au service qui a initié la requête webhook.\n\n---\n\n## 👤 Pour qui est-ce ?\n### Ce flux de travail est idéal pour :\n\n- Développeurs et Intégrateurs : Pré-valider les charges JSON des systèmes externes (APIs, webhooks) avant de les traiter dans vos flux de travail, évitant ainsi les erreurs.\n- Ingénieurs de données : Garantir l'intégrité des données JSON avant de les stocker dans des bases de données ou des lacs de données.\n- Constructeurs d'API : Offrir un point de terminaison dédié pour que les clients testent la validité de leurs chaînes JSON.\n- Équipes de support client : Vérifier rapidement les configurations JSON fournies par les utilisateurs pour des erreurs.\n- Quiconque manipulant des données JSON : Un moyen rapide et facile de vérifier programmatique la correction des chaînes JSON sans écrire de code personnalisé dans chaque application.\n\n---\n\n## 📑 Structure des données\nLorsque vous déclenchez le webhook, envoyez une requête POST avec un corps JSON structuré comme suit :\n\n```\n{\n  \"jsonString\": \"{\\\"name\\\": \\\"n8n\\\", \\\"type\\\": \\\"workflow\\\"}\"\n}\n```\n\nExemple d'une chaîne JSON invalide :\n\n```\n{\n  \"jsonString\": \"{name: \\\"n8n\\\"}\" // Manque des guillemets autour de 'name'\n}\n```\n\nLe flux de travail renverra une réponse JSON indiquant la validité :\n\nPour une chaîne JSON valide :\n\n```\n{\n  \"valid\": true\n}\n```\n\nPour une chaîne JSON invalide :\n\n```\n{\n  \"valid\": false,\n  \"error\": \"Token inattendu 'n', \\\"{name: \\\"n8n\\\"}\\\" n'est pas un JSON valide\"\n}\n```\n\n---\n\n## ⚙️ Instructions de configuration\n- Importer le flux de travail :\n  - Dans votre éditeur n8n, cliquez sur \"Importer depuis JSON\" et collez le JSON du flux de travail fourni.\n\n- Configurer le chemin du Webhook :\n  - Double-cliquez sur le nœud Webhook.\n  - Dans le champ 'Path', définissez un chemin unique et descriptif (par exemple, /validate-json).\n\n- Activer le flux de travail :\n  - Enregistrez et activez le flux de travail.\n\n---\n\n## 📝 Conseils\nCe flux de travail de validateur JSON est un bon point de départ. Considérez ces améliorations :\n\n- Retour d'erreur amélioré :\n  - Améliorer : Ajoutez un nœud Set après le nœud Code pour formater le message d'erreur en une chaîne plus conviviale avant de répondre.\n  - Exploiter : Facilitez la compréhension du problème pour l'appelant.\n\n- Journalisation des entrées invalides :\n  - Améliorer : Après le nœud Code, ajoutez un nœud IF pour vérifier si valid est false. Si c'est le cas, branchez-vous sur un nœud qui journalise le jsonString invalide et l'erreur dans une feuille Google, une base de données ou un service de journalisation.\n  - Exploiter : Suivez les entrées invalides courantes pour le débogage ou l'amélioration.\n\n- Transformation du JSON valide :\n  - Améliorer : Si le JSON est valide, vous pourriez ajouter un autre nœud Function pour analyser le jsonString et ensuite opérer directement sur les données JSON analysées dans le flux de travail.\n  - Exploiter : Utilisez ce validateur comme première étape dans un flux de travail plus large qui traite des données JSON.\n\n- Validation asynchrone :\n  - Améliorer : Pour des chaînes JSON très grandes ou des requêtes à fort volume, envisagez d'utiliser un mécanisme de mise en file d'attente séparé (par exemple, RabbitMQ, SQS) et un modèle de réponse asynchrone.\n  - Exploiter : Prévenir les délais d'attente du webhook et améliorer la réactivité du système.",
+  "workflow": {
+    "id": "6GzSyLakqBN2hYIe",
+    "meta": {
+      "instanceId": "1777696fb9fddfee653e70940936c2b1e28ba1f1bde53b7182fbd6eb01988706"
+    },
+    "name": "JSON String Validator via Webhook",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "72785a1d-32f6-4f0d-a412-5327c059ddd3",
+        "name": "Webhook: Receive JSON String",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          -680,
+          -140
+        ],
+        "webhookId": "2604aa77-b575-4c3f-b1df-feab9c775603",
+        "parameters": {
+          "path": "validate-json-string",
+          "options": {},
+          "httpMethod": "POST",
+          "responseMode": "responseNode"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "940b04da-3f16-434d-8181-9452dd3ba007",
+        "name": "Respond to Webhook with Result",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          100,
+          -140
+        ],
+        "parameters": {
+          "options": {},
+          "respondWith": "allIncomingItems"
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "4546866f-9376-47cf-ac19-caf0eb197cca",
+        "name": "Code: Validate JSON String",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -300,
+          -140
+        ],
+        "parameters": {
+          "jsCode": "// This node validates if the 'jsonString' in the webhook body is valid JSON.\n// It returns 'valid: true' or 'valid: false' along with an error message if invalid.\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  try {\n    // Attempt to parse the jsonString from the webhook body\n    // Ensure 'jsonString' exists before attempting to parse\n    if (item.json.body && typeof item.json.body.jsonString === 'string') {\n      JSON.parse(item.json.body.jsonString);\n      results.push({ json: { valid: true } });\n    } else {\n      // Handle cases where jsonString is missing or not a string\n      results.push({ json: { valid: false, error: \"Input 'jsonString' is missing or not a string.\" } });\n    }\n  } catch (e) {\n    // If parsing fails, push the error message\n    results.push({ json: { valid: false, error: e.message } });\n  }\n}\n\nreturn results;"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "52ea0a9b-863d-4d09-b96b-ab707571738b",
+        "name": "Note: Webhook Input",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -760,
+          -360
+        ],
+        "parameters": {
+          "width": 280,
+          "height": 380,
+          "content": "## Webhook Input\n\nThis node listens for incoming POST requests. It expects a JSON body containing a single property: `jsonString` (the string you wish to validate as JSON)."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f3f93504-93b2-40e9-93e6-45366a681ac0",
+        "name": "Note: JSON Validation Logic",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -420,
+          -320
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 350,
+          "height": 360,
+          "content": "## JSON Validation Logic\n\nThis node contains custom JavaScript code to parse the `jsonString` from the webhook input. It returns `valid: true` if successful, or `valid: false` with an `error` message if parsing fails."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e8632087-424b-40b4-a894-301885137f49",
+        "name": "Note: Webhook Response",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          -320
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 350,
+          "height": 360,
+          "content": "## Webhook Response\n\nThis node sends the validation result (whether the `jsonString` was valid JSON or not, including an error if applicable) back to the system that triggered the webhook."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "ecec4bf1-c92e-485f-9f8f-fc98441310eb",
+    "connections": {
+      "Code: Validate JSON String": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook with Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook: Receive JSON String": {
+        "main": [
+          [
+            {
+              "node": "Code: Validate JSON String",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-base.respondToWebhook": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "ist00dent",
+    "username": "ist00dent",
+    "bio": "I’m a dedicated automation engineer passionate about no-code and low-code solutions. I design and implement robust n8n workflows—integrating APIs, databases, and messaging—to eliminate manual tasks and accelerate delivery. Leveraging Python and C#, I build scalable, adaptable automations that empower teams to focus on high-value work.",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/89bf012566ef32a63cb1460b2d6c4afdf6defda1e36968c03d6ea868b6bcf33b?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 535,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.respondToWebhook",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Répondre au Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Respond to Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 5,
+      "name": "Ingénierie"
+    }
+  ],
+  "image": []
+}

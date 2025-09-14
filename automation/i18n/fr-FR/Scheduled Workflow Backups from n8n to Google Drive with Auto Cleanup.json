@@ -1,0 +1,1207 @@
+{
+  "id": 4515,
+  "name": "Sauvegardes de flux de travail programmées de n8n vers Google Drive avec nettoyage automatique",
+  "views": 779,
+  "recentViews": 1,
+  "totalViews": 779,
+  "createdAt": "2025-05-30T14:28:11.772Z",
+  "description": "## **Sauvegarde automatique des flux de travail n8n vers Google Drive**\n\nImaginez le sentiment de désespoir : des heures, des semaines, voire des mois de travail méticuleux à construire vos flux de travail n8n, soudainement disparus. Un crash de serveur, une suppression accidentelle, une corruption de données ou un problème de plateforme inattendu – et tous vos processus automatisés s'évaporent. Sans un système de sauvegarde fiable, vous êtes confronté à une reconstruction complète à partir de zéro, un scénario qui n'est pas seulement frustrant mais peut être catastrophique pour les opérations commerciales.\n\nDe plus, envisagez la tâche décourageante de migrer votre instance n8n vers un nouvel hôte ou serveur. Exporter manuellement chaque flux de travail, un par un, puis les importer laborieusement dans le nouvel environnement n'est pas seulement incroyablement chronophage, surtout si vous avez des dizaines ou des centaines de flux de travail, mais aussi très sujet aux erreurs et omissions. Vous avez besoin d'une solution systématique et automatisée.\n\nCe flux de travail fournit une solution robuste pour **sauvegarder automatiquement tous vos flux de travail n8n vers Google Drive selon un calendrier** (par défaut toutes les heures). Il crée un dossier nommé de manière unique pour chaque instance de sauvegarde, incorporant la date et l'heure, puis télécharge systématiquement chaque flux de travail en tant que fichier JSON individuel. Pour gérer l'espace de stockage, le flux de travail inclut également un mécanisme de nettoyage qui **supprime les dossiers de sauvegarde plus anciens qu'une période de conservation définie par l'utilisateur** (par défaut 7 jours).\n\nIdéalement, ce flux de travail de sauvegarde devrait être utilisé en conjonction avec une solution de restauration comme notre [\"Modèle de restauration des flux de travail à partir des sauvegardes Google Drive\"](https://aiautomationpro.org/products/n8n-restore-workflows-from-google-drive-backups/).\n\nPour des modèles n8n plus puissants, visitez notre site Web ou contactez-nous à [**AI Automation Pro**](https://aiautomationpro.org/). Nous aidons votre entreprise à construire des automatisations de flux de travail et des applications AI personnalisées.\n\n### Points forts\n\n* Déclencheurs selon un calendrier (par défaut toutes les heures).  \n* Crée un dossier \\`n8n\\_backup\\_YYYY-MM-DD\\_HH\\` dans Google Drive.  \n* Récupère tous les flux de travail n8n.  \n* Enregistre chaque flux de travail en tant que fichier JSON dans le nouveau dossier.  \n* Supprime les dossiers de sauvegarde plus anciens que la 'Période de couverture' (par défaut 7 jours).\n\n### Pour qui est-ce ?\n\nCe modèle est conçu pour :\n\n* **Administrateurs et développeurs n8n :** Qui ont besoin d'un système fiable et automatisé pour protéger leurs flux de travail contre la perte accidentelle, la corruption ou les problèmes système.  \n* **Utilisateurs proactifs de n8n :** Qui souhaitent maintenir un historique des versions de leurs flux de travail, permettant un retour facile aux configurations précédentes si nécessaire.  \n* **Organisations :** Cherchant à mettre en œuvre des pratiques de récupération après sinistre et d'intégrité des données pour leur infrastructure d'automatisation n8n.\n\n### Quel problème ce flux de travail résout-il ? / cas d'utilisation\n\nCe flux de travail aborde directement ces risques et défis critiques en :\n\n* **Automatisant les sauvegardes :** Élimine l'effort manuel et l'incohérence des sauvegardes ad hoc, garantissant que vos flux de travail sont régulièrement et fiablement sauvegardés.  \n* **Prévenant la perte de données :** Protège vos précieux actifs d'automatisation contre des désastres imprévus en créant des copies sécurisées et versionnées dans Google Drive.  \n* **Facilitant la migration et la récupération :** Fournit les sauvegardes fondamentales nécessaires pour une migration plus fluide et systématique ou une récupération complète après sinistre, vous permettant de restaurer vos opérations efficacement.  \n* **Contrôle de version :** En stockant des sauvegardes programmées (par défaut toutes les heures), il vous permet d'accéder et de restaurer des versions précédentes de vos flux de travail, offrant une capacité d'annulation pour des changements ou des corruptions significatifs.  \n* **Gestion de stockage :** Supprime automatiquement les anciennes sauvegardes en fonction d'une période de conservation configurable, empêchant une utilisation excessive du stockage Google Drive tout en conservant un historique pertinent.\n\n### Ce que fait ce flux de travail\n\n1. **Déclencheur programmé :** S'exécute automatiquement toutes les heures.  \n2. **Horodatage :** Récupère la date et l'heure actuelles pour créer un nom unique pour le dossier de sauvegarde.  \n3. **Création de dossier :** Crée un nouveau dossier dans un emplacement Google Drive spécifié. Le dossier est nommé au format : `n8n_backup_YYYY-MM-DD_HH`.  \n4. **Récupération de flux de travail :** Se connecte à votre instance n8n via son API et récupère une liste de tous les flux de travail existants.  \n5. **Sauvegarde individuelle :** Traite chaque flux de travail un par un :  \n   * Convertit les données du flux de travail en un fichier JSON binaire.  \n   * Télécharge le fichier JSON (nommé d'après le flux de travail) dans le dossier de sauvegarde horaire dans Google Drive.  \n   * Inclut une courte étape d'attente entre les téléchargements pour respecter les limites de taux potentielles de l'API.  \n6. **Suppression des anciennes sauvegardes :**  \n   * Calcule une date limite basée sur la \"Période de couverture\" définie dans le nœud \"Paramètres\" (par exemple, 7 jours avant la date actuelle).  \n   * Recherche dans Google Drive des dossiers de sauvegarde (correspondant à la convention de nommage) qui sont plus anciens que cette date limite.  \n   * Supprime ces anciens dossiers de sauvegarde identifiés pour libérer de l'espace de stockage.\n\n### Configuration étape par étape\n\n1. **Importer le modèle :** Téléchargez le fichier JSON fourni dans votre instance n8n.  \n2. **Configurer les identifiants :**  \n   * **Nœuds Google Drive :** Vous devrez créer ou sélectionner des identifiants API OAuth2 Google Drive existants pour ces nœuds.  \n   * **Nœud n8n :** `n8n` (nœud qui récupère les flux de travail) Configurez les identifiants API n8n pour permettre au flux de travail d'accéder aux données de flux de travail de votre instance.  \n3. **Spécifier l'emplacement de sauvegarde Google Drive :**  \n   * Ouvrez le nœud **\"Dossier de sauvegarde Google Drive toutes les heures\"**.  \n   * Sous le paramètre \"ID de Drive\" : sélectionnez-le dans la liste ou fournissez son ID.  \n   * Sous le paramètre \"ID de dossier\" : sélectionnez ou saisissez l'ID du **dossier parent** dans Google Drive où vous souhaitez que les dossiers `n8n_backup_YYYY-MM-DD_HH` soient créés (par exemple, un dossier général \"n8n\\_Backups\").  \n4. **Définir la période de conservation des sauvegardes :**  \n   * Ouvrez le nœud **\"Paramètres\"**.  \n   * Modifiez la valeur de \"Période de couverture\" (par défaut `7`). Ce nombre représente le nombre de jours pendant lesquels les sauvegardes doivent être conservées avant d'être supprimées.  \n5. **Activer le flux de travail :** Activez l'interrupteur \"Actif\" pour le flux de travail dans votre tableau de bord n8n.\n\n### Comment personnaliser ce flux de travail selon vos besoins\n\n* **Fréquence de sauvegarde :** Ajustez la \"Règle\" dans le nœud **\"Déclencheur de planification\"** pour changer l'intervalle de sauvegarde (par exemple, quotidien, à des heures spécifiques).  \n* **Nommage de dossier/fichier :** Modifiez les expressions dans l'onglet \"Paramètres\" du nœud **\"Dossier de sauvegarde Google Drive toutes les heures\"** (pour le nom du dossier) ou du nœud **\"Télécharger des flux de travail Google Drive\"** (pour le nom du fichier) si vous avez besoin d'une convention de nommage différente.  \n* **Sauvegardes ciblées :** Pour sauvegarder uniquement des flux de travail spécifiques, insérez un nœud \"Filtre\" après le nœud **\"n8n\"** pour filtrer les flux de travail en fonction de critères tels que le nom, les étiquettes ou l'ID avant qu'ils n'atteignent le nœud \"Déplacer les données binaires\".  \n* **Temps d'attente :** Le nœud **\"Attendre\"** est réglé sur 3 secondes entre les téléchargements. Si vous avez un très grand nombre de flux de travail ou si vous rencontrez des limitations de taux, vous pourriez ajuster cette durée.  \n* **Flux de travail d'erreur :** Le flux de travail est préconfiguré avec un paramètre \"Flux de travail d'erreur\". Assurez-vous que ce flux de travail d'erreur existe dans votre instance n8n, ou mettez à jour le paramètre pour pointer vers votre flux de travail de gestion des erreurs préféré. Cela peut être utilisé pour envoyer des notifications en cas d'échec.\n\n### Considérations importantes\n\n* **Utilisation des ressources :** Bien que le flux de travail inclue une étape d'attente entre les téléchargements individuels de flux de travail pour minimiser la charge, sauvegarder un nombre extrêmement élevé de flux de travail pourrait toujours consommer des ressources sur votre instance n8n et faire de nombreux appels API à Google Drive. Surveillez les performances si vous avez des milliers de flux de travail.  \n* **Tester le processus de restauration :** Testez régulièrement la restauration de quelques flux de travail à partir de vos sauvegardes Google Drive en utilisant le modèle compagnon \"Restaurer tous les flux de travail n8n à partir de Google Drive\" ou une importation manuelle. Cela vérifie l'intégrité de vos sauvegardes et garantit que vous pouvez récupérer lorsque cela est nécessaire.  \n* **Modifications du flux de travail :** Si vous modifiez ce flux de travail de sauvegarde (par exemple, changez la convention de nommage des dossiers), assurez-vous que votre processus de restauration ou votre flux de travail est également mis à jour pour correspondre à ces changements.",
+  "workflow": {
+    "id": "uTDqvTnmDaTgRRu8",
+    "meta": {
+      "instanceId": "b3df22d2875c82e3ba1883c50049ed9cee0bcabf99d2b486961d2245a09e3964",
+      "templateId": "2469",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "AIAutomationPro Hourly Backup To Google Drive v1",
+    "tags": [
+      {
+        "id": "MqQ2zS7ixA8b0cmJ",
+        "name": "Tool",
+        "createdAt": "2024-11-15T19:27:51.756Z",
+        "updatedAt": "2024-12-30T09:58:18.482Z"
+      },
+      {
+        "id": "RHp83eTHbIpxlDCF",
+        "name": "Template",
+        "createdAt": "2025-01-03T16:24:28.562Z",
+        "updatedAt": "2025-01-03T16:24:28.562Z"
+      },
+      {
+        "id": "3rkMsCyNbu0QrC94",
+        "name": "Backup",
+        "createdAt": "2025-04-17T05:01:34.098Z",
+        "updatedAt": "2025-04-17T05:01:34.098Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "a2dd2041-2bea-4659-aab6-0b0dd0640f55",
+        "name": "Date Time",
+        "type": "n8n-nodes-base.dateTime",
+        "position": [
+          1400,
+          2200
+        ],
+        "parameters": {
+          "options": {},
+          "outputFieldName": "now"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "54e48154-26bd-49c0-a0b6-5c67ce3eab54",
+        "name": "Date & Time Format",
+        "type": "n8n-nodes-base.dateTime",
+        "position": [
+          1620,
+          2200
+        ],
+        "parameters": {
+          "date": "={{ $('Date Time').first().json.now }}",
+          "format": "yyyy-MM-dd",
+          "options": {},
+          "operation": "formatDate"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "5d3bad24-ef42-42f7-8a41-ca8fbad75b61",
+        "name": "Date & Time Hour",
+        "type": "n8n-nodes-base.dateTime",
+        "position": [
+          1840,
+          2200
+        ],
+        "parameters": {
+          "date": "={{ $('Date Time').first().json.now }}",
+          "part": "hour",
+          "options": {},
+          "operation": "extractDate",
+          "outputFieldName": "hour"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "a8e058b1-f438-470c-8a84-49cd168c8307",
+        "name": "Google Drive Backup Folder Every Hour",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2060,
+          2200
+        ],
+        "parameters": {
+          "name": "=n8n_backup_{{ $('Date & Time Format').first().json.formattedDate }}_{{ $('Date & Time Hour').first().json.hour }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "0AKPPy6FuV32kUk9PVA",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/0AKPPy6FuV32kUk9PVA",
+            "cachedResultName": "AI Automation Pro"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1bfYhgr3GiwFxvfPQiPB_I814Lsuv9tM3",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1bfYhgr3GiwFxvfPQiPB_I814Lsuv9tM3",
+            "cachedResultName": "Template - N8n Backup"
+          },
+          "resource": "folder"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "q8OibtSjVurZl2tb",
+            "name": "AI Auto Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "521f49b0-d349-4781-9a7e-3b0b33f77a5c",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1280,
+          2120
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 2103,
+          "height": 296,
+          "content": "## Create N8n Backup Workflows Every Hour"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "69baef8f-9074-4858-8d5e-751c7d980f34",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1940,
+          2540
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 1003,
+          "height": 296,
+          "content": "## Delete N8n Backup Workflows Over The Past X Days"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "665cc313-a152-4eea-98bc-a11cec81e97d",
+        "name": "n8n",
+        "type": "n8n-nodes-base.n8n",
+        "position": [
+          2280,
+          2200
+        ],
+        "parameters": {
+          "filters": {},
+          "requestOptions": {}
+        },
+        "credentials": {
+          "n8nApi": {
+            "id": "S63rln42rAvGFfBB",
+            "name": "n8n account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bb33fd37-6077-429e-b88d-44dce50df544",
+        "name": "Move Binary Data",
+        "type": "n8n-nodes-base.moveBinaryData",
+        "position": [
+          2500,
+          2200
+        ],
+        "parameters": {
+          "mode": "jsonToBinary",
+          "options": {
+            "fileName": "={{ $json.name }}",
+            "useRawData": true
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4926fe6f-ed1e-466c-b83c-fdea9a7ff08c",
+        "name": "Split In Batches",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          2720,
+          2200
+        ],
+        "parameters": {
+          "options": {
+            "reset": false
+          },
+          "batchSize": 1
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "a511a9e2-6892-42c1-975e-50d30e11d37c",
+        "name": "Google Drive Upload Workflows",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2940,
+          2180
+        ],
+        "parameters": {
+          "name": "={{ $('Split In Batches').item.binary.data.fileName }}.json\n\n",
+          "options": {},
+          "parents": [
+            "={{ $('Google Drive Backup Folder Every Hour').first().json.id }}"
+          ],
+          "binaryData": true,
+          "authentication": "oAuth2"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "q8OibtSjVurZl2tb",
+            "name": "AI Auto Google Drive account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "22a954ab-0b20-48a2-8bc6-fb5c7aa6c11a",
+        "name": "Date & Time Format 2",
+        "type": "n8n-nodes-base.dateTime",
+        "position": [
+          2280,
+          2640
+        ],
+        "parameters": {
+          "date": "={{ $('Date & Time Subtract Coverage Period').first().json.newDate }}",
+          "format": "yyyy-MM-dd",
+          "options": {},
+          "operation": "formatDate"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "3ae1beba-024f-4b57-b298-9b5c2347cb3d",
+        "name": "Google Drive Search",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2500,
+          2640
+        ],
+        "parameters": {
+          "limit": 1,
+          "filter": {},
+          "options": {},
+          "resource": "fileFolder",
+          "queryString": "=n8n_backup_{{ $('Date & Time Format 2').first().json.formattedDate }}_{{ $('Date & Time Hour').first().json.hour }}"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "q8OibtSjVurZl2tb",
+            "name": "AI Auto Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "79591e71-6ee8-4a04-b798-318befcc37c3",
+        "name": "Google Drive Delete",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2720,
+          2640
+        ],
+        "parameters": {
+          "options": {},
+          "resource": "folder",
+          "operation": "deleteFolder",
+          "folderNoRootId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Google Drive Search').first().json.id }}"
+          }
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "q8OibtSjVurZl2tb",
+            "name": "AI Auto Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "d01f220a-df90-4de9-b4a0-b588cc787e62",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          3160,
+          2180
+        ],
+        "webhookId": "bb6e6e2b-d95b-4a46-8992-601833c02b9a",
+        "parameters": {
+          "amount": 3
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "7cc95066-a8a4-4cfe-9271-38b7da181eb6",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          840,
+          2120
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 303,
+          "height": 296,
+          "content": "## Backup Coverage Period"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f420f5e8-36e0-4db2-a033-2fab8361338f",
+        "name": "Settings",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          940,
+          2200
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "84e8bbad-e48d-4a58-af4f-ca08938acc26",
+                "name": "Coverage Period",
+                "type": "number",
+                "value": 7
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "34a3af65-82ca-4c6d-a373-54ddea04229f",
+        "name": "Date & Time Subtract Coverage Period",
+        "type": "n8n-nodes-base.dateTime",
+        "position": [
+          2060,
+          2640
+        ],
+        "parameters": {
+          "options": {},
+          "duration": "={{ $('Settings').first().json['Coverage Period'] }}",
+          "magnitude": "={{ $('Date Time').first().json.now }}",
+          "operation": "subtractFromDate"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "34b988b7-0dcd-49cd-840c-13830a055e2d",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          620,
+          2200
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "8286b8b8-5c27-4722-9626-b388cc9ccc0a",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -300,
+          2080
+        ],
+        "parameters": {
+          "width": 720,
+          "height": 2220,
+          "content": "## Hourly n8n Workflow Backup to Google Drive\n\nThis workflow provides a robust solution for automatically backing up all your n8n workflows to Google Drive on schedule (default to every hour). It creates a uniquely named folder for each backup instance, incorporating the date and hour, and then systematically uploads each workflow as an individual JSON file. To manage storage space, the workflow also includes a cleanup mechanism that deletes backup folders older than a user-defined retention period (defaulting to 7 days).\n\nFor more powerful n8n templates, visit our website or contact us at [**AI Automation Pro**](https://aiautomationpro.org/). We help your business build custom AI workflow automation and apps.\n\n## Feature highlights\n\n* Triggers on schedule (default to hourly).  \n* Creates a \\`n8n\\_backup\\_YYYY-MM-DD\\_HH\\` folder in Google Drive.  \n* Fetches all n8n workflows.  \n* Saves each workflow as a JSON file to the new folder.  \n* Deletes backup folders older than the 'Coverage Period' (default to 7 days).\n\n## Who is this for?\n\nThis template is designed for:\n\n* **n8n Administrators and Developers:** Who need a reliable, automated system to safeguard their workflows against accidental loss, corruption, or system issues.  \n* **Proactive n8n Users:** Who want to maintain a version history of their workflows, enabling easy rollback to previous configurations if necessary.  \n* **Organizations:** Seeking to implement disaster recovery and data integrity practices for their n8n automation infrastructure.\n\n## What problem is this workflow solving? / use case\n\nManually backing up n8n workflows is time-consuming and prone to human error. This workflow addresses these challenges by:\n\n* **Automating Backups:** Eliminates the need for manual intervention, ensuring consistent and regular backups of all your n8n workflows.  \n* **Preventing Data Loss:** Safeguards your valuable automation work by creating secure copies in Google Drive.  \n* **Version Control:** By storing hourly backups, it allows you to access and restore previous versions of your workflows.  \n* **Storage Management:** Automatically removes old backups based on a configurable retention period, preventing excessive use of Google Drive storage.\n\n## What this workflow does\n\n1. **Scheduled Trigger:** Runs automatically every hour.  \n2. **Timestamping:** Fetches the current date and hour to create a unique name for the backup folder.  \n3. **Folder Creation:** Creates a new folder in a specified Google Drive location. The folder is named in the format: `n8n_backup_YYYY-MM-DD_HH`.  \n4. **Workflow Retrieval:** Connects to your n8n instance via its API and fetches a list of all existing workflows.  \n5. **Individual Backup:** Processes each workflow one by one:  \n   * Converts the workflow data to a binary JSON file.  \n   * Uploads the JSON file (named after the workflow) to the hourly backup folder in Google Drive.  \n   * Includes a short wait step between uploads to respect potential API rate limits.  \n6. **Old Backup Deletion:**  \n   * Calculates a cut-off date based on the \"Coverage Period\" set in the \"Settings\" node (e.g., 7 days prior to the current date).  \n   * Searches Google Drive for backup folders (matching the naming convention) that are older than this cut-off date.  \n   * Deletes these identified old backup folders to free up storage space.\n\n## Setup\n\n1. **Import Template:** Upload the provided JSON file into your n8n instance.  \n2. **Configure Credentials:**  \n   * **Google Drive Nodes:** You will need to create or select existing Google Drive OAuth2 API credentials for these nodes.  \n   * **n8n Node:** `n8n` (node that fetches workflows) Configure n8n API credentials to allow the workflow to access your instance's workflow data.  \n3. **Specify Google Drive Backup Location:**  \n   * Open the **\"Google Drive Backup Folder Every Hour\"** node.  \n   * Under the \"Drive ID\" parameter: select it from the list or provide its ID.  \n   * Under the \"Folder ID\" parameter: select or input the ID of the **parent folder** in Google Drive where you want the `n8n_backup_YYYY-MM-DD_HH` folders to be created (e.g., a general \"n8n\\_Backups\" folder).  \n4. **Set Backup Retention Period:**  \n   * Open the **\"Settings\"** node.  \n   * Modify the value for \"Coverage Period\" (default is `7`). This number represents the number of days backups should be kept before being deleted.  \n5. **Activate Workflow:** Toggle the \"Active\" switch for the workflow in your n8n dashboard.\n\n## How to customize this workflow to your needs\n\n* **Backup Frequency:** Adjust the \"Rule\" in the **\"Schedule Trigger\"** node to change the backup interval (e.g., daily, specific times).  \n* **Folder/File Naming:** Modify the expressions in the \"Parameters\" tab of the **\"Google Drive Backup Folder Every Hour\"** node (for folder name) or the **\"Google Drive Upload Workflows\"** node (for file name) if you require a different naming convention.  \n* **Targeted Backups:** To back up only specific workflows, insert a \"Filter\" node after the **\"n8n\"** node to filter workflows based on criteria like name, tags, or ID before they reach the \"Move Binary Data\" node.  \n* **Wait Time:** The **\"Wait\"** node is set to 3 seconds between uploads. If you have a very large number of workflows or encounter rate limiting, you might adjust this duration.  \n* **Error Workflow:** The workflow is pre-configured with an \"Error Workflow\" setting (`KhpM42Ckgy6qgzCz`). Ensure this error workflow exists in your n8n instance, or update the setting to point to your preferred error handling workflow. This can be used to send notifications on failure.\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "errorWorkflow": "KhpM42Ckgy6qgzCz",
+      "executionOrder": "v0"
+    },
+    "versionId": "5dc4b523-d904-4977-b901-fa786fc024f6",
+    "connections": {
+      "n8n": {
+        "main": [
+          [
+            {
+              "node": "Move Binary Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Settings": {
+        "main": [
+          [
+            {
+              "node": "Date Time",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date Time": {
+        "main": [
+          [
+            {
+              "node": "Date & Time Format",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time Hour": {
+        "main": [
+          [
+            {
+              "node": "Google Drive Backup Folder Every Hour",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Date & Time Subtract Coverage Period",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Move Binary Data": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Settings",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split In Batches": {
+        "main": [
+          [
+            {
+              "node": "Google Drive Upload Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time Format": {
+        "main": [
+          [
+            {
+              "node": "Date & Time Hour",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Drive Search": {
+        "main": [
+          [
+            {
+              "node": "Google Drive Delete",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time Format 2": {
+        "main": [
+          [
+            {
+              "node": "Google Drive Search",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Drive Upload Workflows": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time Subtract Coverage Period": {
+        "main": [
+          [
+            {
+              "node": "Date & Time Format 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Drive Backup Folder Every Hour": {
+        "main": [
+          [
+            {
+              "node": "n8n",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 19,
+    "nodeTypes": {
+      "n8n-nodes-base.n8n": {
+        "count": 1
+      },
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.dateTime": {
+        "count": 5
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 4
+      },
+      "n8n-nodes-base.moveBinaryData": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Daniel Ng",
+    "username": "danielng",
+    "bio": "A Growth Hacker, Digital Marketer & AI Automation Builder with 10+ years of experience in Growth Marketing & Workflow Automation. Based in Helsinki, Finland. For questions about my templates and customization, contact me at: daniel@aiautomationpro.org",
+    "verified": true,
+    "links": [
+      "https://aiautomationpro.org/"
+    ],
+    "avatar": "https://gravatar.com/avatar/7e5e8e658b30fd9740edb159e9120a88edf324d14e7115e2229cf6876f2253a3?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "icon": "fa:exchange-alt",
+      "name": "n8n-nodes-base.moveBinaryData",
+      "codex": {
+        "data": {
+          "alias": [
+            "Move Binary Data"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.converttofile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Convertir en/données binaires",
+        "color": "#7722CC"
+      },
+      "iconData": {
+        "icon": "exchange-alt",
+        "type": "icon"
+      },
+      "displayName": "Convert to/from binary data",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 221,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.dateTime",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.datetime/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Date & Heure",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Date & Time",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 826,
+      "icon": "file:n8n.svg",
+      "name": "n8n-nodes-base.n8n",
+      "codex": {
+        "data": {
+          "alias": [
+            "Workflow",
+            "Execution"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.n8n/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/api/authentication/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "n8n"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyMzAgMTIwIj48cGF0aCBmaWxsPSIjRUE0QjcxIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMDQgNDhjLTExLjE4MyAwLTIwLjU4LTcuNjQ5LTIzLjI0NC0xOGgtMjcuNTA4YTEyIDEyIDAgMCAwLTExLjgzNiAxMC4wMjdsLS45ODcgNS45MTlBMjMuOTQgMjMuOTQgMCAwIDEgMTMyLjYyNiA2MGEyMy45NCAyMy45NCAwIDAgMSA3Ljc5OSAxNC4wNTRsLjk4NyA1LjkxOUExMiAxMiAwIDAgMCAxNTMuMjQ4IDkwaDMuNTA4QzE1OS40MiA3OS42NDkgMTY4LjgxNyA3MiAxODAgNzJjMTMuMjU1IDAgMjQgMTAuNzQ1IDI0IDI0cy0xMC43NDUgMjQtMjQgMjRjLTExLjE4MyAwLTIwLjU4LTcuNjQ5LTIzLjI0NC0xOGgtMy41MDhjLTExLjczMiAwLTIxLjc0NC04LjQ4Mi0yMy42NzMtMjAuMDU0bC0uOTg3LTUuOTE5QTEyIDEyIDAgMCAwIDExNi43NTIgNjZoLTkuNTA4QzEwNC41OCA3Ni4zNTEgOTUuMTgzIDg0IDg0IDg0cy0yMC41OC03LjY0OS0yMy4yNDQtMThINDcuMjQ0QzQ0LjU4IDc2LjM1MSAzNS4xODMgODQgMjQgODQgMTAuNzQ1IDg0IDAgNzMuMjU1IDAgNjBzMTAuNzQ1LTI0IDI0LTI0YzExLjE4MyAwIDIwLjU4IDcuNjQ5IDIzLjI0NCAxOGgxMy41MTJDNjMuNDIgNDMuNjQ5IDcyLjgxNyAzNiA4NCAzNnMyMC41OCA3LjY0OSAyMy4yNDQgMThoOS41MDhhMTIgMTIgMCAwIDAgMTEuODM2LTEwLjAyN2wuOTg3LTUuOTE5QzEzMS41MDQgMjYuNDgyIDE0MS41MTYgMTggMTUzLjI0OCAxOGgyNy41MDhDMTgzLjQyIDcuNjQ5IDE5Mi44MTcgMCAyMDQgMGMxMy4yNTUgMCAyNCAxMC43NDUgMjQgMjRzLTEwLjc0NSAyNC0yNCAyNG0wLTEyYzYuNjI3IDAgMTItNS4zNzMgMTItMTJzLTUuMzczLTEyLTEyLTEyLTEyIDUuMzczLTEyIDEyIDUuMzczIDEyIDEyIDEyTTI0IDcyYzYuNjI3IDAgMTItNS4zNzMgMTItMTJzLTUuMzczLTEyLTEyLTEyLTEyIDUuMzczLTEyIDEyIDUuMzczIDEyIDEyIDEybTcyLTEyYzAgNi42MjctNS4zNzMgMTItMTIgMTJzLTEyLTUuMzczLTEyLTEyIDUuMzczLTEyIDEyLTEyIDEyIDUuMzczIDEyIDEybTk2IDM2YzAgNi42MjctNS4zNzMgMTItMTIgMTJzLTEyLTUuMzczLTEyLTEyIDUuMzczLTEyIDEyLTEyIDEyIDUuMzczIDEyIDEyIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4="
+      },
+      "displayName": "n8n",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur programmé",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 16,
+      "name": "DevOps"
+    }
+  ],
+  "image": []
+}

@@ -2,7 +2,7 @@
 
 ![Unitalk](images/default-avatar-transparent.png)
 
-# Unitalk N8N automation Templates
+# Unitalk N8N Automation Templates
 
 [![][github-release-shield]][github-release-link]
 [![][github-main-check-shield]][github-main-check-link]
@@ -18,19 +18,41 @@ To install `Bun`, you can use the command below for Linux and Mac or visit there
 curl -fsSL https://bun.sh/install | bash
 ```
 
-## I - Install dependencies
+## Install dependencies
 
 ```bash
 bun install
 ```
 
-## II - Importing automation Templates
+## Show help form this script:
+
+- `rsync` command:
 
 ```bash
-bun run resync
+bun run rsync -h
 ```
 
-## III - Run local server
+## Importing automation Templates
+
+- To start importing Automations: 
+
+```bash
+bun run rsync
+```
+
+- To start importing Automation with translations:
+
+```bash
+bun run rsync -t
+```
+
+- To restart importing all Automations with translations:
+
+```bash
+bun run rsync -r -t
+```
+
+## Run local server
 
 ```bash
 bun run start

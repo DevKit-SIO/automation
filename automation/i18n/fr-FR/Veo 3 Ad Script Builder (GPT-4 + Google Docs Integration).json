@@ -1,0 +1,370 @@
+{
+  "id": 4936,
+  "name": "Veo 3 Ad Script Builder (GPT-4 + Intégration Google Docs)",
+  "views": 569,
+  "recentViews": 1,
+  "totalViews": 569,
+  "createdAt": "2025-06-15T01:56:06.785Z",
+  "description": "\n🚀 Aperçu\n\nCe flux d'automatisation n8n simplifie la création de scripts publicitaires vidéo professionnels adaptés à Veo 3 en transformant des entrées utilisateur basiques en invites cinématographiques, cohérentes et hautement structurées.\n\nQue vous soyez une agence de marketing, un créateur de contenu ou une petite entreprise, ce flux garantit une génération vidéo AI de haute qualité à grande échelle—sans avoir besoin d'un rédacteur professionnel ou d'un directeur créatif.\n\n🛠️ Comment ça fonctionne\n\n1. 📝 Déclencheur de formulaire\nCapture les entrées initiales via un formulaire web :\n\nCatégorie d'annonce : Menu déroulant (Avant & Après, Notoriété de la marque, Style UGC, Éducatif)\nEnvironnement : Texte (brève description du cadre/emplacement)\nScript : Texte brut de l'annonce\nIntervenant : Idée de personnage de base (par exemple, “jeune femme, confiante, experte en soins de la peau”)\n2. 🧠 Construire le nœud Persona\nUtilise GPT-4o-Mini pour développer l'entrée de l'intervenant en une description complète du personnage.\nLa sortie inclut :\nÂge\nRace\nVêtements\nCoiffure\nTon/Comportement\nAssure la cohérence visuelle dans les scènes vidéo générées par l'IA.\n3. 🌆 Construire le nœud Environnement\nTransforme le texte de l'environnement en un cadre cinématographique détaillé.\nAjoute des éléments descriptifs comme :\nStyle d'éclairage\nArchitecture ou arrière-plan\nAtmosphère (par exemple, douce lueur matinale, intérieurs modernes)\n4. ✂️ Générer le nœud de texte\nDivise le script complet en segments lisibles de 10 secondes pour un rythme fluide.\nAide des outils comme Veo 3 à maintenir le flux, la cohérence et la lisibilité.\nProduits des lignes concises, prêtes pour la caméra pour chaque section.\n5. 📄 Intégration Google Docs\nMet à jour automatiquement un modèle de script prêt à l'emploi dans Google Docs.\nRemplace les espaces réservés par le contenu des 3 nœuds AI :\nPlan cinématographique : (Construire Persona) dans (Construire Environnement).  \nIls s'adressent à la caméra avec confiance : (Générer le texte).  \nUn éclairage professionnel souligne la crédibilité tout au long.\nRésultat final : une invite de vidéo publicitaire polie, prête pour Veo 3 ou tout outil vidéo AI.\n💸 Avantage de coût\n\nUtiliser l'API Veo 3 coûte directement 0,50 $ par seconde — ce qui signifie qu'une simple vidéo de 5 secondes coûte 3,75 $, et un projet de 6 clips pourrait atteindre 24 $.\n\nCependant, ce flux est optimisé pour le mode Fast on Flow de Veo 3, qui ne coûte que 0,20 $ par clip.\n\n🔍 Exemple réel :\n6 clips = 1,20 $\nÉconomies = Plus de 90 %\nPlus de place pour les tests, l'itération et l'échelle\nCe n'est pas juste une automatisation intelligente — c'est stratégiquement financier.\n\n🔧 Instructions de configuration\n\n✅ Prérequis\nInstance n8n active (Cloud ou Auto-hébergée)\nClé API OpenAI (pour GPT-4)\nIdentifiants API Google Docs\n⚙️ Étapes de configuration\nImportez le flux dans votre instance n8n\nAjoutez les identifiants OpenAI aux nœuds AI\nConfigurez l'intégration Google Docs dans n8n\nCopiez ce modèle :\n👉 Modèle de script Veo 3\nMettez à jour le nœud Google Docs avec l'URL de votre texte\nTestez le flux en soumettant le formulaire\n💼 Cas d'utilisation\n\nAgences de marketing : Générer rapidement des scripts publicitaires pour plusieurs campagnes\nCréateurs de contenu : Augmenter la production de contenu sans épuisement créatif\nProducteurs vidéo AI : Maintenir des entrées détaillées et cohérentes pour chaque rendu\nPropriétaires de petites entreprises : Créer des publicités de qualité professionnelle sans sous-traitance\n🎯 Avantages\n\n✨ Cohérence : L'IA assure l'alignement visuel + narratif\n⚡ Vitesse : Passez d'une idée brute à un script publicitaire fini en quelques secondes\n📈 Scalabilité : Gérez plusieurs clients et campagnes simultanément\n🎥 Qualité de sortie : Les modèles et le rythme sont optimisés pour une utilisation vidéo dans le monde réel\n💰 Économies : Économisez jusqu'à 90 % par rapport à la génération uniquement via l'API.",
+  "workflow": {
+    "id": "p2aCKqmpzyStMnvx",
+    "meta": {
+      "instanceId": "2000c64071c20843606b95c63795bb0797c41036047055a6586498e855b96efc",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Veo 3 Ad Script Automation with GPT4 and Google doc",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "69d5ece2-345f-44be-971b-a3ed393fdafa",
+        "name": "On form submission",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -1160,
+          160
+        ],
+        "webhookId": "89fcbe6e-a6a4-4ffb-9fd9-3b01c32adea4",
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "945e2399-c25f-4b77-adfe-3764b1feaa73",
+        "name": "Build Persona",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "position": [
+          -940,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 1.8
+      },
+      {
+        "id": "947bd996-853e-4d4d-96a9-67bfc9034847",
+        "name": "Build Environment",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "position": [
+          -564,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 1.8
+      },
+      {
+        "id": "cbdb303d-fe5a-46e7-9b63-7ffbbdebc83e",
+        "name": "Generate Copy",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "position": [
+          -188,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 1.8
+      },
+      {
+        "id": "0ae8a839-0e9e-4a33-a103-8e74e04f6131",
+        "name": "Google Docs",
+        "type": "n8n-nodes-base.googleDocs",
+        "position": [
+          188,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "29b497e7-5c01-460c-a74a-ad8e7d322598",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -940,
+          -340
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "806a78fe-94dc-49b3-945f-cbbfbf8ced78",
+    "connections": {
+      "Build Persona": {
+        "main": [
+          [
+            {
+              "node": "Build Environment",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Copy": {
+        "main": [
+          [
+            {
+              "node": "Google Docs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Environment": {
+        "main": [
+          [
+            {
+              "node": "Generate Copy",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "On form submission": {
+        "main": [
+          [
+            {
+              "node": "Build Persona",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.googleDocs": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.openAi": {
+        "count": 3
+      }
+    }
+  },
+  "user": {
+    "name": "David Olusola",
+    "username": "dae221",
+    "bio": "I help ambitious businesses eliminate operational bottlenecks and scale faster with AI automation. My clients typically see 40-60% efficiency gains within 90 days. Currently accepting 3 new projects this quarter - david@daexai.com",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/2abbc4c9e828c54a8d8838beda1382e8e4a66684ef9fa8451dbeb3e72b0c9f9c?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 495,
+      "icon": "file:googleDocs.svg",
+      "name": "n8n-nodes-base.googleDocs",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledocs/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Miscellaneous"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Docs"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSItMTggMCA5MCA4MCI+PHVzZSB4bGluazpocmVmPSIjYSIgeD0iLjUiIHk9Ii41Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzU0OGRmNiIgZD0ibTM2IDAgMjIgMjJ2NTNhNC45OSA0Ljk5IDAgMCAxLTUgNUg1YTQuOTkgNC45OSAwIDAgMS01LTVWNWE0Ljk5IDQuOTkgMCAwIDEgNS01eiIvPjxwYXRoIGQ9Ik0xNCA0MGgzMHYzSDE0em0wIDdoMzB2M0gxNHptMCA4aDMwdjNIMTR6bTAgN2gyMXYzSDE0eiIvPjxwYXRoIGZpbGw9IiNhYmQwZmIiIGQ9Im0zNiAwIDIyIDIySDQxYy0yLjc3IDAtNS0yLjQ4LTUtNS4yNXoiLz48cGF0aCBmaWxsPSIjM2U1YmI5IiBkPSJNNDAuNzUgMjIgNTggMjkuMTI1VjIyeiIvPjwvZz48L3N5bWJvbD48L3N2Zz4="
+      },
+      "displayName": "Google Docs",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 11,
+          "name": "Miscellaneous"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Post-it",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1250,
+      "icon": "file:openAi.svg",
+      "name": "@n8n/n8n-nodes-langchain.openAi",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "ChatGPT",
+            "DallE",
+            "whisper",
+            "audio",
+            "transcribe",
+            "tts",
+            "assistant"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Miscellaneous",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg1IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NiAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MSA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K"
+      },
+      "displayName": "OpenAI",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

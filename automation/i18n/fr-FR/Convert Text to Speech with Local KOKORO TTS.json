@@ -1,0 +1,483 @@
+{
+  "id": 3547,
+  "name": "Convertir le texte en parole avec KOKORO TTS local",
+  "views": 4240,
+  "recentViews": 2,
+  "totalViews": 4240,
+  "createdAt": "2025-04-14T11:43:43.518Z",
+  "description": "## Avertissement\nLe nœud *Exécuter la commande* n'est pris en charge que sur les instances *auto-hébergées* (locales) de n8n.\n\n## Introduction\n![1.jpg](fileId:1114)\n\n**KOKORO TTS** - Kokoro TTS est un modèle de synthèse vocale compact mais puissant, actuellement disponible sur Hugging Face et GitHub. Malgré sa taille modeste—entraîné sur moins de 100 heures d'audio—il offre des résultats impressionnants, se classant constamment en tête du classement TTS sur Hugging Face. Contrairement aux systèmes plus grands, Kokoro TTS offre l'avantage de fonctionner localement, même sur des appareils sans GPU, le rendant accessible à un large éventail d'utilisateurs.\n\n**Qui bénéficiera de cette intégration ?**\n\nCela sera utile pour les vidéoblogueurs, les TikTokers, et cela permettra également de créer un bot de chat vocal gratuit. Actuellement, les modèles TTS sont principalement payants, mais cette intégration permettra une génération vocale entièrement gratuite. Les possibilités sont limitées uniquement par votre imagination.\n\n\n#### Remarque\nMalheureusement, nous ne pouvons pas interagir avec l'API KOKORO via l'URL du navigateur (GET/POST), \n**mais** nous pouvons exécuter un script Python via n8n et lui passer n'importe quelle variable.\n\nDans le tutoriel, le lecteur D est utilisé, mais vous pouvez réécrire cela pour n'importe quel chemin, y compris le lecteur C.\n\n\n## Étape 1 \n\nVous devez avoir Python installé. [lien](https://github.com/PierrunoYT/Kokoro-TTS-Local)\nDe plus, téléchargez et extrayez la version portable de KOKORO depuis GitHub.\n\nCréez un fichier nommé voicegen.py avec le code suivant dans le dossier KOKORO : (C:\\KOKORO). Comme vous pouvez le voir, le chemin de sortie est : (D:\\output.mp3).\n\n```\nimport sys\nimport shutil\nfrom gradio_client import Client\n\n# Définir l'encodage UTF-8 pour stdout\nsys.stdout.reconfigure(encoding='utf-8')\n\n# Obtenir les arguments de la ligne de commande\ntext = sys.argv[1] # Premier argument : texte d'entrée\nvoice = sys.argv[2] # Deuxième argument : voix\nspeed = float(sys.argv[3]) # Troisième argument : vitesse (converti en float)\n\nprint(f\"Texte reçu : {text}\")\nprint(f\"Voix : {voice}\")\nprint(f\"Vitesse : {speed}\")\n\n# Se connecter au serveur Gradio local\nclient = Client(\"http://localhost:7860/\")\n\n# Générer la parole en utilisant l'API\nresult = client.predict(\ntext=text,\nvoice=voice,\nspeed=speed,\napi_name=\"/generate_speech\"\n)\n\n# Définir le chemin de sortie\noutput_path = r\"D:\\output.mp3\"\n\n# Déplacer le fichier généré\nshutil.move(result[1], output_path)\n\n# Imprimer le chemin de sortie\nprint(output_path)\n```\n\n## Étape 2\nAllez sur n8n et créez le flux de travail suivant.\n![2.jpg](fileId:1111)\n\n\n\n## Étape 3\nModifier le module de champ.\n```\n{\n  \"voice\": \"af_sarah\",\n  \"text\": \"Bonjour le monde !\"\n}\n```\n![33.jpg](fileId:1110)  \n\n\n## Étape 4 \nNous aurons besoin d'un module Exécuter la commande avec la commande : python \n```\nC:\\KOKORO\\voicegen.py “{{ $json.text }}” “{{ $json.voice }}” 1\n```\n\n![44.jpg](fileId:1112)\n\n\n## Étape 5 \nLe script fonctionne déjà, mais pour l'écouter, vous pouvez connecter un module Binaire avec le chemin vers le fichier MP3 généré \n```\nD:/output.mp3\n```\n![55.jpg](fileId:1113)\n\n\n## Étape 6\nCliquez sur “Texte du flux de travail” et profitez du résultat.\n\nIl y a plus de voix et d'accents que dans ChatGPT, de plus c'est gratuit.\n\n### P.S.\nSi vous le souhaitez, il y a un [tutoriel détaillé](https://blog.bswlife.site/2025/04/14/n8n-kokoro-tts-integration-setup/) sur mon blog.\n\n",
+  "workflow": {
+    "meta": {
+      "instanceId": "a6d5191e58fd6be87222f47435e6f9df8f98ec0d945d3e7b7f6373c59a6c3f37",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "fcf1064e-557f-4514-9109-bb10ac837f8b",
+        "name": "Run python script",
+        "type": "n8n-nodes-base.executeCommand",
+        "position": [
+          -100,
+          20
+        ],
+        "parameters": {
+          "command": "=python C:\\KOKORO\\voicegen.py \"{{ $json.text }}\" \"{{ $json.voice }}\" 1\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "199a3212-69c0-4314-92c8-783573f165d7",
+        "name": "Passing variables",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -320,
+          20
+        ],
+        "parameters": {
+          "mode": "raw",
+          "options": {},
+          "jsonOutput": "{\n  \"voice\": \"af_sarah\",\n  \"text\": \"Hello world!\"\n}\n"
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "deb008d0-53ae-4348-a555-9e54b6e0efd4",
+        "name": "Start",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -540,
+          20
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "ffa1b2bf-abc3-45d8-8b7b-de4c0780a609",
+        "name": "Play sound",
+        "type": "n8n-nodes-base.readBinaryFiles",
+        "position": [
+          120,
+          20
+        ],
+        "parameters": {
+          "fileSelector": "D:/output.mp3"
+        },
+        "typeVersion": 1,
+        "alwaysOutputData": false
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Passing variables",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Passing variables": {
+        "main": [
+          [
+            {
+              "node": "Run python script",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Run python script": {
+        "main": [
+          [
+            {
+              "node": "Play sound",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 16,
+  "workflowInfo": {
+    "nodeCount": 4,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.executeCommand": {
+        "count": 1
+      },
+      "n8n-nodes-base.readBinaryFiles": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "bswlife",
+    "username": "bswlife",
+    "bio": "Looking for website design, WordPress,\nor 3D with animation? \n\nI’d be happy to help!",
+    "verified": false,
+    "links": [
+      "https://bswlife.site/"
+    ],
+    "avatar": "https://gravatar.com/avatar/d8918362e768229a8bd3f1c71fbf0f3d403fa2fad19c784ceae9be565b62acf7?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 13,
+      "icon": "fa:terminal",
+      "name": "n8n-nodes-base.executeCommand",
+      "codex": {
+        "data": {
+          "alias": [
+            "Shell",
+            "Command",
+            "OS",
+            "Bash"
+          ],
+          "details": "Execute command allows you to run terminal commands on the computer/server hosting your n8n instance. Useful for executing a shell script or interacting with your n8n instance programmatically via the CLI.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.executecommand/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Exécuter la commande",
+        "color": "#886644"
+      },
+      "iconData": {
+        "icon": "terminal",
+        "type": "icon"
+      },
+      "displayName": "Execute Command",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "icon": "fa:file-import",
+      "name": "n8n-nodes-base.readBinaryFiles",
+      "codex": {
+        "data": {
+          "alias": [
+            "Text",
+            "Open",
+            "Import"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.readwritefile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Lire les fichiers binaires",
+        "color": "#44AA44"
+      },
+      "iconData": {
+        "icon": "file-import",
+        "type": "icon"
+      },
+      "displayName": "Read Binary Files",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsqu'on clique sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": [
+    {
+      "id": 1110,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/33_0bf357873e.jpg"
+    },
+    {
+      "id": 1111,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/2_a68200b442.jpg"
+    },
+    {
+      "id": 1112,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/44_fafc00c452.jpg"
+    },
+    {
+      "id": 1113,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/55_51bc02e866.jpg"
+    },
+    {
+      "id": 1114,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/1_afbe14cda3.jpg"
+    }
+  ]
+}

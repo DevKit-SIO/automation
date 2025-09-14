@@ -1,25 +1,38 @@
-import {getTemplates, getWorkflow} from "./_requests.ts";
-import type {Category, ResponseCollection, Workflow} from "./_models.ts";
+import figlet from "figlet";
+import {parseArgs} from "util";
 import {access, mkdir, writeFile} from "node:fs/promises";
-import {join, resolve} from "node:path";
-import {readdirSync} from 'node:fs';
+import {dirname, join, resolve} from "node:path";
+import {existsSync} from 'node:fs';
 import {readJSONSync} from 'fs-extra';
-import {translateJSON} from "./i18n";
 import qs from "qs";
+import {getTemplates, getWorkflow} from "./_requests.ts";
+import {translateJSON} from "./i18n";
+import type {Category, CommandOptions, ResponseCollection, Workflow} from "./_models.ts";
 
 class ImportAutomations {
     // locals = ["en-US", "fr-FR", "es-ES", "pt-PT", "de-DE", "it-IT", "ar-MA"];
-    locals = ["fr-FR"];
 
-    private async ensureDirectory(directoryPath: string): Promise<void> {
+    options: CommandOptions
+    locals = ["fr-FR"];
+    workflowsDir = "automation";
+    localDir = join(this.workflowsDir, 'i18n');
+
+    constructor(options: CommandOptions) {
+        this.options = options
+    }
+
+    private async _ensure(directoryPath: string): Promise<void> {
         try {
             await access(directoryPath);
         } catch {
-            await mkdir(directoryPath, {recursive: true});
+            let dir = directoryPath;
+            if (dir?.endsWith('.json'))
+                dir = dirname(directoryPath)
+            await mkdir(dir, {recursive: true});
         }
     }
 
-    private sanitizeFileName(name: string): string {
+    private _sanitizeFileName(name: string): string {
         const replaced = name
             .replace(/[\\\/:*?"<>#|]/g, "-")
             .replace(/\s+/g, " ")
@@ -31,27 +44,72 @@ class ImportAutomations {
             : withoutTrailing;
     }
 
-    getCategories(workflows: Array<Workflow>): Array<Category> {
+    _getCategories(workflow: Workflow): Array<Category> {
         const categoryMap = new Map<number, Category>();
 
-        for (const wf of workflows) {
-            for (const c of wf.categories || []) {
-                if (!categoryMap.has(c.id)) {
-                    categoryMap.set(c.id, c);
-                }
+        for (const c of workflow.categories || []) {
+            if (!categoryMap.has(c.id)) {
+                categoryMap.set(c.id, c);
             }
         }
 
         return Array.from(categoryMap.values());
     }
 
-    async getAutomations() {
-        const workflows: Array<Workflow> = [];
-        const pagination = {
-            page: 1,
-            rows: 20,
-        };
+    async _translate(
+        workflow: Workflow,
+        locale: string
+    ): Promise<Workflow> {
+        const payload = workflow as any;
+        return (await translateJSON(payload, locale)) as Workflow;
+    }
+
+    async _saveCategories(
+        categories: Array<Category>,
+        path: string = "automation"
+    ) {
+        try {
+            const baseDir = path;
+            await this._ensure(baseDir);
+            const sorted = [...(categories || [])].sort((a, b) => a.id - b.id);
+            const filePath = join(baseDir, "categories.json");
+            await writeFile(filePath, JSON.stringify(sorted, null, 2), "utf8");
+            console.info(`Saved ${sorted.length} categories to ${filePath}`);
+        } catch (error) {
+            console.error("Failed to save categories:", {
+                error,
+                targetPath: path,
+            });
+        }
+    }
+
+    async _save(
+        workflow: Workflow,
+        path: string
+    ) {
+        try {
+            await this._ensure(path);
+            // const originalName =
+            //     originalNames?.[index] ?? workflow.__originalName ?? workflow.name;
+            // delete workflow.__originalName;
+            // const fileName = `${this.sanitizeFileName(originalName)}.json`;
+            await writeFile(path, JSON.stringify(workflow, null, 2), "utf8");
+        } catch (e) {
+        }
+    }
+
+    async _getAutomations(rows: number = 100): Promise<void> {
+        const {refresh, translate} = this.options
+        let categories: Array<Category> = []
+        let foundWorkflows: number = 0;
         let hasMorePages = true;
+        const pagination = {page: 1, rows};
+
+        try {
+            const categoriesPath = resolve(this.workflowsDir, 'categories.json');
+            categories = readJSONSync(categoriesPath) as Array<Category>
+        } catch (e) {
+        }
 
         // Calculate the cutoff date (18 months ago)
         const cutoffDate = new Date();
@@ -59,13 +117,12 @@ class ImportAutomations {
 
         do {
             try {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
                 console.info(`Fetching page ${pagination?.page}...`);
                 const data: ResponseCollection<Workflow> = await getTemplates(
                     `${qs.stringify(pagination, {encode: false})}`
                 );
                 console.info(
-                    `${workflows.length + data.workflows?.length} workflow found.`
+                    `${foundWorkflows + data.workflows?.length} workflow found.`
                 );
 
                 console.info(`Importing ${data.workflows?.length} workflows...`);
@@ -95,136 +152,122 @@ class ImportAutomations {
                 );
 
                 for (const w of recentWorkflows) {
-                    const wf = await getWorkflow(w?.id);
-                    workflows.push({...w, ...wf.workflow});
+                    try {
+                        const {workflow} = await getWorkflow(w?.id);
+
+                        categories = [...new Set([...categories, ...this._getCategories(workflow)])];
+
+                        const workflowFile: string = join(this.workflowsDir, `${this._sanitizeFileName(workflow.name)}.json`);
+                        if (!existsSync(workflowFile) || refresh) {
+                            await this._save(workflow, workflowFile)
+                        }
+
+                        if (translate) {
+                            for (const local of this.locals) {
+                                try {
+                                    const localeDir = join(this.localDir, local);
+                                    await this._ensure(localeDir);
+
+                                    const translationFile: string = join(localeDir, `${this._sanitizeFileName(workflow.name)}.json`);
+                                    if (!existsSync(translationFile) || refresh) {
+                                        const translated = await this._translate(workflow, local);
+                                        await this._save(translated, translationFile);
+                                    }
+                                } catch (e: any) {
+                                    console.error(`Error translating workflow: "${workflow.name}"(${workflow.id}). (${e.message})`);
+                                }
+                            }
+                        }
+
+                        console.log(`Workflow "${workflow.name}"(${workflow.id}) imported successfully`)
+                    } catch (e) {
+
+                    }
+
+                    foundWorkflows++;
                 }
-                console.info(`${workflows.length} workflows imported.`);
+                console.info(`${foundWorkflows} workflows imported.`);
 
                 pagination.page++;
 
                 if (data?.totalWorkflows < pagination.page * pagination.rows)
                     hasMorePages = false;
+
+                await new Promise((resolve) => setTimeout(resolve, 1000));
             } catch (e) {
                 console.warn(
                     `Error fetching page ${pagination?.page}. Skipping to next page...`,
                     e
                 );
                 pagination.page++;
-                continue;
             }
         } while (hasMorePages);
 
-        console.info(`Total workflows fetched: ${workflows.length}`);
-        return workflows;
-    }
+        console.info(`Total workflows fetched: ${foundWorkflows}`);
 
-    async translate(
-        workflows: Array<Workflow>,
-        locale: string
-    ): Promise<Array<Workflow>> {
-        const localeDir = join("automation", "i18n", locale);
-        const translated: Array<Workflow> = [];
-        for (const wf of workflows) {
-            const payload = {...wf} as any;
-            const t = (await translateJSON(payload, locale)) as Workflow;
-            await this.save([t], localeDir, [wf.name])
-            translated.push(t);
-        }
-        return translated;
-    }
+        await this._saveCategories(categories)
 
-    async saveCategories(
-        categories: Array<Category>,
-        path: string = "automation"
-    ) {
-        try {
-            const baseDir = path;
-            await this.ensureDirectory(baseDir);
-            const sorted = [...(categories || [])].sort((a, b) => a.id - b.id);
-            const filePath = join(baseDir, "Categories.json");
-            await writeFile(filePath, JSON.stringify(sorted, null, 2), "utf8");
-            console.info(`Saved ${sorted.length} categories to ${filePath}`);
-        } catch (error) {
-            console.error("Failed to save categories:", {
-                error,
-                targetPath: path,
-            });
+        for (const local of this.locals) {
+            const translatedCategories = (await translateJSON(
+                categories,
+                local
+            )) as Array<Category>;
+
+            await this._saveCategories(translatedCategories, join(this.localDir, local));
         }
     }
 
-    async save(
-        workflows: Array<Workflow>,
-        path: string = "automation",
-        originalNames?: Array<string>
-    ) {
-        const baseDir = path;
-        await this.ensureDirectory(baseDir);
-
-        const tasks = workflows.map(async (workflow, index) => {
-            try {
-                const originalName =
-                    originalNames?.[index] ?? workflow.__originalName ?? workflow.name;
-                delete workflow.__originalName;
-                const fileName = `${this.sanitizeFileName(originalName)}.json`;
-                const filePath = join(baseDir, fileName);
-                await writeFile(filePath, JSON.stringify(workflow, null, 2), "utf8");
-            }catch (e) {
-            }
-        });
-
-        await Promise.all(tasks);
+    _help() {
+        console.info('Unitalk AI Automation script\n')
+        console.info('This script scrap the automation workflow examples from N8N Api.')
+        console.info('usage: bun run rsync [options]')
+        console.info('\toptions:')
+        console.info('\t\t-h, --help:       Show the help message.')
+        console.info('\t\t-r, --refresh:    Re-import all the automation workflow examples.')
+        console.info('\t\t-t, --translate:  Translate the automation workflow examples using "gpt-4o-mini" model by default.')
+        console.info('\t\t-m, --madel:      OpenAI model to use for translation (coming soon).')
     }
 
     async run() {
-        const workflowsDir = "automation";
-        let workflows: Array<Workflow> = []
-        let categories: Array<Category> = []
-        const workflowsFiles = readdirSync(workflowsDir, {withFileTypes: true, recursive: false});
+        const {help} = this.options
 
-        if (workflowsFiles?.length > 0) {
-            for (const workflowFile of workflowsFiles) {
-                if (workflowFile?.isFile()) {
-                    const workflowPath = resolve(workflowsDir, workflowFile?.name);
-                    const workflow = readJSONSync(workflowPath);
-                    workflows.push(workflow)
-                }
-            }
+        const unitalk = figlet.textSync("Unitalk AI");
+        console.log(unitalk)
 
-            const categoriesPath = resolve(workflowsDir, 'Categories.json');
-            categories = readJSONSync(categoriesPath)
+        if (!help) {
+            await this._getAutomations();
         } else {
-            workflows = await this.getAutomations();
-
-            const categoryMap = new Map<number, Category>();
-            for (const wf of workflows) {
-                for (const c of wf.categories || []) {
-                    if (!categoryMap.has(c.id)) {
-                        categoryMap.set(c.id, c);
-                    }
-                }
-            }
-            const categories = this.getCategories(workflows);
-
-            await this.save(workflows);
-            await this.saveCategories(categories);
-        }
-
-
-        for (const locale of this.locals) {
-            const localeDir = join(workflowsDir, "i18n", locale);
-            await this.ensureDirectory(localeDir);
-
-            const translatedWorkflows = await this.translate(workflows, locale);
-            // const originalNames = workflows.map((wf) => wf.name);
-            // await this.save(translatedWorkflows, localeDir, originalNames);
-
-            const translatedCategories = (await translateJSON(
-                categories,
-                locale
-            )) as Array<Category>;
-            await this.saveCategories(translatedCategories, localeDir);
+            this._help()
         }
     }
 }
 
-new ImportAutomations().run();
+const {values} = parseArgs({
+    args: Bun.argv,
+    options: {
+        help: {
+            type: 'boolean',
+            default: false,
+            short: 'h',
+        },
+        refresh: {
+            type: 'boolean',
+            default: false,
+            short: 'r',
+        },
+        translate: {
+            type: 'boolean',
+            default: false,
+            short: 't',
+        },
+        madel: {
+            type: 'string',
+            default: 'gpt-4o-mini',
+            short: 'm',
+        },
+    },
+    strict: true,
+    allowPositionals: true,
+});
+
+new ImportAutomations(values).run();

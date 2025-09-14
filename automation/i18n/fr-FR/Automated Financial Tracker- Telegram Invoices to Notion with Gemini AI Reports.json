@@ -1,0 +1,1528 @@
+{
+  "id": 3960,
+  "name": "Suivi Financier Automatisé : Factures Telegram vers Notion avec Rapports AI Gemini",
+  "views": 5169,
+  "recentViews": 3,
+  "totalViews": 5169,
+  "createdAt": "2025-05-09T11:57:48.753Z",
+  "description": "\n\n**Suivi Financier Automatisé : Factures Telegram vers Notion avec Résumés & Rapports AI**\n\n---\n\n**Marre de saisir manuellement chaque dépense ? Simplifiez votre suivi financier avec ce puissant workflow n8n !**\n\nPrenez une photo de votre facture dans Telegram, et laissez l'IA (alimentée par Google Gemini) extraire automatiquement les détails, les enregistrer dans votre base de données Notion, et même vous envoyer un résumé rapide. De plus, recevez des rapports hebdomadaires programmés avec des graphiques pour visualiser vos dépenses. Automatisez vos finances, gagnez du temps et obtenez de meilleures informations avec ce modèle facile à utiliser !\n\n**Transformez votre suivi des dépenses d'une corvée en une brise automatisée. Essayez-le !**\n\n---\n\n\n### Aperçu :\n\nCe workflow révolutionne la façon dont vous suivez vos finances en automatisant l'ensemble du processus, de la capture de la facture à la génération de rapports. Il vous suffit d'envoyer une photo d'une facture ou d'un reçu à un chat Telegram désigné, et ce workflow va :\n\n1.  **Extraction de Données avec l'IA :** Utilisez les capacités de Google Gemini pour effectuer de l'OCR sur l'image, comprendre le contenu et extraire des détails clés comme le nom de l'article, la quantité, le prix, le total, la date, et même tenter de catégoriser la dépense.\n2.  **Stockage dans Notion :** Enregistrez automatiquement chaque transaction extraite dans une base de données Notion structurée.\n3.  **Retour Instantané :** Envoyez un résumé de la transaction traitée à votre chat Telegram.\n4.  **Rapports Programmés :** Générez et envoyez un résumé visuel de vos dépenses (par exemple, dépenses hebdomadaires par catégorie) sous forme de graphique à votre chat ou groupe Telegram préféré.\n\nCe workflow est parfait pour les particuliers, les freelances ou les petites équipes cherchant à gérer sans effort leurs dépenses sans saisie manuelle des données.\n\n### Caractéristiques Clés & Avantages :\n\n* **Saisie de Dépenses Sans Effort :** Il suffit d'envoyer une photo – plus besoin de taper !\n* **Extraction de Données Alimentée par l'IA :** Exploite Google Gemini pour un traitement intelligent des factures.\n* **Données Centralisées dans Notion :** Gardez tous vos enregistrements financiers bien organisés dans une base de données Notion.\n* **Catégorisation Automatisée :** L'IA aide à catégoriser vos dépenses (par exemple, Alimentation & Boissons, Transport).\n* **Résumés Instantanés :** Recevez une confirmation immédiate et un résumé de ce qui a été enregistré.\n* **Rapports Visuels :** Recevez des graphiques programmés (par exemple, graphiques à barres des dépenses par catégorie) directement dans Telegram.\n* **Personnalisable :** Adaptez facilement le workflow à vos besoins spécifiques, catégories et préférences de reporting.\n* **Gain de Temps :** Réduit considérablement le temps consacré à l'administration financière manuelle.\n\n### Comment Ça Fonctionne (Détail du Workflow) :\n\nLe workflow est divisé en deux parties principales :\n\n**Partie 1 : Traitement & Enregistrement des Factures en Temps Réel (`## Auto Notes Transaction avec Telegram et base de données Notion`)**\n\n1.  **Déclencheur Telegram (`Déclencheur Telegram | Lors de la réception d'une photo`):** S'active lorsqu'une nouvelle photo est envoyée au chat Telegram configuré.\n2.  **Obtenir les Infos de la Photo (`Obtenir Infos Photo du chat telegram`):** Récupère les détails de la photo reçue.\n3.  **Obtenir les Infos de l'Image (`Obtenir Infos de l'Image`):** Prépare les données de l'image.\n4.  **Extraction de Données IA (`Modèle de Chat Google Gemini` & `Chaîne LLM de Base`):**\n    * Les données de l'image sont envoyées au Modèle de Chat Google Gemini.\n    * Un prompt spécifique demande à l'IA d'extraire les détails (date, ID, nom, quantité, prix, total, catégorie, taxe) au format d'un tableau JSON et de fournir un message résumé. Les catégories incluent Alimentation & Boissons, Transport, Services Publics, Shopping, Santé, Divertissement, Logement, et Éducation.\n5.  **Analyser la Sortie de l'IA (`Analyser vers votre objet | Tableau`):** Structure la sortie JSON de l'IA pour un traitement plus facile.\n6.  **Diviser les Transactions (`Diviser | données transaction`):** Si une facture contient plusieurs articles, ce nœud les divise en enregistrements individuels.\n7.  **Enregistrer dans Notion (`Enregistrer dans la base de données Notion`):** Chaque élément de transaction est ajouté comme une nouvelle page/entrée dans votre base de données Notion spécifiée, en mappant des champs comme Nom, Quantité, Prix, Total, Catégorie, Date, et Taxe.\n8.  **Envoyer le Résumé Telegram (`Retourner au chat et donner un texte résumé`):** Le message résumé généré par l'IA est renvoyé au chat Telegram d'origine.\n\n**Partie 2 : Reporting Financier Programmé (`## Rapport de programme à envoyer sur le canal ou message privé`)**\n\n1.  **Déclencheur de Planification (`Déclencheur de Planification | pour envoyer le rapport graphique`):** S'exécute à un intervalle prédéfini (par exemple, chaque semaine) pour générer des rapports.\n2.  **Obtenir les Données Récentes de Notion (`Obtenir Données Récentes de Notions`):** Récupère les données de transaction de la base de données Notion pour une période spécifique (par exemple, la semaine passée).\n3.  **Résumer les Données (`Résumer les Données de Transaction`):** Agrège les données, par exemple, en additionnant le montant 'total' pour chaque 'catégorie'.\n4.  **Préparer les Données du Graphique (`Convertir les Données en charge utile JSON pour le graphique`):** Transforme les données résumées en un format JSON adapté à la génération d'un graphique (par exemple, étiquettes pour les catégories, données pour les montants des dépenses).\n5.  **Générer le Graphique (`Générer le Graphique`):** Utilise le nœud QuickChart pour créer un graphique visuel (par exemple, un graphique à barres) à partir des données préparées.\n6.  **Envoyer le Graphique à Telegram (`Envoyer l'Image du Graphique au Groupe ou au Chat Privé`):** Envoie l'image du graphique généré à un ID de chat Telegram ou groupe spécifié.\n\n### Nœuds Utilisés (Nœuds Clés) :\n\n* **Déclencheur Telegram & Nœud Telegram :** Pour recevoir des images et envoyer des messages/images.\n* **Modèle de Chat Google Gemini (Langchain) :** Pour l'OCR alimenté par l'IA et l'extraction de données des factures.\n* **Chaîne LLM de Base (Langchain) :** Pour interagir avec le modèle de langage en utilisant des prompts spécifiques.\n* **Analyseur de Sortie Structurée (Langchain) :** Pour structurer la sortie du modèle de langage.\n* **Nœud Notion :** Pour lire et écrire dans vos bases de données Notion.\n* **Déclencheur de Planification :** Pour automatiser le processus de reporting.\n* **Nœud Résumer :** Pour agréger les données pour les rapports.\n* **Nœud Code :** Utilisé ici pour formater les données pour le graphique.\n* **Nœud QuickChart :** Pour générer des graphiques.\n* **Nœud Diviser :** Pour traiter plusieurs articles d'une seule facture.\n\n### Instructions de Configuration :\n\n1.  **Identifiants :**\n    * **Telegram :** Créez un bot Telegram et obtenez son token API. Vous aurez également besoin de l'ID de chat où vous enverrez les factures et où les rapports doivent être envoyés.\n    * **API Google Gemini (PaLM) :** Vous aurez besoin d'une clé API pour Google Gemini.\n    * **Notion :** Créez une intégration Notion et obtenez la clé API. Créez une base de données Notion avec des propriétés correspondant aux données que vous souhaitez enregistrer (par exemple, `Nom` (Titre), `Quantité` (Nombre), `Prix` (Nombre), `Total` (Nombre), `Catégorie` (Sélection), `Date` (Texte ou Date), `Taxe` (Nombre)). Partagez cette base de données avec votre intégration Notion.\n2.  **Configurer le Déclencheur Telegram :**\n    * Ajoutez votre token API de Bot Telegram.\n    * Lorsque vous activez le workflow pour la première fois ou testez le déclencheur, envoyez `/start` à votre bot dans le chat que vous souhaitez utiliser pour envoyer des factures. n8n capturera alors l'ID de chat.\n3.  **Configurer le Nœud Google Gemini (`Modèle de Chat Google Gemini`) :**\n    * Sélectionnez ou ajoutez vos identifiants API Google Gemini.\n    * Examinez le prompt dans le nœud `Chaîne LLM de Base` et ajustez si nécessaire (par exemple, format de date, catégories).\n4.  **Configurer les Nœuds Notion :**\n    * **`Enregistrer dans la base de données Notion` :**\n        * Sélectionnez ou ajoutez vos identifiants API Notion.\n        * Sélectionnez l'ID de votre base de données Notion cible.\n        * Mappez les propriétés du workflow (par exemple, `={{ $json.name }}`) aux colonnes de votre base de données Notion.\n    * **`Obtenir les Données Récentes de Notions` :**\n        * Sélectionnez ou ajoutez vos identifiants API Notion.\n        * Sélectionnez l'ID de votre base de données Notion cible.\n        * Ajustez le filtre si nécessaire (le défaut est \"semaine_passée\").\n5.  **Configurer le Nœud Telegram pour les Rapports (`Envoyer l'Image du Graphique au Groupe ou au Chat Privé`) :**\n    * Sélectionnez ou ajoutez votre token API de Bot Telegram.\n    * Entrez l'`ID de Chat` pour le groupe ou le chat privé où vous souhaitez recevoir les rapports.\n6.  **Configurer le Déclencheur de Planification (`Déclencheur de Planification | pour envoyer le rapport graphique`) :**\n    * Définissez votre calendrier souhaité (par exemple, chaque lundi à 9h).\n7.  **Tester :** Envoyez une image d'une facture à votre bot Telegram et vérifiez si les données apparaissent dans Notion et si vous recevez un message résumé. Attendez le rapport programmé ou déclenchez-le manuellement pour tester la fonctionnalité de reporting.\n\n---\n\n## Texte de Note Collante pour Votre Modèle n8n :\n\n*(Ce sont des suggestions. Vous placeriez cela directement dans les notes collantes de votre éditeur de workflow n8n.)*\n\n**Notes Collantes Existantes de Haut Niveau :**\n\n* `## Auto Notes Transaction avec Telegram et base de données Notion`\n* `## Rapport de programme à envoyer sur le canal ou message privé`\n\n**Notes Collantes Spécifiques à Ajouter :**\n\n* **Sur `Déclencheur Telegram | Lors de la réception d'une photo` :**\n    ```\n    📸 ENTRÉE DE FACTURE 📸\n    Le bot écoute ici les photos de vos reçus/factures.\n    Assurez-vous que votre token API de Bot Telegram est configuré dans les identifiants.\n    ```\n* **Près de `Modèle de Chat Google Gemini` & `Chaîne LLM de Base` :**\n    ```\n    🤖 LA MAGIE DE L'IA SE PRODUIT ICI 🧠\n    - L'image est envoyée à Google Gemini pour l'extraction de données.\n    - Vérifiez 'Chaîne LLM de Base' pour personnaliser le prompt de l'IA (par exemple, catégories, format de sortie).\n    - Nécessite des identifiants API Google Gemini.\n    ```\n* **Sur `Analyser vers votre objet | Tableau` :**\n    ```\n    ✨ STRUCTURATION DES DONNÉES DE L'IA ✨\n    Convertit la sortie textuelle de l'IA en un objet JSON utilisable.\n    Vérifiez le schéma si vous modifiez significativement le prompt de l'IA.\n    ```\n* **Sur `Enregistrer dans la base de données Notion` :**\n    ```\n    📝 ENREGISTRER DANS NOTION 📝\n    - Les données de transaction extraites sont enregistrées ici.\n    - Configurez avec votre clé API Notion & ID de base de données.\n    - Mappez correctement les champs à vos colonnes de base de données !\n    ```\n* **Sur `Retourner au chat et donner un texte résumé` :**\n    ```\n    💬 RÉSUMÉ DE LA TRANSACTION 💬\n    Envoie un message de confirmation à l'utilisateur dans Telegram\n    avec un résumé de la dépense enregistrée.\n    ```\n* **Sur `Déclencheur de Planification | pour envoyer le rapport graphique` :**\n    ```\n    🗓️ CALENDRIER DE REPORTING 🗓️\n    Définissez la fréquence à laquelle vous souhaitez recevoir votre rapport de dépenses (par exemple, hebdomadaire, mensuel).\n    ```\n* **Sur `Obtenir les Données Récentes de Notions` :**\n    ```\n    📊 RÉCUPÉRATION DES DONNÉES POUR LE RAPPORT 📊\n    - Récupère les transactions de Notion pour la période de rapport.\n    - Par défaut : \"Semaine Passée\". Ajustez le filtre si nécessaire.\n    - Nécessite des identifiants API Notion & ID de base de données.\n    ```\n* **Sur `Résumer les Données de Transaction` :**\n    ```\n    ➕ RÉSUMÉ DES DÉPENSES ➕\n    Agrège vos dépenses, généralement par catégorie,\n    pour préparer le graphique.\n    ```\n* **Sur `Convertir les Données en charge utile JSON pour le graphique` (Nœud Code) :**\n    ```\n    🎨 PRÉPARATION DES DONNÉES DU GRAPHIQUE 🎨\n    Ce nœud de code formate les données résumées\n    dans la structure JSON nécessaire à QuickChart.\n    ```\n* **Sur `Générer le Graphique` (Nœud QuickChart) :**\n    ```\n    📈 GÉNÉRATION DU RAPPORT VISUEL 📈\n    Crée l'image du graphique basée sur vos données de dépenses.\n    Vous pouvez personnaliser le type de graphique (barres, secteurs, etc.) ici.\n    ```\n* **Sur `Envoyer l'Image du Graphique au Groupe ou au Chat Privé` :**\n    ```\n    📤 ENVOYER LE RAPPORT À TELEGRAM 📤\n    - Livrer le graphique généré à votre chat/groupe Telegram choisi.\n    - Définissez le bon ID de chat et le token API du bot.\n    ```\n* **Note Collante Générale (Placez là où c'est pertinent) :**\n    ```\n    🔑 IDENTIFIANTS NÉCESSAIRES 🔑\n    N'oubliez pas de configurer les clés/tokens API pour :\n    - Telegram\n    - Google Gemini\n    - Notion\n    ```\n* **Note Collante Générale (Placez là où c'est pertinent) :**\n    ```\n    💡 PERSONNALISEZ-MOI ! 💡\n    - Ajustez les prompts de l'IA pour une meilleure précision.\n    - Changez la structure de la base de données Notion.\n    - Modifiez la fréquence et le contenu des rapports.\n    ```",
+  "workflow": {
+    "id": "3BkxvtCbF6hHGUgM",
+    "meta": {
+      "instanceId": "d847dccbed2cefba539a228a44c266869b59eafbd4f307c4928a1149fb542a9e",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "N8N Financial Tracker Telegram Invoices to Notion with AI Summaries & Reports",
+    "tags": [
+      {
+        "id": "OXcPKHaINFSvU1ux",
+        "name": "Money",
+        "createdAt": "2025-05-09T11:02:15.929Z",
+        "updatedAt": "2025-05-09T11:02:15.929Z"
+      },
+      {
+        "id": "witgF3iHQ0sAlkjG",
+        "name": "experimental",
+        "createdAt": "2025-05-09T11:02:15.933Z",
+        "updatedAt": "2025-05-09T11:02:15.933Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "3792ae58-807f-4e83-a219-25c17c8b4048",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          680,
+          380
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-2.5-flash-preview-04-17"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "haEP6ehKtsSUjFmK",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "943f87e2-a1ac-4f7e-999b-8ea261259e5a",
+        "name": "Basic LLM Chain",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          640,
+          220
+        ],
+        "parameters": {
+          "text": "=ini ada base64 invoice rangkumkan Pengeluaran dari invoice tersebut Nama Barang jumlah dan Pengeluaran masing masing barang dan total, outputnya jangan panjang panjang saya cukup berikan \n\ndate: DD-MM-YYYY ( Jika dari OCR tidak ada tanggal ambil tanggal hari ini )\nid:\nname:\n qty: \nprice:\n total:\ncategory:\ntax : (jika di total berbeda dengan item brati ada pajak nya hitungkan juga pajaknya masukan kesini)\n\nuntuk pilihan categorynya : Food & Beverage / Transportation / Utilities / Shopping / Healthcare / Entertaiment / Housing / Education\n\ndalam bentuk JSON array object, berikan juga key message summary untuk rangkuman, berikan rangkauman singkat total pengeluaran dan barang apa saja yang dibeli serta jumlah nya berikan juga pajaknya",
+          "messages": {
+            "messageValues": [
+              {
+                "type": "HumanMessagePromptTemplate",
+                "messageType": "imageBinary"
+              }
+            ]
+          },
+          "promptType": "define",
+          "hasOutputParser": true
+        },
+        "typeVersion": 1.4
+      },
+      {
+        "id": "247b78cb-c3f6-4f31-8559-0fff70de9ba9",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "width": 1703,
+          "height": 580,
+          "content": "## Automated Financial Tracker: Telegram Invoices to Notion with AI Summaries & Reports\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e20045c2-a8ef-43d6-b619-6825f605e183",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          620
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 1706,
+          "height": 527,
+          "content": "## Schedule report to send on chanel or private message\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ed8d6544-af9e-416a-b1f3-624ca108427f",
+        "name": "Schedule Trigger | for send chart report",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          80,
+          880
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "22ad7ea1-9404-48bd-9d0f-0c58b8b66e3d",
+        "name": "Get Recent Data from Notions",
+        "type": "n8n-nodes-base.notion",
+        "position": [
+          400,
+          940
+        ],
+        "parameters": {
+          "filters": {
+            "conditions": [
+              {
+                "key": "Created time|created_time",
+                "condition": "past_week"
+              }
+            ]
+          },
+          "options": {},
+          "resource": "databasePage",
+          "operation": "getAll",
+          "returnAll": true,
+          "databaseId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1d858554-d218-807c-936c-d06c8a8ec769",
+            "cachedResultUrl": "https://www.notion.so/1d858554d218807c936cd06c8a8ec769",
+            "cachedResultName": "Pengeluaran Rizqi Dini"
+          },
+          "filterType": "manual"
+        },
+        "credentials": {
+          "notionApi": {
+            "id": "AhjWhO7Jpc5x7xKG",
+            "name": "Notion account"
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "34310645-52da-4f9c-96a2-0a01d0a640f9",
+        "name": "Summarize Transaction Data",
+        "type": "n8n-nodes-base.summarize",
+        "position": [
+          760,
+          920
+        ],
+        "parameters": {
+          "options": {},
+          "fieldsToSplitBy": "property_category",
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "field": "property_total",
+                "aggregation": "sum"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "80a374cb-00cf-46b1-9505-709be1c550da",
+        "name": "Generate Chart",
+        "type": "n8n-nodes-base.quickChart",
+        "position": [
+          1200,
+          900
+        ],
+        "parameters": {
+          "data": "={{ $json.chart.data.datasets[0].data }}",
+          "labelsMode": "array",
+          "labelsArray": "={{ $json.chart.data.labels }}",
+          "chartOptions": {},
+          "datasetOptions": {}
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6b7c67ee-b205-42f5-9441-eb2ecee4a503",
+        "name": "Send Chart Image to Group or Private Chat",
+        "type": "n8n-nodes-base.telegram",
+        "position": [
+          1460,
+          760
+        ],
+        "webhookId": "66cce6e1-819c-487b-b8ad-3f02aebd40cb",
+        "parameters": {
+          "chatId": "-1001957001324",
+          "operation": "sendPhoto",
+          "binaryData": true,
+          "additionalFields": {
+            "fileName": "chart",
+            "message_thread_id": 571
+          }
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "J8yRVYmsnH74HuaD",
+            "name": "Telegram account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "06afd5ea-77b2-468d-b12b-1386d37a3ee6",
+        "name": "Convert Data to JSON chart payload",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1080,
+          900
+        ],
+        "parameters": {
+          "jsCode": "const labels = [];\nconst values = [];\n\nfor (const item of items) {\n  labels.push(item.json.property_category);\n  values.push(item.json.sum_property_total);\n}\n\nreturn [\n  {\n    json: {\n      chart: {\n        type: 'bar',\n        data: {\n          labels,\n          datasets: [\n            {\n              label: 'Spending by Category',\n              data: values,\n              backgroundColor: 'rgba(54, 162, 235, 0.6)',\n              borderColor: 'rgba(54, 162, 235, 1)',\n              borderWidth: 1\n            }\n          ]\n        },\n        options: {\n          plugins: {\n            title: {\n              display: true,\n              text: 'Spending Summary by Category'\n            }\n          },\n          scales: {\n            y: {\n              beginAtZero: true\n            }\n          }\n        }\n      }\n    }\n  }\n];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "4ad8c9c9-fbec-46ce-943d-447ca687e031",
+        "name": "Telegram Trigger | When recive photo",
+        "type": "n8n-nodes-base.telegramTrigger",
+        "position": [
+          160,
+          160
+        ],
+        "webhookId": "cac4ce91-ed1f-42ea-aebe-97ac3612aea6",
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {}
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "J8yRVYmsnH74HuaD",
+            "name": "Telegram account"
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "5231929f-2d7d-43ff-b9ae-141374926131",
+        "name": "Get Image Info",
+        "type": "n8n-nodes-base.editImage",
+        "position": [
+          460,
+          160
+        ],
+        "parameters": {
+          "operation": "information"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c8dcc6a1-2367-4049-9a8b-d8a04299ee72",
+        "name": "Parse To your object | Table",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "position": [
+          1040,
+          460
+        ],
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"message\": {\n      \"type\": \"string\"\n    },\n    \"summary\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\"date\": { \"type\": \"date\" },\n          \"id\": { \"type\": \"integer\" },\n          \"name\": { \"type\": \"string\" },\n          \"qty\": { \"type\": \"integer\" },\n          \"price\": { \"type\": \"number\" },\n          \"tax\": { \"type\": \"number\" },\n          \"total\": { \"type\": \"number\" },\"category\": { \"type\": \"string\" }\n        },\n        \"required\": [\"id\", \"name\", \"qty\", \"price\", \"total\",\"category\"]\n      }\n    }\n  },\n  \"required\": [\"message\", \"summary\"]\n}\n"
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "bc098a26-4e55-4908-880c-e5f27737a941",
+        "name": "Split Out | data transaction",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          1120,
+          40
+        ],
+        "parameters": {
+          "options": {},
+          "fieldToSplitOut": "output.summary"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2a42bc4b-a5c7-433e-91e4-aa5531570f73",
+        "name": "Sendback to chat and give summarize text",
+        "type": "n8n-nodes-base.telegram",
+        "position": [
+          1480,
+          400
+        ],
+        "webhookId": "f90475fa-69cd-4e19-bc93-bffdceae8324",
+        "parameters": {
+          "text": "={{ $json.output.message }}",
+          "chatId": "={{ $('Telegram Trigger | When recive photo').item.json.message.chat.id }}",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "J8yRVYmsnH74HuaD",
+            "name": "Telegram account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "bfc5c52e-313d-4257-bdfa-c542b687a853",
+        "name": "Record To Notion Database",
+        "type": "n8n-nodes-base.notion",
+        "position": [
+          1580,
+          120
+        ],
+        "parameters": {
+          "options": {},
+          "resource": "databasePage",
+          "databaseId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1d858554-d218-807c-936c-d06c8a8ec769",
+            "cachedResultUrl": "https://www.notion.so/1d858554d218807c936cd06c8a8ec769",
+            "cachedResultName": "Pengeluaran Rizqi Dini"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "Name|title",
+                "title": "={{ $json.name }}"
+              },
+              {
+                "key": "Quantity|number",
+                "numberValue": "={{ $json.qty }}"
+              },
+              {
+                "key": "Price|number",
+                "numberValue": "={{ $json.price }}"
+              },
+              {
+                "key": "Total|number",
+                "numberValue": "={{ $json.total }}"
+              },
+              {
+                "key": "Category|select",
+                "selectValue": "={{ $json.category }}"
+              },
+              {
+                "key": "Date|rich_text",
+                "textContent": "={{ $json.date }}"
+              },
+              {
+                "key": "Tax|number",
+                "numberValue": "={{ $json.tax }}"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "notionApi": {
+            "id": "AhjWhO7Jpc5x7xKG",
+            "name": "Notion account"
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "f514554b-eb9e-47e2-ad6b-0b13036beaf4",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          40,
+          60
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 340,
+          "height": 280,
+          "content": "📸 INVOICE INPUT 📸\nBot listens here for photos of your receipts/invoices.\nEnsure your Telegram Bot API token is set in credentials."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "53fc4c77-3f16-4cb8-82e8-f4810af1f569",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          600,
+          60
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 360,
+          "height": 460,
+          "content": "🤖 AI MAGIC HAPPENS HERE 🧠\n- Image is sent to Google Gemini for data extraction.\n- Check 'Basic LLM Chain' to customize the AI prompt (e.g., categories, output format).\n- Requires Google Gemini API credentials."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c6fb1193-7cc9-4f45-8a5f-20af41cdf3c8",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          980,
+          340
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 280,
+          "height": 200,
+          "content": "✨ STRUCTURING AI DATA ✨\nConverts the AI's text output into a usable JSON object.\nCheck the schema if you modify the AI prompt significantly."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "79a4e9ba-d1ea-4cfc-870c-145bae80c9b4",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1320,
+          0
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 380,
+          "height": 240,
+          "content": "📝 SAVING TO NOTION 📝\n- Extracted transaction data is saved here.\n- Configure with your Notion API key & Database ID.\n- Map fields correctly to your database columns!"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9406306b-9f3d-4877-a888-1f5e16a431c1",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          20,
+          760
+        ],
+        "parameters": {
+          "height": 280,
+          "content": "REPORTING SCHEDULE 🗓️\nSet how often you want to receive your spending report (e.g., weekly, monthly)."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1b6c8a28-b0f0-44fb-be02-21725d950716",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          320,
+          760
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 280,
+          "height": 380,
+          "content": "📊 FETCHING DATA FOR REPORT 📊\n- Retrieves transactions from Notion for the report period.\n- Default: \"Past Week\". Adjust filter as needed.\n- Requires Notion API credentials & Database ID."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4612006e-04a9-4ad5-9f05-d49ec13f31cf",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          660,
+          740
+        ],
+        "parameters": {
+          "width": 320,
+          "height": 360,
+          "content": "➕ SUMMARIZING SPENDING ➕\nAggregates your expenses, usually by category,\nto prepare for the chart."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "103132cf-37a6-455f-b19f-14d3e17af912",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1040,
+          740
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "📈 GENERATING VISUAL REPORT 📈\nCreates the actual chart image based on your spending data.\nYou can customize chart type (bar, pie, etc.) here."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "24324366-33e5-4097-ab36-aac31cef0006",
+        "name": "Sticky Note10",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1380,
+          640
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 300,
+          "height": 300,
+          "content": "📤 SENDING REPORT TO TELEGRAM 📤\n- Delivers the generated chart to your chosen Telegram chat/group.\n- Set the correct Chat ID and Bot API token."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e9fc1140-411b-411a-87a6-bbe9718ba3b3",
+        "name": "Sticky Note11",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1320,
+          280
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 300,
+          "height": 280,
+          "content": "💬 TRANSACTION SUMMARY 💬\nSends a confirmation message back to the user in Telegram\nwith a summary of the recorded expense."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "013fd587-3504-44b8-97e1-09cad47a0089",
+        "name": "Sticky Note12",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          40,
+          360
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 460,
+          "height": 240,
+          "content": "  🔑 CREDENTIALS NEEDED 🔑\n  Remember to set up API keys/tokens for:\n  - Telegram\n  - Google Gemini\n  - Notion\n\n  💡 CUSTOMIZE ME! 💡\n  - Adjust AI prompts for better accuracy.\n  - Change Notion database structure.\n  - Modify report frequency and content.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8f6f0fdb-d3be-4464-a7db-ea4d642a4f55",
+        "name": "Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "position": [
+          320,
+          160
+        ],
+        "webhookId": "6e801e0b-72d1-42a9-ac47-61ac113a01d2",
+        "parameters": {
+          "fileId": "={{ $json.message.photo[3].file_id }}",
+          "resource": "file"
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "J8yRVYmsnH74HuaD",
+            "name": "Telegram account"
+          }
+        },
+        "typeVersion": 1.2
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "a192c50c-4a77-44ee-b98a-f18d4ced2cb1",
+    "connections": {
+      "Telegram": {
+        "main": [
+          [
+            {
+              "node": "Get Image Info",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Chart": {
+        "main": [
+          [
+            {
+              "node": "Send Chart Image to Group or Private Chat",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Image Info": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "Split Out | data transaction",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Sendback to chat and give summarize text",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarize Transaction Data": {
+        "main": [
+          [
+            {
+              "node": "Convert Data to JSON chart payload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Recent Data from Notions": {
+        "main": [
+          [
+            {
+              "node": "Summarize Transaction Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse To your object | Table": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out | data transaction": {
+        "main": [
+          [
+            {
+              "node": "Record To Notion Database",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert Data to JSON chart payload": {
+        "main": [
+          [
+            {
+              "node": "Generate Chart",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Telegram Trigger | When recive photo": {
+        "main": [
+          [
+            {
+              "node": "Telegram",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger | for send chart report": {
+        "main": [
+          [
+            {
+              "node": "Get Recent Data from Notions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 28,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.notion": {
+        "count": 2
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.telegram": {
+        "count": 3
+      },
+      "n8n-nodes-base.editImage": {
+        "count": 1
+      },
+      "n8n-nodes-base.summarize": {
+        "count": 1
+      },
+      "n8n-nodes-base.quickChart": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 13
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.telegramTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.outputParserStructured": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Rizqi Pratama Ramadhani",
+    "username": "rizqiramadhani",
+    "bio": "",
+    "verified": false,
+    "links": [
+      "https://www.linkedin.com/in/rizqi-ramadhani"
+    ],
+    "avatar": "https://gravatar.com/avatar/7343195aa892bd61744d26d5e1d78061f804e4d33bf1e8bb7521672c21a68454?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 9,
+      "icon": "fa:image",
+      "name": "n8n-nodes-base.editImage",
+      "codex": {
+        "data": {
+          "details": "The Edit Image node allows you to manipulate and edit images. Use this node when you want to:\n\n- Blur an image\n- Add a border to an image\n- Create a new image\n- Crop an image\n- Composite an image on top of another\n- Draw on an image\n- Get information about the image\n- Rotate an image\n- Change the size of an image\n- Shear an image along the X or Y axis\n- Add text to the image",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.editimage/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modifier l'Image",
+        "color": "#553399"
+      },
+      "iconData": {
+        "icon": "image",
+        "type": "icon"
+      },
+      "displayName": "Edit Image",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "icon": "file:telegram.svg",
+      "name": "n8n-nodes-base.telegram",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-telegram-bots-with-n8n-a-no-code-platform/",
+                "icon": "💬",
+                "label": "Creating Telegram Bots with n8n, a No-Code Platform"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.telegram/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/telegram/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Telegram"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNjYgNjYiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzM3YWVlMiIgZD0iTTAgMzJjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMyczMyLTE0LjMyNyAzMi0zMlM0OS42NzMgMCAzMiAwIDAgMTQuMzI3IDAgMzIiLz48cGF0aCBmaWxsPSIjYzhkYWVhIiBkPSJtMjEuNjYxIDM0LjMzOCAzLjc5NyAxMC41MDhzLjQ3NS45ODMuOTgzLjk4MyA4LjA2OC03Ljg2NCA4LjA2OC03Ljg2NGw4LjQwNy0xNi4yMzctMjEuMTE5IDkuODk4eiIvPjxwYXRoIGZpbGw9IiNhOWM2ZDgiIGQ9Im0yNi42OTUgMzcuMDM0LS43MjkgNy43NDZzLS4zMDUgMi4zNzMgMi4wNjggMGw0LjY0NC00LjIwMyIvPjxwYXRoIGQ9Im0yMS43MyAzNC43MTItNy44MDktMi41NDVzLS45MzItLjM3OC0uNjMzLTEuMjM3Yy4wNjItLjE3Ny4xODYtLjMyOC41NTktLjU4OCAxLjczMS0xLjIwNiAzMi4wMjgtMTIuMDk2IDMyLjAyOC0xMi4wOTZzLjg1Ni0uMjg4IDEuMzYxLS4wOTdjLjIzMS4wODguMzc4LjE4Ny41MDMuNTQ4LjA0NS4xMzIuMDcxLjQxMS4wNjguNjg5LS4wMDMuMjAxLS4wMjcuMzg2LS4wNDUuNjc4LS4xODQgMi45NzgtNS43MDYgMjUuMTk4LTUuNzA2IDI1LjE5OHMtLjMzIDEuMy0xLjUxNCAxLjM0NWMtLjQzMi4wMTYtLjk1Ni0uMDcxLTEuNTgyLS42MS0yLjMyMy0xLjk5OC0xMC4zNTItNy4zOTQtMTIuMTI2LTguNThhLjM0LjM0IDAgMCAxLS4xNDYtLjIzOWMtLjAyNS0uMTI1LjEwOC0uMjguMTA4LS4yOHMxMy45OC0xMi40MjcgMTQuMzUyLTEzLjczMWMuMDI5LS4xMDEtLjA3OS0uMTUxLS4yMjYtLjEwNy0uOTI5LjM0Mi0xNy4wMjUgMTAuNTA2LTE4LjgwMSAxMS42MjktLjEwNC4wNjYtLjM5NS4wMjMtLjM5NS4wMjMiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Telegram",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "icon": "file:telegram.svg",
+      "name": "n8n-nodes-base.telegramTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-telegram-bots-with-n8n-a-no-code-platform/",
+                "icon": "💬",
+                "label": "Creating Telegram Bots with n8n, a No-Code Platform"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.telegramtrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/telegram/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Telegram"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNjYgNjYiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzM3YWVlMiIgZD0iTTAgMzJjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMyczMyLTE0LjMyNyAzMi0zMlM0OS42NzMgMCAzMiAwIDAgMTQuMzI3IDAgMzIiLz48cGF0aCBmaWxsPSIjYzhkYWVhIiBkPSJtMjEuNjYxIDM0LjMzOCAzLjc5NyAxMC41MDhzLjQ3NS45ODMuOTgzLjk4MyA4LjA2OC03Ljg2NCA4LjA2OC03Ljg2NGw4LjQwNy0xNi4yMzctMjEuMTE5IDkuODk4eiIvPjxwYXRoIGZpbGw9IiNhOWM2ZDgiIGQ9Im0yNi42OTUgMzcuMDM0LS43MjkgNy43NDZzLS4zMDUgMi4zNzMgMi4wNjggMGw0LjY0NC00LjIwMyIvPjxwYXRoIGQ9Im0yMS43MyAzNC43MTItNy44MDktMi41NDVzLS45MzItLjM3OC0uNjMzLTEuMjM3Yy4wNjItLjE3Ny4xODYtLjMyOC41NTktLjU4OCAxLjczMS0xLjIwNiAzMi4wMjgtMTIuMDk2IDMyLjAyOC0xMi4wOTZzLjg1Ni0uMjg4IDEuMzYxLS4wOTdjLjIzMS4wODguMzc4LjE4Ny41MDMuNTQ4LjA0NS4xMzIuMDcxLjQxMS4wNjguNjg5LS4wMDMuMjAxLS4wMjcuMzg2LS4wNDUuNjc4LS4xODQgMi45NzgtNS43MDYgMjUuMTk4LTUuNzA2IDI1LjE5OHMtLjMzIDEuMy0xLjUxNCAxLjM0NWMtLjQzMi4wMTYtLjk1Ni0uMDcxLTEuNTgyLS42MS0yLjMyMy0xLjk5OC0xMC4zNTItNy4zOTQtMTIuMTI2LTguNThhLjM0LjM0IDAgMCAxLS4xNDYtLjIzOWMtLjAyNS0uMTI1LjEwOC0uMjguMTA4LS4yOHMxMy45OC0xMi40MjcgMTQuMzUyLTEzLjczMWMuMDI5LS4xMDEtLjA3OS0uMTUxLS4yMjYtLjEwNy0uOTI5LjM0Mi0xNy4wMjUgMTAuNTA2LTE4LjgwMSAxMS42MjktLjEwNC4wNjYtLjM5NS4wMjMtLjM5NS4wMjMiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Telegram Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 487,
+      "icon": "file:notion.svg",
+      "name": "n8n-nodes-base.notion",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.notion/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/notion/"
+              }
+            ]
+          },
+          "categories": [
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Notion"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik03LjU4Mjc2IDYuOTc2NzlDOC44MjA0NyA3Ljk4MjM4IDkuMjg0NzkgNy45MDU2NiAxMS42MDkxIDcuNzUwNTdMMzMuNTIwNiA2LjQzNDg4QzMzLjk4NTMgNi40MzQ4OCAzMy41OTg5IDUuOTcxMjcgMzMuNDQzOSA1Ljg5NDIzTDI5LjgwNDkgMy4yNjM0OEMyOS4xMDc2IDIuNzIyMTMgMjguMTc4NiAyLjEwMjE3IDI2LjM5ODIgMi4yNTcyNkw1LjE4MTE1IDMuODA0NzZDNC40MDczNiAzLjg4MTQ4IDQuMjUyODIgNC4yNjgzNyA0LjU2MDk2IDQuNTc4NDdMNy41ODI3NiA2Ljk3Njc5Wk04Ljg5ODI5IDEyLjA4MzNWMzUuMTM4MUM4Ljg5ODI5IDM2LjM3NzEgOS41MTc0NiAzNi44NDA3IDEwLjkxMSAzNi43NjRMMzQuOTkxOSAzNS4zNzA2QzM2LjM4NjIgMzUuMjkzOSAzNi41NDE1IDM0LjQ0MTcgMzYuNTQxNSAzMy40MzUyVjEwLjUzNTFDMzYuNTQxNSA5LjUzMDE5IDM2LjE1NDkgOC45ODgyOSAzNS4zMDE0IDkuMDY1NjRMMTAuMTM2NyAxMC41MzUxQzkuMjA3OTkgMTAuNjEzMSA4Ljg5ODIxIDExLjA3NzcgOC44OTgyMSAxMi4wODMzSDguODk4MjlaTTMyLjY3MDggMTMuMzJDMzIuODI1MiAxNC4wMTcgMzIuNjcwOCAxNC43MTMzIDMxLjk3MjUgMTQuNzkxN0wzMC44MTIzIDE1LjAyMjlWMzIuMDQzNEMyOS44MDQ5IDMyLjU4NDggMjguODc1OSAzMi44OTQ0IDI4LjEwMTggMzIuODk0NEMyNi44NjI1IDMyLjg5NDQgMjYuNTUyMSAzMi41MDcyIDI1LjYyMzcgMzEuMzQ3NEwxOC4wMzQzIDE5LjQzMjlWMzAuOTYwNUwyMC40MzU5IDMxLjUwMjRDMjAuNDM1OSAzMS41MDI0IDIwLjQzNTkgMzIuODk0NCAxOC40OTgzIDMyLjg5NDRMMTMuMTU2OCAzMy4yMDQyQzEzLjAwMTYgMzIuODk0NCAxMy4xNTY4IDMyLjEyMTQgMTMuNjk4NiAzMS45NjY1TDE1LjA5MjUgMzEuNTgwMlYxNi4zMzg1TDEzLjE1NzIgMTYuMTgzNEMxMy4wMDE5IDE1LjQ4NjQgMTMuMzg4NSAxNC40ODE0IDE0LjQ3MzMgMTQuNDAzNUwyMC4yMDM1IDE0LjAxNzJMMjguMTAxOCAyNi4wODY4VjE1LjQwOTdMMjYuMDg4MSAxNS4xNzg2QzI1LjkzMzUgMTQuMzI2NSAyNi41NTIxIDEzLjcwNzggMjcuMzI2NSAxMy42MzExTDMyLjY3MDggMTMuMzJaTTMuMzk5NzMgMS43MTU5OEwyNS40Njg4IDAuMDkwNzQ1N0MyOC4xNzkgLTAuMTQxNjg4IDI4Ljg3NjMgMC4wMTQwMjQ1IDMwLjU3OTYgMS4yNTEzNUwzNy42MjQzIDYuMjAyNzZDMzguNzg2NyA3LjA1NDIxIDM5LjE3NDIgNy4yODYwMiAzOS4xNzQyIDguMjE0MTlWMzUuMzcwNkMzOS4xNzQyIDM3LjA3MjYgMzguNTU0MiAzOC4wNzkxIDM2LjM4NjUgMzguMjMzMUwxMC43NTc3IDM5Ljc4MDdDOS4xMzA0OSAzOS44NTgzIDguMzU2MDcgMzkuNjI2NCA3LjUwMzkyIDM4LjU0MjZMMi4zMTYwOCAzMS44MTE3QzEuMzg2NTggMzAuNTcyNiAxIDI5LjY0NTcgMSAyOC41NjEzVjQuNDIyODNDMSAzLjAzMTA1IDEuNjIwMTkgMS44NzAwNSAzLjM5OTczIDEuNzE1OThWMS43MTU5OFoiIGZpbGw9ImJsYWNrIi8+Cjwvc3ZnPgo="
+      },
+      "displayName": "Notion",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 843,
+      "icon": "file:quickChart.svg",
+      "name": "n8n-nodes-base.quickChart",
+      "codex": {
+        "data": {
+          "alias": [
+            "image",
+            "graph",
+            "report",
+            "chart",
+            "diagram",
+            "data",
+            "visualize"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.quickchart/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/quickchart/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "QuickChart"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSI0NDUiIGhlaWdodD0iNDQ1Ij48ZyBzdHlsZT0ic3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjEwO2ZpbGw6bm9uZTtmaWxsLXJ1bGU6bm9uemVybztvcGFjaXR5OjEiPjxwYXRoIGQ9Ik00MC4xMzUgOTBoLTguNzgyYTIuNzUgMi43NSAwIDAgMS0yLjc1LTIuNzVWNDUuMzgxYTIuNzUgMi43NSAwIDAgMSAyLjc1LTIuNzVoOC43ODJhMi43NSAyLjc1IDAgMCAxIDIuNzUgMi43NVY4Ny4yNWEyLjc1IDIuNzUgMCAwIDEtMi43NSAyLjc1IiBzdHlsZT0ic3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjEwO2ZpbGw6I2ZmYzM2ZTtmaWxsLXJ1bGU6bm9uemVybztvcGFjaXR5OjEiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yLjQ3MiAtMi40NzIpc2NhbGUoNC45NCkiLz48cGF0aCBkPSJNNTguNjQ3IDkwaC04Ljc4MmEyLjc1IDIuNzUgMCAwIDEtMi43NS0yLjc1VjMxLjQ0OWEyLjc1IDIuNzUgMCAwIDEgMi43NS0yLjc1aDguNzgyYTIuNzUgMi43NSAwIDAgMSAyLjc1IDIuNzVWODcuMjVhMi43NSAyLjc1IDAgMCAxLTIuNzUgMi43NSIgc3R5bGU9InN0cm9rZTpub25lO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2UtbGluZWNhcDpidXR0O3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtbWl0ZXJsaW1pdDoxMDtmaWxsOiNhNWQ3NmU7ZmlsbC1ydWxlOm5vbnplcm87b3BhY2l0eToxIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMi40NzIgLTIuNDcyKXNjYWxlKDQuOTQpIi8+PHBhdGggZD0iTTIxLjYyNCA5MGgtOC43ODJhMi43NSAyLjc1IDAgMCAxLTIuNzUtMi43NVY1OS4zMTNhMi43NSAyLjc1IDAgMCAxIDIuNzUtMi43NWg4Ljc4MmEyLjc1IDIuNzUgMCAwIDEgMi43NSAyLjc1Vjg3LjI1YTIuNzUgMi43NSAwIDAgMS0yLjc1IDIuNzUiIHN0eWxlPSJzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6MTtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLW1pdGVybGltaXQ6MTA7ZmlsbDojZDI1NTVhO2ZpbGwtcnVsZTpub256ZXJvO29wYWNpdHk6MSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIuNDcyIC0yLjQ3MilzY2FsZSg0Ljk0KSIvPjxwYXRoIGQ9Ik03Ny4xNTggOTBoLTguNzgyYTIuNzUgMi43NSAwIDAgMS0yLjc1LTIuNzVWMTcuNTE3YTIuNzUgMi43NSAwIDAgMSAyLjc1LTIuNzVoOC43ODJhMi43NSAyLjc1IDAgMCAxIDIuNzUgMi43NVY4Ny4yNWEyLjc1IDIuNzUgMCAwIDEtMi43NSAyLjc1IiBzdHlsZT0ic3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjEwO2ZpbGw6Izc4ZDJiZTtmaWxsLXJ1bGU6bm9uemVybztvcGFjaXR5OjEiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yLjQ3MiAtMi40NzIpc2NhbGUoNC45NCkiLz48cGF0aCBkPSJNNjcuNzczIDE3Ljk3N2gxOC4xODNjMS43ODcgMCAyLjY4Mi0yLjI1OCAxLjQxOC0zLjU3OEw3NC4xODUuNjE0YTEuOTQ0IDEuOTQ0IDAgMCAwLTIuODM2IDBMNTguMTYgMTQuMzk4Yy0xLjI2NCAxLjMyMS0uMzY5IDMuNTc4IDEuNDE4IDMuNTc4eiIgc3R5bGU9InN0cm9rZTpub25lO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2UtbGluZWNhcDpidXR0O3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtbWl0ZXJsaW1pdDoxMDtmaWxsOiM3OGQyYmU7ZmlsbC1ydWxlOm5vbnplcm87b3BhY2l0eToxIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMi40NzIgLTIuNDcyKXNjYWxlKDQuOTQpIi8+PC9nPjwvc3ZnPg=="
+      },
+      "displayName": "QuickChart",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chaîne LLM de Base",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1179,
+      "icon": "fa:code",
+      "name": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "codex": {
+        "data": {
+          "alias": [
+            "json",
+            "zod"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.outputparserstructured/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Output Parsers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Analyseur de Sortie Structurée"
+      },
+      "iconData": {
+        "icon": "code",
+        "type": "icon"
+      },
+      "displayName": "Structured Output Parser",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Diviser"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1241,
+      "icon": "file:summarize.svg",
+      "name": "n8n-nodes-base.summarize",
+      "codex": {
+        "data": {
+          "alias": [
+            "Append",
+            "Array",
+            "Average",
+            "Concatenate",
+            "Count",
+            "Group",
+            "Item",
+            "List",
+            "Max",
+            "Min",
+            "Pivot",
+            "Sum",
+            "Summarise",
+            "Summarize",
+            "Transform",
+            "Unique"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.summarize/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Résumer"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSIjRjkyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzIgOTFjLTE1LjQ2NCAwLTI4IDEyLjUzNi0yOCAyOHYzMTdjMCAxNS40NjQgMTIuNTM2IDI4IDI4IDI4aDI0OGMxNS40NjQgMCAyOC0xMi41MzYgMjgtMjhWMTE5YzAtMTUuNDY0LTEyLjUzNi0yOC0yOC0yOGgtNmE2IDYgMCAwIDEtNi02VjQ5YTYgNiAwIDAgMSA2LTZoNmM0MS45NzQgMCA3NiAzNC4wMjYgNzYgNzZ2MzE3YzAgNDEuOTc0LTM0LjAyNiA3Ni03NiA3NkgxMzJjLTQxLjk3NCAwLTc2LTM0LjAyNi03Ni03NlYxMTljMC00MS45NzQgMzQuMDI2LTc2IDc2LTc2aDZhNiA2IDAgMCAxIDYgNnYzNmE2IDYgMCAwIDEtNiA2eiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iI0Y5MiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMjU2IDBjLTI3LjIzMiAwLTUwLjIyNyAxOC4xNDItNTcuNTU4IDQzSDE4MmE2IDYgMCAwIDAtNiA2djcwYTYgNiAwIDAgMCA2IDZoMTQ4YTYgNiAwIDAgMCA2LTZWNDlhNiA2IDAgMCAwLTYtNmgtMTYuNDQyQzMwNi4yMjcgMTguMTQyIDI4My4yMzIgMCAyNTYgMG0wIDQwYTE5LjkgMTkuOSAwIDAgMC0xMC41NDEgM0MyMzkuNzgxIDQ2LjUyOCAyMzYgNTIuODIzIDIzNiA2MGMwIDExLjA0NiA4Ljk1NCAyMCAyMCAyMHMyMC04Ljk1NCAyMC0yMGMwLTcuMTc3LTMuNzgxLTEzLjQ3Mi05LjQ1OS0xN0ExOS45IDE5LjkgMCAwIDAgMjU2IDQwbTEwMSAxNzljMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgyMzNjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ2LTI0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBmaWxsPSIjRjkyIiBkPSJNMTk3IDIwN2MwIDEzLjI1NS0xMC43NDUgMjQtMjQgMjRzLTI0LTEwLjc0NS0yNC0yNCAxMC43NDUtMjQgMjQtMjQgMjQgMTAuNzQ1IDI0IDI0Ii8+PHBhdGggZmlsbD0iI0Y5MiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzU3IDM5NWMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDIzM2MtNi42MjcgMC0xMi01LjM3My0xMi0xMnYtMjRjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxMTJjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGZpbGw9IiNGOTIiIGQ9Ik0xOTcgMzgzYzAgMTMuMjU1LTEwLjc0NSAyNC0yNCAyNHMtMjQtMTAuNzQ1LTI0LTI0IDEwLjc0NS0yNCAyNC0yNCAyNCAxMC43NDUgMjQgMjQiLz48cGF0aCBmaWxsPSIjRjkyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNTcgMzA3YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMjMzYy02LjYyNyAwLTEyLTUuMzczLTEyLTEydi0yNGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDExMmM2LjYyNyAwIDEyIDUuMzczIDEyIDEyeiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iI0Y5MiIgZD0iTTE5NyAyOTVjMCAxMy4yNTUtMTAuNzQ1IDI0LTI0IDI0cy0yNC0xMC43NDUtMjQtMjQgMTAuNzQ1LTI0IDI0LTI0IDI0IDEwLjc0NSAyNCAyNCIvPjwvc3ZnPg=="
+      },
+      "displayName": "Summarize",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 34,
+      "name": "Traitement des Factures"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    }
+  ],
+  "image": []
+}

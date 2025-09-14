@@ -1,0 +1,1201 @@
+{
+  "id": 7384,
+  "name": "Extraction par lot des URL de sites Web depuis Google Sheets vers Google Docs avec Firecrawl",
+  "views": 377,
+  "recentViews": 4,
+  "totalViews": 377,
+  "createdAt": "2025-08-14T13:00:56.819Z",
+  "description": "*Ce flux de travail contient des nœuds communautaires qui ne sont compatibles qu'avec la version auto-hébergée de n8n.*\n\n# Extraction par lot de Firecrawl vers Google Docs\n## Pour qui est-ce\nDéveloppeurs de chatbots IA, gestionnaires de contenu et analystes de données qui ont besoin d'extraire et d'organiser du contenu à partir de plusieurs pages Web pour la création de bases de connaissances, l'analyse concurrentielle ou les projets de migration de contenu.\n## Ce que cela fait\nCe flux de travail extrait automatiquement le contenu d'une liste d'URL et convertit chaque page en un document Google structuré au format markdown. Il est conçu pour le traitement par lot de plusieurs pages de manière efficace, ce qui le rend idéal pour la construction de bases de connaissances IA, l'analyse du contenu des concurrents ou la migration de contenu de site Web vers des systèmes de documentation.\n## Comment cela fonctionne\nLe flux de travail suit un processus d'extraction systématique :\n\nEntrée d'URL : Lit une liste d'URL à partir d'un modèle Google Sheets\nValidation des données : Filtre les lignes vides et les URL déjà traitées\nTraitement par lot : Parcourt chaque URL séquentiellement\nExtraction de contenu : Utilise Firecrawl pour extraire et convertir le contenu en markdown\nCréation de documents : Crée des Google Docs individuels pour chaque page extraite\nSuivi des progrès : Met à jour la feuille de calcul pour marquer les URL complétées\nNotification finale : Fournit un résumé de la complétion avec accès au contenu extrait\n\n## Exigences\n\nClé API Firecrawl (pour l'extraction Web)\nAccès à Google Sheets\nAccès à Google Drive (pour la création de documents)\nModèle Google Sheets (fourni)\n\n## Comment configurer\n### Étape 1 : Préparez votre modèle\n\nCopiez le modèle Google Sheets\nCréez votre propre version pour un usage personnel\nAssurez-vous que la feuille a un onglet nommé \"Page vers doc\"\nListez toutes les URL que vous souhaitez extraire dans la colonne \"URL\"\n\n### Étape 2 : Configurez les identifiants API\nConfigurez les identifiants suivants dans n8n :\n\nAPI Firecrawl : Pour l'extraction de contenu Web et la conversion en markdown\nGoogle Sheets OAuth2 : Pour lire les URL et mettre à jour les progrès\nGoogle Drive OAuth2 : Pour créer des documents de contenu\n\n### Étape 3 : Configurez votre dossier Google Drive\n\nLe flux de travail enregistre le contenu extrait dans un dossier Drive spécifique\nDossier par défaut : \"Contenu scrapé\"\nID du dossier : 1ry3xvQ9UqM2Rf9C4-AoJdg1lfB9inh_5 (personnalisez ceci pour votre propre dossier)\nCréez votre propre dossier et mettez à jour l'ID du dossier dans le nœud \"Créer un fichier markdown scraping\"\n\n### Étape 4 : Choisissez votre méthode de déclenchement\nOption A : Interface de chat\n\nUtilisez le déclencheur de chat par défaut\nEnvoyez votre URL Google Sheets via l'interface de chat\n\nOption B : Déclencheur manuel\n\nRemplacez le déclencheur de chat par un déclencheur manuel\nDéfinissez l'URL Google Sheets comme variable dans le nœud \"Obtenir l'URL\"\n\n## Comment personnaliser le flux de travail\n### Personnalisation de la source d'URL\n\nNom de la feuille : Changez \"Page vers doc\" par le nom de votre onglet préféré\nStructure de colonne : Modifiez les mappages de champs si vous utilisez des noms de colonnes différents\nValidation des URL : Ajustez les critères de filtrage pour les exigences de format d'URL\nTaille de lot : Le flux de travail traite toutes les URL séquentiellement (pas de limite de taille de lot)\n\n### Configuration de l'extraction\n\nOptions Firecrawl : Ajoutez des paramètres d'extraction spécifiques (temps d'attente, rendu JavaScript)\nFormat de contenu : Actuellement, il sort en markdown (peut être modifié pour d'autres formats)\nGestion des erreurs : Le flux de travail continue le traitement même si des URL individuelles échouent\nLogique de réessai : Ajoutez des mécanismes de réessai pour les tentatives d'extraction échouées\n\n### Personnalisation de la sortie\n\nNom des documents : Utilise actuellement l'URL comme nom de document (personnalisable)\nOrganisation des dossiers : Créez des sous-dossiers pour différents types de contenu\nFormat de fichier : Passez de Google Docs à d'autres formats (PDF, TXT, etc.)\nStructure de contenu : Ajoutez des en-têtes, des métadonnées ou un formatage au contenu extrait\n\n### Améliorations du suivi des progrès\n\nColonnes de statut : Ajoutez un suivi de statut plus détaillé (échec, réessai, etc.)\nCapture de métadonnées : Stockez les horodatages d'extraction, la longueur du contenu, etc.\nJournalisation des erreurs : Suivez quelles URL ont échoué et pourquoi\nStatistiques de complétion : Générez des rapports récapitulatifs des résultats d'extraction\n\n## Cas d'utilisation\n### Création de base de connaissances IA\n\nPages de produits e-commerce : Extraire des descriptions de produits et des spécifications pour la formation de chatbots\nSites de documentation : Convertir des articles d'aide en contenu structuré de base de connaissances\nPages FAQ : Extraire des informations sur le service client pour des systèmes de support automatisés\nInformations sur l'entreprise : Rassembler des pages à propos, des services et des informations sur l'équipe\n\n### Analyse et migration de contenu\n\nRecherche concurrentielle : Analyser le contenu et la structure des sites Web concurrents\nAudits de contenu : Extraire le contenu existant pour analyse et optimisation\nMigrations de sites Web : Sauvegarder le contenu avant les refontes de site ou les changements de plateforme\nAnalyse SEO : Rassembler du contenu pour l'analyse des mots-clés et de la structure\n\n### Recherche et documentation\n\nRecherche de marché : Collecter des informations à partir de plusieurs sources industrielles\nRecherche académique : Rassembler du contenu à partir de sources Web pertinentes\nConformité légale : Documenter les termes, politiques et avertissements du site Web\nSurveillance de marque : Suivre les changements de contenu sur plusieurs sites\n\n## Caractéristiques du flux de travail\n### Logique de traitement intelligente\n\nPrévention des doublons : Ignore les URL déjà marquées comme \"Scrapé\"\nFiltrage des lignes vides : Ignore automatiquement les lignes sans URL\nTraitement séquentiel : Gère une URL à la fois pour éviter la limitation de taux\nMises à jour de progrès : Mises à jour de statut en temps réel dans la feuille de calcul source\n\n### Gestion des erreurs et résilience\n\nÉchecs gracieux : Continue le traitement des URL restantes si des extractions individuelles échouent\nSuivi de statut : Indication claire des URL complétées par rapport à celles en attente\nNotification de complétion : Message récapitulatif avec lien vers le dossier de contenu extrait\nCapacité de redémarrage manuel : Peut reprendre le traitement là où il s'est arrêté\n\n## Interprétation des résultats\n### Sortie de contenu organisée\nChaque page extraite crée :\n\nDocument Google individuel : Nommé avec l'URL source\nFormatage markdown : Extraction de contenu propre et structurée\nPréservation des métadonnées : URL d'origine et horodatage d'extraction\nStockage organisé : Tous les documents dans le dossier Google Drive désigné\n\n### Suivi des progrès\nLa feuille de calcul source montre :\n\nListe d'URL : URL d'origine à traiter\nColonne de statut : \"OK\" pour complété, vide pour en attente\nMises à jour en temps réel : Progrès visible pendant l'exécution du flux de travail\nRésumé de complétion : Notification finale avec instructions d'accès\n\n## Limitations du flux de travail\n\nTraitement séquentiel : Traite les URL une à la fois (évite la limitation de taux mais plus lent pour de grandes listes)\nDépendance à Google Drive : Nécessite Google Drive pour le stockage des documents\nLimites de taux Firecrawl : Soumis aux limitations et quotas de l'API Firecrawl\nSortie en format unique : Actuellement, ne sort que des Google Docs (facilement personnalisable)\nConfiguration manuelle : Nécessite la préparation du modèle Google Sheets avant utilisation\nPas de dé-duplication de contenu : Crée des documents séparés même pour un contenu similaire",
+  "workflow": {
+    "meta": {
+      "instanceId": "393ca9e36a1f81b0f643c72792946a5fe5e49eb4864181ba4032e5a408278263",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "b17a526e-3245-4255-9308-644d1a8b8a56",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1152,
+          -80
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "9bc90f3e-9c5d-4cbc-b899-93fa5e2de9a5",
+                "operator": {
+                  "type": "string",
+                  "operation": "empty",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.scraped }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "d573c093-b0fe-46dd-803a-f4f5407ef071",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          1792,
+          -96
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "b6c0bf60-c7fe-4cf0-b6df-5cd10adc59d9",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -624,
+          -80
+        ],
+        "webhookId": "60fcb296-7be1-4d65-a3b0-59a6fe4c43c0",
+        "parameters": {
+          "mode": "webhook",
+          "public": true,
+          "options": {
+            "responseMode": "responseNode"
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "a171ef02-49d0-407a-a690-1c0a33ac9960",
+        "name": "Scraping",
+        "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+        "position": [
+          2448,
+          -112
+        ],
+        "parameters": {
+          "url": "={{ $json.URL }}",
+          "operation": "scrape",
+          "requestOptions": {}
+        },
+        "credentials": {
+          "firecrawlApi": {
+            "id": "E34WDB80ik5VHjiI",
+            "name": "Firecrawl account"
+          }
+        },
+        "retryOnFail": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "e5ef4981-bad1-438e-ae51-64c81271fdac",
+        "name": "Get URL",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          16,
+          -80
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "Page to doc"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "={{ $json.chatInput }}"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "wBRLUCktxqXE6DVJ",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.5
+      },
+      {
+        "id": "840557d7-7d60-4e2b-8a77-d28bd729005e",
+        "name": "Row not empty",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          608,
+          -80
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "48acd975-5041-455b-8e47-3b7eef32b483",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.URL }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ad30c0c6-a5ba-460e-826a-ab329410c0b1",
+        "name": "Create file markdown scraping",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          3040,
+          -112
+        ],
+        "parameters": {
+          "name": "={{ $('Scraping').item.json.data.metadata.url }}",
+          "content": "={{ $('Scraping').item.json.data.markdown }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1ry3xvQ9UqM2Rf9C4-AoJdg1lfB9inh_5",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1ry3xvQ9UqM2Rf9C4-AoJdg1lfB9inh_5",
+            "cachedResultName": "Contenu scrapé"
+          },
+          "operation": "createFromText"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "3TalAPza9NdMx3yx",
+            "name": "Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "f218e0e1-4262-4077-a8b9-284c7d2ec268",
+        "name": "Scraped : OK",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          3664,
+          -112
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "URL": "={{ $('Loop Over Items').item.json.URL }}",
+              "Scraped": "OK"
+            },
+            "schema": [
+              {
+                "id": "URL",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "URL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Scraped",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Scraped",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "type": "number",
+                "display": true,
+                "removed": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "row_number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "URL"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update",
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "Page to doc"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "={{ $('When chat message received').item.json.chatInput }}"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "wBRLUCktxqXE6DVJ",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "6f542285-389c-4f3d-8dbf-9e1505684de5",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -848,
+          -192
+        ],
+        "parameters": {
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 1: Spreadsheet Input and Initialization"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "36fa8b23-7c8d-4944-94aa-a8feae7f7138",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -848,
+          112
+        ],
+        "parameters": {
+          "width": 576,
+          "height": 400,
+          "content": "### What you do:\n\nProvide the Google Sheets URL containing the list of URLs to scrape\nEnsure your spreadsheet has a \"Page to doc\" sheet with URL column populated\nTrigger the workflow by submitting the spreadsheet link via chat interface\n\n### What the system does:\n\nReceives the spreadsheet URL via webhook trigger\nPrepares the system for bulk URL processing\nSets up the workflow for automated scraping and document generation\n\n### Result:\n✅ Workflow initialized with your URL list\n✅ System prepared for bulk processing\n✅ Secure connection established to your spreadsheet\n✅ Ready to begin automated scraping sequence\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e14c5181-9966-43a7-8c95-70c492f7ed86",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -240,
+          -192
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 2: URL List Retrieval"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4a1d178d-b8b2-445f-a0af-2b82fa9e3280",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -240,
+          112
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 576,
+          "height": 288,
+          "content": "### What the system does:\n\nConnects to your Google Sheets document\nReads the \"Page to doc\" sheet to extract URL list\nRetrieves all URLs marked for processing\nLoads scraping status to track progress\n\n### Result:\n✅ Complete URL inventory loaded from spreadsheet\n✅ Processing queue established\n✅ Status tracking system activated\n✅ Data structure prepared for bulk operations\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "94ff42ce-0d6d-415b-9059-a677a4ad6712",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          368,
+          -192
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 3: URL Validation and Filtering"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c38eb0bb-89a2-4826-82cc-d35e98293bbd",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          368,
+          112
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 576,
+          "height": 288,
+          "content": "### What the system does:\n\nFilters out empty rows to focus on valid URLs\nValidates URL format and accessibility\nRemoves already processed URLs based on \"Scraped\" status\nCreates clean dataset for processing\n\n### Result:\n✅ Only valid, unprocessed URLs selected\n✅ Duplicate processing prevention implemented\n✅ Efficient resource utilization ensured\n✅ Clean processing queue established\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "200373ae-ee32-410d-a5ca-7d1ea82f24d1",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          976,
+          -192
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 4: Unprocessed URL Detection"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8e02cf81-817d-4435-b11c-afce09c6ef81",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          976,
+          112
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 576,
+          "height": 288,
+          "content": "### What the system does:\n\nChecks scraping status for each URL\nIdentifies URLs without \"Scraped\" marker in the spreadsheet\nRoutes unprocessed URLs to the scraping pipeline\nSkips already completed URLs to avoid redundant work\n\n### Result:\n✅ Smart detection of pending work\n✅ Resume capability for interrupted processes\n✅ Progress tracking implemented\n✅ Efficient processing optimization\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "45c072dc-8487-469a-83a0-e7d03ca947ce",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1584,
+          -192
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 5: Sequential URL Processing"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "036655c0-079d-4c88-880d-61496cb2ed7c",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1584,
+          112
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 576,
+          "height": 288,
+          "content": "### What the system does:\n\nProcesses URLs one at a time to maintain stability\nManages processing queue systematically\nMaintains data integrity throughout the workflow\nHandles batch processing with controlled flow\n\n### Result:\n✅ Organized sequential processing established\n✅ System stability maintained during bulk operations\n✅ Processing queue managed efficiently\n✅ Scalable approach for large URL lists\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "605c5ee7-959b-4efe-8931-261c975ac60b",
+        "name": "Sticky Note10",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2192,
+          -192
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 6: Web Content Scraping"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c8ac2c4e-bdce-4f39-bd15-61f0f5c75318",
+        "name": "Sticky Note11",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2192,
+          112
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 576,
+          "height": 320,
+          "content": "### What the system does:\n\nUses Firecrawl service to extract content from each URL\nRetrieves full page content including text, metadata, and structure\nConverts content to markdown format for clean document creation\nExtracts page metadata such as titles and descriptions\nHandles various page types and content structures\nImplements retry logic for failed scraping attempts\n\n### Result:\n✅ Complete page content extracted and formatted\n✅ Clean markdown conversion for document creation\n✅ Page metadata preserved for context\n✅ Reliable content extraction with error handling\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a3c39f2c-0b69-4c45-9a29-ee0ef99e8656",
+        "name": "Sticky Note13",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2800,
+          112
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 576,
+          "height": 320,
+          "content": "### What the system does:\n\nCreates individual Google Docs for each scraped page\nUses the page URL as filename for easy identification\nStores documents in designated folder (\"Contenu scrapé\")\nFormats content as markdown in the document\nPreserves original page structure and formatting where possible\n\n### Result:\n✅ Individual Google Docs created for each URL\n✅ Organized file storage in dedicated folder\n✅ Clear naming convention for easy navigation\n✅ Content preserved in accessible document format\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0e4a25cf-fc3b-42dc-9620-2595a9fc2c7a",
+        "name": "Sticky Note12",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2800,
+          -192
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 7: Google Drive Document Creation"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c8085641-aa2b-4b2b-925d-e8d956896a44",
+        "name": "Sticky Note14",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3408,
+          -192
+        ],
+        "parameters": {
+          "width": 576,
+          "height": 256,
+          "content": "# Phase 8: Progress Tracking Update"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d49fc5db-54f5-4a92-b05c-e3c0f50d52cb",
+        "name": "Sticky Note15",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3408,
+          112
+        ],
+        "parameters": {
+          "width": 576,
+          "height": 320,
+          "content": "### What the system does:\n\nUpdates the source spreadsheet with processing status\nMarks completed URLs with \"Scraped: OK\" status\nMaintains processing log for accountability\nEnables resume functionality for interrupted workflows\n\n### Result:\n✅ Real-time progress tracking in spreadsheet\n✅ Clear status indicators for all processed URLs\n✅ Resume capability for large processing jobs\n✅ Complete audit trail of scraping activities\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get URL": {
+        "main": [
+          [
+            {
+              "node": "Row not empty",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scraping": {
+        "main": [
+          [
+            {
+              "node": "Create file markdown scraping",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scraped : OK": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Row not empty": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Scraping",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Get URL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create file markdown scraping": {
+        "main": [
+          [
+            {
+              "node": "Scraped : OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 24,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 16
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@mendable/n8n-nodes-firecrawl.firecrawl": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Growth AI",
+    "username": "growthai",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.agence-n8n.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/e93e43e1e71be1aee89eb849a5396be04c95604624b155a29298b9209e2534c3?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filtrer",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de documents"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

@@ -1,0 +1,298 @@
+{
+  "id": 3282,
+  "name": "Créer des notes et des commentaires sur n'importe quel enregistrement de modèle Odoo",
+  "views": 635,
+  "recentViews": 1,
+  "totalViews": 635,
+  "createdAt": "2025-03-21T17:49:37.686Z",
+  "description": "## Introduction\nCe flux de travail est conçu pour créer et attacher des notes ou des commentaires à n'importe quel enregistrement dans votre instance Odoo. Il agit comme un sous-flux de travail qui peut être déclenché par un flux de travail principal pour enregistrer des messages ou des commentaires de manière centralisée. En tirant parti de la puissante API Odoo, ce modèle garantit que les mises à jour des enregistrements sont gérées efficacement, fournissant un moyen organisé de documenter des informations importantes liées à vos processus commerciaux.\n\n## Instructions de configuration\nImporter le flux de travail :\n\nImportez le fichier JSON fourni dans votre instance n8n.\n\n## Identifiants Odoo :\n\nAssurez-vous d'avoir des identifiants API Odoo valides (par exemple, \"Compte d'automatisation Odoo Roodsys\") configurés dans n8n.\n\n## Configuration du nœud :\n\nVérifiez que le nœud \"Odoo\" (envisagez de le renommer en \"Gestionnaire d'enregistrements Odoo\" pour plus de clarté) est configuré avec les détails de votre serveur et les paramètres d'authentification.\n\nVérifiez que le déclencheur de flux de travail (\"Lorsqu'il est exécuté par un autre flux de travail\") est configuré pour recevoir des paramètres d'entrée du flux de travail parent.\n\n## Déclencheur d'exécution :\n\nCe flux de travail est conçu pour être initié par un autre flux de travail. Assurez-vous que le flux de travail principal fournit les entrées requises.\n\n### Détails du flux de travail\nNœud de déclenchement :\nLe flux de travail commence avec le nœud \"Lorsqu'il est exécuté par un autre flux de travail\", qui accepte trois entrées :\n\nrec_id : Un identifiant numérique pour l'enregistrement Odoo.\n\nmessage : Le texte du commentaire ou de la note.\n\nmodel : Le modèle Odoo spécifique (par exemple, rs.deployment.action.log) où la note doit être attachée.\n\n### Nœud Odoo :\nLe deuxième nœud du flux de travail appelle l'API Odoo pour créer un nouveau message de journal. Il mappe les entrées comme suit :\n\nmessage_type est défini sur \"commentaire\".\n\nmodel est assigné au nom de modèle fourni.\n\nres_id est assigné à l'ID d'enregistrement (rec_id).\n\nbody est assigné au contenu du message.\n\n# Informations supplémentaires :\nUn nœud de note autocollante est inclus pour fournir un aperçu bref de l'objectif du flux de travail directement dans l'interface.\n\n### Paramètres d'entrée\nID d'enregistrement (rec_id) :\nL'identifiant unique de l'enregistrement dans Odoo où la note sera ajoutée.\n\n### Message (message) :\nLe contenu du commentaire ou de la note qui doit être enregistré.\n\n### Modèle (model) :\nLe nom du modèle Odoo indiquant le contexte dans lequel la note doit être créée (par exemple, rs.deployment.action.log).\n\n## Exemples d'utilisation\n### Journalisation interne :\nUtilisez le flux de travail pour attacher des commentaires ou des journaux internes à des enregistrements spécifiques, tels que des profils clients, des commandes ou des journaux de déploiement.\n\n### Pistes d'audit :\nCréez une piste d'audit complète en documentant les changements ou les événements importants dans les enregistrements Odoo.\n\n### Intégration avec d'autres flux de travail :\nLiez ce flux de travail avec d'autres processus d'automatisation dans n8n (comme les notifications par e-mail, la synchronisation des données ou les rapports) pour créer une intégration fluide à travers vos systèmes.\n\n### Préconditions\nL'instance Odoo doit être accessible et correctement configurée.\n\nLes autorisations API et les rôles d'utilisateur doivent être validés pour garantir que le flux de travail dispose des droits d'accès nécessaires.\n\nLe flux de travail attend des entrées d'un déclencheur externe ou d'un flux de travail parent.\n\nPersonnalisation et intégration\nCe modèle offre plusieurs options de personnalisation pour l'adapter à vos besoins :\n\nPersonnalisation des champs : Modifiez ou ajoutez de nouveaux champs pour correspondre à vos exigences de journalisation ou de commentaire.\n\nRenommage des nœuds : Renommez les nœuds pour une meilleure clarté et cohérence au sein de votre écosystème de flux de travail.\n\n**Possibilités d'intégration** : Intégrez facilement ce flux de travail avec d'autres processus dans n8n, tels que le déclenchement de notifications ou la synchronisation des données entre différents systèmes.\n\n\n\nCe sous-flux de travail reçoit des données d'un flux de travail principal (par exemple, un ID d'enregistrement, un message et le modèle Odoo) et crée une nouvelle note (ou commentaire) dans l'enregistrement Odoo correspondant. Essentiellement, il agit comme un point central pour enregistrer des commentaires ou des notes dans un modèle Odoo spécifique, garantissant que l'information reste organisée et facile à suivre.\n\nVotre modèle doit hériter de\n\n _inherit = ['portal.mixin', 'mail.thread.main.attachment']",
+  "workflow": {
+    "id": "g9L52eIw9UtmEKlk",
+    "meta": {
+      "instanceId": "1ed2ca0b20b27416028c1a74b1ee5a18d8b9a12cf5d27f153d2ae6fe9f4453d9",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Send Log Message to Odoo",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "aec2c855-0861-4757-a43e-2729d63973ea",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "rec_id",
+                "type": "number"
+              },
+              {
+                "name": "message"
+              },
+              {
+                "name": "model"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "30a07404-6aa2-4ea4-9edc-e558d551f611",
+        "name": "Odoo",
+        "type": "n8n-nodes-base.odoo",
+        "position": [
+          220,
+          0
+        ],
+        "parameters": {
+          "resource": "custom",
+          "customResource": "={{ 'mail.message' }}",
+          "fieldsToCreateOrUpdate": {
+            "fields": [
+              {
+                "fieldName": "message_type",
+                "fieldValue": "comment"
+              },
+              {
+                "fieldName": "model",
+                "fieldValue": "={{ $json.model }}"
+              },
+              {
+                "fieldName": "res_id",
+                "fieldValue": "={{ $json.rec_id }}"
+              },
+              {
+                "fieldName": "body",
+                "fieldValue": "={{ $json.message }}"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "odooApi": {
+            "id": "EdPd58r6gWSjk4dR",
+            "name": "Roodsys Odoo Automation Account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b5c95ef2-66a7-4706-9ffb-9359133c889e",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -580,
+          -60
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 400,
+          "height": 260,
+          "content": "## Creates a Note in an Odoo Record\nThis sub-workflow receives data from a main workflow (for example, a record ID, a message, and the Odoo model) and creates a new note (or comment) in the corresponding Odoo record. Essentially, it acts as a centralized point for logging comments or notes in a specific Odoo model, ensuring that the information remains organized and easy to track."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {
+      "When Executed by Another Workflow": [
+        {
+          "json": {
+            "model": "rs.deployment.action.log",
+            "rec_id": 35,
+            "message": "Test Message"
+          }
+        }
+      ]
+    },
+    "settings": {
+      "timezone": "America/Mexico_City",
+      "callerPolicy": "workflowsFromSameOwner",
+      "executionOrder": "v1",
+      "executionTimeout": -1
+    },
+    "versionId": "0e263156-7239-4470-b8ad-2e46f832b74a",
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Odoo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 3,
+    "nodeTypes": {
+      "n8n-nodes-base.odoo": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.executeWorkflowTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Carlos Contreras",
+    "username": "carlosecv",
+    "bio": "Odoo Consultant for more than 15 years",
+    "verified": false,
+    "links": [
+      "https://realsystems.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/fa73debb34238cda02d54c64c9c7e1bc6257cb414cf5f2b1eaae12217e46ac02?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 559,
+      "icon": "file:odoo.svg",
+      "name": "n8n-nodes-base.odoo",
+      "codex": {
+        "data": {
+          "alias": [
+            "ERP"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.odoo/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/odoo/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Odoo"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIj48Y2lyY2xlIGN4PSI3NSIgY3k9Ijc1IiByPSI3Mi40IiBmaWxsPSIjOWM1Nzg5Ii8+PGNpcmNsZSBjeD0iNzUiIGN5PSI3NSIgcj0iNDIuNyIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=="
+      },
+      "displayName": "Odoo",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 837,
+      "icon": "fa:sign-out-alt",
+      "name": "n8n-nodes-base.executeWorkflowTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.executeworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsqu'il est exécuté par un autre flux de travail",
+        "color": "#ff6d5a"
+      },
+      "iconData": {
+        "icon": "sign-out-alt",
+        "type": "icon"
+      },
+      "displayName": "Execute Workflow Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 45,
+      "name": "Divers"
+    }
+  ],
+  "image": []
+}

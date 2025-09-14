@@ -1,0 +1,1951 @@
+{
+  "id": 5877,
+  "name": "Notifier de mise à jour du menu alimentaire",
+  "views": 228,
+  "recentViews": 1,
+  "totalViews": 228,
+  "createdAt": "2025-07-11T09:15:45.164Z",
+  "description": "Un système intelligent de notification de mise à jour du menu alimentaire qui détecte automatiquement les changements dans le menu spécial de votre restaurant et envoie des notifications personnalisées aux clients via plusieurs canaux - WhatsApp, Email et SMS. Ce flux de travail garantit que vos clients sont toujours informés des nouveaux plats, des changements de prix et de la disponibilité du menu en temps réel.\n\n## Quel est l'objectif ?\n- Surveiller automatiquement les mises à jour du menu spécial à partir de Google Sheets\n- Détecter les changements de menu et générer des messages d'alerte à l'aide de l'IA\n- Envoyer des notifications multicanaux (WhatsApp, Email, SMS) en fonction des préférences des clients\n- Maintenir des journaux de notification complets pour le suivi et l'analyse\n- Fournir une communication fluide avec les clients pour les mises à jour du menu\n- Permettre aux propriétaires de restaurants de garder les clients engagés avec les dernières offres\n\nÀ la fin, vous disposerez d'un système de notification de menu entièrement automatisé qui garde vos clients informés et engagés avec vos dernières offres culinaires.\n\n## Pourquoi est-ce important ?\nLa communication manuelle des mises à jour du menu prend du temps et est souvent manquée par les clients. Voici pourquoi ce flux de travail est essentiel pour les restaurants :\n\n- **Mises à jour en temps réel** : Les clients reçoivent des notifications instantanées concernant les changements de menu\n- **Portée multicanaux** : WhatsApp, Email et SMS garantissent une portée maximale auprès des clients\n- **Expérience personnalisée** : Les clients reçoivent des notifications via leurs canaux préférés\n- **Augmentation des ventes** : La prise de conscience immédiate des nouveaux articles stimule les commandes\n- **Fidélisation des clients** : Des mises à jour régulières gardent les clients engagés et les incitent à revenir\n- **Efficacité opérationnelle** : Élimine les tâches de notification manuelles pour le personnel\n- **Informations basées sur les données** : Journalisation complète pour l'analyse marketing\n\nConsidérez-le comme l'annonceur numérique du menu de votre restaurant qui ne manque jamais une mise à jour.\n\n## Comment ça fonctionne\n\nVoici le processus complet du flux de travail :\n\n### Étape 1 : Surveillance du menu\n- **Nœud** : Planificateur de mise à jour quotidienne du menu\n- **Fonction** : Déclenche le flux de travail sur une base programmée\n- **Fréquence** : Configurable (horaire, quotidien ou en temps réel)\n\n### Étape 2 : Récupération des données\n- **Nœud** : Récupérer les données du menu spécial\n- **Fonction** : Tire les données actuelles du menu à partir de Google Sheets (Feuille 1)\n- **Données** : Récupère les détails des articles, les prix, les descriptions et la disponibilité\n\n### Étape 3 : Détection des changements\n- **Nœud** : Détecter les changements de menu\n- **Fonction** : Compare les données actuelles avec l'état précédent\n- **Logique** : Identifie les nouveaux articles, les changements de prix ou les mises à jour de disponibilité\n\n### Étape 4 : Génération de contenu IA\n- **Nœud** : Générer un message d'alerte de menu\n- **Fonction** : Crée un contenu de notification engageant à l'aide de l'IA\n- **Sortie** : Message formaté avec de nouveaux articles, descriptions et prix\n\n### Étape 5 : Traitement des données clients\n- **Nœud** : Récupérer la liste de contacts des clients\n- **Fonction** : Récupère les préférences des clients à partir de Google Sheets (Feuille 2)\n- **Filtre** : Segmente les clients par préférences de notification\n\n### Étape 6 : Livraison multicanaux\nLe flux de travail se divise en trois canaux de notification parallèles :\n\n#### Branche WhatsApp\n- **Nœud** : Filtrer les utilisateurs de WhatsApp\n- **Fonction** : Identifie les clients ayant activé les notifications WhatsApp\n- **Nœud** : Envoyer une notification WhatsApp\n- **Fonction** : Livrer les mises à jour du menu via WhatsApp\n- **Nœud** : Journaliser l'état WhatsApp\n- **Fonction** : Enregistre l'état de livraison dans la Feuille 3\n\n#### Branche Email\n- **Nœud** : Filtrer les utilisateurs d'Email\n- **Fonction** : Identifie les clients ayant activé les notifications par email\n- **Nœud** : Envoyer un email de menu\n- **Fonction** : Livrer des notifications par email formatées\n- **Nœud** : Journaliser l'état de l'email\n- **Fonction** : Enregistre l'état de livraison dans la Feuille 3\n\n#### Branche SMS\n- **Nœud** : Filtrer les utilisateurs de SMS\n- **Fonction** : Identifie les clients ayant activé les notifications par SMS\n- **Nœud** : Envoyer une alerte SMS Twilio\n- **Fonction** : Livrer des notifications par message texte via Twilio\n- **Nœud** : Journaliser l'état SMS\n- **Fonction** : Enregistre l'état de livraison dans la Feuille 3\n\n### Étape 7 : Journalisation complète\nToutes les activités de notification sont enregistrées dans la Feuille 3 pour le suivi et l'analyse.\n\n## Structure de Google Sheets\n\n### Feuille 1 : Menu spécial\n| Colonne | Description | Exemple |\n|---------|-------------|---------|\n| ID de l'article | Identifiant unique pour l'article du menu | \"ITEM001\" |\n| Nom de l'article | Nom du plat | \"Risotto aux truffes\" |\n| Prix | Prix de l'article | \"$28.99\" |\n| Description | Description détaillée de l'article | \"Riz arborio crémeux avec truffe noire, parmesan et champignons sauvages\" |\n| Nutriments | Informations nutritionnelles | \"Calories : 450, Protéines : 15g\" |\n| Catégorie | Catégorie du menu | \"Plat principal\" |\n| Disponible | Statut de disponibilité | \"Oui\" / \"Non\" |\n\n### Feuille 2 : Base de données clients\n| Colonne | Description | Exemple |\n|---------|-------------|---------|\n| Nom du client | Nom complet du client | \"ABC\" |\n| Email | Adresse email du client | \"abc@gmail.com\" |\n| Numéro de téléphone | Numéro de téléphone du client | \"91999999999\" |\n| Numéro WhatsApp | Numéro WhatsApp du client | \"91999999999\" |\n| Notifications par email | Préférence email | \"Oui\" / \"Non\" |\n| Notifications par SMS | Préférence SMS | \"Oui\" / \"Non\" |\n| Notifications par WhatsApp | Préférence WhatsApp | \"Oui\" / \"Non\" |\n\n### Feuille 3 : Journaux de notification\n| Colonne | Description | Exemple |\n|---------|-------------|---------|\n| Horodatage | Heure d'envoi de la notification | \"2025-07-09T12:51:09.587Z\" |\n| Nom du client | Nom du destinataire | \"ABC\" |\n| Type de notification | Canal utilisé | \"Email\" / \"SMS\" / \"WhatsApp\" |\n| Statut | Statut de livraison | \"Envoyé\" / \"Échoué\" / \"En attente\" |\n| Message | Contenu envoyé | \"MISE À JOUR DU MENU SPÉCIAL...\" |\n\n## Comment utiliser le flux de travail\n\n### Prérequis\n1. **Configuration de Google Sheets** : Créez trois feuilles avec la structure requise\n2. **Compte n8n** : Accès à la plateforme de flux de travail n8n\n3. **API WhatsApp Business** : Compte WhatsApp Business avec accès API\n4. **Service Email** : Service Gmail ou SMTP pour les notifications par email\n5. **Compte Twilio** : Compte Twilio pour la fonctionnalité SMS\n6. **Accès au modèle IA** : Service IA OpenAI ou similaire pour la génération de contenu\n\n### Importation du flux de travail dans n8n\n\n#### Étape 1 : Obtenir le JSON du flux de travail\n- Exportez le flux de travail depuis votre instance n8n ou obtenez le fichier JSON\n- Assurez-vous d'avoir la configuration complète du flux de travail\n\n#### Étape 2 : Accéder à l'éditeur de flux de travail n8n\n- Connectez-vous à votre instance n8n (Cloud ou auto-hébergé)\n- Accédez à la section Flux de travail\n- Cliquez sur \"Ajouter un flux de travail\" pour créer un nouveau flux de travail\n\n#### Étape 3 : Importer le flux de travail\n**Option A : Importer depuis le presse-papiers**\n1. Cliquez sur les trois points (⋯) dans le coin supérieur droit\n2. Sélectionnez \"Importer depuis le presse-papiers\"\n3. Collez le code JSON dans la zone de texte\n4. Cliquez sur \"Importer\" pour charger le flux de travail\n\n**Option B : Importer depuis un fichier**\n1. Cliquez sur les trois points (⋯) dans le coin supérieur droit\n2. Sélectionnez \"Importer depuis un fichier\"\n3. Choisissez le fichier .json depuis votre ordinateur\n4. Cliquez sur \"Ouvrir\" pour importer le flux de travail\n\n### Configuration\n\n#### Intégration Google Sheets\n1. **Authentification** : Connectez votre compte Google dans n8n\n2. **Configuration de la Feuille 1** : Définissez l'ID de la feuille de calcul et la plage pour les données du menu\n3. **Configuration de la Feuille 2** : Définissez l'ID de la feuille de calcul et la plage pour les données des clients\n4. **Configuration de la Feuille 3** : Définissez l'ID de la feuille de calcul et la plage pour les journaux de notification\n\n#### Intégration WhatsApp\n1. **API WhatsApp Business** : Configurez les identifiants de l'API WhatsApp Business\n2. **Configuration du Webhook** : Configurez les URL de webhook pour la livraison des messages\n3. **Modèles de message** : Créez des modèles de message approuvés pour les mises à jour du menu\n\n#### Intégration Email\n1. **Configuration Gmail/SMTP** : Configurez les identifiants du service email\n2. **Modèles d'email** : Concevez des modèles d'email HTML pour les notifications de menu\n3. **Configuration de l'expéditeur** : Définissez le nom et l'adresse email de l'expéditeur\n\n#### Intégration SMS Twilio\n1. **Compte Twilio** : Configurez l'ID SID du compte Twilio et le jeton d'authentification\n2. **Numéro de téléphone** : Configurez le numéro de téléphone Twilio pour l'envoi de SMS\n3. **Modèles de message** : Créez des modèles de message SMS\n\n#### Génération de contenu IA\n1. **Configuration de l'API** : Configurez les identifiants du service IA OpenAI ou préféré\n2. **Personnalisation des invites** : Configurez les invites pour le contenu de mise à jour du menu\n3. **Paramètres de contenu** : Définissez le ton, la longueur et le style du message\n\n### Exécution du flux de travail\n\n#### Exécution automatique\n1. **Déclencheurs programmés** : Configurez des expressions cron pour des vérifications régulières\n2. **Déclencheurs Webhook** : Configurez des déclencheurs en temps réel pour des mises à jour immédiates\n3. **Déclencheurs manuels** : Activez l'exécution manuelle pour les tests\n\n#### Surveillance et maintenance\n1. **Journaux d'exécution** : Surveillez l'exécution du flux de travail via l'interface n8n\n2. **Gestion des erreurs** : Configurez des notifications d'erreur et des mécanismes de réessai\n3. **Surveillance des performances** : Suivez les temps d'exécution et les taux de réussite\n\n## Message de notification d'exemple\n\n```\nMISE À JOUR DU MENU SPÉCIAL 🍽️\n\nNOUVEAUX ARTICLES :\n• Risotto aux truffes - $28.99\n  Riz arborio crémeux avec truffe noire, parmesan et champignons sauvages\n\n• Gâteau au chocolat coulant - $18.99\n  Gâteau au chocolat chaud avec un cœur fondant, glace à la vanille\n\nTotal des articles du menu : 2\nMis à jour : 09/07/2025, 12:10:50 PM\n\nVisitez notre restaurant ou appelez pour passer votre commande ! 📞\n```\n\n## Meilleures pratiques\n\n### Gestion des données\n- Validez régulièrement les informations de contact des clients\n- Gardez les données du menu à jour et précises\n- Maintenez des paramètres de préférence client propres\n\n### Stratégie de notification\n- Envoyez des notifications pendant les heures optimales (déjeuner/dîner)\n- Limitez la fréquence pour éviter la fatigue des clients\n- Personnalisez les messages en fonction des préférences des clients\n\n### Qualité du contenu\n- Utilisez un langage engageant et des emojis de manière appropriée\n- Incluez des prix et des descriptions clairs\n- Ajoutez un appel à l'action pour des commandes immédiates\n\n### Optimisation des performances\n- Traitez les notifications par lots pour éviter les limites de taux\n- Implémentez une logique de réessai pour les livraisons échouées\n- Surveillez les quotas d'API et les limites d'utilisation\n\n## Dépannage\n\n### Problèmes courants\n- **Erreurs d'authentification** : Vérifiez les identifiants et les autorisations de l'API\n- **Limitation de taux** : Implémentez des délais entre les notifications\n- **Livraison des messages** : Vérifiez les formats de numéro de téléphone et les adresses email\n- **Accès à la feuille** : Assurez-vous des autorisations de partage appropriées\n\n### Gestion des erreurs\n- Configurez des alertes de notification pour les échecs de flux de travail\n- Implémentez des mécanismes de secours pour les pannes de service\n- Maintenez des méthodes de notification de secours\n\n## Analyse et reporting\n\n### Indicateurs clés\n- **Taux de livraison** : Suivez les notifications réussies par canal\n- **Engagement des clients** : Surveillez les taux de réponse et les retours\n- **Performance du menu** : Analysez quels articles génèrent le plus d'intérêt\n- **Efficacité des canaux** : Comparez les performances entre WhatsApp, Email et SMS\n\n### Fonctionnalités de reporting\n- Rapports automatisés quotidiens/hebdomadaires\n- Analyse des préférences des clients\n- Tableaux de bord de performance des notifications\n- Corrélation des revenus avec les mises à jour du menu\n\n## Sécurité et conformité\n\n### Protection des données\n- Stockage sécurisé des informations de contact des clients\n- Conformité au RGPD et aux lois locales sur la vie privée\n- Audits de sécurité réguliers de l'accès à l'API\n\n### Limitation de taux\n- Respectez les limites de taux des plateformes (WhatsApp, Twilio, Email)\n- Implémentez des systèmes de mise en file d'attente pour les notifications à volume élevé\n- Surveillez et ajustez les fréquences d'envoi\n\n## Conclusion\n\nLe Notifier de mise à jour du menu alimentaire transforme la communication des restaurants de réactive à proactive, garantissant que les clients sont toujours informés de vos dernières offres. En tirant parti de plusieurs canaux de communication et de contenu généré par l'IA, ce flux de travail crée un pont fluide entre vos innovations culinaires et la sensibilisation des clients.\n\nCe système améliore non seulement l'engagement des clients, mais stimule également les ventes immédiates grâce à des notifications opportunes concernant les nouveaux articles du menu, les offres spéciales et les plats de saison. Les capacités de journalisation et d'analyse complètes fournissent des informations précieuses pour l'optimisation du menu et le perfectionnement de la stratégie marketing.",
+  "workflow": {
+    "id": "nZ4j1Y5HdguFrisS",
+    "meta": {
+      "instanceId": "dd69efaf8212c74ad206700d104739d3329588a6f3f8381a46a481f34c9cc281",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Food Menu Update Notifier via WhatsApp, Email & Twilio SMS",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "7e2bce2a-74b1-4f6d-af45-87e4e9b67739",
+        "name": "Send WhatsApp Notification",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -280,
+          -160
+        ],
+        "parameters": {
+          "url": "https://api.whatsapp.com/send",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "to",
+                "value": "={{ $json['WhatsApp Number'] }}"
+              },
+              {
+                "name": "message",
+                "value": "={{ $node['Merge Menu with Customer Data'].json.messageData.whatsappMessage }}"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer YOUR_WHATSAPP_API_TOKEN"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.1
+      },
+      {
+        "id": "f7ce15a2-4f0e-4547-ab59-5ea71c9cea16",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1660,
+          -620
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 880,
+          "height": 220,
+          "content": "## Automatically detects changes in the restaurant's special menu from Google Sheets and notifies customers via their preferred channel – WhatsApp, Email, or SMS (Twilio).\n\n## This ensures real-time updates to all customers about new or updated food offers.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5a177091-496b-46e2-8243-a2aef1d7a877",
+        "name": "Daily Menu Update Scheduler",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -2260,
+          40
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 30
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "90184fe7-7c85-4e1c-8a50-db72dfbbeab6",
+        "name": "Fetch Special Menu Data",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -2040,
+          40
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit#gid=0",
+            "cachedResultName": "Special Menu"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit?usp=drivesdk",
+            "cachedResultName": "Special Offers"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "rgIk6EXVdPbmPYAl",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.4
+      },
+      {
+        "id": "4f38bdba-10fb-4664-bd82-0562fb5c1236",
+        "name": "Detect Menu Changes",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -1820,
+          40
+        ],
+        "parameters": {
+          "jsCode": "// Check if menu data has changed since last check\nconst currentData = $input.all();\nconst lastCheckKey = 'last_menu_check';\n\n// Get stored last check data from workflow static data\nconst lastCheckData = $getWorkflowStaticData('global')[lastCheckKey] || null;\n\n// Convert current data to string for comparison\nconst currentDataString = JSON.stringify(currentData);\n\n// Initialize result\nlet hasChanged = false;\nlet newItems = [];\nlet updatedItems = [];\nlet removedItems = [];\n\nif (lastCheckData) {\n  // Compare with previous data\n  if (currentDataString !== lastCheckData.dataString) {\n    hasChanged = true;\n    \n    // Detailed comparison logic\n    const previousItems = JSON.parse(lastCheckData.dataString);\n    const currentItems = currentData;\n    \n    // Find new items (compare by Item ID)\n    newItems = currentItems.filter(current => \n      !previousItems.some(prev => prev['Item ID'] === current['Item ID'])\n    );\n    \n    // Find updated items (same ID but different content)\n    updatedItems = currentItems.filter(current => {\n      const prevItem = previousItems.find(prev => prev['Item ID'] === current['Item ID']);\n      return prevItem && JSON.stringify(prevItem) !== JSON.stringify(current);\n    });\n    \n    // Find removed items (existed before but not now)\n    removedItems = previousItems.filter(prev => \n      !currentItems.some(current => current['Item ID'] === prev['Item ID'])\n    );\n  }\n} else {\n  // First run - all items are considered new\n  hasChanged = true;\n  newItems = currentData;\n}\n\n// Store current data for next comparison\n$getWorkflowStaticData('global')[lastCheckKey] = {\n  dataString: currentDataString,\n  timestamp: new Date().toISOString()\n};\n\n// Return results\nreturn [{\n  json: {\n    hasChanged,\n    newItems,\n    updatedItems,\n    removedItems,\n    totalItems: currentData.length,\n    checkTime: new Date().toISOString()\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "9453db00-32a5-4077-9e2c-dd581bdcc151",
+        "name": "Generate Menu Alert Message",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -1600,
+          40
+        ],
+        "parameters": {
+          "jsCode": "// Format menu updates for notifications\nconst data = $json;\nlet message = \"🍽️ **SPECIAL MENU UPDATE** 🍽️\\n\\n\";\n\n// Helper function to extract item data from the nested structure\nfunction extractItemData(items) {\n  if (!items || !Array.isArray(items)) return [];\n  \n  return items.map(item => {\n    // Check if item has a 'json' property (nested structure)\n    if (item.json) {\n      return item.json;\n    }\n    // Otherwise, assume it's already the item data\n    return item;\n  });\n}\n\n// Add new items\nif (data.newItems && data.newItems.length > 0) {\n  message += \"🆕 **NEW ITEMS:**\\n\";\n  const newItemsData = extractItemData(data.newItems);\n  newItemsData.forEach(item => {\n    message += `• ${item['Item Name']} - $${item['Price']}\\n`;\n    if (item['Description']) message += `  ${item['Description']}\\n`;\n  });\n  message += \"\\n\";\n}\n\n// Add updated items\nif (data.updatedItems && data.updatedItems.length > 0) {\n  message += \"📝 **UPDATED ITEMS:**\\n\";\n  const updatedItemsData = extractItemData(data.updatedItems);\n  updatedItemsData.forEach(item => {\n    message += `• ${item['Item Name']} - $${item['Price']}\\n`;\n    if (item['Description']) message += `  ${item['Description']}\\n`;\n  });\n  message += \"\\n\";\n}\n\n// Add removed items\nif (data.removedItems && data.removedItems.length > 0) {\n  message += \"❌ **REMOVED ITEMS:**\\n\";\n  const removedItemsData = extractItemData(data.removedItems);\n  removedItemsData.forEach(item => {\n    message += `• ${item['Item Name']}\\n`;\n  });\n  message += \"\\n\";\n}\n\nmessage += `📊 Total Menu Items: ${data.totalItems}\\n`;\nmessage += `🕐 Updated: ${new Date(data.checkTime).toLocaleString()}\\n\\n`;\nmessage += \"Visit our restaurant or call to place your order! 📞\";\n\n// Create different formats for different channels\nconst whatsappMessage = message;\nconst emailMessage = message.replace(/\\*\\*/g, '').replace(/🍽️|🆕|📝|❌|📊|🕐|📞/g, '');\nconst smsMessage = message.replace(/\\*\\*/g, '').replace(/🍽️|🆕|📝|❌|📊|🕐|📞/g, '').substring(0, 160);\n\n// Calculate lengths properly\nconst newItemsLength = data.newItems ? data.newItems.length : 0;\nconst updatedItemsLength = data.updatedItems ? data.updatedItems.length : 0;\nconst removedItemsLength = data.removedItems ? data.removedItems.length : 0;\n\nreturn [{\n  json: {\n    whatsappMessage,\n    emailMessage,\n    smsMessage,\n    hasNewItems: newItemsLength > 0,\n    hasUpdatedItems: updatedItemsLength > 0,\n    hasRemovedItems: removedItemsLength > 0,\n    totalChanges: newItemsLength + updatedItemsLength + removedItemsLength\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "bc83e5ce-dce8-4873-8d0a-9a7a7180c88c",
+        "name": "Fetch Customer Contact List",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -1380,
+          40
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1419004309,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit#gid=1419004309",
+            "cachedResultName": "Customers"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit?usp=drivesdk",
+            "cachedResultName": "Special Offers"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "rgIk6EXVdPbmPYAl",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.4
+      },
+      {
+        "id": "a7f5a4ab-415d-45aa-b83e-c4e000ea06ee",
+        "name": "Merge Menu with Customer Data",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -940,
+          40
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "customer-data",
+                "name": "customers",
+                "type": "array",
+                "value": "={{ $(\"Fetch Customer Contact List\").all() }}"
+              },
+              {
+                "id": "message-data",
+                "name": "=messageData",
+                "type": "array",
+                "value": "={{ [$(\"Generate Menu Alert Message\").first()] }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.3
+      },
+      {
+        "id": "fcb2d175-6f06-4dae-8db6-5f10aa998f1b",
+        "name": "Split by Notification Preference",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          -720,
+          40
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "36c04dee-c856-412b-9477-f51bf2f9be7a",
+        "name": "Filter WhatsApp Users",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -500,
+          -160
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "whatsapp-condition",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json['WhatsApp Notifications'] }}",
+                "rightValue": "Yes"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "ccada993-edbe-4cd5-8d0e-53b3e1b7454b",
+        "name": "Log WhatsApp Status",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -60,
+          -160
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Status": "Sent",
+              "Message": "={{ $node['Merge Menu with Customer Data'].json.messageData.whatsappMessage.substring(0, 100) }}...",
+              "Timestamp": "={{ new Date().toISOString() }}",
+              "Customer Name": "={{ $json['Customer Name'] }}",
+              "Notification Type": "WhatsApp"
+            },
+            "schema": [
+              {
+                "id": "Timestamp",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Timestamp",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer Name",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Customer Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Notification Type",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Notification Type",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Status",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Message",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1731532192,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit#gid=1731532192",
+            "cachedResultName": "Notification Logs"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit?usp=drivesdk",
+            "cachedResultName": "Special Offers"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "rgIk6EXVdPbmPYAl",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.4
+      },
+      {
+        "id": "8ca7e47b-219a-4be1-8ca1-5aea15b4e0c8",
+        "name": "Filter Email Users",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -500,
+          40
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 1,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "email-condition",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.customers[0].json['Email Notifications'] }}",
+                "rightValue": "Yes"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "1510f575-b745-485f-9eaa-10ec1e7e1896",
+        "name": "Send Menu Email",
+        "type": "n8n-nodes-base.emailSend",
+        "position": [
+          -280,
+          40
+        ],
+        "webhookId": "95c603c6-4b4a-4fcf-861b-d1dc81df76fe",
+        "parameters": {
+          "text": "={{ $json.messageData[0].json.emailMessage }}",
+          "options": {},
+          "subject": "🍽️ Special Menu Update - Your Favorite Restaurant",
+          "toEmail": "={{ $json.customers.map(customer => customer.json.Email).join(', ') }}",
+          "fromEmail": "vrushti@itoneclick.com",
+          "emailFormat": "text"
+        },
+        "credentials": {
+          "smtp": {
+            "id": "3QSx1pWoS0BZcK4c",
+            "name": "SMTP account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "45fa2573-9b05-4f64-976f-e4693d40b7d7",
+        "name": "Filter SMS Users",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -500,
+          240
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "sms-condition",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json['SMS Notifications'] }}",
+                "rightValue": "Yes"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "91eca46b-30ca-4e83-8897-cff4ae3d2f1b",
+        "name": "Log Email Status1",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -60,
+          40
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Status": "Sent",
+              "Message": "={{ $('Filter Email Users').item.json.messageData[0].emailMessage }}",
+              "Timestamp": "={{ new Date().toISOString() }}",
+              "Customer Name": "={{ $('Filter Email Users').item.json.customers[0]['Customer Name'] }}",
+              "Notification Type": "Email"
+            },
+            "schema": [
+              {
+                "id": "Timestamp",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Timestamp",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer Name",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Customer Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Notification Type",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Notification Type",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Status",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Message",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1731532192,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit#gid=1731532192",
+            "cachedResultName": "Notification Logs"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit?usp=drivesdk",
+            "cachedResultName": "Special Offers"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "rgIk6EXVdPbmPYAl",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.4
+      },
+      {
+        "id": "e3fe9db7-df90-491a-b471-e1a0eafc4f86",
+        "name": "Send Twilio SMS Alert",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -280,
+          240
+        ],
+        "parameters": {
+          "url": "https://api.twilio.com/2010-04-01/Accounts/YOUR_TWILIO_ACCOUNT_SID/Messages.json",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "sendHeaders": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "From",
+                "value": "YOUR_TWILIO_PHONE_NUMBER"
+              },
+              {
+                "name": "To",
+                "value": "={{ $json['Phone Number'] }}"
+              },
+              {
+                "name": "Body",
+                "value": "={{ $node['Merge Menu with Customer Data'].json.messageData.smsMessage }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpBasicAuth",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "SS8MHWya3vb8KVFr",
+            "name": "temporary cred"
+          }
+        },
+        "typeVersion": 4.1
+      },
+      {
+        "id": "36a469d9-6966-4d14-917d-9d619c4220b7",
+        "name": " Log SMS Status",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -60,
+          240
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Status": "Sent",
+              "Message": "={{ $node['Merge Menu with Customer Data'].json.messageData.smsMessage.substring(0, 100) }}...",
+              "Timestamp": "={{ new Date().toISOString() }}",
+              "Customer Name": "={{ $json['Customer Name'] }}",
+              "Notification Type": "SMS"
+            },
+            "schema": [
+              {
+                "id": "Timestamp",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Timestamp",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer Name",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Customer Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Notification Type",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Notification Type",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Status",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Message",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1731532192,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit#gid=1731532192",
+            "cachedResultName": "Notification Logs"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185-CpBG7aVkoiq25NXjTW5gnNJC75n7w3TOBH9HpzhQ/edit?usp=drivesdk",
+            "cachedResultName": "Special Offers"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "rgIk6EXVdPbmPYAl",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.4
+      },
+      {
+        "id": "14957f37-83b2-48b6-b61d-0244147f77db",
+        "name": "Wait For All data",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          -1160,
+          40
+        ],
+        "webhookId": "162f6374-f15b-465c-9e71-0f52131bfab8",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "3694a6bc-9a67-4b03-a1ea-cb059e330431",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -2320,
+          -240
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 620,
+          "height": 660,
+          "content": "## Automatically checks the special menu sheet on a schedule (daily/hourly) and detects any updates or changes in menu items."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5ece58c5-bec4-4b12-bf45-b75654a032c0",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1660,
+          -240
+        ],
+        "parameters": {
+          "height": 660,
+          "content": "## Creates a custom message (with updated menu info) to be sent to customers in a readable and attractive format."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bf1b3482-a6cb-4015-942d-45277284575e",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1380,
+          -240
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 780,
+          "height": 660,
+          "content": "## Reads customer contact info and communication preferences (WhatsApp, Email, or SMS), then prepares data for each user."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "984c9afc-655e-45e1-a0de-aea5a2fe7bfb",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -540,
+          -400
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 680,
+          "height": 820,
+          "content": "## Sends the menu update to customers via their selected channel and logs the status for confirmation and audit.\n\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "0ef23c49-3d4e-4a28-91a9-19037f3121c2",
+    "connections": {
+      "Send Menu Email": {
+        "main": [
+          [
+            {
+              "node": "Log Email Status1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter SMS Users": {
+        "main": [
+          [
+            {
+              "node": "Send Twilio SMS Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Log Email Status1": {
+        "main": [
+          []
+        ]
+      },
+      "Wait For All data": {
+        "main": [
+          [
+            {
+              "node": "Merge Menu with Customer Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Email Users": {
+        "main": [
+          [
+            {
+              "node": "Send Menu Email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Detect Menu Changes": {
+        "main": [
+          [
+            {
+              "node": "Generate Menu Alert Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Log WhatsApp Status": {
+        "main": [
+          []
+        ]
+      },
+      "Filter WhatsApp Users": {
+        "main": [
+          [
+            {
+              "node": "Send WhatsApp Notification",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Twilio SMS Alert": {
+        "main": [
+          [
+            {
+              "node": " Log SMS Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Special Menu Data": {
+        "main": [
+          [
+            {
+              "node": "Detect Menu Changes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send WhatsApp Notification": {
+        "main": [
+          [
+            {
+              "node": "Log WhatsApp Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Daily Menu Update Scheduler": {
+        "main": [
+          [
+            {
+              "node": "Fetch Special Menu Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Customer Contact List": {
+        "main": [
+          [
+            {
+              "node": "Wait For All data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Menu Alert Message": {
+        "main": [
+          [
+            {
+              "node": "Fetch Customer Contact List",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge Menu with Customer Data": {
+        "main": [
+          [
+            {
+              "node": "Split by Notification Preference",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split by Notification Preference": {
+        "main": [
+          [
+            {
+              "node": "Filter WhatsApp Users",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Filter SMS Users",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Filter Email Users",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 22,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 3
+      },
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 2
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.emailSend": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 5
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 5
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Oneclick AI Squad",
+    "username": "oneclick-ai",
+    "bio": "The AI Squad Initiative is a pioneering effort to build, automate and scale AI-powered workflows using n8n.io. Our mission is to help individuals and businesses integrate AI agents seamlessly into their daily operations  from automating tasks and enhancing productivity to creating innovative, intelligent solutions. We design modular, reusable AI workflow templates that empower creators, developers and teams to supercharge their automation with minimal effort and maximum impact.",
+    "verified": true,
+    "links": [
+      "https://www.oneclickitsolution.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/848fca91367142f65f9e5c55d64e5c9952b160d7b060d103b52aa343c6bc7b3d?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 11,
+      "icon": "fa:envelope",
+      "name": "n8n-nodes-base.emailSend",
+      "codex": {
+        "data": {
+          "alias": [
+            "SMTP",
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.sendemail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/credentials/sendemail/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Envoyer un email",
+        "color": "#00bb88"
+      },
+      "iconData": {
+        "icon": "envelope",
+        "type": "icon"
+      },
+      "displayName": "Send Email",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 33,
+      "name": "Médias sociaux"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

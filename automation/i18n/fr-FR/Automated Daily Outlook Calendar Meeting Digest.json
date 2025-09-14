@@ -1,0 +1,756 @@
+{
+  "id": 4420,
+  "name": "Résumé Automatisé Quotidien des Réunions du Calendrier Outlook",
+  "views": 3034,
+  "recentViews": 3,
+  "totalViews": 3034,
+  "createdAt": "2025-05-27T06:47:50.602Z",
+  "description": "# Résumé Automatisé Quotidien des Réunions du Calendrier Outlook\n\n## Objectif Global\nCe flux de travail s'exécute automatiquement à une heure programmée (quotidiennement à 8h par défaut), calcule la plage de dates du jour en cours, récupère tous les événements du calendrier d'un compte Microsoft Outlook spécifié pour ce jour, formate ces événements dans un e-mail HTML convivial, puis envoie ce résumé à une adresse e-mail désignée.\n\n---\n\n## Comment ça fonctionne (Décomposition étape par étape) :\n\n### Node : **Déclencheur de Planification** (Node de Déclencheur de Planification)\n- **Type :** `n8n-nodes-base.scheduleTrigger`  \n- **But :** Démarre automatiquement le flux de travail à une heure prédéfinie.  \n- **Configuration :**  \n  - Règle &gt; Intervalle &gt; Déclencher à l'heure : 8  \n    (Déclenche tous les jours à 8h00 selon le fuseau horaire du serveur n8n)  \n- **Sortie :** Déclenche l'exécution du flux de travail à l'heure programmée.\n\n### Node : **Code** (Node de Code)\n- **Type :** `n8n-nodes-base.code`  \n- **But :** Calcule dynamiquement les horodatages de début et de fin pour \"aujourd'hui\", en fonction du moment où le flux de travail est déclenché.  \n- **Configuration (Code JS) :**  \n  - Obtient la date et l'heure actuelles (temps d'exécution du flux de travail).  \n  - Définit `today` au début de la journée actuelle (00:00:00).  \n  - Définit `tomorrow` au début du lendemain (00:00:00).  \n  - Convertit ces valeurs au format de chaîne ISO (par exemple, `2023-10-27T00:00:00Z`).  \n- **Sortie :** Objet JSON avec les chaînes de date ISO `today` et `tomorrow`.\n\n### Node : **Microsoft Outlook** (Node Microsoft Outlook)\n- **Type :** `n8n-nodes-base.microsoftOutlook`  \n- **But :** Récupérer les événements du calendrier d'Outlook dans la plage de dates calculée.  \n- **Configuration :**  \n  - Ressource : Événement  \n  - Filtres (Personnalisés) :  \n    ```\n    start/dateTime ge '{{$json.today}}' and start/dateTime lt '{{$json.tomorrow}}'\n    ```  \n  (Filtre OData pour récupérer les événements commençant aujourd'hui ou après et avant demain, c'est-à-dire tous les événements d'aujourd'hui.)  \n- **Sortie :** Liste d'objets d'événements d'Outlook.\n\n### Node : **Modifier les Champs** (Node de Définition)\n- **Type :** `n8n-nodes-base.set`  \n- **But :** Transformer et simplifier la structure des données des événements d'Outlook.  \n- **Configuration :** Mappe les champs de l'événement Outlook à de nouveaux noms de champs :  \n  - `id`  \n  - `subject`  \n  - `description` (à partir de `bodyPreview`)  \n  - `meeting_start`  \n  - `meeting_end`  \n  - `attendees`  \n  - `meeting_organizer`  \n  - `meeting_organizer_email`  \n  - `meeting_link`  \n- **Sortie :** Liste d'objets JSON avec des détails de réunion simplifiés.\n\n### Node : **Générer HTML** (Node de Code)\n- **Type :** `n8n-nodes-base.code`  \n- **But :** Générer un corps d'e-mail HTML unique résumant toutes les réunions et créer la ligne de sujet de l'e-mail.  \n- **Configuration (Code JS) :**  \n  - Traite tous les éléments de réunion du node \"Modifier les Champs\".  \n  - Définit la fonction `generateMeetingReminderEmail` pour formater chaque réunion en une \"carte\" HTML.  \n  - Échappe les caractères spéciaux HTML, formate les heures, les participants, etc.  \n  - Concatène toutes les cartes en un document HTML complet.  \n  - Génère la ligne de sujet (par exemple, \"🗓️ Vos Réunions Aujourd'hui – Vendredi, 27 Oct\").  \n- **Sortie :** Objet JSON avec :  \n  ```json\n  {\n    \"subject\": \"chaîne de sujet de l'e-mail\",\n    \"html\": \"chaîne de contenu HTML généré\"\n  }\n  ```\n\n### Node : **Envoyer un E-mail** (Node d'Envoi d'E-mail)\n- **Type :** `n8n-nodes-base.emailSend`  \n- **But :** Envoyer l'e-mail digest HTML généré au destinataire désigné.  \n- **Configuration :**  \n  - E-mail de l'expéditeur : `test@gmail.com`  \n  - E-mail du destinataire : `akhilgadiraju@gmail.com`  \n  - Sujet : `{{ $json.subject }}` (dynamique du node Générer HTML)  \n  - HTML : `{{ $json.html }}` (dynamique du node Générer HTML)  \n- **Sortie :** Statut d'envoi de l'e-mail.\n\n---\n\n## Notes Collantes\n- **Heure de Mise à Jour :** Près du node \"Déclencheur de Planification\" ; configurez l'heure de déclenchement selon vos besoins.  \n- **Détails de l'E-mail de Mise à Jour :** Près du node \"Envoyer un E-mail\" ; changez les adresses e-mail de l'expéditeur et du destinataire.\n\n---\n\n## Comment le Personnaliser\n\n- **Planification (node Déclencheur de Planification) :**  \n  Modifiez l'heure de déclenchement, les minutes ou les jours de la semaine pour changer quand le flux de travail s'exécute.\n\n- **Plage de Dates (node Code) :**  \n  Ajustez le JS pour changer la plage de dates (par exemple, le prochain jour ouvrable, la semaine à venir).\n\n- **Calendrier Outlook (node Microsoft Outlook) :**  \n  Spécifiez l'ID du calendrier ou affinez les filtres OData pour la sélection des événements.\n\n- **Détails des Événements (node Modifier les Champs) :**  \n  Ajoutez/supprimez/modifiez les champs d'événements extraits.\n\n- **Apparence et Contenu de l'E-mail (node Générer HTML) :**  \n  Changez le style CSS, les détails des réunions ou la logique de la ligne de sujet.\n\n- **Scénario Sans Réunions :**  \n  Utilisez un node \"Si\" après \"Modifier les Champs\" pour gérer les jours sans réunion (par exemple, envoyer un e-mail \"Pas de réunions aujourd'hui !\" ou sauter l'e-mail).\n\n- **Destinataires d'E-mail (node Envoyer un E-mail) :**  \n  Mettez à jour les e-mails \"De\" et \"À\" ; plusieurs destinataires séparés par des virgules.\n\n---\n\n## Gestion des Erreurs\n- Utilisez des nodes \"Déclencheur d'Erreur\" pour capturer et gérer les échecs (API Outlook, erreurs SMTP).\n- Envoyez des alertes ou consignez les erreurs en conséquence.\n\n---\n\n## Cas d'Utilisation\n- **Résumé Automatisé Quotidien des Réunions Personnelles :** Recevez des résumés quotidiens par e-mail de vos réunions.  \n- **Résumé Automatisé des Réunions d'Équipe :** Envoyez des e-mails digest quotidiens du calendrier de l'équipe.  \n- **Planification Quotidienne Proactive :** Restez automatiquement informé de l'emploi du temps de votre journée.\n\n---\n\n## Identifiants Requis\n\nAjoutez ces identifiants dans votre instance n8n sous **Identifiants** :\n\n- **Microsoft Outlook (API OAuth2) :**  \n  - Utilisé par : \"Node Microsoft Outlook\"  \n  - Nom de l'identifiant dans le flux de travail : `Outlook` (ID : `JcYqVJwcwZIhB8oy`)  \n  - Nécessite OAuth2 avec la permission `Calendars.Read`.\n\n- **SMTP :**  \n  - Utilisé par : \"Node Envoyer un E-mail\"  \n  - Nom de l'identifiant dans le flux de travail : `Compte SMTP` (ID : `vCexcphurglwGBfk`)  \n  - Nécessite les détails du serveur SMTP (hôte, port, nom d'utilisateur, mot de passe).\n\nAssurez-vous que ces identifiants sont configurés correctement avec les permissions requises. Activez le flux de travail pour une exécution programmée.\n\n---\n\nFait avec ❤️ en utilisant n8n par Akhil.\n",
+  "workflow": {
+    "meta": {
+      "instanceId": "7d8066d2f56a07000fe7d753d3eeabf0ecdf68413466f30d10afe0906f058427",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "c515d0b8-82f7-47f1-9a15-6867c69a8146",
+        "name": "Microsoft Outlook",
+        "type": "n8n-nodes-base.microsoftOutlook",
+        "position": [
+          480,
+          0
+        ],
+        "webhookId": "35e62655-df36-4713-9a85-641dc2dc3fb8",
+        "parameters": {
+          "filters": {
+            "custom": "=start/dateTime ge '{{$json.today}}' and start/dateTime lt '{{$json.tomorrow}}'"
+          },
+          "resource": "event"
+        },
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "JcYqVJwcwZIhB8oy",
+            "name": "Outlook - Jared"
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "2c325199-8df6-4c6c-94d2-b54a6d407d27",
+        "name": "Code",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          260,
+          0
+        ],
+        "parameters": {
+          "jsCode": "const now = new Date();\nconst today = new Date(now.getFullYear(), now.getMonth(), now.getDate());\nconst tomorrow = new Date(today);\ntomorrow.setDate(today.getDate() + 1);\n\nconst isoDate = (d) => d.toISOString().split('.')[0] + 'Z';\n\nreturn [\n  {\n    json: {\n      today: isoDate(today),\n      tomorrow: isoDate(tomorrow),\n    },\n  },\n];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "0b785775-6430-4fee-8603-e6527957560a",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          700,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b4e4cf3b-eb02-408e-87e4-85eb52677a52",
+                "name": "id",
+                "type": "string",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "2eb21920-5251-4def-8b24-0db84367bb94",
+                "name": "subject",
+                "type": "string",
+                "value": "={{ $json.subject }}"
+              },
+              {
+                "id": "2840ba2a-1c25-494e-89ad-a18d61629855",
+                "name": "description",
+                "type": "string",
+                "value": "={{ $json.bodyPreview }}"
+              },
+              {
+                "id": "df847006-a390-40cc-a51e-368a213ffb32",
+                "name": "meeting_start",
+                "type": "string",
+                "value": "={{ $json.start.dateTime }}"
+              },
+              {
+                "id": "82e613bc-8de5-4f49-bebe-fbe34f3a1ea8",
+                "name": "meeting_end",
+                "type": "string",
+                "value": "={{ $json.end.dateTime }}"
+              },
+              {
+                "id": "6de1d0ea-48f6-4b95-b810-720dd853b301",
+                "name": "attendees",
+                "type": "array",
+                "value": "={{ $json.attendees }}"
+              },
+              {
+                "id": "3fca7af4-1e83-4e50-b42b-db95e5dba255",
+                "name": "meeting_organizer",
+                "type": "string",
+                "value": "={{ $json.organizer.emailAddress.name }}"
+              },
+              {
+                "id": "5eaa74ef-595d-4a5b-9c37-bdf009cd3b5e",
+                "name": "meeting_organizer_email",
+                "type": "string",
+                "value": "={{ $json.organizer.emailAddress.address }}"
+              },
+              {
+                "id": "d26a7fc5-9782-4237-af89-7afcb42c8bcc",
+                "name": "meeting_link",
+                "type": "string",
+                "value": "={{ $json.webLink }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "9257dcb7-0605-4837-944b-97670cf53317",
+        "name": "Send Email",
+        "type": "n8n-nodes-base.emailSend",
+        "position": [
+          1140,
+          0
+        ],
+        "webhookId": "0b3eae88-6102-4da2-985e-c681e7d5005c",
+        "parameters": {
+          "html": "={{ $json.html }}",
+          "options": {
+            "appendAttribution": false
+          },
+          "subject": "={{ $json.subject }}",
+          "toEmail": "akhil.nueve@gmail.com",
+          "fromEmail": "notification@nuevesolutions.in"
+        },
+        "credentials": {
+          "smtp": {
+            "id": "vCexcphurglwGBfk",
+            "name": "SMTP account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "571a1e32-3d86-4a2f-af35-439557423283",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          40,
+          0
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 8
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "649833a8-81e0-4bd2-ad8b-5982ce32fe11",
+        "name": "Generate HTML",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          920,
+          0
+        ],
+        "parameters": {
+          "jsCode": "const data = $input.all().map(item => item.json);\n\nfunction generateMeetingReminderEmail(meetings) {\n  const escapeHtml = (unsafe) =>\n    unsafe\n      .replace(/&/g, \"&amp;\")\n      .replace(/</g, \"&lt;\")\n      .replace(/>/g, \"&gt;\")\n      .replace(/\"/g, \"&quot;\")\n      .replace(/'/g, \"&#039;\");\n\n  const meetingCards = meetings.map(meeting => {\n    const start = new Date(meeting.meeting_start);\n    const end = new Date(meeting.meeting_end);\n\n    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };\n    const timeString = `${start.toLocaleString('en-US', options)} – ${end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;\n\n    const requiredAttendees = meeting.attendees\n      .filter(a => a.type === 'required')\n      .map(a => escapeHtml(a.emailAddress.name))\n      .join(', ');\n\n    const optionalAttendees = meeting.attendees\n      .filter(a => a.type === 'optional')\n      .map(a => escapeHtml(a.emailAddress.name))\n      .join(', ');\n\n    return `\n      <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-bottom: 20px;\">\n        <tr>\n          <td align=\"center\" style=\"padding: 0 10px;\">\n            <table cellpadding=\"20\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 800px; background-color: #ffffff; border: 1px solid #ddd; border-collapse: collapse;\">\n              <tr>\n                <td style=\"font-family: Arial, sans-serif; color: #333333; font-size: 14px;\">\n                  <h2 style=\"margin: 0 0 10px; font-size: 18px; color: #2c3e50;\">${escapeHtml(meeting.subject)}</h2>\n                  <p><strong>Time:</strong> ${timeString}</p>\n                  <p><strong>Organizer:</strong> ${escapeHtml(meeting.meeting_organizer)} (${escapeHtml(meeting.meeting_organizer_email)})</p>\n                  <p><strong>Description:</strong> ${escapeHtml(meeting.description || 'No description provided.')}</p>\n                  <p><strong>Attendees:</strong><br>${requiredAttendees || 'None'}<br>\n                  ${optionalAttendees ? `<em>Optional:</em> ${optionalAttendees}` : ''}</p>\n                  <p>\n                    <a href=\"${meeting.meeting_link}\" style=\"display: inline-block; padding: 10px 15px; background-color: #0078d4; color: #ffffff; text-decoration: none; border-radius: 4px;\">View in Calendar</a>\n                  </p>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n      </table>\n    `;\n  }).join('\\n');\n\n  return `\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <meta charset=\"UTF-8\">\n        <title>Today's Meetings</title>\n      </head>\n      <body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333;\">\n        <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"padding: 20px;\">\n          <tr>\n            <td align=\"center\">\n              <h1 style=\"font-size: 24px;\">📅 Your Meetings Today</h1>\n            </td>\n          </tr>\n          <tr>\n            <td>\n              ${meetingCards}\n            </td>\n          </tr>\n        </table>\n      </body>\n    </html>\n  `;\n}\n\nconst htmlContent = generateMeetingReminderEmail(data);\n\n// Return HTML + Subject for email node\nreturn [\n  {\n    json: {\n      subject: \"🗓️ Your Meetings Today – \" + (new Date()).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),\n      html: htmlContent\n    }\n  }\n];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "ca74ba38-8661-45d1-9524-5ed4e978f6a2",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1060,
+          160
+        ],
+        "parameters": {
+          "width": 280,
+          "height": 120,
+          "content": "## Update Email Details\nchange email details to your sender and receiver email addresses."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "430f51b0-af72-4604-a00e-0d76bb45659c",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -20,
+          -180
+        ],
+        "parameters": {
+          "content": "## Update Time\nconfigure the default time, when this workflow should trigger"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Microsoft Outlook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Generate HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate HTML": {
+        "main": [
+          [
+            {
+              "node": "Send Email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Microsoft Outlook": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 8,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 2
+      },
+      "n8n-nodes-base.emailSend": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.microsoftOutlook": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Akhil Varma Gadiraju",
+    "username": "akhilv7",
+    "bio": "I'm a full stack developer passionate about building intelligent, scalable solutions that automate workflows and enhance productivity. I love working at the intersection of AI, APIs, and automation—using tools like n8n to streamline processes, integrate data, and unlock smarter decision-making. Whether it's crafting custom backend services or designing intuitive frontends, I’m always exploring ways to build more with less manual effort.",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/akhilv7/"
+    ],
+    "avatar": "https://gravatar.com/avatar/b99567eca941cecc3ec3ceeda2c0c561f619423a66ffd88825781966e0aef4e8?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 11,
+      "icon": "fa:envelope",
+      "name": "n8n-nodes-base.emailSend",
+      "codex": {
+        "data": {
+          "alias": [
+            "SMTP",
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.sendemail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/credentials/sendemail/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Envoyer un E-mail",
+        "color": "#00bb88"
+      },
+      "iconData": {
+        "icon": "envelope",
+        "type": "icon"
+      },
+      "displayName": "Send Email",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les Champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 433,
+      "icon": "file:outlook.svg",
+      "name": "n8n-nodes-base.microsoftOutlook",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.microsoftoutlook/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/microsoft/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Microsoft Outlook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgODEiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48cGF0aCBmaWxsPSIjMjM3MmJhIiBzdHJva2U9Im5vbmUiIGQ9Ik03Ny45IDE5LjJINDYuODZWMEwwIDguMjMyVjcxLjk4TDQ2Ljg2IDgwVjYxLjg0N0g3Ny45YzEuMjY2IDAgMi4xLTEuMDU1IDIuMS0yLjFWMjEuMzJjMC0xLjI2Ni0uODQ0LTIuMS0yLjEtMi4xek0yMS45NTIgNTQuNDZjLTE1LjQtMS4wNTUtMTQuNzc2LTI5LjEzLjQyMi0yOS45NzQgMTYuNjc1LS44NDQgMTYuMjUzIDMxLjAzLS40MjIgMjkuOTc0bTU1LjUxNSA0LjY0NEg0Ni44NlYzNS4wNGw5LjUgOS4wNzdjLjQyMi40MjIuODQ0LjYzMyAxLjQ3Ny42MzNzMS4wNTUtLjIgMS40NzgtLjYzM0w3Ny40NjcgMjcuMjN6bTAtMzUuNDYyLTE5LjYzIDE4LjE1M0w0Ni44NiAzMS40NXYtOS43aDMwLjM5NnYxLjloLjJ6bS01NS4wOTIgNi41NDNjLTguMjMyLjQyMi04LjQ0MyAxOC4zNjQtLjIgMTguNTc1IDguNjU0LjQyMiA4LjY1NC0xOC45OTcuMi0xOC41NzUiLz48L3N5bWJvbD48L3N2Zz4="
+      },
+      "displayName": "Microsoft Outlook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 43,
+      "name": "Productivité Personnelle"
+    }
+  ],
+  "image": []
+}

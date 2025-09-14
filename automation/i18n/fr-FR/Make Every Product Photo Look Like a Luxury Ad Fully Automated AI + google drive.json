@@ -1,0 +1,735 @@
+{
+  "id": 6151,
+  "name": "Faites en sorte que chaque photo de produit ressemble à une publicité de luxe entièrement automatisée AI + Google Drive",
+  "views": 635,
+  "recentViews": 2,
+  "totalViews": 635,
+  "createdAt": "2025-07-18T19:58:18.885Z",
+  "description": "![Untitled1.png](fileId:1794)\n\n## Regardez la vidéo pour mieux comprendre ce flux de travail :\n[ARRE-automation](https://youtu.be/LD60Kt4MEgg?si=Xzb0taY52lNgxmfR)\n\n## Bon à savoir :\nCe flux de travail traite automatiquement les images de produits depuis Google Drive, génère des invites de fond alimentées par l'IA en utilisant plusieurs modèles d'IA (ChatGPT, Claude ou Groq), crée des scènes de fond professionnelles en utilisant Pixelcut.ai, et enregistre les images améliorées dans votre Google Drive. Parfait pour les entreprises de commerce électronique et les flux de travail de photographie de produits.\n\n## Pour qui est-ce ?\n\n➖Propriétaires de magasins de commerce électronique qui ont besoin de fonds de produits professionnels\n➖Photographes de produits cherchant à automatiser la génération de fonds\n➖Équipes marketing créant des images de produits cohérentes\n➖Petites entreprises souhaitant améliorer leurs photos de produits sans configurations de studio coûteuses\n➖Quiconque ayant besoin de transformer rapidement des images de produits transparentes en photos prêtes pour le commerce\n\n## Quel problème ce flux de travail résout-il ?\n\nCe flux de travail résout le défi de la création de fonds de photographie de produits professionnels à grande échelle. Au lieu de modifier manuellement chaque image de produit ou de mettre en place des séances photo coûteuses, il génère automatiquement des fonds contextuellement appropriés pour vos produits en utilisant la technologie de l'IA. Il élimine le processus long de création de fonds tout en maintenant une qualité professionnelle et une cohérence à travers votre catalogue de produits.\n\n## Ce que fait ce flux de travail :\n\n✅Récupère automatiquement les images de produits de votre dossier Google Drive\n✅Télécharge des images de produits transparentes/sans fond\n✅Utilise des modèles d'IA avancés (ChatGPT, Claude ou Groq) pour générer des invites de fond intelligentes basées sur l'analyse des produits\n✅Crée des fonds professionnels en utilisant l'API Pixelcut.ai avec des invites générées par l'IA ou personnalisées\n✅Enregistre les images de produits améliorées dans Google Drive avec un nom organisé\n✅Traite plusieurs images en lot automatiquement\n\n## Comment ça fonctionne :\n\n1️⃣Le nœud Google Drive recherche des images de produits PNG dans votre dossier spécifié\n2️⃣Le nœud de téléchargement binaire récupère les fichiers d'image réels pour le traitement\n3️⃣L'agent IA optionnel analyse les produits en utilisant votre modèle d'IA choisi (OpenAI GPT-4, Claude ou Groq) et génère des invites de fond appropriées\n4️⃣L'API Pixelcut.ai traite les images et ajoute des fonds professionnels en utilisant des invites générées par l'IA ou manuelles\n5️⃣Les images améliorées sont automatiquement enregistrées dans Google Drive avec le préfixe \"enhanced-\"\n\n## Comment utiliser :\n\nConfigurez les identifiants OAuth2 de Google Drive dans n8n\nCréez un compte Pixelcut.ai et obtenez votre clé API\nConfigurez l'ID de votre dossier source dans les nœuds Google Drive\nConfigurez l'ID de votre dossier de sortie pour les images améliorées\nChoisissez et configurez les identifiants de votre modèle d'IA préféré (OpenAI pour ChatGPT, Anthropic pour Claude ou Groq)\nRemplacez les clés API de remplacement par vos véritables identifiants\nExécutez le flux de travail pour traiter vos images de produits\n\n## Exigences :\n\n✅Instance n8n (cloud ou auto-hébergée)\n✅Compte Google Drive avec accès OAuth2\n✅Compte et clé API Pixelcut.ai\n✅Images de produits au format PNG (fonds transparents recommandés)\n✅Identifiants API d'IA pour la génération automatique d'invites (choisissez parmi) :\n   - API OpenAI (pour ChatGPT/GPT-4)\n   - API Anthropic (pour Claude)\n   - API Groq (pour une inférence rapide)\n✅Compréhension de base des flux de travail n8n\n\n## Personnalisation de ce flux de travail :\n\n🟢Modifiez le filtre de format d'image pour prendre en charge JPG, WEBP ou d'autres formats\n🟢Alternez entre différents modèles d'IA (ChatGPT, Claude, Groq) pour la génération d'invites\n🟢Personnalisez les invites de fond pour différentes catégories de produits\n🟢Ajoutez une étape de suppression de fond pour les produits avec des fonds existants\n🟢Changez pour différents services de fond IA (Deep-Image.ai, Remove.bg, etc.)\n🟢Configurez différents paramètres de modèle d'IA pour une créativité d'invite variée\n🟢Ajoutez des étapes de redimensionnement d'image ou d'optimisation de qualité\n🟢Créez plusieurs dossiers de sortie pour différentes catégories de produits\n🟢Ajoutez des mécanismes de gestion des erreurs et de réessai pour les processus échoués\n🟢Implémentez des tests A/B avec différents modèles d'IA pour la comparaison de qualité des invites",
+  "workflow": {
+    "meta": {
+      "instanceId": "b123b0ced16c403c4b53c4c2871fe8ad53e10fa860639a439ee9c523097eb0ca",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "1c1f5f21-2517-4644-bb67-4d9887f3b2c6",
+        "name": "Get Images from Google Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          -460,
+          -2520
+        ],
+        "parameters": {
+          "filter": {
+            "folderId": {
+              "__rl": true,
+              "mode": "list",
+              "value": "YOUR_GOOGLE_DRIVE_FOLDER_ID",
+              "cachedResultUrl": "https://drive.google.com/drive/folders/YOUR_FOLDER_ID",
+              "cachedResultName": "Product Images"
+            }
+          },
+          "options": {},
+          "resource": "fileFolder",
+          "returnAll": true,
+          "queryString": ".png"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "b20d6ab3-e90d-4a06-8c77-447c7b327413",
+        "name": "AI Prompt Generator (Optional)",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          160,
+          -2400
+        ],
+        "parameters": {
+          "text": "Analyze this product image and create a professional background prompt for commercial photography. Focus on style, lighting, and environment that would complement this product.",
+          "options": {},
+          "promptType": "define"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "aef4b599-cd45-48c9-8a31-8a6f31fc7680",
+        "name": "Save Enhanced Image",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          1300,
+          -2520
+        ],
+        "parameters": {
+          "name": "enhanced-{{ $('Get Images from Google Drive').item.json.name }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive",
+            "cachedResultName": "My Drive"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "YOUR_OUTPUT_FOLDER_ID",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/YOUR_OUTPUT_FOLDER_ID",
+            "cachedResultName": "Enhanced Products"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "123430d3-e08f-42f3-8e65-cc20a07c28ad",
+        "name": "AI Agent Instructions",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          140,
+          -2200
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 380,
+          "height": 540,
+          "content": "## 🤖 AI Agent Notes (Optional)\n\n**Purpose**: Generates background prompts automatically\n\n**How to Use**:\n1. This node is OPTIONAL - you can skip it entirely\n2. If using, connect a vision-capable AI model\n3. Alternative: Write your own prompt directly in the Pixelcut node\n\n**⚠️ Important Limitations**:\n- Use OpenAI GPT-4 Vision or Claude Vision instead\n- Or simply disable this node and use manual prompts\n\n**Better Options**:\n- OpenAI GPT-4 Vision Preview\n- Anthropic Claude Vision\n- Google Gemini Vision\n- Manual prompt creation"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5601862a-ff17-4dce-b0fe-d61f5f1926ab",
+        "name": "Pixelcut Background Generator",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          760,
+          -2520
+        ],
+        "parameters": {
+          "url": "https://api.developer.pixelcut.ai/v1/generate-background",
+          "method": "POST",
+          "options": {
+            "timeout": 60000
+          },
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "image",
+                "parameterType": "formBinaryData",
+                "inputDataFieldName": "imageData"
+              },
+              {
+                "name": "prompt",
+                "value": "Professional studio background with soft lighting, clean surfaces, and elegant atmosphere"
+              },
+              {
+                "name": "format",
+                "value": "png"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-API-KEY",
+                "value": "YOUR_PIXELCUT_API_KEY"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "d6986636-7d05-44d2-87cc-1df4bf7a640c",
+        "name": "Pixelcut Configuration Guide",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          640,
+          -2860
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 400,
+          "height": 320,
+          "content": "## 🎨 Pixelcut.ai Configuration\n\n**Required Setup**:\n1. Get API key from pixelcut.ai\n2. Replace YOUR_PIXELCUT_API_KEY with your actual key\n3. Customize the prompt field for your desired background\n\n**Supported Formats**:\n- PNG (recommended for products)\n- JPG (smaller file size)\n- WEBP (modern format)\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3b9c5250-8498-4096-96ab-e3cbf8175b84",
+        "name": "File Format Configuration",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          220,
+          -3020
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 380,
+          "height": 520,
+          "content": "## ⚠️ File Format Warning\n\n**Current Limitation**: \nThis workflow only processes PNG files\n\n**To Support Other Formats**:\n1. Go to \"Get Images from Google Drive\" node\n2. Change queryString from :\n   - \".jpg\" for JPEG files\n   - \".webp\" for WebP files\n ➡️ to : \".png\" \n\n**Output Format**:\nChange the \"format\" parameter in Pixelcut node:\n- \"png\" - Best quality, transparency support\n- \"jpg\" - Smaller file size\n- \"webp\" - Modern format, good compression\n\n**Multiple Formats**: Use OR operator:\n\"mimeType='image/png' or mimeType='image/jpeg'\""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "14182b3a-a7b5-4c58-99b7-a6b125446f2d",
+        "name": "Background Requirements",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -460,
+          -3000
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 400,
+          "height": 460,
+          "content": "## 🚨 Background Removal Warning\n\n**Important**: This workflow expects products WITHOUT backgrounds\n\n**If Your Images Have Backgrounds**:\n1. Add a background removal step BEFORE this workflow\n2. Use Pixelcut's remove-background endpoint:\n   - URL: https://api.developer.pixelcut.ai/v1/remove-background\n   - Same API key and setup\n\n**Background Removal Options**:\n- Pixelcut.ai remove-background API\n- Remove.bg API\n- Deep-Image.ai background removal\n- Adobe Creative SDK\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e20669ed-e1ba-43c7-92f3-15420fb03d6e",
+        "name": "Setup Checklist",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -900,
+          -2800
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 350,
+          "height": 560,
+          "content": "## 📋 Setup Checklist\n\n**Required Credentials**:\n□ Google Drive OAuth2 API\n□ Pixelcut.ai API Key\n□ Vision AI API (if using AI prompts) any AI Accepts images\n\n**Folder Configuration**:\n□ Replace YOUR_GOOGLE_DRIVE_FOLDER_ID\n□ Replace YOUR_OUTPUT_FOLDER_ID\n□ Ensure proper folder permissions\n\n**Security Notes**:\n□ Never share API keys publicly\n□ Use environment variables for sensitive data\n□ Regularly rotate API keys\n□ Monitor API usage and costs\n\n**Testing Steps**:\n1. Test with single image first\n2. Verify output quality\n3. Check file naming convention\n4. Confirm folder permissions\n5. Monitor API rate limits"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "81ca6ccb-855e-4b04-934c-8167feea9fea",
+        "name": "Download Binary Image Files2",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          -180,
+          -2520
+        ],
+        "parameters": {
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.id }}"
+          },
+          "options": {
+            "binaryPropertyName": "imageData"
+          },
+          "operation": "download"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "1c668c86-2ec4-4ddd-a5b5-0c37dac39c93",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -40,
+          -2120
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "typeVersion": 1.2
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Prompt Generator (Optional)",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Binary Image Files2": {
+        "main": [
+          [
+            {
+              "node": "Pixelcut Background Generator",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "AI Prompt Generator (Optional)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Images from Google Drive": {
+        "main": [
+          [
+            {
+              "node": "Download Binary Image Files2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pixelcut Background Generator": {
+        "main": [
+          [
+            {
+              "node": "Save Enhanced Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Prompt Generator (Optional)": {
+        "main": [
+          [
+            {
+              "node": "Pixelcut Background Generator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 5
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 3
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "ARRE",
+    "username": "arre",
+    "bio": "Automation Architect | I transform complexity into simplicity\nBuilding intelligent n8n workflows that do your heavy lifting in minutes, not hours. My mission: Eliminate repetitive tasks, streamline your operations, and give you back the most valuable resource – your time. Let’s make work feel lighter together.",
+    "verified": true,
+    "links": [
+      "https://www.youtube.com/@ARRE-automation"
+    ],
+    "avatar": "https://gravatar.com/avatar/5f951a9d79eb3f593977ad58e84cb58b6eba568ecc0498df27aac70cb2116a28?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": [
+    {
+      "id": 1794,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Untitled_1_affc169c48.png"
+    }
+  ]
+}

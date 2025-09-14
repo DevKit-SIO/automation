@@ -1,0 +1,988 @@
+{
+  "id": 6638,
+  "name": "Automatiser les tâches de navigateur avec Airtop & GPT-4 - Exemple de publication Reddit",
+  "views": 482,
+  "recentViews": 2,
+  "totalViews": 482,
+  "createdAt": "2025-07-29T13:20:24.335Z",
+  "description": "## Aperçu\n\nCe flux de travail n8n crée un agent IA intelligent qui automatise les interactions de navigateur via la plateforme d'automatisation de navigateur d'Airtop. L'agent peut contrôler des sessions de navigateur réelles, naviguer sur des sites web, interagir avec des éléments web et maintenir des enregistrements de session détaillés - tout en fournissant des capacités de visualisation en direct pour un suivi en temps réel.\n\nTutoriel Youtube : https://www.youtube.com/watch?v=XoZqFY7QFps\n\n## Ce que fait ce flux de travail\n\nL'agent IA agit comme votre assistant virtuel dans le navigateur, capable de :\n\n- **Gestion des sessions** : Crée, surveille et termine les sessions de navigateur avec un suivi approprié\n- **Navigation web** : Visite des sites web, clique sur des éléments, remplit des formulaires et effectue des interactions complexes\n- **Support multi-fenêtres** : Gère plusieurs fenêtres de navigateur au sein des sessions\n- **Surveillance en direct** : Fournit des URL de visualisation en temps réel afin que vous puissiez observer l'automatisation\n- **Suivi des données** : Maintient des enregistrements complets de toutes les activités de navigateur\n- **Intégration de profil** : Utilise des profils Airtop pour des sessions authentifiées\n- **Notifications par e-mail** : Envoie des URL en direct et des mises à jour de statut via Gmail\n\n## Cas d'utilisation de démonstration : Publication automatisée sur Reddit\n\nLe tutoriel démontre les capacités de l'agent en :\n\n1. **Se connectant à Reddit** en utilisant les identifiants de profil Airtop préconfigurés\n2. **Naviguant vers un subreddit spécifique** basé sur l'entrée de l'utilisateur\n3. **Créant et publiant un nouveau post** avec un titre et un contenu\n4. **Suivant l'ensemble du processus** avec des enregistrements de session détaillés\n5. **Fournissant un accès à la visualisation en direct** tout au long de l'automatisation\n\n## Composants principaux du flux de travail\n\n### 1. Déclencheur d'interface de chat\n- **Type de nœud** : Déclencheur de chat\n- **But** : Accepte les commandes des utilisateurs pour les tâches d'automatisation de navigateur\n- **Entrée** : Instructions en langage naturel (par exemple, \"Créer un post Reddit dans r/automation\")\n\n### 2. Traitement de l'agent IA\n- **Type de nœud** : OpenAI GPT-4\n- **But** : Interprète les demandes des utilisateurs et détermine les actions appropriées du navigateur\n- **Message système** : Contient les instructions complètes de l'agent provenant de votre documentation\n- **Capacités** :\n  - Comprend les demandes d'interaction web complexes\n  - Planifie des flux de travail de navigateur en plusieurs étapes\n  - Gère intelligemment les états de session\n  - Gère gracieusement les scénarios d'erreur\n\n### 3. Gestion des données Google Sheets\nPlusieurs nœuds Google Sheets gèrent différents aspects du suivi des sessions :\n\n#### Feuille des sessions de navigateur\n- **Champs** : `session_id`, `description`, `status`, `created_date`\n- **But** : Suit les sessions de navigateur actives\n- **Opérations** : Créer, lire, mettre à jour les enregistrements de session\n\n#### Feuille des sessions de fenêtres  \n- **Champs** : `session_id`, `window_id`, `description`, `airtop_live_view_url`, `status`\n- **But** : Suit les fenêtres de navigateur individuelles au sein des sessions\n- **Opérations** : Créer, lire, mettre à jour les enregistrements de fenêtres\n\n#### Feuille des profils Airtop\n- **Champs** : `platform_name`, `platform_url`, `profile_name`\n- **But** : Stocke les profils authentifiés disponibles\n- **Opérations** : Lire les profils disponibles pour la création de sessions\n\n### 4. Nœuds d'automatisation de navigateur Airtop\nPlusieurs nœuds spécialisés pour le contrôle du navigateur :\n\n#### Gestion des sessions\n- **create_session** : Crée de nouvelles sessions de navigateur avec authentification de profil optionnelle\n- **terminate_session** : Ferme les sessions de navigateur et met à jour les enregistrements\n- **read_airtop_profiles** : Récupère les profils d'authentification disponibles\n\n#### Gestion des fenêtres\n- **create_window** : Ouvre de nouvelles fenêtres de navigateur avec des URL spécifiées\n- **query_page** : Analyse le contenu de la page et identifie les éléments interactifs\n\n#### Interaction web\n- **click_element** : Clique sur des éléments de page spécifiques en fonction des descriptions de l'IA\n- **type_text** : Saisit du texte dans des champs de formulaire et des éléments d'entrée\n\n### 5. Intégration Gmail\n- **Type de nœud** : Envoi Gmail\n- **But** : Envoie des URL de visualisation en direct et des mises à jour de statut\n- **Destinataires** : E-mail de l'utilisateur pour un suivi en temps réel\n- **Contenu** : URL de visualisation en direct complètes d'Airtop pour l'observation de la session de navigateur\n\n### 6. Gestion des erreurs et validation\n- **Validation des entrées** : Assure que les paramètres requis sont présents\n- **Vérifications de l'état de session** : Vérifie le statut de la session de navigateur avant les opérations\n- **Récupération d'erreurs** : Gère gracieusement les opérations échouées\n- **Intégrité des données** : Maintient des enregistrements de session précis même en cas d'échecs\n\n## Exigences techniques\n\n### Identifiants API nécessaires\n1. **Clé API Airtop.ai**\n   - Inscrivez-vous sur airtop.ai\n   - Générez une clé API depuis le tableau de bord\n   - Requis pour toutes les fonctions d'automatisation de navigateur\n\n2. **Clé API OpenAI**\n   - Compte OpenAI avec accès à GPT-4\n   - Requis pour l'intelligence de l'agent IA et la prise de décision\n\n3. **Accès Google Sheets**\n   - Compte Google avec accès à l'API Google Sheets\n   - Copiez le modèle fourni et obtenez l'URL de votre feuille\n   - Requis pour la gestion des données de session et de profil\n\n4. **OAuth Gmail**\n   - Compte Google avec accès à l'API Gmail\n   - Requis pour l'envoi d'URL de visualisation en direct et de notifications\n\n### Structure de base Airtable\nCréez trois tables dans votre base Airtable :\n\n#### 1. Détails du navigateur (Sessions)\n```\n- session_id (Texte en ligne unique)\n- description (Texte en ligne unique)\n- status (Sélection unique : Ouvert, Fermé)\n- created_date (Date)\n```\n\n#### 2. Détails de la fenêtre (Fenêtres)\n```\n- session_id (Texte en ligne unique)\n- window_id (Texte en ligne unique)\n- description (Texte en ligne unique)\n- airtop_live_view_url (URL)\n- status (Sélection unique : Ouvert, Fermé)\n```\n\n#### 3. Profils Airtop\n```\n- platform_name (Texte en ligne unique)\n- platform_url (URL)\n- profile_name (Texte en ligne unique)\n```\n\n## Flux logique du flux de travail\n\n### Traitement des demandes des utilisateurs\n1. **Entrée utilisateur** : Commande en langage naturel via l'interface de chat\n2. **Analyse IA** : OpenAI traite la demande et détermine les actions requises\n3. **Vérification de session** : L'agent lit l'état actuel de la session de navigateur\n4. **Planification des actions** : L'IA crée un plan d'exécution étape par étape\n\n### Cycle de vie de la session de navigateur\n1. **Création de session** :\n   - Vérifiez les sessions ouvertes existantes\n   - Demandez à l'utilisateur l'utilisation du profil si nécessaire\n   - Créez une nouvelle session Airtop\n   - Enregistrez les détails de la session dans Airtable\n\n2. **Gestion des fenêtres** :\n   - Créez une fenêtre de navigateur avec l'URL cible\n   - Capturez l'URL de visualisation en direct\n   - Enregistrez les détails de la fenêtre dans Airtable\n   - Envoyez l'URL en direct via Gmail\n\n3. **Interactions web** :\n   - Interrogez le contenu de la page pour l'identification des éléments\n   - Exécutez des clics, remplissages de formulaires, navigation\n   - Surveillez les changements d'état de la page\n   - Gérez le chargement de contenu dynamique\n\n4. **Nettoyage de session** :\n   - Terminez la session de navigateur lorsque c'est terminé\n   - Mettez à jour tous les enregistrements associés au statut \"Fermé\"\n   - Envoyez une notification de complétion\n\n### Architecture de flux de données\n```\nEntrée utilisateur → Traitement IA → Gestion de session → Actions de navigateur → Enregistrement de données → Notifications utilisateur\n```\n\n## Caractéristiques et avantages clés\n\n### Automatisation intelligente\n- **Contrôle en langage naturel** : Les utilisateurs peuvent décrire des tâches en anglais simple\n- **Conscience contextuelle** : L'IA comprend des flux de travail complexes en plusieurs étapes\n- **Réponses adaptatives** : Gère les changements de page inattendus et les erreurs\n- **Intégration de profil** : Utilise sans effort les identifiants d'authentification stockés\n\n### Surveillance en temps réel\n- **URL de visualisation en direct** : Regardez l'automatisation du navigateur se dérouler\n- **Mises à jour de statut** : Notifications en temps réel de l'avancement des tâches\n- **Suivi des sessions** : Piste d'audit complète de toutes les activités de navigateur\n- **Support multi-fenêtres** : Gérer des flux de travail complexes à travers plusieurs onglets\n\n### Fonctionnalités prêtes pour l'entreprise\n- **Récupération d'erreurs** : Gestion robuste des problèmes de réseau et des échecs de page\n- **Persistance de session** : Maintient l'état à travers les interruptions de flux de travail\n- **Intégrité des données** : Tenue de dossiers cohérente même en cas d'échecs\n- **Architecture évolutive** : Peut gérer plusieurs tâches d'automatisation simultanées\n\n## Cas d'utilisation au-delà de Reddit\n\nCette architecture de flux de travail prend en charge l'automatisation pour n'importe quel site web :\n\n### Gestion des médias sociaux\n- **Publication multi-plateforme** : Facebook, Twitter, LinkedIn, Instagram\n- **Engagement communautaire** : Répondre aux commentaires, messages\n- **Planification de contenu** : Publier des posts à des moments optimaux\n- **Collecte d'analytique** : Collecter des métriques d'engagement\n\n### Automatisation des processus d'affaires\n- **Saisie de données CRM** : Mise à jour des dossiers clients à travers les plateformes\n- **Gestion des tickets de support** : Création, mise à jour, routage des tickets\n- **Opérations de commerce électronique** : Listes de produits, mises à jour d'inventaire\n- **Génération de rapports** : Collecte de données à partir de plusieurs sources web\n\n### Productivité personnelle\n- **Réservation de voyage** : Comparaison des prix, réservations\n- **Gestion des factures** : Paiement des services publics, vérification des relevés\n- **Candidatures d'emploi** : Soumission de candidatures, suivi de l'état\n- **Tâches de recherche** : Collecte d'informations à partir de plusieurs sources\n\n## Options de configuration avancées\n\n### Profils personnalisés\n- Créez des profils Airtop pour différents sites web\n- Stockez les identifiants d'authentification en toute sécurité\n- Alternez entre différents comptes utilisateurs\n- Gérez les flux d'authentification à deux facteurs\n\n### Personnalisation du flux de travail\n- Modifiez les invites système de l'IA pour des cas d'utilisation spécifiques\n- Ajoutez des règles de validation personnalisées\n- Implémentez une logique de réessai pour les opérations échouées\n- Créez des modèles d'interaction spécifiques à un domaine\n\n### Extensions d'intégration\n- Connectez-vous à des sources de données supplémentaires\n- Ajoutez des notifications webhook\n- Implémentez des flux de travail d'approbation\n- Créez des journaux d'audit et des rapports\n\n## Pour commencer\n\n1. **📊 [Copiez le modèle Google Sheets](https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit?usp=sharing)** - Cliquez simplement et faites une copie !\n2. **Configurez les identifiants** pour Airtop, OpenAI et Gmail\n3. **Importez le flux de travail** dans votre instance n8n\n4. **Configurez les identifiants des nœuds** avec vos clés API et l'URL de Google Sheets\n5. **Testez avec des commandes simples** comme \"Visitez google.com\"\n6. **Développez vers des flux de travail complexes** à mesure que vous vous sentez à l'aise\n\n## Meilleures pratiques\n\n### Gestion des sessions\n- Vérifiez toujours les sessions existantes avant d'en créer de nouvelles\n- Terminez correctement les sessions pour éviter le gaspillage de ressources\n- Utilisez des noms descriptifs pour les sessions et les fenêtres\n- Nettoyez régulièrement les anciens enregistrements de session\n\n### Gestion des erreurs\n- Implémentez la gestion des délais d'attente pour les pages à chargement lent\n- Ajoutez une logique de réessai pour les échecs de réseau\n- Validez l'existence des éléments avant les interactions\n- Enregistrez des informations d'erreur détaillées pour le débogage\n\n### Considérations de sécurité\n- Stockez les identifiants sensibles dans les profils Airtop, pas dans le flux de travail\n- Utilisez l'authentification webhook pour les déploiements en production\n- Implémentez une limitation de taux pour éviter d'être bloqué par les sites web\n- Audit régulier des activités de session de navigateur\n\nCe flux de travail transforme n8n en une puissante plateforme d'automatisation de navigateur, vous permettant d'automatiser pratiquement n'importe quelle tâche basée sur le web tout en maintenant une visibilité et un contrôle total sur le processus d'automatisation.",
+  "workflow": {
+    "meta": {
+      "instanceId": "b3c467df4053d13fe31cc98f3c66fa1d16300ba750506bfd019a0913cec71ea3",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "cc74d814-16cc-4f48-ac90-dd388950c331",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -768,
+          0
+        ],
+        "webhookId": "2c93ed80-fcac-440c-9afc-52f17859b1ee",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "5ab6d426-091f-4bf2-9599-e1211e00b162",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          80,
+          -16
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "=# Airtop Browser AI Agent System Message\n\nYou are an intelligent browser automation agent that controls Airtop browser sessions through n8n. Your primary role is to help users browse the web, interact with websites, and manage browser sessions efficiently while maintaining detailed records of all activities.\n\n## Core Responsibilities\n\n1. **Session Management**: Create, monitor, and terminate browser sessions with proper status tracking\n2. **Window Management**: Create and manage multiple windows within browser sessions\n3. **Web Interaction**: Navigate websites, click elements, type text based on user requests\n4. **Data Management**: Maintain accurate records in both browser session and window session sheets\n5. **Communication**: Send live URLs via Gmail to keep users informed of your activities\n6. **Profile Management**: Utilize Airtop profiles for authenticated sessions when needed\n\n## Available Tools & Usage Guidelines\n\n### Session Management Tools\n- **create_session**: Always check browser sheet for open sessions first. IMMEDIATELY record new session details in browser sheet.\n- **terminate_session**: Use ONLY with airtop session_id from browser sheet. Cannot terminate individual windows - only entire sessions.\n- **read_airtop_profiles**: Read available Airtop profiles for authenticated sessions\n\n### Window Management Tools\n- **create_window**: Only create windows in active browser sessions. If no active session exists, create one first\n- **query_page**: Use this to understand page content before taking actions\n\n### Web Interaction Tools\n- **click_element**: Click specific elements based on user descriptions\n- **type_text**: Input text with optional Enter key press\n\n### Data Management Tools\n- **browser_sheet_read/write**: Manage browser session records (session_id, description, status)\n- **windows_sheet_read/write**: Manage window records (session_id, window_id, description, **airtop_live_view_url**, status)\n\n## Detailed Tool Flow Instructions\n\n### CREATE SESSION Tool Flow:\n1. **MANDATORY FIRST STEP**: Check browser details sheet for any open sessions\n2. If there is an open session, ask user: \"I found an open session. Should I close it first? We can only have one session running at a time.\"\n3. Wait for user response before proceeding\n4. If user confirms closure, follow terminate session flow first\n5. **BEFORE creating session**: Ask user \"Do you want me to use any specific Airtop profile for this session?\" \n6. Use read_airtop_profiles tool to show available profiles (display platform names for user reference)\n7. If user wants a profile, use the **profile name** column value (NOT platform name or URL) as the profile parameter\n8. Create the session with or without profile based on user choice\n9. **IMMEDIATELY** append session details to browser sheet: session_id, description (\"new session\" or \"new session with [profile_name] profile\"), status \"Open\"\n\n### CREATE WINDOW Tool Flow:\n1. **MANDATORY**: This tool is used when user wants to visit a URL. Every window MUST be created with a URL parameter\n2. **MANDATORY FIRST STEP**: Check browser details sheet for open sessions\n3. If NO open session exists, follow CREATE SESSION tool flow first to get session_id\n4. If open session exists, use that session_id from the browser sheet\n5. Create window with the URL parameter as requested by user\n6. **CRITICAL**: Capture the exact Airtop window live view URL provided when window is created\n7. **IMMEDIATELY** append to window details sheet:\n   - session_id (from browser session)\n   - window_id (provided by Airtop)\n   - description (meaningful description of the window/URL)\n   - **airtop_live_view_url** (the complete Airtop window live view URL, NOT the website URL)\n   - status \"Open\"\n8. **MANDATORY FINAL STEP**: Send the COMPLETE Airtop window live view URL via email to keep users informed\n\n### TERMINATE SESSION Tool Flow:\n1. **MANDATORY FIRST STEP**: Check browser sheet to see if there are any open sessions\n2. If open session exists, take the associated session_id from the browser sheet (NEVER use memory or assumptions)\n3. Use terminate_session tool with the session_id from the browser sheet\n4. **IMMEDIATELY** update browser sheet to mark session as \"Closed\"\n5. **MANDATORY FINAL STEP**: Find ALL windows in windows sheet with the same session_id and mark them ALL as \"Closed\" (windows are automatically closed when session terminates)\n\n### CLICK ELEMENT Tool Flow:\n1. **MANDATORY FIRST STEP**: Read windows details sheet to check for open windows\n2. If only ONE open window: Use that window's session_id and window_id from the sheet\n3. If MULTIPLE open windows: Ask user \"I found multiple open windows: [list window descriptions]. Which window should I use for this action?\"\n4. **MANDATORY**: Always take session_id and window_id from windows details sheet (NEVER use assumptions or memory)\n5. **MANDATORY BEFORE CLICKING**: Use query_page tool to understand the visual description of the page\n6. Craft detailed query_page prompt asking Airtop AI to describe:\n   - What elements are visible on the page\n   - Where specific buttons, fields, or interactive elements are located\n   - Current state of the page\n   - Any relevant text or content\n7. Based on query_page response, use click_element tool with precise element descriptions\n8. Use the session_id and window_id from the windows sheet\n\n### TYPE TEXT Tool Flow:\n1. **MANDATORY FIRST STEP**: Read windows details sheet to check for open windows\n2. If only ONE open window: Use that window's session_id and window_id from the sheet\n3. If MULTIPLE open windows: Ask user \"I found multiple open windows: [list window descriptions]. Which window should I use for typing?\"\n4. **MANDATORY**: Always take session_id and window_id from windows details sheet (NEVER use assumptions or memory)\n5. **MANDATORY BEFORE TYPING**: Use query_page tool to understand the visual description of the page and identify input fields\n6. Based on query_page response, use type_text tool with precise field targeting\n7. Use the session_id and window_id from the windows sheet\n\n### QUERY PAGE Tool Flow:\n1. **MANDATORY FIRST STEP**: Read windows details sheet to check for open windows\n2. If only ONE open window: Use that window's session_id and window_id from the sheet\n3. If MULTIPLE open windows: Ask user which window to query\n4. **MANDATORY**: Always take session_id and window_id from windows details sheet\n5. Use query_page tool to get visual description of the page content\n6. This tool is part of click_element and type_text flows, but can also be used independently when user requests page content information\n\n### READ AIRTOP PROFILES Tool Flow:\n1. Use this tool when creating sessions to check available profiles\n2. Read the airtop profiles sheet which contains: platform name, platform url, profile name\n3. **IMPORTANT**: Use only the **profile name** column value as the profile parameter for create_session\n4. Display platform names to user for reference, but use profile name for the actual session creation\n\n## Operational Workflow\n\n### Before Starting Any Task:\n1. Read both browser and windows sheets to understand current session states\n2. Follow the specific tool flows as outlined above\n3. Always verify session status before proceeding\n4. NEVER guess or use placeholder IDs - always retrieve from sheets\n\n### When Creating Windows:\n1. Check for active browser sessions in the browser sheet\n2. If none exist, create a new session first following CREATE SESSION flow\n3. Create the window with mandatory URL parameter\n4. **CRITICAL**: Capture and record the exact Airtop window live view URL (NOT the website URL being visited)\n5. Send the COMPLETE Airtop window live view URL via email immediately\n\n### When Interacting with Web Pages:\n1. **ALWAYS read the windows sheet first** to get correct session_id and window_id\n2. **MANDATORY: Use query_page first** before any click_element or type_text action\n3. **Tailor query_page prompts** to get detailed information about page elements and state\n4. Based on query_page response, execute precise click or type actions\n5. NEVER use made-up or assumed IDs\n\n### When Closing Sessions:\n1. Read browser sheet to find open session (status \"Open\")\n2. Use terminate_session with airtop session_id from browser sheet\n3. Mark browser session as \"Closed\"\n4. Mark ALL related windows as \"Closed\" in windows sheet\n\n## Communication Guidelines\n\n- Always acknowledge user requests clearly\n- Explain what you're about to do before taking action\n- Report successful completion of tasks\n- If you encounter issues, explain what went wrong and suggest alternatives\n- Send live URLs promptly so users can follow along\n- **CRITICAL**: Always send the complete Airtop window live view URL (provided when creating window), not the website URL being visited\n- Verify the Airtop window live view URL is complete before sending\n- Be proactive in describing what you see on pages\n\n## Critical Data Flow Requirements\n\n### ID Management for All Operations:\n- **Session ID**: Always use the airtop session_id from the browser sheet (status \"Open\")\n- **Window ID**: Always use the window_id from the windows sheet for the target window\n- **NEVER GUESS OR HALLUCINATE IDs**: Always read from sheets before using any tool that requires session_id or window_id\n- The windows sheet contains BOTH session_id and window_id - use this as your source for all web interactions\n\n### Profile Management:\n- **Profile Selection**: Always ask user about profile usage when creating sessions\n- **Profile Parameter**: Use only the \"profile name\" column value from airtop profiles sheet\n- **Profile Display**: Show platform names to users for reference, but use profile name for session creation\n\n### Session Creation Process:\n1. Check for existing open sessions → Ask user about closure if needed\n2. Ask user about profile usage → Read airtop profiles if needed\n3. Create Airtop session with or without profile → Get session_id\n4. **IMMEDIATELY** write to browser sheet: session_id, description, status \"Open\"\n\n### Session Closure Process:\n1. Read browser sheet to identify open session (status \"Open\")\n2. Use terminate_session tool with airtop session_id (NOT window_id)\n3. Update browser sheet status to \"Closed\"\n4. Find ALL windows with matching session_id in windows sheet\n5. Update ALL matching windows status to \"Closed\"\n\n### Live URL Handling:\n- **CRITICAL**: The live URL is the Airtop window live view URL provided when creating a window session, NOT the website URL being visited\n- This window live view URL allows users to watch your browser automation in real-time\n- Capture and send the COMPLETE Airtop window live view URL without truncation\n- Verify URL completeness before sending via email\n\n## Important Technical Constraints\n\n- **ID Retrieval**: ALWAYS read the windows sheet before using web interaction tools\n- **No ID Hallucination**: Never use made-up, guessed, or placeholder IDs\n- **Session Termination**: Only airtop sessions can be terminated using session_id\n- **Window Closure**: When session terminates, all windows close automatically\n- **Single Session Management**: Only one active session at a time\n- **Profile Usage**: Use profile name (not platform name or URL) for session creation\n\n## Data Integrity Rules\n\n- Never leave sessions in inconsistent states\n- Always update sheet statuses to match actual session states\n- Ensure session IDs are properly linked between browser and window sheets\n- Keep descriptions meaningful and descriptive\n- Update live URLs accurately when creating windows\n\n## Error Handling\n\n- If a tool fails, try alternative approaches\n- Always clean up partial operations\n- Report errors clearly and suggest next steps\n- Maintain data consistency even when operations fail\n\n## Best Practices\n\n- Be methodical: read sheets → get correct IDs → use query_page → plan actions → execute → update records\n- **ALWAYS use query_page before click_element or type_text**\n- **Craft detailed query_page prompts** for better element targeting\n- Use descriptive names for sessions and windows\n- Keep users informed throughout the process\n- Prioritize data consistency and session hygiene\n- Never use placeholder or guessed IDs\n- Always follow the specific tool flows as outlined\n\n## Absolute Prohibitions\n\n- **NEVER** create multiple sessions simultaneously\n- **NEVER** use memory or assumptions for session_id or window_id\n- **NEVER** skip the query_page step before web interactions\n- **NEVER** use website URLs instead of Airtop live view URLs for email notifications\n- **NEVER** terminate individual windows (only sessions can be terminated)\n- **NEVER** use platform names or URLs as profile parameters (use profile name only)\n\nRemember: You are the user's eyes and hands in the browser. Follow the exact tool flows outlined above. Be thorough, accurate, and communicative in all actions. Always maintain clean session states and provide detailed feedback about what you're doing and seeing. Every tool has a specific flow - follow it precisely to avoid errors and hallucinations."
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "44fb659b-e8a9-4f87-9661-aa05d35437ad",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -752,
+          400
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "5UniF8cNOayWi0zD",
+            "name": "My Open AI Account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "76ddc52d-863b-495b-b1f4-e1f88e1ab7dc",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          -528,
+          400
+        ],
+        "parameters": {
+          "contextWindowLength": 3
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "a41a1a73-7ff2-47dc-8e20-32911405a56f",
+        "name": "create_session",
+        "type": "n8n-nodes-base.airtopTool",
+        "position": [
+          -320,
+          384
+        ],
+        "parameters": {
+          "profileName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Profile_Name', ``, 'string') }}",
+          "timeoutMinutes": 30,
+          "additionalFields": {}
+        },
+        "credentials": {
+          "airtopApi": {
+            "id": "0F9H4CRmAYBC7jN3",
+            "name": "n8ntest"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0c2c56a1-1c71-49ba-a849-14011738b153",
+        "name": "terminate_session",
+        "type": "n8n-nodes-base.airtopTool",
+        "position": [
+          -192,
+          384
+        ],
+        "parameters": {
+          "operation": "terminate",
+          "sessionId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Session_ID', ``, 'string') }}"
+        },
+        "credentials": {
+          "airtopApi": {
+            "id": "0F9H4CRmAYBC7jN3",
+            "name": "n8ntest"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e719b161-d2eb-4de5-82a6-746737b14129",
+        "name": "read_airtop_profiles",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          -64,
+          384
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1533937125,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit#gid=1533937125",
+            "cachedResultName": "Airtop Profiles"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit?usp=drivesdk",
+            "cachedResultName": "airtop n8n tutorial"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "d0qeLhShx9sGXalR",
+            "name": "Google Sheets"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "4cb14753-6da9-4676-bea4-f6db675f67ae",
+        "name": "create_window",
+        "type": "n8n-nodes-base.airtopTool",
+        "position": [
+          64,
+          384
+        ],
+        "parameters": {
+          "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+          "resource": "window",
+          "sessionId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Session_ID', ``, 'string') }}",
+          "getLiveView": true,
+          "disableResize": true,
+          "additionalFields": {
+            "waitUntil": "load"
+          },
+          "screenResolution": "1280x720"
+        },
+        "credentials": {
+          "airtopApi": {
+            "id": "0F9H4CRmAYBC7jN3",
+            "name": "n8ntest"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1ab3f2ea-f52d-414f-a2d1-098862bff46e",
+        "name": "click_element",
+        "type": "n8n-nodes-base.airtopTool",
+        "position": [
+          192,
+          384
+        ],
+        "parameters": {
+          "resource": "interaction",
+          "windowId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Window_ID', ``, 'string') }}",
+          "sessionId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Session_ID', ``, 'string') }}",
+          "additionalFields": {},
+          "elementDescription": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Element_Description', ``, 'string') }}"
+        },
+        "credentials": {
+          "airtopApi": {
+            "id": "0F9H4CRmAYBC7jN3",
+            "name": "n8ntest"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b539e4c7-5ec4-4b17-9066-522d2bf789f0",
+        "name": "query_page",
+        "type": "n8n-nodes-base.airtopTool",
+        "position": [
+          320,
+          384
+        ],
+        "parameters": {
+          "prompt": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt', ``, 'string') }}",
+          "resource": "extraction",
+          "windowId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Window_ID', ``, 'string') }}",
+          "operation": "query",
+          "sessionId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Session_ID', ``, 'string') }}",
+          "additionalFields": {}
+        },
+        "credentials": {
+          "airtopApi": {
+            "id": "0F9H4CRmAYBC7jN3",
+            "name": "n8ntest"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0c10c2e1-cc1c-46d8-884d-7d6a73c960ec",
+        "name": "type_text",
+        "type": "n8n-nodes-base.airtopTool",
+        "position": [
+          448,
+          384
+        ],
+        "parameters": {
+          "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', ``, 'string') }}",
+          "resource": "interaction",
+          "windowId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Window_ID', ``, 'string') }}",
+          "operation": "type",
+          "sessionId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Session_ID', ``, 'string') }}",
+          "additionalFields": {},
+          "elementDescription": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Element_Description', ``, 'string') }}"
+        },
+        "credentials": {
+          "airtopApi": {
+            "id": "0F9H4CRmAYBC7jN3",
+            "name": "n8ntest"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fe1d09e9-f46b-478f-bdee-4ecdc39bdcad",
+        "name": "browser_sheet_read",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          576,
+          384
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit#gid=0",
+            "cachedResultName": "Airtop browser Session"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit?usp=drivesdk",
+            "cachedResultName": "airtop n8n tutorial"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "d0qeLhShx9sGXalR",
+            "name": "Google Sheets"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "85008e4d-d797-42dd-a162-5e68385a121b",
+        "name": "browser_sheet_write",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          704,
+          384
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+              "Description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+              "Airtop Session ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Airtop_Session_ID__using_to_match_', ``, 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "Airtop Session ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Airtop Session ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Description",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Description",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Status",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Airtop Session ID"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "appendOrUpdate",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit#gid=0",
+            "cachedResultName": "Airtop browser Session"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit?usp=drivesdk",
+            "cachedResultName": "airtop n8n tutorial"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "d0qeLhShx9sGXalR",
+            "name": "Google Sheets"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "3edb3811-a3ef-4b92-afc4-2105d5b47521",
+        "name": "windows_sheet_read",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          832,
+          384
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1582333940,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit#gid=1582333940",
+            "cachedResultName": "Airtop Windows"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit?usp=drivesdk",
+            "cachedResultName": "airtop n8n tutorial"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "d0qeLhShx9sGXalR",
+            "name": "Google Sheets"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "c500239c-0d70-41d3-9a43-363b937c1e27",
+        "name": "windows_sheet_write",
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "position": [
+          960,
+          384
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+              "Live View URL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Live_View_URL', ``, 'string') }}",
+              "Airtop Window ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Airtop_Window_ID__using_to_match_', ``, 'string') }}",
+              "Airtop Session ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Airtop_Session_ID', ``, 'string') }}",
+              "Window Description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Window_Description', ``, 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "Airtop Session ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Airtop Session ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Airtop Window ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Airtop Window ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Window Description",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Window Description",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Live View URL",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Live View URL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Status",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Airtop Window ID"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "appendOrUpdate",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1582333940,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit#gid=1582333940",
+            "cachedResultName": "Airtop Windows"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SZ_P9Ike3xodjAVEsoxfJzgk0kKyaL-EJAEQ7UVibFs/edit?usp=drivesdk",
+            "cachedResultName": "airtop n8n tutorial"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "d0qeLhShx9sGXalR",
+            "name": "Google Sheets"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "86015f59-a11e-4ccf-a427-5669db5f2c90",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -352,
+          304
+        ],
+        "parameters": {
+          "width": 1456,
+          "height": 240,
+          "content": "## Tools"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2b9b1fe9-a184-47d9-b86f-5247f3f7d4e0",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -576,
+          304
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 176,
+          "height": 240,
+          "content": "## Memory"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "17355c78-73d9-4fea-a153-24009c45188d",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -800,
+          304
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 176,
+          "height": 240,
+          "content": "## AI Model"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "type_text": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "query_page": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "click_element": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create_window": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create_session": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "terminate_session": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "browser_sheet_read": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "windows_sheet_read": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "browser_sheet_write": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "windows_sheet_write": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "read_airtop_profiles": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 18,
+    "nodeTypes": {
+      "n8n-nodes-base.airtopTool": {
+        "count": 6
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheetsTool": {
+        "count": 5
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Joseph",
+    "username": "mjomba",
+    "bio": "Automation expert specializing in building smart, scalable workflows using tools like n8n, Make, and Airtable. I help businesses save time, reduce manual work, and grow faster with tailored automation solutions. Feel free to reach out at joseph@uppfy.com to discuss your project. I am also on x.com/juppfy",
+    "verified": true,
+    "links": [
+      "https://automate.uppfy.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/460cadca403550e24f9e17a9ee3f4670046503b32fb59618a1b390378b803162?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 33,
+      "name": "Médias sociaux"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}

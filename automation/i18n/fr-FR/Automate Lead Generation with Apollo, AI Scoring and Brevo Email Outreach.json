@@ -1,0 +1,2461 @@
+{
+  "id": 4539,
+  "name": "Automatiser la génération de leads avec Apollo, scoring AI et outreach par email Brevo",
+  "views": 1573,
+  "recentViews": 1,
+  "totalViews": 1573,
+  "createdAt": "2025-05-31T17:18:03.659Z",
+  "description": "# Génération de Leads, Scoring AI, Création et Outreach d'Emails Personnalisés\n\n## Aperçu\n\nCe flux d'automatisation complet vous aide à étendre votre outreach vers des clients potentiels grâce à une génération de leads intelligente et des campagnes d'emails personnalisés. Le système combine le web scraping, le scoring de leads alimenté par l'IA, et des séquences d'emails automatisées pour maximiser vos taux de conversion.\n\n### Caractéristiques Clés\n- **Scraping de Leads en Masse** depuis Apollo.io\n- **Analyse Intelligente de Sites Web** avec scraping automatisé\n- **Scoring de Leads Alimenté par l'IA** pour la priorisation\n- **Génération d'Emails Personnalisés** utilisant l'IA\n- **Outreach par Email Automatisé** avec suivi\n- **Surveillance d'Événements en Temps Réel** via les webhooks de Brevo\n- **Gestion Centralisée des Données** avec NocoDB\n\n### Architecture du Système\nLe flux de travail intègre plusieurs plateformes pour créer un pipeline de génération de leads sans couture :\n- **NocoDB** - Base de données centrale et CRM\n- **Apollo.io** - Source de données de leads\n- **Crawl4AI** - Analyse de contenu de site web\n- **OpenAI** - Scoring de leads et personnalisation d'emails\n- **Brevo** - Livraison et suivi des emails\n\n---\n\n## Exigences de Configuration\n\n### Prérequis\nAvant de commencer, assurez-vous d'avoir des comptes pour les services suivants :\n1. **NocoDB** (Base de données & CRM)\n2. **Apify** (Plateforme de web scraping)\n3. **OpenAI** (Traitement IA)\n4. **Brevo** (Service de livraison d'emails)\n\n&gt; **💡 Astuce Pro :** Pour les utilisateurs avancés, envisagez d'auto-héberger NocoDB et Crawl4AI pour réduire considérablement les coûts opérationnels.\n\n---\n\n## Configuration Étape par Étape\n\n### 1. Configuration de la Base de Données NocoDB\n\n#### Créez Votre Compte NocoDB\n1. Inscrivez-vous sur [nocodb.com](https://nocodb.com)\n2. Créez un nouvel espace de travail\n3. Configurez votre première base (base de données)\n\n#### Configuration du Schéma de Base de Données\nCréez une nouvelle table avec la structure de champ suivante :\n\n| Nom du Champ | Type de Champ | Configuration |\n|--------------|---------------|---------------|\n| `first_name` | Texte sur une ligne | - |\n| `last_name` | Texte sur une ligne | - |\n| `email` | Email | - |\n| `headline` | Texte sur une ligne | - |\n| `linkedin_url` | URL | - |\n| `industry` | Texte sur une ligne | - |\n| `organization_name` | Texte sur une ligne | - |\n| `organization_website` | URL | - |\n| `organization_size` | Nombre | - |\n| `organization_linkedin_url` | URL | - |\n| `organization_facebook_url` | URL | - |\n| `market_cap` | Texte sur une ligne | - |\n| `job_title` | Texte sur une ligne | - |\n| `country` | Texte sur une ligne | - |\n| `city` | Texte sur une ligne | - |\n| `lead_status` | Sélection Unique | Options : `entered`, `processed`, `email_created`, `contacted`, `trash`, `failed_to_process`, `opened_email`, `warm` | Valeur par Défaut : `entered`\n| `website_summary` | Texte Long | - |\n| `score` | Nombre | Valeur par Défaut : 0 |\n| `organization_description` | Texte Long | - |\n| `primary_phone` | Numéro de Téléphone | - |\n| `keywords` | Texte sur une ligne | - |\n| `email_subject` | Texte sur une ligne | - |\n| `email_body` | Texte Long | - |\n| `email_opened_times` | Nombre | Valeur par Défaut : 0 |\n| `personal_email` | Texte sur une ligne | - |\n\n### 2. Configuration des Services Externes\n\n#### Configuration d'Apify\n1. Créez un compte sur [apify.com](https://apify.com)\n2. Allez dans **Paramètres** → **Tokens API**\n3. Générez un nouveau token API\n4. Sauvegardez le token en toute sécurité pour la configuration de l'automatisation\n\n#### Configuration de l'API OpenAI\n1. Visitez [platform.openai.com](https://platform.openai.com)\n2. Allez dans la section **Clés API**\n3. Créez une nouvelle clé secrète\n4. Stockez la clé API en toute sécurité\n5. Assurez-vous que la facturation est configurée pour l'utilisation de l'API\n\n#### Service Email Brevo\n1. Inscrivez-vous sur [brevo.com](https://brevo.com)\n2. Complétez la vérification de votre compte\n3. Allez dans les paramètres **SMTP & API**\n4. Générez une clé API pour l'intégration\n5. Configurez l'authentification de l'expéditeur (SPF/DKIM)\n\n---\n\n## Processus de Flux de Travail\n\n### Phase 1 : Découverte de Leads & Collecte de Données\n1. **Scraping Apollo** - Extraire les données de leads en fonction des critères cibles\n2. **Importation de Données** - Remplir NocoDB avec les informations de leads\n3. **Mise à Jour de Statut** - Marquer les leads comme `entered`\n\n### Phase 2 : Analyse de Site Web & Scoring de Leads\n1. **Scraping de Site Web** - Analyser les sites web des entreprises en utilisant Crawl4AI\n2. **Traitement de Contenu** - Extraire les informations commerciales clés\n3. **Scoring AI** - Évaluer la qualité des leads en utilisant OpenAI\n4. **Mise à Jour de la Base de Données** - Stocker les résultats d'analyse et les scores\n\n### Phase 3 : Personnalisation d'Emails & Outreach\n1. **Génération de Contenu** - Créer du contenu d'email personnalisé\n2. **Préparation d'Email** - Formater les messages pour la livraison\n3. **Envoi Automatisé** - Déployer via Brevo\n4. **Suivi de Statut** - Surveiller la livraison et l'engagement\n\n### Phase 4 : Surveillance de Performance\n1. **Traitement de Webhook** - Capturer les événements d'email de Brevo\n2. **Suivi d'Engagement** - Mettre à jour les métriques d'ouverture/clic\n3. **Qualification de Leads** - Ajuster le statut des leads en fonction de l'engagement\n4. **Gestion de Pipeline** - Maintenir la progression des leads\n\n---\n\n## Flux de Travail de Statut de Leads\n\n```\nentered → processed → email_created → contacted → opened_email → warm\n    ↓\nfailed_to_process / trash (pour les leads de faible qualité)\n```\n\n### Définitions de Statut\n- **entered** : Données de lead initiales capturées\n- **processed** : Site web analysé et noté\n- **email_created** : Email personnalisé généré\n- **contacted** : Email envoyé avec succès\n- **opened_email** : Le destinataire a ouvert l'email\n- **warm** : Engagement élevé, prêt pour un suivi\n- **failed_to_process** : Problèmes techniques lors du traitement\n- **trash** : Lead de faible qualité, retiré du pipeline actif\n\n---\n\n## Meilleures Pratiques\n\n### Qualité des Données\n- Nettoyez régulièrement et dédupliquez votre base de données de leads\n- Surveillez les scores de leads pour affiner vos critères de ciblage\n- Archivez ou retirez les leads inactifs pour maintenir la performance\n\n### Délivrabilité des Emails\n- Réchauffez votre domaine d'envoi avant des campagnes à fort volume\n- Surveillez les taux de rebond et ajustez la qualité de la liste\n- Mettez en œuvre des enregistrements SPF, DKIM et DMARC appropriés\n\n### Conformité\n- Assurez-vous de la conformité GDPR/CAN-SPAM dans toutes les communications\n- Fournissez des mécanismes de désinscription clairs\n- Respectez les préférences et les désinscriptions des destinataires\n\n### Optimisation de Performance\n- Testez A/B les lignes de sujet et le contenu des emails\n- Analysez les taux d'ouverture et ajustez les heures d'envoi\n- Segmentez les leads en fonction des niveaux d'engagement pour un suivi ciblé\n\n---\n\n## Prochaines Étapes\n\nUne fois votre configuration terminée, vous disposerez d'un puissant système de génération de leads automatisé qui peut :\n- Traiter des centaines de leads simultanément\n- Fournir une priorisation intelligente des leads\n- Générer un outreach personnalisé à grande échelle\n- Suivre et optimiser la performance des campagnes\n\nPrêt à transformer votre processus de génération de leads ? Commencez par la configuration de NocoDB et travaillez à travers chaque étape d'intégration.",
+  "workflow": {
+    "id": "BVxFpIBewfg8Jwjx",
+    "meta": {
+      "instanceId": "6c0a09a47d94a1a73da5dfac616caeedf0377a325eabc675382bec3037bf1127",
+      "templateId": "3435",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Lead Gen From Apollo To NocoDB",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "03eabaeb-ad13-4764-98de-183325e32cbd",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -40,
+          -40
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "e7df072c-fba8-4dc2-94ce-ae20a135a633",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          840,
+          -60
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "3aaa9ea7-0c5d-4ea3-aa10-6cd0125ea91a",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          240,
+          -320
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0915cea5-746a-4dde-9208-885e08644ae2",
+        "name": "Filter leads without email",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          560,
+          -40
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "79c0d44d-461c-47c4-a2c3-bc48819424f5",
+        "name": "NocoDB",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          1100,
+          -60
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "2ae8597b-c3cc-4094-ac10-876286a767fd",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1340,
+          -540
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "65f90ea8-fead-4d3a-af5a-087711bd7c89",
+        "name": "Fetch data to prepare for scoring",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          3080,
+          680
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "039c6258-d5da-45f1-8bce-5db46535bb19",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3000,
+          340
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "cada3220-ba44-40a2-a376-6c4b085b52ff",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3000,
+          -240
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3f290863-d49b-4bda-8a9e-d60f1acd3431",
+        "name": "If not scored",
+        "type": "n8n-nodes-base.if",
+        "onError": "continueRegularOutput",
+        "position": [
+          3580,
+          440
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "0f157716-a181-45f9-a003-c99fd8fdb7a1",
+        "name": "Add a score",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          4220,
+          480
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "61917624-c471-49db-b94e-b3af95d54932",
+        "name": "Crawl4AI",
+        "type": "n8n-nodes-base.httpRequest",
+        "onError": "continueRegularOutput",
+        "position": [
+          1800,
+          -500
+        ],
+        "parameters": {},
+        "typeVersion": 4.2
+      },
+      {
+        "id": "aeaca1d7-47b8-4949-8431-470b9173444c",
+        "name": "Crawl4AI resolve",
+        "type": "n8n-nodes-base.httpRequest",
+        "onError": "continueErrorOutput",
+        "position": [
+          2080,
+          -500
+        ],
+        "parameters": {},
+        "typeVersion": 4.2
+      },
+      {
+        "id": "9b6e2ab7-11c2-4f50-87de-e7c3d1e0d1d2",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          1940,
+          -240
+        ],
+        "webhookId": "7b0d36c1-b26b-448b-a9a9-6bff0c03293c",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "a7a0226d-de96-4fde-93d6-26861c27ed4c",
+        "name": "If mail not created",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          3520,
+          -80
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "fbf38182-6201-47e9-a144-db168947bdf3",
+        "name": "Add Personalized mail",
+        "type": "n8n-nodes-base.nocoDb",
+        "onError": "continueRegularOutput",
+        "position": [
+          4200,
+          20
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "0ef74fde-b88c-417c-850d-9c18a48f2840",
+        "name": "Ai Scoring",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "onError": "continueRegularOutput",
+        "position": [
+          3840,
+          400
+        ],
+        "parameters": {},
+        "typeVersion": 1.8
+      },
+      {
+        "id": "f9d4f2c5-2ab7-4393-b697-2e5a72aeb840",
+        "name": "Email Personalization",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "onError": "continueErrorOutput",
+        "position": [
+          3800,
+          -40
+        ],
+        "parameters": {},
+        "typeVersion": 1.8
+      },
+      {
+        "id": "904fc571-1d57-4281-915e-ba0ab05b6bb5",
+        "name": "Personalized Mail Loop",
+        "type": "n8n-nodes-base.splitInBatches",
+        "onError": "continueRegularOutput",
+        "position": [
+          4700,
+          -160
+        ],
+        "parameters": {},
+        "executeOnce": false,
+        "typeVersion": 3
+      },
+      {
+        "id": "01e6de3a-77df-4ef7-aa14-6c75c8e7bc8d",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          4440,
+          -240
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "38732d31-45d9-4446-8c5e-83a753ab9d7a",
+        "name": "Mark as contacted",
+        "type": "n8n-nodes-base.nocoDb",
+        "onError": "continueRegularOutput",
+        "position": [
+          5980,
+          60
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "0b8ef68a-b4c5-4e6b-969f-a2e18172dae1",
+        "name": "Email Exists -> Mark as Contacted",
+        "type": "n8n-nodes-base.nocoDb",
+        "onError": "continueRegularOutput",
+        "position": [
+          5380,
+          -80
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "6622c17f-4372-4dfa-bb6d-f4d5bdd5732d",
+        "name": "Email Send",
+        "type": "n8n-nodes-base.sendInBlue",
+        "onError": "continueErrorOutput",
+        "position": [
+          5700,
+          -220
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "ad99aea5-e1d7-42ab-8feb-d31dbb1c131d",
+        "name": "Create Contact",
+        "type": "n8n-nodes-base.sendInBlue",
+        "onError": "continueErrorOutput",
+        "position": [
+          5240,
+          -200
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "a93dbfed-c320-4775-907f-b14528440a72",
+        "name": "If not contacted and email created",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          4960,
+          -140
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "f366ff2c-91c7-4c66-bd38-d767aed98cdd",
+        "name": "If pending",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          2220,
+          -240
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "c8ac0133-0d38-4b51-9b7d-4da170128d99",
+        "name": "Mark as Trash",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          5700,
+          0
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "8e0e6f67-edcf-408e-b5f8-3af76151ad57",
+        "name": "If not success",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          2440,
+          -220
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "42e3f6de-4ec4-46a7-a7f9-c028d27a677b",
+        "name": "Scrape Leads From Apollo",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          300,
+          -40
+        ],
+        "parameters": {},
+        "typeVersion": 4.2
+      },
+      {
+        "id": "9d3e9f4b-faac-4712-8b3a-7455acf15049",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1140,
+          -680
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "54e6e348-94da-4468-9c7b-c841b9b970d7",
+        "name": "Get by email",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          5160,
+          -560
+        ],
+        "parameters": {},
+        "typeVersion": 3,
+        "alwaysOutputData": false
+      },
+      {
+        "id": "1aa6ab44-929d-48f0-b82d-b5cd7900f7ee",
+        "name": "Lead Status -> Trash",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          5600,
+          -560
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "06d7157e-c32d-4301-bdae-6e1363bf9280",
+        "name": "Delete Contact In Brevo",
+        "type": "n8n-nodes-base.sendInBlue",
+        "onError": "continueRegularOutput",
+        "position": [
+          4940,
+          -560
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "9e9d2e18-7f07-4779-8add-5bab43c23ce9",
+        "name": "Email Opened",
+        "type": "n8n-nodes-base.sendInBlueTrigger",
+        "disabled": true,
+        "position": [
+          4720,
+          -820
+        ],
+        "webhookId": "10d24686-a8b9-4a61-b8f7-88c7aebec134",
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "f49e831b-c958-4f7c-a42f-06570f9e589f",
+        "name": "Lead Status -> Email Opened",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          5160,
+          -820
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "3499fc86-5edc-4c28-9e95-dc08b00745d9",
+        "name": "If Email Opened More Than Once",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          5380,
+          -820
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "f1c092fe-ab2b-4af3-acab-c16eaeea1794",
+        "name": "Lead Status -> Warm",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          5600,
+          -820
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "18a47bc2-c7d0-4164-ba12-7b057358343f",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          4620,
+          -600
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "47e16200-8710-405f-baf0-7078d147649f",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          4620,
+          -900
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b81accf5-26f3-4e5b-8f27-81462cb20bd2",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          5320,
+          -900
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d6fed6ec-a5fb-4e46-8cc7-90e9e75220d9",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1340,
+          20
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "45189b23-8fa7-4993-907a-2475dcdb2d6e",
+        "name": "Apify Crawl Request",
+        "type": "n8n-nodes-base.httpRequest",
+        "onError": "continueErrorOutput",
+        "position": [
+          2240,
+          100
+        ],
+        "parameters": {},
+        "typeVersion": 4.2
+      },
+      {
+        "id": "dd026984-588b-4cb0-a59e-81a8b78e26d9",
+        "name": "Process Apify Crawl",
+        "type": "n8n-nodes-base.nocoDb",
+        "onError": "continueRegularOutput",
+        "position": [
+          2700,
+          260
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "7ca5e49d-6e9c-4717-a276-906079b69b62",
+        "name": "Mark as failed_to_process",
+        "type": "n8n-nodes-base.nocoDb",
+        "onError": "continueRegularOutput",
+        "position": [
+          2400,
+          220
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "c7dd8f36-a045-45d2-9378-264556c1b71f",
+        "name": "Sticky Note10",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          240,
+          -680
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "46191283-6f1b-4f80-943c-a70a3a7e40d5",
+        "name": "Sticky Note11",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          780,
+          -680
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fdbe2dd5-9f58-49fa-a583-461f6d2a2131",
+        "name": "Sticky Note12",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          880,
+          220
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6997b63c-b4a4-4c5e-a60e-4f94b7d0c50c",
+        "name": "Sticky Note13",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          240,
+          220
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c619c476-d1db-4274-9f69-a7721a69989a",
+        "name": "Sticky Note14",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1140,
+          840
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e6834cb7-8def-419c-9b4a-955225b4a6cd",
+        "name": "Sticky Note15",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1140,
+          960
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e4e4d68a-4b82-4814-84aa-93507ec03b71",
+        "name": "Sticky Note16",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -160,
+          -480
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "086dadba-e5aa-4878-8db5-db31f133e16d",
+        "name": "Get Entered Leads From Crawl4AI",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          1400,
+          -480
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "17deb25e-ad8e-46d7-aa96-461e0fa68147",
+        "name": "Get 'Entered' Leads From Apify",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          1380,
+          80
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "13d17853-a3f8-4090-9092-e0f5ca3947bf",
+        "name": "Set Lead Status -> 'processed'",
+        "type": "n8n-nodes-base.nocoDb",
+        "onError": "continueRegularOutput",
+        "position": [
+          2680,
+          -220
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "0e52decf-7492-46c2-9c93-6f3118da7f87",
+        "name": "Set Lead Status -> 'failed_to_process'",
+        "type": "n8n-nodes-base.nocoDb",
+        "onError": "continueRegularOutput",
+        "position": [
+          2680,
+          -500
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "be068a81-5255-4c60-9de1-2c2f2f4e775b",
+        "name": "Loop over entered leads",
+        "type": "n8n-nodes-base.splitInBatches",
+        "onError": "continueRegularOutput",
+        "position": [
+          1640,
+          80
+        ],
+        "parameters": {},
+        "executeOnce": false,
+        "typeVersion": 3
+      },
+      {
+        "id": "2c3351fc-e75f-4ca7-ae85-1d245ba1b127",
+        "name": "Loop Over Entered Leads Crawl4AI",
+        "type": "n8n-nodes-base.splitInBatches",
+        "onError": "continueRegularOutput",
+        "position": [
+          1400,
+          -260
+        ],
+        "parameters": {},
+        "executeOnce": false,
+        "typeVersion": 3
+      },
+      {
+        "id": "fb062cba-8e2c-457f-98b8-8cb2365cfab6",
+        "name": "Fetch processed leads",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          3060,
+          -60
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "6a665ba4-9613-48f3-b268-2cca0233c891",
+        "name": "Loop Over Processed Leads",
+        "type": "n8n-nodes-base.splitInBatches",
+        "onError": "continueRegularOutput",
+        "position": [
+          3340,
+          -200
+        ],
+        "parameters": {},
+        "executeOnce": false,
+        "typeVersion": 3
+      },
+      {
+        "id": "7e71cf7a-46c4-44c7-a573-245af9fb6072",
+        "name": "Loop Over Leads For Scoring",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          3280,
+          400
+        ],
+        "parameters": {},
+        "retryOnFail": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "9000cd35-dc89-4a03-a3b8-d5691d89454e",
+        "name": "Fetch Leads With Created Emails",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          4500,
+          -160
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "97ad2f49-dab9-4761-a43a-df21f75885d3",
+        "name": "Get by user email",
+        "type": "n8n-nodes-base.nocoDb",
+        "position": [
+          4940,
+          -820
+        ],
+        "parameters": {},
+        "typeVersion": 3,
+        "alwaysOutputData": false
+      },
+      {
+        "id": "1f259b81-fbfe-4e51-9a84-18d5ee7158d5",
+        "name": "Sticky Note17",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1340,
+          -800
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "da386568-de62-4de7-9499-8bf476b2d5c3",
+        "name": "Sticky Note18",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1340,
+          580
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ddd9a21a-bb09-44d2-8df5-8104a41c2e50",
+        "name": "If organization website exists Crawl4AI",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1640,
+          -260
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "4acc6b9c-7767-4f45-8212-404b8a4a845b",
+        "name": "If organization website exists",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1880,
+          140
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "0b33cb3d-ca9f-445a-8337-7d6ba7a70834",
+        "name": "Sticky Note19",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3720,
+          660
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7cd52266-8c9e-48dd-8fbe-6a9718d4a730",
+        "name": "Sticky Note20",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3000,
+          -540
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1a67fa60-a90c-4509-a34a-835dbf11f26d",
+        "name": "Sticky Note21",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          4420,
+          340
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ee6dda9b-2598-468d-9806-318841e51b6b",
+        "name": "Sticky Note22",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          4620,
+          -1100
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "57d82b63-51c5-45c2-9352-cd7863f39506",
+        "name": "Email Unwanted",
+        "type": "n8n-nodes-base.sendInBlueTrigger",
+        "disabled": true,
+        "position": [
+          4720,
+          -560
+        ],
+        "webhookId": "f71be43b-84bd-40cb-bfc0-49253bd58a5e",
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "266ac693-20a2-4681-bc9f-9afebbc20cb6",
+        "name": "Sticky Note23",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -160,
+          140
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "c02ac938-5c46-4bc7-9ee9-d5d774ba8fa3",
+    "connections": {
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Crawl4AI resolve",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "NocoDB": {
+        "main": [
+          [
+            {
+              "node": "Get 'Entered' Leads From Apify",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Crawl4AI": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ai Scoring": {
+        "main": [
+          [
+            {
+              "node": "Add a score",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email Send": {
+        "main": [
+          [
+            {
+              "node": "Mark as contacted",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Mark as Trash",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If pending": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If not success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Add a score": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Leads For Scoring",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "NocoDB",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email Opened": {
+        "main": [
+          [
+            {
+              "node": "Get by user email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get by email": {
+        "main": [
+          [
+            {
+              "node": "Lead Status -> Trash",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If not scored": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Leads For Scoring",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Ai Scoring",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark as Trash": {
+        "main": [
+          [
+            {
+              "node": "Personalized Mail Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Contact": {
+        "main": [
+          [
+            {
+              "node": "Email Send",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Email Exists -> Mark as Contacted",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email Unwanted": {
+        "main": [
+          [
+            {
+              "node": "Delete Contact In Brevo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If not success": {
+        "main": [
+          [
+            {
+              "node": "Set Lead Status -> 'failed_to_process'",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set Lead Status -> 'processed'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Crawl4AI resolve": {
+        "main": [
+          [
+            {
+              "node": "If pending",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set Lead Status -> 'failed_to_process'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get by user email": {
+        "main": [
+          [
+            {
+              "node": "Lead Status -> Email Opened",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark as contacted": {
+        "main": [
+          [
+            {
+              "node": "Personalized Mail Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Apify Crawl Request": {
+        "main": [
+          [
+            {
+              "node": "Process Apify Crawl",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Mark as failed_to_process",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If mail not created": {
+        "main": [
+          [
+            {
+              "node": "Email Personalization",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Processed Leads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Process Apify Crawl": {
+        "main": [
+          [
+            {
+              "node": "Loop over entered leads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Add Personalized mail": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Processed Leads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email Personalization": {
+        "main": [
+          [
+            {
+              "node": "Add Personalized mail",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Processed Leads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch processed leads": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Processed Leads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Personalized Mail Loop": {
+        "main": [
+          [],
+          [
+            {
+              "node": "If not contacted and email created",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete Contact In Brevo": {
+        "main": [
+          [
+            {
+              "node": "Get by email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop over entered leads": {
+        "main": [
+          [
+            {
+              "node": "Fetch data to prepare for scoring",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If organization website exists",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scrape Leads From Apollo": {
+        "main": [
+          [
+            {
+              "node": "Filter leads without email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Processed Leads": {
+        "main": [
+          [
+            {
+              "node": "Fetch Leads With Created Emails",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If mail not created",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark as failed_to_process": {
+        "main": [
+          [
+            {
+              "node": "Loop over entered leads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter leads without email": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Lead Status -> Email Opened": {
+        "main": [
+          [
+            {
+              "node": "If Email Opened More Than Once",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Leads For Scoring": {
+        "main": [
+          [
+            {
+              "node": "Fetch processed leads",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If not scored",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get 'Entered' Leads From Apify": {
+        "main": [
+          [
+            {
+              "node": "Loop over entered leads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Email Opened More Than Once": {
+        "main": [
+          [
+            {
+              "node": "Lead Status -> Warm",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If organization website exists": {
+        "main": [
+          [
+            {
+              "node": "Apify Crawl Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Mark as failed_to_process",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Lead Status -> 'processed'": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Entered Leads Crawl4AI",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Fetch Leads With Created Emails": {
+        "main": [
+          [
+            {
+              "node": "Personalized Mail Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Entered Leads From Crawl4AI": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Entered Leads Crawl4AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Entered Leads Crawl4AI": {
+        "main": [
+          [],
+          [
+            {
+              "node": "If organization website exists Crawl4AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email Exists -> Mark as Contacted": {
+        "main": [
+          [
+            {
+              "node": "Personalized Mail Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch data to prepare for scoring": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Leads For Scoring",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Scrape Leads From Apollo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If not contacted and email created": {
+        "main": [
+          [
+            {
+              "node": "Create Contact",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Personalized Mail Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Lead Status -> 'failed_to_process'": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Entered Leads Crawl4AI",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "If organization website exists Crawl4AI": {
+        "main": [
+          [
+            {
+              "node": "Crawl4AI",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Entered Leads Crawl4AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 72,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 9
+      },
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.nocoDb": {
+        "count": 20
+      },
+      "n8n-nodes-base.sendInBlue": {
+        "count": 3
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 24
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 4
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 5
+      },
+      "@n8n/n8n-nodes-langchain.openAi": {
+        "count": 2
+      },
+      "n8n-nodes-base.sendInBlueTrigger": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "Luka Zivkovic",
+    "username": "zivkovic58",
+    "bio": "",
+    "verified": true,
+    "links": [],
+    "avatar": "https://gravatar.com/avatar/264b4523dccf25e81a9a317123ec8e377ecedc880258d79732e08c5ede641e8d?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les Champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les Éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 510,
+      "icon": "file:nocodb.svg",
+      "name": "n8n-nodes-base.nocoDb",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.nocodb/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/nocoDb/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "NocoDB"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJub25lIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzNENDNENSIgcng9IjI1Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTM4IDkzLjkwNyAyOS43NiAyOS4wMDZ2NDUuOTJIMzh6bTEyNS02MS42NjV2MTI1LjQxN2MwIDguMDc4LTQuNDk4IDExLjM0MS0xMS43NDIgMTEuMzQxLTEuMzMzIDAtMy43MjUtLjUwMS01Ljc5My0yLjUwMkwzOCA2NS4zMjhWNDIuODRDMzggMzQuNzYzIDQxLjM2MyAzMS41IDQ5LjcyMyAzMS41YzEuMzMzIDAgNC4wMS41MiA2LjA2IDIuNTAybDc3LjQzOCA3MS45MjNWMzIuMjQyeiIvPjwvc3ZnPg=="
+      },
+      "displayName": "NocoDB",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 820,
+      "icon": "file:brevo.svg",
+      "name": "n8n-nodes-base.sendInBlue",
+      "codex": {
+        "data": {
+          "alias": [
+            "sendinblue"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.brevo/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/brevo/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing",
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Brevo"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iMjQiIGN5PSIyNCIgcj0iMjQiIGZpbGw9IiMwQjk5NkUiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzEuNTA0IDIxLjgxYzEuNDgzLTEuNDU0IDIuMTc5LTMuMTMzIDIuMTc5LTUuMTc1IDAtNC4yMi0zLjEwNi03LjAzNS03Ljc4Ny03LjAzNUgxNC40djMwaDkuMjdDMzAuNzE4IDM5LjYgMzYgMzUuMjg5IDM2IDI5LjU3YzAtMy4xMzItMS42MjItNS45NDUtNC40OTYtNy43Nm0tMTIuOTMyLTguMzA4aDYuODZjMi4zMTcgMCAzLjg0OCAxLjMxNiAzLjg0OCAzLjMxMyAwIDIuMjY5LTEuOTkzIDMuOTk0LTYuMDcyIDUuMzEtMi43ODEuODYxLTQuMDMyIDEuNTg4LTQuNDk2IDIuNDUxbC0uMTQuMDAyem00LjcyNyAyMi4xOTZoLTQuNzI3di00LjYzYzAtMi4wNDIgMS43NjItNC4wMzkgNC4yMTktNC44MSAyLjE3OS0uNzI3IDMuOTg1LTEuNDU0IDUuNTE2LTIuMjI0IDIuMDM5IDEuMTgxIDMuMjkgMy4yMjIgMy4yOSA1LjM1NiAwIDMuNjMtMy41MjMgNi4zMDgtOC4yOTggNi4zMDgiLz48L3N2Zz4="
+      },
+      "displayName": "Brevo",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 821,
+      "icon": "file:brevo.svg",
+      "name": "n8n-nodes-base.sendInBlueTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "sendinblue"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.brevotrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/brevo/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing",
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Brevo"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iMjQiIGN5PSIyNCIgcj0iMjQiIGZpbGw9IiMwQjk5NkUiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzEuNTA0IDIxLjgxYzEuNDgzLTEuNDU0IDIuMTc5LTMuMTMzIDIuMTc5LTUuMTc1IDAtNC4yMi0zLjEwNi03LjAzNS03Ljc4Ny03LjAzNUgxNC40djMwaDkuMjdDMzAuNzE4IDM5LjYgMzYgMzUuMjg5IDM2IDI5LjU3YzAtMy4xMzItMS42MjItNS45NDUtNC40OTYtNy43Nm0tMTIuOTMyLTguMzA4aDYuODZjMi4zMTcgMCAzLjg0OCAxLjMxNiAzLjg0OCAzLjMxMyAwIDIuMjY5LTEuOTkzIDMuOTk0LTYuMDcyIDUuMzEtMi43ODEuODYxLTQuMDMyIDEuNTg4LTQuNDk2IDIuNDUxbC0uMTQuMDAyem00LjcyNyAyMi4xOTZoLTQuNzI3di00LjYzYzAtMi4wNDIgMS43NjItNC4wMzkgNC4yMTktNC44MSAyLjE3OS0uNzI3IDMuOTg1LTEuNDU0IDUuNTE2LTIuMjI0IDIuMDM5IDEuMTgxIDMuMjkgMy4yMjIgMy4yOSA1LjM1NiAwIDMuNjMtMy41MjMgNi4zMDgtOC4yOTggNi4zMDgiLz48L3N2Zz4="
+      },
+      "displayName": "Brevo Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1250,
+      "icon": "file:openAi.svg",
+      "name": "@n8n/n8n-nodes-langchain.openAi",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "ChatGPT",
+            "DallE",
+            "whisper",
+            "audio",
+            "transcribe",
+            "tts",
+            "assistant"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Miscellaneous",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg1IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NiAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MSA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K"
+      },
+      "displayName": "OpenAI",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de Leads"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": []
+}

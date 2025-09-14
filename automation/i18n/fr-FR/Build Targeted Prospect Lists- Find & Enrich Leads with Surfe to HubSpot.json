@@ -1,0 +1,1224 @@
+{
+  "id": 7130,
+  "name": "Construire des listes de prospects ciblés : Trouver et enrichir des leads avec Surfe vers HubSpot",
+  "views": 1032,
+  "recentViews": 9,
+  "totalViews": 1032,
+  "createdAt": "2025-08-07T11:18:02.174Z",
+  "description": "## 🚀 Construire des listes de prospection hyper-ciblées avec Surfe & HubSpot\n\nCe modèle découvre automatiquement des entreprises qui correspondent à votre Profil Client Idéal (ICP), trouve les bonnes personnes au sein de ces entreprises et les enrichit — prêtes à être directement intégrées dans HubSpot. Lancez le flux de travail, détendez-vous et obtenez une liste propre de prospects validés en quelques minutes.\n\n---\n\n## 1. ❓ Quel problème cela résout-il ?\n\nSourcing de prospects qui correspondent vraiment à votre ICP est lent et répétitif. Vous passez d'une base de données à l'autre, copiez des domaines, recherchez des décideurs, et devez ensuite encore enrichir les emails et numéros de téléphone un par un.\n\nCe flux de travail remplace tout cet effort manuel :\n\n1. Il interroge la base de données de Surfe pour des entreprises qui correspondent exactement à vos filtres d'industrie, de taille, de revenus et de géographie.\n2. Il extrait les personnes les mieux adaptées au sein de chaque entreprise et les enrichit en masse.\n3. Il ne conserve que les enregistrements avec à la fois un email direct *et* un téléphone mobile, puis les synchronise automatiquement avec HubSpot.\n\nPas de tableurs, pas de copier-coller — juste une liste de prospects fraîche et qualifiée prête pour le démarchage.\n\n---\n\n## 2. 🧰 Prérequis\n\nVous aurez besoin de :\n\n- Une instance auto-hébergée ou cloud de **n8n**\n- Une **clé API Surfe**\n- Un **token d'application privée HubSpot** avec des autorisations de lecture/écriture de contact\n- Un compte **Gmail** (OAuth2) pour la notification de complétion\n- Le fichier JSON du flux de travail lié ci-dessus\n    \n    [N8N_FLOW_2__Building_Prospecting_Lists.json](attachment:1d4ec670-711b-4e96-9cca-7556e53f6ba0:N8N_FLOW_2__Building_Prospecting_Lists.json)\n    \n\n---\n\n## 3. 📌 Configuration de recherche des entreprises ICP — Affinez votre ciblage\n\n![Screenshot 20250807 at 12.13.11.png](fileId:1984)\n\n### 3.1 Édition du JSON\n\nChaque règle de ciblage se trouve à l'intérieur du nœud HTTP **“🔍 Recherche des entreprises ICP”**.\n\nOuvrez le nœud `Recherche des entreprises ICP` → `*onglet Paramètres*` → `*Corps JSON*` pour modifier les filtres.\n\n| Filtre | Chemin JSON | Ce que cela fait | Exemple |\n| --- | --- | --- | --- |\n| **industries** | `filters.industries` | Restreindre à des secteurs spécifiques (chaînes sensibles à la casse) | `[\"Software\",\"Apps\",\"SaaS\"]` |\n| **employeeCount.from / to** | `filters.employeeCount` | de / à  | `1 / 35` |\n| **countries** | `filters.countries` | codes ISO à 2 lettres | `[\"FR\",\"DE\"]` |\n| **revenues** | `filters.revenues` | Tranches de revenus annuels | `[\"1-10M\"]` |\n| **limit** | `limit` | Entreprises par exécution | `20` |\n\n### 3.2 Où trouver les valeurs autorisées\n\nSurfe expose un **“🗂 Obtenir des filtres”** point de terminaison qui renvoie chaque valeur acceptée pour :\n\n- `industries`\n- `employeeCounts`\n- `revenues`\n- `countries` (toujours des codes ISO-2)\n\nVous pouvez y accéder avec une simple requête `GET /v1/people/search/filters` ou parcourir la documentation interactive ici :\n\nhttps://developers.surfe.com/public-008-people-filters [developers.surfe.com](https://developers.surfe.com/public-008-people-filters)\n\nPour les recherches au niveau des entreprises, les mêmes énumérations s'appliquent.\n\n---\n\n## 4. ⚙️ Instructions de configuration\n\n### 4.1 🔐 Créez vos identifiants dans n8n\n\n---\n\n### 4.1.1 🚀 API Surfe\n\n1. Dans votre [tableau de bord Surfe](https://www.surfe.com/) → Utilisez l'API Surfe → copiez votre **clé API**\n2. Allez à **n8n → Identifiants → Créer un identifiant**\n    1. Choisissez **Type d'identifiant** : `Bearer Auth`\n    2. Nommez-le quelque chose comme `Clé API SURFE`\n    3. Collez votre clé API dans le `Token Bearer`\n    4. Enregistrez\n    \n![Screenshot 20250807 at 12.13.38.png](fileId:1983)\n    \n\n---\n\n### 4.1.2 📧 API Gmail OAuth2\n\n1. Allez à **n8n → Identifiants**\n2. Créez de nouveaux identifiants :\n    - Type : `API Gmail OAuth2`\n3. Une fenêtre contextuelle apparaîtra où vous pourrez vous connecter avec votre **compte Google** lié à Gmail\n    - Assurez-vous d'accorder les **autorisations d'envoi d'email** lorsque cela est demandé\n\n![Screenshot 20250807 at 12.14.26.png](fileId:1982)\n\n---\n\n### 4.1.3 🎯 HubSpot\n\n### 🔓 Token d'application privée\n\n1. Allez à HubSpot → Paramètres → Intégrations → **Applications privées**\n    1. Créez une application avec les autorisations :\n        - `crm.objects.contacts.read`\n        - `crm.objects.contacts.write`\n        - `crm.schemas.contacts.read`\n    2. **Enregistrez le token de l'application**\n2. Allez à **n8n → Identifiants → Créer un identifiant → Token d'application HubSpot**\n    1. Collez votre token d'application\n\n![Screenshot 20250807 at 12.14.52.png](fileId:1987)\n\n![Screenshot 20250807 at 12.15.12.png](fileId:1988)\n\n![Screenshot 20250807 at 12.15.28.png](fileId:1981)\n\n### ✅ Vous êtes maintenant prêt pour les identifiants\n\n---\n\n### 4.2 📥 Importer et configurer le flux de travail N8N\n\n- Importez le flux de travail JSON fourni dans N8N\n    - Créez un nouveau flux de travail vierge\n    - cliquez sur le `…` en haut à gauche\n    - Importer depuis un fichier\n\n![Screenshot 20250807 at 12.16.02.png](fileId:1986)\n\n![Screenshot 20250807 at 12.16.17.png](fileId:1989)\n\n### 4.2.1 🔗 Lier les nœuds à vos identifiants\n\nDans le flux de travail, liez vos identifiants nouvellement créés à chaque nœud de cette liste :\n\n- `Nœuds HTTP Surfe:`\n    - Authentification → Type d'identifiant générique\n    - Type d'authentification générique → Bearer Auth\n    - Bearer Auth → Sélectionnez les identifiants que vous avez créés précédemment\n- `Identifiants du nœud Gmail à connecter` → `compte Gmail`\n- `Nœud Hubspot` → `Identifiants à connecter` → `compte Gmail`\n\n![Screenshot 20250807 at 12.16.53.png](fileId:1985)\n\n`Nœuds HTTP Surfe`\n\n`Nœuds HTTP Surfe`\n\n- Nœud HubSpot → `Identifiants à connecter` → sélectionnez vos identifiants HubSpot dans la liste\n\n---\n\n## 5. 🔄 Comment fonctionne ce flux de travail N8N\n\n1. **Déclencheur manuel** – Cliquez sur **Exécuter le flux de travail** (ou planifiez-le) pour commencer.\n2. **Recherche des entreprises ICP** – Surfe renvoie des domaines d'entreprises qui correspondent à votre ensemble de filtres.\n3. **Préparer la charge utile JSON avec les domaines d'entreprises** – Formate la liste de domaines pour l'appel suivant.\n4. **Recherche de personnes dans les entreprises** – Trouve des personnes au sein de chaque entreprise.\n5. **Préparer la demande de charge utile JSON d'enrichissement** – Construit la demande d'enrichissement en masse.\n6. **API d'enrichissements en masse de Surfe** – Lance un travail d'enrichissement pour l'ensemble du lot.\n7. **Attendre + boucle de sondage** – Vérifie l'état du travail toutes les 3 secondes jusqu'à ce qu'il soit `COMPLÉTÉ`.\n8. **Extraire la liste des personnes** – Récupère les contacts enrichis de la réponse de Surfe.\n9. **Filtrer : téléphone ET email** – Ne conserve que les prospects entièrement joignables (email *et* mobile).\n10. **HubSpot : Créer ou Mettre à jour** – Insère/met à jour chaque contact dans HubSpot.\n11. **Gmail** – Vous envoie un email “Votre enrichissement de prospection ICP est terminé”.\n\n---\n\n## 6. 🧩 Cas d'utilisation\n\n- **Rafraîchissement hebdomadaire de la liste de prospects** – Générez 50 prospects parfaitement assortis chaque lundi matin.\n- **Expansion de territoire** – Créez une liste de PDG de logiciels PME dans un nouveau pays en quelques minutes.\n- **Préparation ABM** – Construisez des listes de groupes d'acheteurs multi-parties prenantes pour des comptes cibles.\n- **Listes spécifiques à une campagne** – Assemblez rapidement des contacts pour un lancement de produit à durée limitée.\n\n---\n\n## 7. 🛠 Idées de personnalisation\n\npréparer \n\n- 🎯 **Affiner les filtres pour les personnes** – Ajoutez des niveaux hiérarchiques ou d'autres filtres dans le nœud `CHARGE UTILE JSON AVEC Domaines d'entreprises`\n    - utilisez la documentation de l'API de recherche de personnes sur surfe https://developers.surfe.com/public-009-search-people-v2\n- ♻️ **Dédupliquer** – Vérifiez d'abord HubSpot pour ignorer les contacts existants.\n- 🟢 **Alerte Slack** – Remplacez Gmail par une notification Slack.\n- 📊 **Reporting** – Ajoutez des contacts enrichis à une feuille Google pour l'analyse.\n\n---\n\n## 8. ✅ Résumé\n\nLancez le flux de travail, et n8n trouvera des entreprises correspondant à l'ICP, extraira des personnes clés, enrichira les données de contact direct et déposera le tout dans HubSpot — le tout en pilote automatique.\n\nListes de prospection, faites pour vous.",
+  "workflow": {
+    "id": "mtCQYada6O64BILe",
+    "meta": {
+      "instanceId": "1c6299b01fe56ad80280bbb1a8394f761ca72a9606abe611a4617f9adc407187"
+    },
+    "name": "Building Prospecting Lists",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "2299f88a-bfeb-4d28-8164-704a40c9cdae",
+        "name": "Search ICP Companies",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -1560,
+          125
+        ],
+        "parameters": {
+          "url": "https://api.surfe.com/v2/companies/search",
+          "method": "POST",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          },
+          "jsonBody": "{\n  \"filters\": {\n    \"industries\": [\"Software\", \"Apps\", \"SaaS\"],\n    \"employeeCount\": {\n        \"from\": 1,\n        \"to\": 35\n      },\n    \"countries\": [\"FR\"],\n    \"revenues\": [\"1-10M\"]\n  },\n  \"limit\": 20\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth"
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "5b7477c1-1a29-42ff-bd2c-207edeb49839",
+        "name": "Search People in Companies",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -1120,
+          125
+        ],
+        "parameters": {
+          "url": "https://api.surfe.com/v2/people/search",
+          "method": "POST",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          },
+          "jsonBody": "={{ $json }}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth"
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "de26445a-750e-4b12-83f7-4a864e146b8e",
+        "name": "Prepare JSON Payload Enrichment Request",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -900,
+          125
+        ],
+        "parameters": {
+          "jsCode": "const people = $json.people || [];\n\nreturn [\n  {\n    json: {\n      \"include\": {\n        \"email\": true,\n        \"linkedInUrl\": false,\n        \"mobile\": true\n      },\n      \"notificationOptions\": {\n        \"webhookUrl\": \"\"\n      },\n      people: people.map((person) => ({\n        firstName: person.firstName || \"\",\n        lastName: person.lastName || \"\",\n        companyName: person.companyName || \"\",\n        companyDomain: person.companyDomain || \"\",\n        linkedinUrl: person.linkedInUrl || \"\",\n        externalID: `${person.firstName}_${person.lastName}_${person.companyDomain}`.toLowerCase().replace(/[^a-z0-9_]/g, '_')\n      }))\n    }\n  }\n];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "a4e45b9e-327b-4ca2-9338-c2739ef93841",
+        "name": "Surfe Bulk Enrichments API",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -680,
+          125
+        ],
+        "parameters": {
+          "url": "https://api.surfe.com/v2/people/enrich",
+          "method": "POST",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          },
+          "jsonBody": "={{ $json }}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth"
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "8ec1dbe8-b0c3-413b-9576-74cabfbaed70",
+        "name": "Surfe check enrichement status",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -460,
+          125
+        ],
+        "parameters": {
+          "url": "=https://api.surfe.com/v2/people/enrich/{{ $json.enrichmentID }}",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          },
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth"
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "b9bba6b6-6d14-400a-bba0-64a06f4ce343",
+        "name": "Is enrichment complete ?",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -240,
+          50
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "65a670df-84e8-4c87-956c-96758b8d8d26",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "COMPLETED"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "d6a21f33-d87d-4d9f-8d1d-597a943a0391",
+        "name": "Wait 3 secondes",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          -20,
+          225
+        ],
+        "webhookId": "faddf14b-4e33-4108-a141-c1a172e0a5d1",
+        "parameters": {
+          "amount": 3
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "1f811e79-79b2-46b6-8bac-0e94eb63c2d8",
+        "name": "Extract list of peoples from Surfe API response",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -20,
+          0
+        ],
+        "parameters": {
+          "jsCode": "const people = $json.people || [];\n\nreturn people.map(person => {\n  return {\n    json: {\n      id: person.id || '',\n      firstName: person.firstName || '',\n      lastName: person.lastName || '',\n      email: person.emails?.[0]?.email || '',\n      phone: person.mobilePhones?.[0]?.mobilePhone || '',\n      jobTitle: person.jobTitle || '',\n      companyName: person.companyName || '',\n      companyWebsite: person.companyDomain || '',\n      linkedinUrl: person.linkedInUrl || '',\n      country: person.country || '',\n      status: person.status || ''\n    }\n  };\n});"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "043348d5-0bb7-40d6-be4d-ad3c2a7658de",
+        "name": "Filter: phone AND email",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          200,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "4f8f9bec-6eee-4e62-8d5f-e8f5b85620d6",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.phone }}",
+                "rightValue": ""
+              },
+              {
+                "id": "007f5a66-4e2a-42bc-bbed-0fb2b2f39ae7",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.email }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "814c954b-749c-4b9a-93ca-70cdf9a48505",
+        "name": "HubSpot: Create or Update",
+        "type": "n8n-nodes-base.hubspot",
+        "position": [
+          420,
+          0
+        ],
+        "parameters": {
+          "email": "={{ $json.email }}",
+          "options": {
+            "resolveData": false
+          },
+          "authentication": "appToken",
+          "additionalFields": {
+            "country": "={{ $json.country }}",
+            "jobTitle": "={{ $json.jobTitle }}",
+            "lastName": "={{ $json.lastName }}",
+            "firstName": "={{ $json.firstName }}",
+            "websiteUrl": "={{ $json.linkedinUrl }}",
+            "companyName": "={{ $json.companyName }}",
+            "phoneNumber": "={{ $json.phone }}"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "25faa3d0-e800-4a68-a7da-b4295f9b03ae",
+        "name": "Gmail",
+        "type": "n8n-nodes-base.gmail",
+        "notes": "Notify end of enrichement",
+        "position": [
+          640,
+          0
+        ],
+        "webhookId": "b46c028e-8212-40fe-b4d5-0f7c1890585e",
+        "parameters": {
+          "sendTo": "<YOUR_EMAIL>",
+          "message": "Your ICP prospecting enrichment is done.",
+          "options": {},
+          "subject": "Your ICP prospecting enrichment is done."
+        },
+        "executeOnce": true,
+        "notesInFlow": true,
+        "typeVersion": 2.1
+      },
+      {
+        "id": "e6daaf79-f53c-4059-80f7-8bfd2df14ebf",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -1780,
+          125
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b07b72bb-f631-4e60-9ad8-6cba88df6604",
+        "name": "prepare JSON PAYLOAD WITH Company Domains",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -1340,
+          125
+        ],
+        "parameters": {
+          "jsCode": "const companies = $json.companyDomains || [];\n\nreturn {\n    \"companies\": {\n      \"domains\": companies\n    },\n    \"limit\": 20\n  };\n\n"
+        },
+        "typeVersion": 2
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "9df5b0c2-a0af-4178-85ce-94fd0b835535",
+    "connections": {
+      "Wait 3 secondes": {
+        "main": [
+          [
+            {
+              "node": "Surfe check enrichement status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search ICP Companies": {
+        "main": [
+          [
+            {
+              "node": "prepare JSON PAYLOAD WITH Company Domains",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter: phone AND email": {
+        "main": [
+          [
+            {
+              "node": "HubSpot: Create or Update",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is enrichment complete ?": {
+        "main": [
+          [
+            {
+              "node": "Extract list of peoples from Surfe API response",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait 3 secondes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HubSpot: Create or Update": {
+        "main": [
+          [
+            {
+              "node": "Gmail",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search People in Companies": {
+        "main": [
+          [
+            {
+              "node": "Prepare JSON Payload Enrichment Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Surfe Bulk Enrichments API": {
+        "main": [
+          [
+            {
+              "node": "Surfe check enrichement status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Surfe check enrichement status": {
+        "main": [
+          [
+            {
+              "node": "Is enrichment complete ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Search ICP Companies",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare JSON Payload Enrichment Request": {
+        "main": [
+          [
+            {
+              "node": "Surfe Bulk Enrichments API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "prepare JSON PAYLOAD WITH Company Domains": {
+        "main": [
+          [
+            {
+              "node": "Search People in Companies",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract list of peoples from Surfe API response": {
+        "main": [
+          [
+            {
+              "node": "Filter: phone AND email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 13,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 3
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.hubspot": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 4
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "go-surfe",
+    "username": "go-surfe",
+    "bio": "Save time and sell more with Surfe's API via n8n workflows.\n\n- Accurate data you can trust\n- Results in milliseconds\n- Scalable and versatile \n- Full automation\n\nFor more check out:\n💻 https://www.surfe.com?utm_source=n8n\n🔗 https://www.linkedin.com/company/surfe/\n👾 https://github.com/surfe/api-examples",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/ec4663445e119923bc4d830116a4bf6368bfe19b3748a553e386eb0bef027067?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "icon": "file:hubspot.svg",
+      "name": "n8n-nodes-base.hubspot",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-sync-data-between-two-systems/",
+                "icon": "🏬",
+                "label": "How to synchronize data between two systems (one-way vs. two-way sync"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.hubspot/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/hubspot/"
+              }
+            ]
+          },
+          "categories": [
+            "Sales"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "HubSpot"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNjIuODgzIDY5Ljg4MyI+PHVzZSB4bGluazpocmVmPSIjYSIgeD0iMi40NDIiIHk9IjIuNDQyIi8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxwYXRoIGZpbGw9IiNmODc2MWYiIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSJub25lIiBkPSJNNTUuNTA0IDMwLjQwMWExNi4yNiAxNi4yNiAwIDAgMC01LjkwNC01Ljg2NGMtMS44NjUtMS4wODQtMy43OTQtMS43NzMtNS45NzItMi4wN3YtNy43OThhNS43MSA1LjcxIDAgMCAwIDMuNTI1LTUuMzU3IDUuODYgNS44NiAwIDAgMC01Ljg1OS01Ljg4OSA1LjkxIDUuOTEgMCAwIDAtNS45MDggNS44ODljMCAyLjM5MyAxLjI3IDQuNDM0IDMuNDUyIDUuMzU3djcuNzU0YTE3IDE3IDAgMCAwLTUuMTk1IDEuNjMxTDEyLjc2OSA4LjI0N2MuMTQ2LS41NTIuMjczLTEuMTIzLjI3My0xLjcyNEE2LjUyIDYuNTIgMCAwIDAgNi41MTkgMCA2LjUyIDYuNTIgMCAwIDAgMCA2LjUyNGE2LjUyMyA2LjUyMyAwIDAgMCA2LjUyNCA2LjUyNCA2LjQ3IDYuNDcgMCAwIDAgMy4zNS0uOTUybDEuMzY3IDEuMDM1IDE4LjcyNiAxMy41MDFjLS45OTEuOTA4LTEuOTE0IDEuOTQzLTIuNjUxIDMuMTA1LTEuNDk0IDIuMzY4LTIuNDA3IDQuOTcxLTIuNDA3IDcuODEzdi41ODZhMTYuNCAxNi40IDAgMCAwIDEuMDI1IDUuNjQ1QzI2LjUgNDUuMzI0IDI3LjMzIDQ2LjczIDI4LjM2MSA0OGwtNi4yMjEgNi4yMzVhNS4wMSA1LjAxIDAgMCAwLTUuMjk4IDEuMTYyYy0uOTQ3Ljk0Mi0xLjQ4IDIuMjI3LTEuNDc1IDMuNTY1cy41MjcgMi42MTIgMS40NzkgMy41NjQgMi4yMjcgMS40OCAzLjU2NSAxLjQ4YTUgNSAwIDAgMCAzLjU2NS0xLjQ4IDUuMDUgNS4wNSAwIDAgMCAxLjQ3NS0zLjU2NCA1IDUgMCAwIDAtLjIzNC0xLjUxNGw2LjQyNi02LjQyNmExNiAxNiAwIDAgMCAyLjg1NiAxLjU2MyAxNi43IDE2LjcgMCAwIDAgNi42ODUgMS40MDZoLjQzOWExNS43NiAxNS43NiAwIDAgMCA3LjYyNy0xLjkyOSAxNS43NyAxNS43NyAwIDAgMCA1Ljk3Ny01LjYzYzEuNDk5LTIuMzkzIDIuMzE5LTUuMDQ0IDIuMzE5LTcuOTU5di0uMTQ2YzAtMi44NjYtLjY2NC01LjUwOC0yLjA1MS03Ljkzem0tNy44NDcgMTMuNDg3Yy0xLjc0MyAxLjkzOC0zLjc1IDMuMTM1LTYuMDE2IDMuMTM1aC0uNDNjLTEuMjk0IDAtMi41NjQtLjM1Ni0zLjc5OS0xLjAxMWE4LjggOC44IDAgMCAxLTMuMzMtMy4wMzJjLS44OTgtMS4yNy0xLjM4Ny0yLjY1Ni0xLjM4Ny00LjEyNnYtLjQzOWMwLTEuNDQ1LjI3OC0yLjgxNy45NzctNC4xMTEuNzQ3LTEuNDY1IDEuNzU4LTIuNTE1IDMuMTAxLTMuMzg5YTcuNiA3LjYgMCAwIDEgNC4yOTctMS4yOTRoLjE0N2MxLjQxNiAwIDIuNzY5LjI3OCA0LjAzOC45MjhhOC41NiA4LjU2IDAgMCAxIDMuMTc0IDIuODg2IDkuMiA5LjIgMCAwIDEgMS40MjEgNC4wNTNsLjAzNC45MTNjMCAxLjk4Ny0uNzYyIDMuODI4LTIuMjggNS40OTh6Ii8+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "HubSpot",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 2,
+          "name": "Sales"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filtrer",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de leads"
+    }
+  ],
+  "image": [
+    {
+      "id": 1981,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_15_28_6c360575d5.png"
+    },
+    {
+      "id": 1982,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_14_26_fca2ace9cd.png"
+    },
+    {
+      "id": 1983,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_13_38_2e38321053.png"
+    },
+    {
+      "id": 1984,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_13_11_7958b2cf1c.png"
+    },
+    {
+      "id": 1985,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_16_53_ff505d8bd5.png"
+    },
+    {
+      "id": 1986,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_16_02_1ec75a8de0.png"
+    },
+    {
+      "id": 1987,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_14_52_5cffe019f3.png"
+    },
+    {
+      "id": 1988,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_15_12_430daa7721.png"
+    },
+    {
+      "id": 1989,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_08_07_at_12_16_17_6347548f99.png"
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "id": 5733,
+  "name": "Sécuriser les e-mails des utilisateurs avec le système de vérification et de chiffrement AES-256",
+  "views": 60,
+  "recentViews": 0,
+  "totalViews": 60,
+  "createdAt": "2025-07-07T04:26:25.713Z",
+  "description": "# 🔐 Masterclass de Chiffrement des E-mails\n*Protection des données de niveau professionnel AES-256 pour n8n*\n\n## Comment ça fonctionne\n\nCe flux de travail complet démontre le chiffrement des e-mails de niveau entreprise en utilisant le chiffrement AES-256-CBC conforme aux normes de l'industrie. Parfait pour les organisations traitant des données clients sensibles qui doivent se conformer au RGPD, à la HIPAA ou à d'autres réglementations sur la protection des données.\n\n**Le flux de travail traite les données en trois étapes sécurisées :**\n\n1. **Génération de Données d'Exemple** - Crée des enregistrements d'utilisateurs de test avec des e-mails pour la démonstration\n2. **Chiffrement des E-mails** - Applique le chiffrement AES-256-CBC avec des vecteurs d'initialisation (IV) uniques pour chaque enregistrement\n3. **Système de Vérification** - Déchiffre et valide les données chiffrées pour garantir l'intégrité\n\nChaque adresse e-mail est chiffrée avec un IV généré aléatoirement, rendant chaque chiffrement unique même pour des adresses e-mail identiques. Le système comprend une gestion complète des erreurs et fournit un statut de traitement détaillé pour les pistes d'audit.\n\n## Caractéristiques Clés\n\n✅ **Sécurité de Niveau Militaire** : Chiffrement AES-256-CBC avec IV uniques\n✅ **Prêt pour la Conformité** : Conçu pour les exigences du RGPD, de la HIPAA et de la SOX  \n✅ **Traitement par Lots** : Gère efficacement de grands ensembles de données\n✅ **Gestion des Erreurs** : Gestion des échecs avec journalisation détaillée\n✅ **Système de Vérification** : Validation de déchiffrement intégrée\n✅ **Piste d'Audit** : Horodatages de traitement complets et suivi de statut\n✅ **Prêt pour la Production** : Inclut les meilleures pratiques de sécurité et des conseils sur la gestion des clés\n\n## Étapes de Configuration\n\n### 1. Importer le Flux de Travail\n- Téléchargez le fichier JSON\n- Dans n8n, allez à **Flux de travail** → **Importer depuis un Fichier**\n- Sélectionnez le fichier JSON téléchargé\n- Cliquez sur **Importer**\n\n### 2. Configurer les Paramètres de Sécurité\n- Ouvrez le nœud **Chiffrer les E-mails**\n- Remplacez la clé secrète par défaut par votre propre clé sécurisée de 32 caractères :\n  ```javascript\n  const secret = 'votre_clé_secrète_de_32_caractères_ici!';\n  ```\n- **Important** : En production, utilisez des variables d'environnement pour la clé secrète\n\n### 3. Configurer les Données d'Exemple (Optionnel)\n- Le flux de travail inclut des données d'utilisateur d'exemple pour les tests\n- Remplacez par votre source de données réelle (base de données, API, CSV, etc.)\n- Assurez-vous que vos données ont un champ `email`\n\n### 4. Tester le Flux de Travail\n- Cliquez sur **Exécuter le flux de travail** pour exécuter le processus complet\n- Examinez les résultats chiffrés dans chaque nœud\n- Vérifiez que les e-mails sont correctement chiffrés et peuvent être déchiffrés\n\n### 5. Déploiement en Production\n- **Supprimez** le champ `originalEmail` de la sortie (ligne 45 dans le nœud Chiffrer les E-mails)\n- Stockez votre clé secrète dans des variables d'environnement\n- Mettez en place un calendrier de rotation des clés approprié\n- Configurez la surveillance et les alertes pour les chiffrages échoués\n\n## Meilleures Pratiques de Sécurité Incluses\n\n🔒 **IV Uniques** : Chaque chiffrement utilise un vecteur d'initialisation aléatoire frais\n🔒 **Longueur de Clé Appropriée** : Imposition de clés de 32 octets pour AES-256\n🔒 **Isolation des Erreurs** : Les chiffrages échoués ne cassent pas l'ensemble du lot\n🔒 **Aucune Exposition de Clé** : Les clés secrètes ne sont jamais enregistrées ou stockées dans la sortie\n🔒 **Boucle de Vérification** : Garantit que les données chiffrées peuvent être déchiffrées avec succès\n\n## Cas d'Utilisation\n\n- **Protection des Données Clients** : Chiffrer les adresses e-mail dans les systèmes CRM\n- **Exigences de Conformité** : Répondre aux mandats de protection des données RGPD, HIPAA, SOX\n- **Sécurité des Entrepôts de Données** : Protéger les PII dans les bases de données d'analytique\n- **Transfert de Données Sécurisé** : Chiffrer les données sensibles avant transmission API\n- **Préparation à l'Audit** : Démontrer des contrôles de protection des données appropriés\n\n\n\n---\n\n*Ce flux de travail représente des années d'expertise en cybersécurité condensées en une solution d'automatisation prête à l'emploi. Parfait pour les développeurs, les professionnels de la sécurité et les équipes de conformité qui ont besoin d'un chiffrement de données fiable.*",
+  "workflow": {
+    "id": "TubhBU7sNJM8HbIO",
+    "meta": {
+      "instanceId": "2000c64071c20843606b95c63795bb0797c41036047055a6586498e855b96efc"
+    },
+    "name": "🔐 Email Encryption Masterclass",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "2dffdac7-13c1-4341-a122-4f9b049da158",
+        "name": "When clicking \"Test workflow\"",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          220,
+          0
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "ecdf641b-33f0-46a4-98f0-8bd8cce5b603",
+        "name": "Sample Data",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          420,
+          0
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "a07a7590-8424-4fa6-b518-cbb65c7803ff",
+        "name": "Encrypt Emails",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          620,
+          0
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "44f1e649-428a-48b4-bba5-49e1618b177c",
+        "name": "Verify Encryption",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          820,
+          0
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "892d4560-b558-4888-ad87-57503ceafe54",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -220,
+          -100
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c95888de-7c36-47fd-8a3c-177349302ec2",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -220,
+          280
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "6b1a2fe4-908c-4703-a59c-0ab1e80cf620",
+    "connections": {
+      "Sample Data": {
+        "main": [
+          [
+            {
+              "node": "Encrypt Emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Encrypt Emails": {
+        "main": [
+          [
+            {
+              "node": "Verify Encryption",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking \"Test workflow\"": {
+        "main": [
+          [
+            {
+              "node": "Sample Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 3
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "David Olusola",
+    "username": "dae221",
+    "bio": "I help ambitious businesses eliminate operational bottlenecks and scale faster with AI automation. My clients typically see 40-60% efficiency gains within 90 days. Currently accepting 3 new projects this quarter - david@daexai.com",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/2abbc4c9e828c54a8d8838beda1382e8e4a66684ef9fa8451dbeb3e72b0c9f9c?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 29,
+      "name": "SecOps"
+    }
+  ],
+  "image": []
+}

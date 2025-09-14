@@ -1,0 +1,748 @@
+{
+  "id": 5085,
+  "name": "Convertir les PDF de visite en base de données vectorielle en utilisant Google Drive, LangChain et OpenAI",
+  "views": 555,
+  "recentViews": 1,
+  "totalViews": 555,
+  "createdAt": "2025-06-21T06:37:26.155Z",
+  "description": "# **🧩 Flux de travail :** \nTraiter le PDF de visite depuis Google Drive vers Pinecone Vector DB avec les embeddings OpenAI\n\n## **Aperçu**\nCe flux de travail automatise le processus d'extraction des informations de visite à partir de fichiers PDF stockés dans un dossier Google Drive, traite et vectorise les données extraites, et les stocke dans une base de données vectorielle Pinecone pour des requêtes efficaces. Cela est particulièrement utile pour construire des systèmes de recherche ou de recommandation alimentés par l'IA pour des forfaits de voyage.\n\n## **Configuration :** \n\n### Prérequis\nUn dossier dans Google Drive avec des brochures de forfaits de visite en PDF.\n\nCompte Pinecone + clé API\n\nClé API OpenAI\n\nInstance n8n cloud ou auto-hébergée\n\n## **Étapes de configuration du flux de travail**\n#### Déclencheur\nDéclencheur manuel (lorsque vous cliquez sur 'Tester le flux de travail') : utilisé pour les tests manuels et l'exécution du flux de travail.\n\n#### Intégration Google Drive\n**Étape 1 : Stocker les forfaits de visite au format PDF**\n\nTéléchargez vos forfaits de visite sélectionnés contenant les visites, activités et sites touristiques au format PDF dans un dossier Google Drive désigné.\n\n**Étape 2 : Rechercher le dossier**\n\nNœud : Dossier de forfaits de visite PDF (Google Drive)\n\nCe nœud recherche dans le dossier désigné des fichiers (filtrer par type MIME = application/pdf si nécessaire).\n\n**Étape 3 : Télécharger les PDF**\n\nNœud : Télécharger les fichiers de forfaits (Google Drive)\n\nTélécharge chaque fichier PDF correspondant trouvé à l'étape précédente.\n\n#### Traiter chaque fichier PDF\n**Étape 4 : Boucle à travers les fichiers**\n\nNœud : Boucle sur chaque fichier PDF\n\nItère à travers chaque fichier PDF téléchargé pour extraire, nettoyer, diviser et intégrer.\n\n#### Préparation des données et intégration\n**Étape 5 : Chargeur de données**\n\nNœud : Chargeur de données\n\nLit le contenu de chaque PDF à l'aide d'un chargeur compatible. Il passe le texte brut propre au nœud suivant.\n\nSouvent intégré avec des chargeurs de documents comme pdf-loader, Unstructured ou pdfplumber.\n\n**Étape 6 : Diviseur de texte récursif**\n\nNœud : Diviseur de texte par caractères récursif\n\nDivise de grands morceaux de texte en segments gérables en utilisant une logique de fenêtre chevauchante (par exemple, 500 jetons avec un chevauchement de 50 jetons).\n\nCela garantit la préservation du contexte pour les longs documents lors de l'intégration.\n\n**Étape 7 : Générer des embeddings**\n\nNœud : Embeddings OpenAI\n\nUtilise le modèle text-embedding-3-small pour vectoriser les morceaux divisés.\n\nProduits des représentations vectorielles pour chaque morceau de contenu.\n\n#### Stocker dans Pinecone\n**Étape 8 : Stockage vectoriel Pinecone**\n\nNœud : Stockage vectoriel Pinecone - Stocker...\n\nStocke chaque embedding avec ses métadonnées (nom du PDF source, ID de morceau, etc.).\n\nCela devient la base pour une recherche sémantique rapide via des flux de travail RAG ou des agents.\n\n\n## **🛠️ Outils et nœuds utilisés**\nGoogle Drive (Recherche et téléchargement)\n\nRecherche tous les fichiers PDF dans un dossier Google Drive spécifié.\nTélécharge chaque fichier pour traitement.\nSplitInBatches (Boucle sur les éléments)\n\nBoucle à travers chaque fichier trouvé dans le dossier, garantissant que chacun est traité individuellement.\nChargeur de données par défaut (LangChain)\n\nLit et extrait le texte des fichiers PDF.\nDiviseur de texte par caractères récursif (LangChain)\n\nDivise le texte extrait en morceaux gérables pour l'intégration.\nEmbeddings OpenAI (LangChain)\n\nConvertit chaque morceau de texte en un vecteur en utilisant le modèle d'embedding d'OpenAI.\nStockage vectoriel Pinecone (LangChain)\n\nStocke les vecteurs résultants dans un index Pinecone pour une recherche de similarité rapide et des requêtes.\n\n## **🔗 Étapes du flux de travail expliquées**\n### **Déclencheur :** \nLe flux de travail commence manuellement pour des tests ou peut être programmé.\n### **Recherche Google Drive :** \nTrouve tous les fichiers PDF dans le dossier spécifié.\n\n### **Boucle sur les fichiers :** \nChaque fichier est traité un à un à l'aide du nœud SplitInBatches.\n\n### Télécharger le fichier : \nTélécharge le fichier PDF actuel depuis Google Drive.\n\n### **Extraire le texte :** \nLe nœud Chargeur de données par défaut lit le PDF et extrait son contenu textuel.\n\n### **Division du texte : **\nLe Diviseur de texte par caractères récursif divise le texte en morceaux (par exemple, 1000 caractères avec 50 de chevauchement) pour optimiser la qualité de l'intégration.\n\n### **Vectorisation : \n**Chaque morceau est envoyé au nœud Embeddings OpenAI pour générer des représentations vectorielles.\n\n### **Stocker dans Pinecone :** \nLes vecteurs sont insérés dans un index Pinecone, les rendant disponibles pour la recherche sémantique et les recommandations.\n\n## **🚀 Qu'est-ce qui peut être amélioré dans la prochaine version ?**\n\n#### **Gestion des erreurs : **\nAjouter des nœuds de gestion des erreurs pour gérer les échecs de téléchargement ou les problèmes d'extraction de manière élégante.\n#### **Filtrage des types de fichiers :** \nAssurez-vous que seuls les fichiers PDF sont traités en ajoutant un nœud de filtrage.\n#### **Stockage des métadonnées :** \nStockez des métadonnées supplémentaires (par exemple, nom de fichier, ID de visite) aux côtés des vecteurs dans Pinecone pour des résultats de recherche plus riches.\n#### **Traitement parallèle : **\nOptimisez pour de grands dossiers en traitant plusieurs fichiers en parallèle (en tenant compte des limites de taux d'API).\n#### **Déclencheurs automatisés :** \nRemplacez le déclencheur manuel par un déclencheur basé sur le temps ou un webhook pour une automatisation complète.\n#### **Validation des données :** \nAjoutez des vérifications pour garantir que le texte extrait contient des données de visite valides avant l'intégration.\n#### **Retour d'utilisateur :** \nIntégrez des notifications (par exemple, email ou Slack) pour informer lorsque le traitement est terminé ou si des problèmes surviennent.\n\n## **💡 Résumé**\nCe flux de travail démontre comment n8n peut orchestrer un puissant pipeline de données IA en utilisant Google Drive, LangChain, OpenAI et Pinecone. C'est une excellente base pour construire des fonctionnalités de recherche ou de recommandation intelligentes pour les données de voyage et de visite.\n\nN'hésitez pas à demander plus de détails ou à partager vos améliorations !\n\n\nFaites-moi savoir si vous souhaitez voir une partie spécifique du flux de travail ou si vous avez besoin d'aide avec un nœud particulier !",
+  "workflow": {
+    "id": "9wzQXONqaSbZWXqh",
+    "meta": {
+      "instanceId": "92e36925b2d06addd7a010605535ce53ac105737436355f7e52e2980c726ed3d",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Tour Package Recomendation Database - Process Tour PDF",
+    "tags": [
+      {
+        "id": "oKGIn6U0wpeHShTN",
+        "name": "working flow",
+        "createdAt": "2025-06-02T06:27:44.762Z",
+        "updatedAt": "2025-06-02T06:27:44.762Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "ff4ada8f-0e63-4035-afb2-9f459cd7f158",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -920,
+          1060
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b17ec584-be56-49c2-ad9d-a85bc98285c2",
+        "name": "PDF Tour Package Folder",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          -680,
+          1060
+        ],
+        "parameters": {
+          "filter": {
+            "folderId": {
+              "__rl": true,
+              "mode": "list",
+              "value": "1ANNp1YrfmcNhYm2ZqUGtxxLrvPenBlhh",
+              "cachedResultUrl": "https://drive.google.com/drive/folders/1ANNp1YrfmcNhYm2ZqUGtxxLrvPenBlhh",
+              "cachedResultName": "TestPackages"
+            }
+          },
+          "options": {},
+          "resource": "fileFolder",
+          "returnAll": true
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "RFbg76pQ49AUClT1",
+            "name": "youremail@abc.com"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "5c4e9e98-4f1f-4024-ab88-6183f4583c00",
+        "name": "Download Package Files",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          -440,
+          1060
+        ],
+        "parameters": {
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.id }}"
+          },
+          "options": {},
+          "operation": "download"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "RFbg76pQ49AUClT1",
+            "name": "youremail@abc.com"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "ad967561-1968-4bdb-9c36-17200f291593",
+        "name": "Loop Over each PDF file",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          -180,
+          1060
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "6408c50e-99fe-46f1-995b-0d9b99e42ca1",
+        "name": "Pinecone Vector Store - Store Vector Data",
+        "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+        "position": [
+          160,
+          1100
+        ],
+        "parameters": {
+          "mode": "insert",
+          "options": {},
+          "pineconeIndex": {
+            "__rl": true,
+            "mode": "list",
+            "value": "package1536",
+            "cachedResultName": "package1536"
+          }
+        },
+        "credentials": {
+          "pineconeApi": {
+            "id": "HqCFDvnsq0D6wXpJ",
+            "name": "PineconeApi account 2"
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "687269c8-74ca-44fb-8f37-a860ae82f162",
+        "name": "Embeddings OpenAI",
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "position": [
+          60,
+          1360
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "SCKN5KUziIpM8NB7",
+            "name": "OpenAi account 5"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "068cde17-e656-440d-abb8-2e498cee82b1",
+        "name": "Data Loader",
+        "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+        "position": [
+          220,
+          1360
+        ],
+        "parameters": {
+          "options": {},
+          "dataType": "binary"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "adaeaaf3-1bfc-4b27-878b-5d5ddb1fc9a5",
+        "name": "Recursive Character Text Splitter",
+        "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+        "position": [
+          300,
+          1540
+        ],
+        "parameters": {
+          "options": {},
+          "chunkOverlap": 50
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4184166f-f2ea-448e-9876-a432fd85a8c3",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -740,
+          920
+        ],
+        "parameters": {
+          "width": 460,
+          "height": 320,
+          "content": "## Extract PDF file from Google Drive\n**Connect & Download PDF file**"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "cfcef192-f80d-43dc-beac-0b7bfab7d9ba",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -260,
+          920
+        ],
+        "parameters": {
+          "width": 360,
+          "height": 320,
+          "content": "## Loop over each PDF file\n**Extract each tour package content from the pdf file and vectorise the data in the pinecone database. "
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "callerPolicy": "workflowsFromSameOwner",
+      "executionOrder": "v1"
+    },
+    "versionId": "f3d6347b-1f02-4869-8cc0-b4f45029d1f0",
+    "connections": {
+      "Data Loader": {
+        "ai_document": [
+          [
+            {
+              "node": "Pinecone Vector Store - Store Vector Data",
+              "type": "ai_document",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Pinecone Vector Store - Store Vector Data",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Package Files": {
+        "main": [
+          [
+            {
+              "node": "Loop Over each PDF file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over each PDF file": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Pinecone Vector Store - Store Vector Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF Tour Package Folder": {
+        "main": [
+          [
+            {
+              "node": "Download Package Files",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recursive Character Text Splitter": {
+        "ai_textSplitter": [
+          [
+            {
+              "node": "Data Loader",
+              "type": "ai_textSplitter",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "PDF Tour Package Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Vector Store - Store Vector Data": {
+        "main": [
+          [
+            {
+              "node": "Loop Over each PDF file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 10,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 2
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.embeddingsOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.vectorStorePinecone": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.documentDefaultDataLoader": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Mohan Gopal",
+    "username": "mohan",
+    "bio": "B2B and B2C Travel App Consultant. Building AI Agent for Travel Solution.",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/mohan-gopal/"
+    ],
+    "avatar": "https://gravatar.com/avatar/ec6348ef3df126e77e0213e20256264e135c7418b3510a363c2660c05df120ba?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1141,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.embeddingsopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Embeddings"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Embeddings OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "Embeddings OpenAI",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1191,
+      "icon": "fa:grip-lines-vertical",
+      "name": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.textsplitterrecursivecharactertextsplitter/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Text Splitters"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Diviseur de texte par caractères récursif"
+      },
+      "iconData": {
+        "icon": "grip-lines-vertical",
+        "type": "icon"
+      },
+      "displayName": "Recursive Character Text Splitter",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1230,
+      "icon": "file:pinecone.svg",
+      "name": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.vectorstorepinecone/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Vector Stores",
+              "Tools",
+              "Root Nodes"
+            ],
+            "Tools": [
+              "Other Tools"
+            ],
+            "Vector Stores": [
+              "Other Vector Stores"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Stockage vectoriel Pinecone"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzUiIHZpZXdCb3g9IjAgMCAzMiAzNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzLjg1NTUgMzQuMjk2MkMxNC45MzI1IDM0LjI5NjIgMTUuODA1NSAzMy40NDUxIDE1LjgwNTUgMzIuMzk1NEMxNS44MDU1IDMxLjM0NTYgMTQuOTMyNSAzMC40OTQ2IDEzLjg1NTUgMzAuNDk0NkMxMi43Nzg2IDMwLjQ5NDYgMTEuOTA1NSAzMS4zNDU2IDExLjkwNTUgMzIuMzk1NEMxMS45MDU1IDMzLjQ0NTEgMTIuNzc4NiAzNC4yOTYyIDEzLjg1NTUgMzQuMjk2MloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik0xOC40MTM4IDcuMTk2NzVMMTkuMjUxMiAyLjY2MDA1IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMTE3ODYiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiLz4KPHBhdGggZD0iTTIyLjI2NTYgNS41ODU1TDE5LjM0NjYgMi4xMTA5OUwxNS4zNzQ4IDQuMzcyOTIiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMi4xMTc4NiIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTQuOTIwMiAyNi41NTI4TDE1LjczMzcgMjIuMDE2OSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjExNzg2IiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIi8+CjxwYXRoIGQ9Ik0xOC43NzI5IDI0LjkzMDRMMTUuODMgMjEuNDY3MUwxMS44NzAxIDIzLjc0MSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjExNzg2IiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xNi42MDc3IDE3LjE5OTZMMTcuNDIxMiAxMi42NjMzIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMTE3ODYiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiLz4KPHBhdGggZD0iTTIwLjQ1ODcgMTUuNThMMTcuNTI3NyAxMi4xMjhMMTMuNTY3OSAxNC4zOTA0IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMTE3ODYiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTguMzI4NzEgMjYuMTU1NEw0Ljc1MTcxIDI4LjU4MTUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMi4wMTAxNyIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIvPgo8cGF0aCBkPSJNOC41NDM4MyAzMC4wODY1TDQuMzIwOCAyOC44NzM4TDQuNjMxODUgMjQuNTk0NCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjAxMDE3IiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0yMS4zMjEzIDI4LjQyOTlMMjMuODA5NiAzMS45MjgyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMDEwMTciIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiLz4KPHBhdGggZD0iTTE5LjcxOCAzMi4wNDVMMjQuMTA4NSAzMi4zMzY1TDI1LjM1MjcgMjguMjQzOCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjAxMDE3IiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0yNS4zOTk5IDIxLjMyOTFMMjkuNzc4NCAyMi4wOTk2IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMDU4MDQiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiLz4KPHBhdGggZD0iTTI2LjkwNzIgMjUuMDcyTDMwLjMwNDggMjIuMTkxOUwyOC4xNjM0IDE4LjM1NTciIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMi4wNTgwNCIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNMjQuMTE5NiAxMi44NjE1TDI4LjAxOTcgMTAuNzYzIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMDU4MDQiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiLz4KPHBhdGggZD0iTTI0LjMzNTcgOC44Mzk2NUwyOC40ODY5IDEwLjUxODhMMjcuNzA5MyAxNC44MjE2IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMDU4MDQiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTYuOTE2MzkgMTguMTU3MkwyLjUyNTg4IDE3LjQxMDEiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMi4wNTgwNCIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIvPgo8cGF0aCBkPSJNNC4xNzczMSAyMS4xNjQ1TDIgMTcuMzI4TDUuMzYxNjcgMTQuNDM2IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIuMDU4MDQiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTExLjA3OTkgMTAuNjEyOUw4LjE0ODkzIDcuMzQ3NjkiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMi4wNTgwNCIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIvPgo8cGF0aCBkPSJNMTIuMjg5NyA2Ljc3NDk2TDcuODAzNDkgNi45NjE1Nkw3LjAxMzkyIDExLjI2NDkiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMi4wNTgwNCIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K"
+      },
+      "displayName": "Pinecone Vector Store",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1243,
+      "icon": "file:binary.svg",
+      "name": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.documentdefaultdataloader/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Document Loaders"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chargeur de données par défaut"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NjgiIGhlaWdodD0iMTAyNCI+PHBhdGggZmlsbD0iIzdEN0Q4NyIgZD0iTTAgOTYwVjY0aDU3NmwxOTIgMTkydjcwNHptNzA0LTY0MEw1MTIgMTI4SDY0djc2OGg2NDB6TTMyMCA1MTJIMTI4VjI1NmgxOTJ6bS02NC0xOTJoLTY0djEyOGg2NHptMCA0NDhoNjR2NjRIMTI4di02NGg2NFY2NDBoLTY0di02NGgxMjh6bTI1Ni0zMjBoNjR2NjRIMzg0di02NGg2NFYzMjBoLTY0di02NGgxMjh6bTY0IDM4NEgzODRWNTc2aDE5MnptLTY0LTE5MmgtNjR2MTI4aDY0eiIvPjwvc3ZnPg=="
+      },
+      "displayName": "Default Data Loader",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de documents"
+    },
+    {
+      "id": 48,
+      "name": "IA RAG"
+    }
+  ],
+  "image": []
+}

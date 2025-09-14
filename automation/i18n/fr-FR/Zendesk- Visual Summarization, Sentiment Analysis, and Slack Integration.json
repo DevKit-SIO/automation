@@ -1,0 +1,1954 @@
+{
+  "id": 4688,
+  "name": "Zendesk : Résumé Visuel, Analyse de Sentiment et Intégration Slack",
+  "views": 453,
+  "recentViews": 1,
+  "totalViews": 453,
+  "createdAt": "2025-06-05T13:01:17.102Z",
+  "description": "## Analysez et Explorez vos Demandes de Support ZenDesk en utilisant un Graphique de Connaissances Alimenté par IA\n\nCe modèle vous aide à créer un **graphique de connaissances [InfraNodus](https://infranodus.com) interactif pour vos tickets ZenDesk** en utilisant n'importe quel critère de recherche (par exemple, après une certaine date, un statut spécifique, un expéditeur, un mot-clé) qui sera automatiquement envoyé à un canal Slack sélectionné.\n\nVoici un exemple du [graphique InfraNodus](https://infranodus.com) qui montre les principaux sujets et lacunes dans les tickets de support ZenDesk : \n\n![Graphique InfraNodus des demandes ZenDesk](https://support.noduslabs.com/hc/article_attachments/20447708129820)\n\n\n## Vous pouvez utiliser le flux de travail pour :\n\n- Obtenir un aperçu instantané des **principaux sujets** dont parlent vos clients\n- Générer des **idées commerciales et de produits** basées sur les angles morts identifiés à l'aide de l'[IA InfraNodus](https://infranodus.com)\n- Voir quels **sujets sont corrélés à la sentiment négatif / positif** pour comprendre les points faibles et forts de votre produit et de votre support \n- Recevoir des **notifications quotidiennes** sur les principaux sujets dont parlent vos clients via Slack / Telegram / Email et d'autres canaux\n- Effectuer une **recherche détaillée à l'aide d'un formulaire web protégé par mot de passe** pour des tickets filtrés par une certaine date, statut, tag, expéditeur, mot-clé.\n- Utiliser le **graphique interactif** pour **explorer des sujets et concepts spécifiques** dont parlent vos clients — une excellente façon de s'engager avec leurs préoccupations de manière non linéaire, **en contournant l'interface tabulaire ennuyeuse**\n- Utiliser le graphique pour explorer les demandes de support par **segments spécifiques** — par exemple, statut, priorité, sentiment, tags, urgence.\n- Utiliser le graphique généré comme un **expert IA** disponible pour vos **agents IA** dans d'autres flux de travail n8n via [InfraNodus GraphRAG](https://infranodus.com/use-case/ai-knowledge-graphs). Par exemple, vous pourriez connecter votre base de connaissances au graphique des tickets de support et laisser l'agent découvrir des solutions possibles aux problèmes les plus typiques de vos clients. Voir un [exemple de modèle ici](https://n8n.io/workflows/4402-ai-chatbot-agent-with-a-panel-of-experts-using-infranodus-graphrag-knowledge/).\n\n\n## Comment ça fonctionne\nVous pouvez démarrer ce flux de travail \n\n- manuellement, \n- avec un déclencheur quotidien / hebdomadaire, ou \n- via un formulaire web protégé par mot de passe, où vous pouvez fournir des demandes de recherche. \n\nUne fois démarré, il effectuera une recherche de tickets ZenDesk avec les critères par défaut ou vos critères personnalisés. Ensuite, il utilisera les résultats de la recherche pour générer un [graphique InfraNodus](https://infranodus.com) (ou ajouter les nouvelles données à un existant), et — enfin — utiliser les points de terminaison IA InfraNodus pour générer un résumé thématique et une idée commerciale de produit basée sur les angles morts identifiés. Les résultats sont livrés sur un canal de votre choix.\n\nVoici une description étape par étape :\n\n1. Démarrez le flux de travail (manuellement ou selon un calendrier)\n2. Assignez des valeurs aux variables (critères de recherche, nom du graphique)\n3. Effectuez une recherche de tickets de support ZenDesk\n4. Convertissez les données reçues et soumettez-les à [InfraNodus](https://infranodus.com) pour générer un graphique de connaissances\n5. Générez un résumé thématique avec [InfraNodus](https://infranodus.com)\n6. Générez une idée commerciale avec [InfraNodus](https://infranodus.com) (vous pouvez également changer le paramètre pour générer une question à la place)\n7. Envoyez une notification via Slack / Telegram / Email ou retour au formulaire web\n\n## Comment utiliser\n\nVous avez besoin d'un [compte et clé API InfraNodus](https://infranodus.com/use-case/ai-knowledge-graphs) pour utiliser ce flux de travail. Vous avez également besoin d'un compte ZenDesk. Cela prend environ 5 minutes pour tout configurer.\n\n- Créez un compte InfraNodus.\n- Obtenez la clé API sur [https://infranodus.com/api-access](https://infranodus.com/api-access) et créez une clé d'autorisation Bearer pour les nœuds HTTP InfraNodus.\n- Ajoutez la clé d'autorisation à tous les nœuds HTTP InfraNodus dans le modèle (Étapes 3, 5 et 6).\n- Générez un jeton d'autorisation ZenDesk en suivant les instructions dans le nœud ZenDesk de n8n (Étape 3).\n- Optionnel : connectez votre compte Slack ou Telegram ou Gmail pour recevoir des notifications automatisées avec le lien vers le graphique, une fois le flux de travail prêt (cela prend environ 30 secondes à exécuter).\n- Exécutez-le en utilisant le formulaire pour jouer avec les critères de recherche qui fonctionnent le mieux pour vous (vous pouvez laisser tout vide au début), puis choisissez les paramètres que vous aimez et activez le nœud de Déclencheur Quotidien pour recevoir des résumés exécutifs sur un canal de votre choix.\n- Ouvrez le graphique dans [InfraNodus](https://infranodus.com) et utilisez notre [guide d'analyse des retours clients](https://support.noduslabs.com/hc/en-us/articles/19917497109020-Qualitative-Analysis-of-Interviews-Open-Ended-Survey-Responses-and-Customer-Feedback) pour explorer le graphique et générer de nouvelles idées.\n\n\n## Exigences\n\n- Un compte et clé API [InfraNodus](https://infranodus.com/use-case/ai-knowledge-graphs)\n- Une clé API ZenDesk\n- (Optionnel) — une connexion Slack / Telegram / Gmail pour les notifications\n\n## FAQ\n\n**1. Quels sont les meilleurs cas d'utilisation à essayer ?**\n\nJ'adore configurer le graphique pour me livrer un briefing visuel quotidien de ce qui se passe dans mon portail de support. Cela me montre les principaux sujets et lacunes et génère des idées de produits basées sur eux. Super pour garder le pouls sur l'entreprise. \n\nJ'aime aussi vraiment générer un graphique pour la semaine passée manuellement, en utilisant le formulaire, puis explorer le graphique dans InfraNodus directement en utilisant le [flux de travail d'analyse des retours clients](https://support.noduslabs.com/hc/en-us/articles/19917497109020-Qualitative-Analysis-of-Interviews-Open-Ended-Survey-Responses-and-Customer-Feedback) pour :\n\n- découvrir les principaux sujets dont parlent mes clients ?\n- comprendre les sujets qui ont la connotation la plus négative pour eux (en utilisant le filtre de sentiment) ?\n- découvrir certains tickets de support qui nécessitent plus d'attention ou qui parlent des sujets qui m'intéressent personnellement et interagir avec le client\n- identifier les lacunes dans le discours de vos clients basées sur les angles morts — utile pour générer des idées, voir le graphique ci-dessous avec une démo de son fonctionnement :\n\n![Graphique des lacunes de contenu Infranodus](https://infranodus.com/images/front/infranodus-structural-gaps-ideas@2x.jpg)\n\n\n**2. Pourquoi utiliser le graphique et pas juste un résumé IA ?**\n\nLe résumé IA ne vous donnera que des résultats génériques. Vous verrez ce que vous savez déjà. Utiliser le graphique vous aide à déconstruire le discours et à obtenir une compréhension beaucoup plus nuancée des principaux points de douleur et des intérêts de vos clients. Le résumé et les idées commerciales générés automatiquement par InfraNodus ont un lien explicable direct avec le discours, vous pouvez donc toujours voir d'où ils viennent et maintenir le focus sur tous les sujets, plutôt que sur les plus proéminents. \n\nDe plus, avoir un graphique interactif ouvre la possibilité d'explorer les préoccupations de vos clients de manière plus engageante, en trouvant les sujets et concepts qui sont pertinents pour vos intérêts ou pour l'expertise de vos agents, vous aidant à trouver les conversations que vous auriez autrement manquées.\n\n\n**3. Les données de mes clients sont-elles en sécurité ?**\n\nAbsolument. Les [conditions d'utilisation](https://infranodus.com/about/terms-conditions) et la [politique de confidentialité](https://infranodus.com/about/privacy-policy) d'InfraNodus stipulent que les données et graphiques textuels des clients ne sont pas utilisés dans l'entraînement de l'IA et ne sont pas offerts à des tiers. Son système API sous-jacent utilise l'Open API qui stipule explicitement que les données ne sont pas utilisées pour l'entraînement non plus. Donc, toutes les données des clients sont privées et sécurisées. En guise de précaution supplémentaire, vous pouvez toujours supprimer les graphiques après les avoir analysés, auquel cas il n'y a aucune trace de ces données laissée sur les serveurs.\n\n\n## Personnalisation de ce flux de travail\n\nConsultez le **guide de configuration complet** pour ce flux de travail à [https://support.noduslabs.com/hc/en-us/articles/20447530961308-Zendesk-Tickets-Summarization-Sentiment-Analysis-and-Slack-Integration-with-n8n-and-InfraNodus](https://support.noduslabs.com/hc/en-us/articles/20447530961308-Zendesk-Tickets-Summarization-Sentiment-Analysis-and-Slack-Integration-with-n8n-and-InfraNodus)\n\nPour **support** avec ce modèle, veuillez contacter \n[https://support.noduslabs.com](https://support.noduslabs.com)\n\nPour plus de **flux de travail InfraNodus n8n**, veuillez consulter notre page de créateurs :\n[https://n8n.io/creators/infranodus/](https://n8n.io/creators/infranodus/)\n\nPour **en savoir plus sur InfraNodus**, GraphRAG et l'analyse de graphique de connaissances :\n[https://infranodus.com](https://infranodus.com)\n",
+  "workflow": {
+    "id": "Ps6Vyn4fFbtSDAIa",
+    "meta": {
+      "instanceId": "2a26454b0172ffcb8d70ba77c235b1209f92cd71bf06c79ba609c7173b416d68",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Summarize Zendesk Tickets and Generate Insights with Knowledge Graphs",
+    "tags": [
+      {
+        "id": "66wgFoDi9Xjl74M3",
+        "name": "Support",
+        "createdAt": "2025-05-21T17:06:32.355Z",
+        "updatedAt": "2025-05-21T17:06:32.355Z"
+      },
+      {
+        "id": "9QurS5Kb1CkCYrnG",
+        "name": "Product",
+        "createdAt": "2025-05-21T17:06:29.704Z",
+        "updatedAt": "2025-05-21T17:06:29.704Z"
+      },
+      {
+        "id": "Hd23erjIskV5mwPl",
+        "name": "Sales",
+        "createdAt": "2025-06-05T12:03:26.567Z",
+        "updatedAt": "2025-06-05T12:03:26.567Z"
+      },
+      {
+        "id": "kldZpTCan1suEN8v",
+        "name": "Marketing",
+        "createdAt": "2025-05-20T13:16:20.459Z",
+        "updatedAt": "2025-05-20T13:16:20.459Z"
+      },
+      {
+        "id": "sJk9cUvmMU8FkJXv",
+        "name": "AI",
+        "createdAt": "2025-05-20T13:16:15.636Z",
+        "updatedAt": "2025-05-20T13:16:15.636Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "a90faec1-0007-4e18-b2cb-90c5ba40bc4c",
+        "name": "Zendesk",
+        "type": "n8n-nodes-base.zendesk",
+        "position": [
+          500,
+          120
+        ],
+        "parameters": {
+          "options": {
+            "query": "=created>={{ $json.analyze_from_date }}{{$json.searh_query ? ` ${$json.searh_query}` : ``}}{{ $json.status ? ` status:${$json.status.toLowerCase()}` : `` }}"
+          },
+          "operation": "getAll"
+        },
+        "credentials": {
+          "zendeskApi": {
+            "id": "i5bOpw0SnJ616AzW",
+            "name": "Zendesk account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "84bf6e0c-76a5-4b70-ae04-c3c684044be8",
+        "name": "InfraNodus Build a Text Knowledge Graph",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          1000,
+          120
+        ],
+        "parameters": {
+          "url": "https://infranodus.com/api/v1/graphAndStatements?doNotSave=false&includeGraph=false&includeGraphSummary=true&includeStatements=false",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "name",
+                "value": "={{ $('Set Parameters').first().json.graph_name }}"
+              },
+              {
+                "name": "statements",
+                "value": "={{ $json.statements }}"
+              },
+              {
+                "name": "contextSettings",
+                "value": "={{{ \"partOfSpeechToProcess\":\"HASHTAGS_AND_WORDS\", \"doubleSquarebracketsProcessing\":\"EXCLUDE\", \"mentionsProcessing\":\"EXCLUDE\"} }}"
+              },
+              {
+                "name": "categories",
+                "value": "={{ $json.categories }}"
+              },
+              {
+                "name": "timestamps",
+                "value": "={{ $json.timestamps }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpBearerAuth"
+        },
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "FPDx6PA5CtzGEIQc",
+            "name": "InfraNodus DeeMeeTree API Key"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "228b5644-60c1-438a-9568-9f616c44ac15",
+        "name": "Add meta data to tickets for graph filters",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          800,
+          120
+        ],
+        "parameters": {
+          "jsCode": "\nlet statements = []\nlet categories = []\nlet timestamps = []\nfor (const item of $input.all()) {\n\n  const isChatMessage = item.json.description.includes('Offline transcript:') || false\n  \n  const fromSender = isChatMessage ? extractEmail(item.json.description) : item.json.via.source.from.address\n  const createdDate = item.json.created_at\n  const messageSubject = isChatMessage ? '' : item.json.subject + ' '\n  \n  const cleanMessageText = isChatMessage ? item.json.description.split('Offline transcript:')[1] : item.json.description\n  const messageText = messageSubject +\n  removeLineBreaks(removeHtmlCssScript(cleanMessageText))\n  \n  const messageUrl = item.json.url.split('/api/')[0] + '/agent/tickets/' + item.json.id\n  \n  const messageStatus = item.json.status\n  const messageType = item.json.type\n  const messagePriority = item.json.priority\n  const messageCategories = []\n  const messageTags = item.json.tags\n  if (messageStatus) messageCategories.push('status: ' + messageStatus)\n  if (messageType) messageCategories.push('type: ' + messageType)\n  if (messagePriority) messageCategories.push('priority: ' + messagePriority)\n  if (messageTags && messageTags.length > 0) messageTags.forEach(tag => messageCategories.push('tag: ' + tag))\n\n  statements.push('[[' + fromSender + ']] ' + messageText + ' ' + messageUrl)\n  categories.push(messageCategories)\n  timestamps.push(createdDate)\n}\n\nreturn { statements, categories, timestamps }\n\nfunction extractEmail(text) {\n  const match = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/);\n  const email = match ? match[0] : '';\n  return email\n}\nfunction removeLineBreaks(text) {\n  const cleanText = text.replaceAll('\\n', ' ')\n  return cleanText\n}\nfunction removeHtmlCssScript(text) {\n  if (!text || typeof text !== 'string') {\n    return '';\n  }\n  \n  let cleanText = text;\n  \n  // Remove script tags and their content (case insensitive)\n  cleanText = cleanText.replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '');\n  \n  // Remove style tags and their content (case insensitive)\n  cleanText = cleanText.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '');\n  \n  // Remove HTML comments\n  cleanText = cleanText.replace(/<!--[\\s\\S]*?-->/g, '');\n  \n  // Remove all remaining HTML tags\n  cleanText = cleanText.replace(/<[^>]*>/g, '');\n  \n  // Decode common HTML entities\n  const htmlEntities = {\n    '&amp;': '&',\n    '&lt;': '<',\n    '&gt;': '>',\n    '&quot;': '\"',\n    '&#39;': \"'\",\n    '&nbsp;': ' ',\n    '&copy;': '©',\n    '&reg;': '®',\n    '&trade;': '™'\n  };\n  \n  Object.keys(htmlEntities).forEach(entity => {\n    const regex = new RegExp(entity, 'g');\n    cleanText = cleanText.replace(regex, htmlEntities[entity]);\n  });\n  \n  // Clean up extra whitespace\n  cleanText = cleanText.replace(/\\s+/g, ' ').trim();\n  \n  return cleanText;\n}"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "2354e6b3-a9de-47ba-a146-a3180126f59b",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          1280,
+          120
+        ],
+        "webhookId": "e9aad8e5-4d65-43b9-9af0-33e221c36e84",
+        "parameters": {
+          "amount": 10
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "6a070df2-3eb3-4686-ae03-e74b8a9530e5",
+        "name": "InfraNodus AI Summary & Graph Link",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          1480,
+          120
+        ],
+        "parameters": {
+          "url": "https://infranodus.com/api/v1/graphAndAdvice?doNotSave=true&includeGraph=false&includeGraphSummary=true",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "aiTopics",
+                "value": "true"
+              },
+              {
+                "name": "requestMode",
+                "value": "summary"
+              },
+              {
+                "name": "name",
+                "value": "={{ $('Set Parameters').first().json.graph_name }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpBearerAuth"
+        },
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "FPDx6PA5CtzGEIQc",
+            "name": "InfraNodus DeeMeeTree API Key"
+          }
+        },
+        "retryOnFail": false,
+        "typeVersion": 4.2
+      },
+      {
+        "id": "a66e966a-cfb6-41a7-901c-3df07392ad82",
+        "name": "Send Report to Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "onError": "continueRegularOutput",
+        "position": [
+          2460,
+          580
+        ],
+        "webhookId": "50dc4ad9-b803-4e13-8c5e-048f6f06ea47",
+        "parameters": {
+          "text": "=💎 Visual **overview of your Zendesk tickets** is ready at [https://infranodus.com/Deemeetree/{{ $('Set Parameters').first().json.graph_name }}/edit](https://infranodus.com/Deemeetree/{{ $('Set Parameters').first().json.graph_name }}/edit)\n\n**💎 Topical summary:**\n{{ $('InfraNodus AI Summary & Graph Link').item.json.aiAdvice[0].text }}\n\n**💡 Idea to think about:**\n{{ $json.aiAdvice[0].text }}\n",
+          "chatId": "your_telegram_chat_id",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "jaBITBhfModUjHo9",
+            "name": "Telegram apartment notifications"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "8baa3b72-d15f-4757-bfd7-dfd73d573d89",
+        "name": "Send Full Report via Gmail",
+        "type": "n8n-nodes-base.gmail",
+        "onError": "continueRegularOutput",
+        "position": [
+          2460,
+          360
+        ],
+        "webhookId": "18e8d5df-3ac6-45fb-ab41-d2e1e578fa51",
+        "parameters": {
+          "sendTo": "your_own_email_12312dsadfas@gmail.com",
+          "message": "=Hello\n\nWe successfully analyzed your Zendesk tickets on {{ $('Set Parameters').first().json.lauch_time }}\n\n💎 Visual overview of your Zendesk tickets is ready at https://infranodus.com/Deemeetree/{{ $('Set Parameters').first().json.graph_name }}/edit\n\n📋 Search parameters:\nAnalyzing from date: {{ $('Set Parameters').first().json.analyze_from_date }}\nSearch query: {{ $('Set Parameters').first().json.search_query}} \nStatus: {{$('Set Parameters').first().json.status}}\n\n💎 Topical summary:\n{{ $('InfraNodus AI Summary & Graph Link').item.json.aiAdvice[0].text }}\n\n{{ $('InfraNodus AI Summary & Graph Link').item.json.graphSummary }}\n\n💡 Idea to think about:\n{{ $json.aiAdvice[0].text }}\n\nThank you, till next time!\n",
+          "options": {},
+          "subject": "Zendesk Summary",
+          "emailType": "text"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "56204c2b-f70b-436b-aa52-7bc7b0994822",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "disabled": true,
+        "position": [
+          -80,
+          200
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 10
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "5f6ab402-79f7-468e-a8f1-770322136cb4",
+        "name": "Slack",
+        "type": "n8n-nodes-base.slack",
+        "onError": "continueRegularOutput",
+        "position": [
+          2460,
+          120
+        ],
+        "webhookId": "6d836f75-04ad-4430-9461-27845de8ab8e",
+        "parameters": {
+          "text": "=Zendesk Support Overview ran on {{ $('Set Parameters').first().json.lauch_time }}\n\n📋 Search parameters:\nAnalyzing from date: {{ $('Set Parameters').first().json.analyze_from_date }}\nSearch query: {{ $('Set Parameters').first().json.search_query}} \nStatus: {{$('Set Parameters').first().json.status}}\n\n\n💎 Visual overview of your Zendesk tickets is ready at [https://infranodus.com/Deemeetree/{{ $('Set Parameters').first().json.graph_name }}/edit](https://infranodus.com/Deemeetree/{{ $('Set Parameters').first().json.graph_name }}/edit)\n\n💎 Topical summary:\n{{ $('InfraNodus AI Summary & Graph Link').item.json.aiAdvice[0].text }}\n\n{{ $('InfraNodus AI Summary & Graph Link').item.json.graphSummary }}\n\n💡 Idea to think about:\n{{ $json.aiAdvice[0].text }}\n\nThank you, till next time!\n",
+          "select": "channel",
+          "channelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "C0905QEULAG",
+            "cachedResultName": "customer-support"
+          },
+          "otherOptions": {
+            "includeLinkToWorkflow": false
+          },
+          "authentication": "oAuth2"
+        },
+        "credentials": {
+          "slackOAuth2Api": {
+            "id": "nFuZU4b0kZ0PiHXR",
+            "name": "Slack account"
+          }
+        },
+        "typeVersion": 2.3
+      },
+      {
+        "id": "187c5d5f-a984-4784-9da2-ca7db7b899f8",
+        "name": "Set Parameters",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          220,
+          120
+        ],
+        "parameters": {
+          "mode": "raw",
+          "options": {},
+          "jsonOutput": "={\n  \"analyze_from_date\": \"{{ $json[\"Starting from Date\"] || $today.minus({days: 1}).toString()}}\",\n  \"search_query\": \"{{ $json[\"Search Query\"] || `` }}\",\n  \"status\": \"{{ $json['Ticket Status to Filter'] || `` }}\",\n  \"graph_name\": \"{{ $json[\"Graph Name\"] || ($json.submittedAt ? `zendesk_tickets_${$json.submittedAt.split('.')[0].replaceAll(':', '_')}` : `zendesk_tickets_${$json.timestamp.split('.')[0].replaceAll(':','_')}`) }}\",\n  \"launch_time\": \"{{ $json.submittedAt ? $json.submittedAt.split('.')[0] : $json.timestamp.split('.')[0] }}\"\n}\n"
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "3629d33e-5b56-4a9a-a32d-be1125b0a1b9",
+        "name": "Wait Again",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          1920,
+          120
+        ],
+        "webhookId": "0e4e854f-bac4-4d6f-b036-e277b4eb68ef",
+        "parameters": {
+          "amount": 2
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "2998db19-1fb6-46d1-8fbb-59e87b3c81ff",
+        "name": "InfraNodus Insight Generator",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          2100,
+          120
+        ],
+        "parameters": {
+          "url": "https://infranodus.com/api/v1/graphAndAdvice?doNotSave=true&optimize=gap&includeGraph=false&includeGraphSummary=true",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "aiTopics",
+                "value": "true"
+              },
+              {
+                "name": "requestMode",
+                "value": "idea"
+              },
+              {
+                "name": "name",
+                "value": "={{ $('Set Parameters').first().json.graph_name }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpBearerAuth"
+        },
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "FPDx6PA5CtzGEIQc",
+            "name": "InfraNodus DeeMeeTree API Key"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "2f06e74a-dcb1-4228-8a5e-688b1fbedbb6",
+        "name": "On form submission",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -80,
+          40
+        ],
+        "webhookId": "34bdb9d4-1b26-4810-bab6-33427bec0331",
+        "parameters": {
+          "options": {
+            "appendAttribution": false,
+            "respondWithOptions": {
+              "values": {
+                "formSubmittedText": "You will receive a notification via the channel of your choice once this workflow completes."
+              }
+            }
+          },
+          "formTitle": "Visual Summary of Zendesk Tickets",
+          "formFields": {
+            "values": [
+              {
+                "fieldType": "date",
+                "fieldLabel": "Starting from Date"
+              },
+              {
+                "fieldLabel": "Search Query"
+              },
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "Ticket Status to Filter",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Open"
+                    },
+                    {
+                      "option": "Closed"
+                    },
+                    {
+                      "option": "Pending"
+                    },
+                    {
+                      "option": "New"
+                    },
+                    {
+                      "option": "On Hold"
+                    }
+                  ]
+                }
+              },
+              {
+                "fieldLabel": "Graph Name",
+                "placeholder": "e.g. zendesk_tickets_search"
+              }
+            ]
+          },
+          "authentication": "basicAuth",
+          "formDescription": "Create a knowledge graph from your Zendesk tickets and send a notification via Slack with the insights."
+        },
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "dnRnDRFSRoubvTh8",
+            "name": "Basic n8n Form Auth"
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "dba86f3f-6f65-4339-b720-26da46c62a0b",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          160,
+          -280
+        ],
+        "parameters": {
+          "height": 660,
+          "content": "## 2. Set Parameters\n\n### Set ticket search parameters and graph name to save to. \n\nFor Zendesk search parameters, please, refer to their [search parameters support page](https://developer.zendesk.com/documentation/api-basics/working-with-data/searching-with-the-zendesk-api/)\n\nYou can also set search parameters directly in the Zendesk node in the Step 3."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "513993e9-a258-4b45-a4b8-6691779689ab",
+        "name": "Form Response",
+        "type": "n8n-nodes-base.form",
+        "onError": "continueRegularOutput",
+        "position": [
+          2460,
+          780
+        ],
+        "webhookId": "e4c7f004-04c7-45f4-ba09-2bac2967093f",
+        "parameters": {
+          "options": {
+            "formTitle": "Zendesk Analysis Results"
+          },
+          "operation": "completion",
+          "completionTitle": "The workflow is complete",
+          "completionMessage": "=Visual overview of your Zendesk tickets is delivered to your channels of choice and is ready at https://infranodus.com/Deemeetree/{{ $('Set Parameters').first().json.graph_name }}/edit"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5e7c5976-c1bb-414a-a4bc-ec6776ebe9e2",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1660,
+          200
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "cb0387d5-e633-4885-a91b-cf9cb889e7f9",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.error }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "2a2134ba-3d8c-4d79-bf90-affa433bd17c",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -140,
+          -280
+        ],
+        "parameters": {
+          "height": 660,
+          "content": "## 1. Set a Trigger\n\n### Start with the search form first or set up a scheduled daily or weekly trigger.\n\nYou can leave all the fields empty. Once you find the search parameters you like, you can specify them in the Step 2 and have an automated trigger run the workflow for you. "
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "13976533-6e27-48c1-81dd-73c9a65f724f",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          440,
+          -280
+        ],
+        "parameters": {
+          "height": 660,
+          "content": "## 3. Get ZenDesk Tickets\n\n### We use search criteria defined in the Step 2. You can also set your own in this node directly. \n\n🚨 Set up your ZenDesk connection here. \n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "56bf6145-fc79-4c12-a505-fc0be369997f",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          720,
+          -280
+        ],
+        "parameters": {
+          "width": 480,
+          "height": 660,
+          "content": "## 4. Process Tickets and Generate an [InfraNodus](https://infranodus.com) Knowledge Graph\n\n### You will get a link to an interactive graph at [InfraNodus](https://infranodus.com) where you can see the main topics and concepts and sort your tickets by \n\n- ticket status\n- priority\n- tag\n- urgency\n- sentiment\n\n\n🚨 Set up your InfraNodus API connection here.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "97ff4272-6b64-44a7-aef6-280c98b0d894",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1240,
+          -280
+        ],
+        "parameters": {
+          "width": 600,
+          "height": 660,
+          "content": "## 5. Generate Topical Summary\n\n### Using the [InfraNodus AI text analysis](https://infranodus.com) we generate a topical summary of the tickets you searched for. You will discover:\n\n- the main topics (good for an overview)\n- main keywords (userful for SEO)\n- content gaps (good for product ideas)\n\n\n🚨 Set up your InfraNodus API connection here.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "42300a56-8816-4274-a6ba-703a2ddce1e4",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1880,
+          -280
+        ],
+        "parameters": {
+          "width": 380,
+          "height": 660,
+          "content": "## 6. Generate a Business Idea\n\n### Using the [InfraNodus AI](https://infranodus.com) we generate a business idea based on the gap found in your Zendesk tickets\n\n*You can also change the `requestMode` to `question` to generate an interesting question instead. For more parameters, refer to the [InfraNodus API documentation](https://support.noduslabs.com/hc/en-us/sections/13605105764124-InfraNodus-API).*\n\n\n🚨 Set up your InfraNodus API connection here.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "deee904a-832f-4e73-8851-89d75c07458e",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2320,
+          -280
+        ],
+        "parameters": {
+          "width": 380,
+          "height": 1260,
+          "content": "## 7. Notify of Results via Slack / Email / Telegram / Form\n\n### Receive a summary with the link to the interactive graph to a channel of your choice, once the workflow is ready.\n\nYou can deactivate the channels you don't want to use. We provide multiple channels, so you have an option. \n\n🚨 Set up your API connections here.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e69ffee3-5d11-4a6c-afe9-93b3187016e6",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -140,
+          -1080
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 760,
+          "height": 760,
+          "content": "# Generate Visual Topical Summary and Business Ideas from ZenDesk Tickets\n\n### Using this workflow, you can generate an [InfraNodus knowledge graph](https://infranodus.com) based on your ZenDesk tickets (using any search criteria) to:\n\n- Learn what your customers are talking about (main topical clusters)\n- Discover the topics and concepts they mention with a negative / positive sentiment\n- Find the support requests for a certain topic\n- Explore the requests in a non-linear way, based on the agent's expertise\n- Identify the content gaps, generate business ideas based on them\n\n\nFor support, please, contact us at [https://support.noduslabs.com](https://support.noduslabs.com)\n\nAn example of the graph that shows the main topics:\n[![Zendesk knowledge graph made with InfraNodus](https://support.noduslabs.com/hc/article_attachments/20447708129820)](https://infranodus.com)"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "40b28280-3224-450f-a045-9609c06ee1be",
+    "connections": {
+      "If": {
+        "main": [
+          [
+            {
+              "node": "InfraNodus AI Summary & Graph Link",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait Again",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "InfraNodus AI Summary & Graph Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Zendesk": {
+        "main": [
+          [
+            {
+              "node": "Add meta data to tickets for graph filters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait Again": {
+        "main": [
+          [
+            {
+              "node": "InfraNodus Insight Generator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Parameters": {
+        "main": [
+          [
+            {
+              "node": "Zendesk",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Parameters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "On form submission": {
+        "main": [
+          [
+            {
+              "node": "Set Parameters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "InfraNodus Insight Generator": {
+        "main": [
+          [
+            {
+              "node": "Send Report to Telegram",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Send Full Report via Gmail",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Slack",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Form Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "InfraNodus AI Summary & Graph Link": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "InfraNodus Build a Text Knowledge Graph": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Add meta data to tickets for graph filters": {
+        "main": [
+          [
+            {
+              "node": "InfraNodus Build a Text Knowledge Graph",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 23,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.form": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 2
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.slack": {
+        "count": 1
+      },
+      "n8n-nodes-base.zendesk": {
+        "count": 1
+      },
+      "n8n-nodes-base.telegram": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 8
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 3
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "InfraNodus",
+    "username": "infranodus",
+    "bio": "I'm Dmitry, the founder of InfraNodus — an AI text network analysis tool. I'm passionate about networks and data visualization and its ability to reveal what everyone else is missing and to highlight different perspectives. I'm sharing the n8n templates that make use of this unique capability of InfraNodus for multiple scenarios.",
+    "verified": true,
+    "links": [
+      "https://infranodus.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/2c4026bed17ffbab6bc63bfd88f3a7375e83f7f2b1c92859a092f8bb3abbbc30?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les Champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "icon": "file:slack.svg",
+      "name": "n8n-nodes-base.slack",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/slack/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Slack"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgMTUwLjg1MiAxNTAuODUyIj48dXNlIHhsaW5rOmhyZWY9IiNhIiB4PSIuOTI2IiB5PSIuOTI2Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZS13aWR0aD0iMS44NTIiPjxwYXRoIGZpbGw9IiNlMDFlNWEiIHN0cm9rZT0iI2UwMWU1YSIgZD0iTTQwLjc0MSA5My41NWMwLTguNzM1IDYuNjA3LTE1Ljc3MiAxNC44MTUtMTUuNzcyczE0LjgxNSA3LjAzNyAxNC44MTUgMTUuNzcydjM4LjgyNGMwIDguNzM3LTYuNjA3IDE1Ljc3NC0xNC44MTUgMTUuNzc0cy0xNC44MTUtNy4wMzctMTQuODE1LTE1Ljc3MnoiLz48cGF0aCBmaWxsPSIjZWNiMjJkIiBzdHJva2U9IiNlY2IyMmQiIGQ9Ik05My41NSAxMDcuNDA4Yy04LjczNSAwLTE1Ljc3Mi02LjYwNy0xNS43NzItMTQuODE1czcuMDM3LTE0LjgxNSAxNS43NzItMTQuODE1aDM4LjgyNmM4LjczNSAwIDE1Ljc3MiA2LjYwNyAxNS43NzIgMTQuODE1cy03LjAzNyAxNC44MTUtMTUuNzcyIDE0LjgxNXoiLz48cGF0aCBmaWxsPSIjMmZiNjdjIiBzdHJva2U9IiMyZmI2N2MiIGQ9Ik03Ny43NzggMTUuNzcyQzc3Ljc3OCA3LjAzNyA4NC4zODUgMCA5Mi41OTMgMHMxNC44MTUgNy4wMzcgMTQuODE1IDE1Ljc3MnYzOC44MjZjMCA4LjczNS02LjYwNyAxNS43NzItMTQuODE1IDE1Ljc3MnMtMTQuODE1LTcuMDM3LTE0LjgxNS0xNS43NzJ6Ii8+PHBhdGggZmlsbD0iIzM2YzVmMSIgc3Ryb2tlPSIjMzZjNWYxIiBkPSJNMTUuNzcyIDcwLjM3MUM3LjAzNyA3MC4zNzEgMCA2My43NjMgMCA1NS41NTZzNy4wMzctMTQuODE1IDE1Ljc3Mi0xNC44MTVoMzguODI2YzguNzM1IDAgMTUuNzcyIDYuNjA3IDE1Ljc3MiAxNC44MTVzLTcuMDM3IDE0LjgxNS0xNS43NzIgMTQuODE1eiIvPjxnIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiPjxwYXRoIGZpbGw9IiNlY2IyMmQiIHN0cm9rZT0iI2VjYjIyZCIgZD0iTTc3Ljc3OCAxMzMuMzMzYzAgOC4yMDggNi42MDcgMTQuODE1IDE0LjgxNSAxNC44MTVzMTQuODE1LTYuNjA3IDE0LjgxNS0xNC44MTUtNi42MDctMTQuODE1LTE0LjgxNS0xNC44MTVINzcuNzc4eiIvPjxwYXRoIGZpbGw9IiMyZmI2N2MiIHN0cm9rZT0iIzJmYjY3YyIgZD0iTTEzMy4zMzQgNzAuMzcxaC0xNC44MTVWNTUuNTU2YzAtOC4yMDcgNi42MDctMTQuODE1IDE0LjgxNS0xNC44MTVzMTQuODE1IDYuNjA3IDE0LjgxNSAxNC44MTUtNi42MDcgMTQuODE1LTE0LjgxNSAxNC44MTV6Ii8+PHBhdGggZmlsbD0iI2UwMWU1YSIgc3Ryb2tlPSIjZTAxZTVhIiBkPSJNMTQuODE1IDc3Ljc3OEgyOS42M3YxNC44MTVjMCA4LjIwNy02LjYwNyAxNC44MTUtMTQuODE1IDE0LjgxNVMwIDEwMC44IDAgOTIuNTkzczYuNjA3LTE0LjgxNSAxNC44MTUtMTQuODE1eiIvPjxwYXRoIGZpbGw9IiMzNmM1ZjEiIHN0cm9rZT0iIzM2YzVmMSIgZD0iTTcwLjM3MSAxNC44MTVWMjkuNjNINTUuNTU2Yy04LjIwNyAwLTE0LjgxNS02LjYwNy0xNC44MTUtMTQuODE1UzQ3LjM0OCAwIDU1LjU1NiAwczE0LjgxNSA2LjYwNyAxNC44MTUgMTQuODE1eiIvPjwvZz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Slack",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "icon": "file:telegram.svg",
+      "name": "n8n-nodes-base.telegram",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-telegram-bots-with-n8n-a-no-code-platform/",
+                "icon": "💬",
+                "label": "Creating Telegram Bots with n8n, a No-Code Platform"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.telegram/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/telegram/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Telegram"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNjYgNjYiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzM3YWVlMiIgZD0iTTAgMzJjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMyczMyLTE0LjMyNyAzMi0zMlM0OS42NzMgMCAzMiAwIDAgMTQuMzI3IDAgMzIiLz48cGF0aCBmaWxsPSIjYzhkYWVhIiBkPSJtMjEuNjYxIDM0LjMzOCAzLjc5NyAxMC41MDhzLjQ3NS45ODMuOTgzLjk4MyA4LjA2OC03Ljg2NCA4LjA2OC03Ljg2NGw4LjQwNy0xNi4yMzctMjEuMTE5IDkuODk4eiIvPjxwYXRoIGZpbGw9IiNhOWM2ZDgiIGQ9Im0yNi42OTUgMzcuMDM0LS43MjkgNy43NDZzLS4zMDUgMi4zNzMgMi4wNjggMGw0LjY0NC00LjIwMyIvPjxwYXRoIGQ9Im0yMS43MyAzNC43MTItNy44MDktMi41NDVzLS45MzItLjM3OC0uNjMzLTEuMjM3Yy4wNjItLjE3Ny4xODYtLjMyOC41NTktLjU4OCAxLjczMS0xLjIwNiAzMi4wMjgtMTIuMDk2IDMyLjAyOC0xMi4wOTZzLjg1Ni0uMjg4IDEuMzYxLS4wOTdjLjIzMS4wODguMzc4LjE4Ny41MDMuNTQ4LjA0NS4xMzIuMDcxLjQxMS4wNjguNjg5LS4wMDMuMjAxLS4wMjcuMzg2LS4wNDUuNjc4LS4xODQgMi45NzgtNS43MDYgMjUuMTk4LTUuNzA2IDI1LjE5OHMtLjMzIDEuMy0xLjUxNCAxLjM0NWMtLjQzMi4wMTYtLjk1Ni0uMDcxLTEuNTgyLS42MS0yLjMyMy0xLjk5OC0xMC4zNTItNy4zOTQtMTIuMTI2LTguNThhLjM0LjM0IDAgMCAxLS4xNDYtLjIzOWMtLjAyNS0uMTI1LjEwOC0uMjguMTA4LS4yOHMxMy45OC0xMi40MjcgMTQuMzUyLTEzLjczMWMuMDI5LS4xMDEtLjA3OS0uMTUxLS4yMjYtLjEwNy0uOTI5LjM0Mi0xNy4wMjUgMTAuNTA2LTE4LjgwMSAxMS42MjktLjEwNC4wNjYtLjM5NS4wMjMtLjM5NS4wMjMiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Telegram",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 123,
+      "icon": "file:zendesk.svg",
+      "name": "n8n-nodes-base.zendesk",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.zendesk/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/zendesk/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Zendesk"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMjRDMCAxMC43NDUgMTAuNzQ1IDAgMjQgMHMyNCAxMC43NDUgMjQgMjQtMTAuNzQ1IDI0LTI0IDI0UzAgMzcuMjU1IDAgMjQiLz48cGF0aCBmaWxsPSIjMDMzNjNEIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS40NDggMTguNjUzYzQuMDUgMCA3LjMzMi0zLjM3NSA3LjMzMi03LjUzOEg4LjExNmMwIDQuMTYzIDMuMjgzIDcuNTM4IDcuMzMyIDcuNTM4bTcuMzMyIDE3LjE5OVYxNy42NDhMOC4xMTYgMzUuODUyem0yLjQxNSAwYzAtNC4xNjQgMy4yODMtNy41NCA3LjMzMi03LjU0IDQuMDUgMCA3LjMzMiAzLjM3NiA3LjMzMiA3LjU0em0wLTI0LjczN3YxOC4yMDNMMzkuODYgMTEuMTE1eiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+"
+      },
+      "displayName": "Zendesk",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1274,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.form",
+      "codex": {
+        "data": {
+          "alias": [
+            "_Form",
+            "form",
+            "table",
+            "submit",
+            "post",
+            "page",
+            "step",
+            "stage",
+            "multi"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.form/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 41,
+      "name": "Gestion des Tickets"
+    },
+    {
+      "id": 49,
+      "name": "Résumé IA"
+    }
+  ],
+  "image": []
+}

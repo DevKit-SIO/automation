@@ -1,0 +1,3571 @@
+{
+  "id": 5943,
+  "name": "Éditeur de médias sociaux multi-plateformes avec Airtable, Google Drive et Postiz",
+  "views": 661,
+  "recentViews": 2,
+  "totalViews": 661,
+  "createdAt": "2025-07-13T18:36:57.111Z",
+  "description": " ## 📝 FLUX DE TÉLÉVERSEMENT DES MÉDIAS POSTIZ\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 OBJECTIF :\nPipeline de téléversement de médias automatisé qui télécharge des vidéos et des images depuis Google Drive et les téléverse dans le stockage Postiz pour la publication sur les réseaux sociaux.\n\n🔄 PROCESSUS DE FLUX DE TRAVAIL :\n1. Le webhook déclenche le flux de travail\n2. Récupérer les métadonnées des médias depuis Airtable\n3. Télécharger la vidéo + l'image depuis Google Drive\n4. Téléverser les deux fichiers dans le stockage Postiz\n5. Enregistrer les chemins de fichiers Postiz dans Airtable\n\n🔧 DÉTAILS TECHNIQUES :\n• API : point de terminaison Postiz /upload (multipart-form-data)\n• Stockage : Convertit les fichiers Google Drive → URLs Postiz\n• Intégration : Met à jour Airtable avec les chemins Postiz\n• Requis : Tous les médias doivent être téléversés avant la publication\n\n## 📱 FLUX DE PUBLICATION SUR LES RÉSEAUX SOCIAUX\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 OBJECTIF :\nPublication automatisée sur plusieurs plateformes de réseaux sociaux utilisant l'API Postiz. Distribue le contenu sur Instagram, Twitter/X (2 comptes), LinkedIn et Facebook avec nettoyage et formatage de contenu spécifiques à chaque plateforme.\n\n🔄 PROCESSUS COMPLET DU FLUX DE TRAVAIL :\n1. 📊 Récupérer le contenu des réseaux sociaux depuis la base de données Airtable\n2. 🔗 Obtenir les IDs d'intégration pour toutes les plateformes sociales connectées\n3. 🔀 Acheminer chaque plateforme vers le processeur de contenu approprié\n4. 🧹 Nettoyer le contenu pour éviter les erreurs de formatage JSON\n5. 📱 Publier simultanément sur les plateformes de réseaux sociaux respectives\n\n📋 COUVERTURE DES PLATEFORMES :\n• 📸 Instagram (Contenu visuel + légendes)\n• 🐦 Compte principal Twitter/X (Texte + images)\n• 🐦 Compte alternatif Twitter/X (Publication en double)\n• 💼 LinkedIn (Contenu professionnel)\n• 📘 Facebook (Publication dans l'écosystème Meta)\n\n⚠️ NETTOYAGE CRITIQUE DU CONTENU :\n• Supprime les sauts de ligne (\\n), les retours chariot (\\r), les tabulations (\\t)\n• Remplace plusieurs espaces par un espace unique\n• Empêche les erreurs 'le paramètre JSON doit être un JSON valide'\n• ESSENTIEL : Sans nettoyage, tous les appels API échouent !\n\n🔧 SPÉCIFICATIONS TECHNIQUES :\n• API : point de terminaison Postiz /posts (POST)\n• Authentification : Authentification par en-tête HTTP\n• Content-Type : application/json\n• Type de publication : Immédiat ('maintenant') + délai d'une minute\n• Médias : Références aux chemins d'images Postiz pré-téléversés\n• Limite de taux : 30 requêtes/heure (limitation bêta de l'API)\n\n🔗 SOURCES DE DONNÉES :\n• Contenu : Airtable \n• Médias : Pré-téléversés via un flux de travail de téléversement de médias séparé\n• Champs : instagram_caption, linkedin_post, twitter single, faceboook\n• Images : Références aux chemins de champ 'image postiz'\n\n⚡ FLUX D'EXÉCUTION :\nAirtable → Intégrations → Routeur de plateforme → Nettoyeurs de contenu → Éditeurs sociaux\n\n🚨 DÉPANNAGE :\n• Erreurs JSON : Vérifiez les nœuds de nettoyage de contenu\n• Erreurs 500 : Vérifiez les IDs d'intégration et les connexions de compte\n• Médias manquants : Assurez-vous que le flux de travail de téléversement de médias a été exécuté en premier\n• Limites de taux : Échelonner les exécutions (limite de 30/heure)\n\n🔄 DÉPENDANCES :\n• Requis : Flux de travail de téléversement de médias (pour les chemins d'images/vidéos)\n• Se connecte à : Flux de travail d'analyse et de surveillance\n• Met à jour : Airtable avec le statut de publication et les URLs\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n\n\n\n\n\n⚠️ NOTES CRITIQUES :\n• Ne peut pas utiliser d'URLs externes dans les publications Postiz\n• Les fichiers doivent être téléversés sur Google Drive d'abord - ID référencé dans Airtable\n• Permet le suivi des références pour toutes les plateformes\n\n📊 FLUX DE DONNÉES :\nGoogle Drive → Télécharger → Téléversement Postiz → Mise à jour Airtable\n\n🔗 SE CONNECTE À :\nFlux de publication principaux sur les réseaux sociaux qui référencent ces chemins de fichiers téléversés pour la publication sur Instagram, Twitter, LinkedIn, Facebook et YouTube.\n## 🎬 FLUX DE PUBLICATION DE VIDÉO\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 OBJECTIF :\nDistribution automatisée de contenu vidéo sur Instagram, Facebook et YouTube utilisant l'API Postiz. Flux de travail spécialisé pour le contenu vidéo avec traitement et nettoyage spécifiques à chaque plateforme.\n\n🔄 EXÉCUTION DU FLUX DE TRAVAIL :\n1. 📊 Récupérer le contenu vidéo depuis la base de données Airtable (recuoYjg4icStHsMK)\n2. 🔗 Obtenir les IDs d'intégration pour les plateformes activées pour la vidéo\n3. 🔀 Acheminer les plateformes vers les processeurs vidéo appropriés\n4. 🧹 Nettoyer le contenu pour Instagram & Facebook (YouTube contourné)\n5. 📹 Publier simultanément sur les plateformes vidéo\n\n📹 COUVERTURE DES PLATEFORMES :\n• 📱 Instagram : Publications vidéo & Reels (✅ Fonctionne)\n• 📘 Facebook : Contenu vidéo (⚠️ Mode test)\n• 🎬 YouTube : Vidéos longues (🚨 Cassé)\n\n⚡ FLUX D'EXÉCUTION :\nAirtable → Intégrations → Routeur vidéo → [3 Chemins parallèles]\n├── Instagram : Nettoyeur → Éditeur\n├── Facebook : Nettoyeur → Éditeur  \n└── YouTube : [Direct] → Éditeur\n\n🗄️ SOURCE DE DONNÉES :\n• Base : Netkreatives.com \n• Table : Outil Youtube \n• Champ Vidéo : 'postiz video'\n• Champs de contenu : instagram_caption, faceboook\n\n\n🔧 SPÉCIFICATIONS TECHNIQUES :\n• Méthode : POST\n• Auth : En-tête HTTP (identifiants Postiz)\n• Timing : Publication immédiate (+1 minute de délai)\n• Médias : Chemins vidéo pré-téléversés\n• Content-Type : application/json",
+  "workflow": {
+    "meta": {
+      "instanceId": "3cc6c4256e2bbdec1b3708c49dc3889c7266357f3e239651c157c2de760e6c65"
+    },
+    "name": "social media content publishing",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "b286e753-d483-4288-b777-55b4aaaa3a98",
+        "name": "📊 Content Database (Media)",
+        "type": "n8n-nodes-base.airtable",
+        "notes": "📋 Fetches media and content from Airtable\n• Table: Youtube tool (tblRnaXqxrvcQhqBw)\n• Record: recuoYjg4icStHsMK\n• Contains: Video/image file IDs, social content\n• Fields: Short form Video, Image for socials\n🔗 Feeds into media download and upload pipeline",
+        "position": [
+          1440,
+          300
+        ],
+        "parameters": {
+          "id": "={{ $json.query.RecordId }}",
+          "base": {
+            "mode": "list",
+            "value": "appTFomwpoQ8GVsSo"
+          },
+          "table": {
+            "mode": "list",
+            "value": "tblRnaXqxrvcQhqBw"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "qzdthb44cvi2IEO0",
+            "name": "Airtable Personal Access Token account 2"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "70607089-3c8d-42ec-8626-d51740cb9c75",
+        "name": "📹 Video Upload to Postiz",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "🔄 Uploads video files to Postiz storage\n• Endpoint: POST /upload\n• Content-Type: multipart-form-data\n• Input: Binary video data from Google Drive\n• Output: Postiz file ID and path\n• Required: Videos must be uploaded before posting\n⚠️ Cannot use external URLs in Postiz posts",
+        "position": [
+          1880,
+          100
+        ],
+        "parameters": {
+          "url": "=https://postiz.yourdomain.com/api/public/v1/upload",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "file",
+                "parameterType": "formBinaryData",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "044473a4-12ba-48f1-ba2a-f6cea1d7d157",
+        "name": "💾 Save Video Path",
+        "type": "n8n-nodes-base.airtable",
+        "notes": "🔄 Updates Airtable with Postiz video path\n• Operation: Update record\n• Field: 'postiz video' = upload response path\n• Maintains data consistency across systems\n• Enables future reference to uploaded videos\n📝 Links Google Drive → Postiz → Airtable chain",
+        "position": [
+          2100,
+          100
+        ],
+        "parameters": {
+          "base": {
+            "mode": "list",
+            "value": "appTFomwpoQ8GVsSo"
+          },
+          "table": {
+            "mode": "list",
+            "value": "tblRnaXqxrvcQhqBw"
+          },
+          "columns": {
+            "value": {
+              "id": "={{ $('📊 Content Database (Media)').item.json.id }}",
+              "postiz video": "={{ $json.path }}"
+            },
+            "schema": [
+              {
+                "id": "id",
+                "type": "string",
+                "display": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "id",
+                "defaultMatch": true
+              },
+              {
+                "id": "Name",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "recordid",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "recordid",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "google drive",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "google drive",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "transcript",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "transcript",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "initial script",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "initial script",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "start",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "start",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "upload media",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "upload media",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post to socials",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Post to socials",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post shorts",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Post shorts",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_title",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_description",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_description",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_thumbnail_text",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_thumbnail_text",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "twitter single",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "twitter single",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "twitter_thread",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "twitter_thread",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "linkedin_post",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "linkedin_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "facebook_post",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "facebook_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "facebook_story_caption",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "facebook_story_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "instagram_post",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "instagram_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "instagram_reel",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "instagram_reel",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "tiktok_caption",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "tiktok_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_shorts_caption",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_shorts_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Short form Video",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Short form Video",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image for socials",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Image for socials",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "postiz image",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "postiz image",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "postiz video",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "postiz video",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Record ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "Record ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update"
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "052ba337-dba8-4451-8ca2-39862314fa4b",
+        "name": "🖼️ Image Upload to Postiz",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "🔄 Uploads image files to Postiz storage\n• Endpoint: POST /upload\n• Content-Type: multipart-form-data\n• Input: Binary image data from Google Drive\n• Output: Postiz file ID and path for posts\n• Supports: JPG, PNG, GIF formats\n📱 Used across Instagram, Twitter, LinkedIn, Facebook",
+        "position": [
+          1880,
+          300
+        ],
+        "parameters": {
+          "url": "=https://postiz.yourdomain.com/api/public/v1/upload",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "file",
+                "parameterType": "formBinaryData",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "98f5db1d-92da-4120-9ad6-d615d4112f94",
+        "name": "💾 Save Image Path",
+        "type": "n8n-nodes-base.airtable",
+        "notes": "🔄 Updates Airtable with Postiz image path\n• Operation: Update record\n• Field: 'postiz image' = upload response path\n• Used by all image-based social posts\n• Maintains referential integrity\n📊 Enables tracking of media usage across platforms",
+        "position": [
+          2100,
+          300
+        ],
+        "parameters": {
+          "base": {
+            "mode": "list",
+            "value": "appTFomwpoQ8GVsSo"
+          },
+          "table": {
+            "mode": "list",
+            "value": "tblRnaXqxrvcQhqBw"
+          },
+          "columns": {
+            "value": {
+              "id": "={{ $('📊 Content Database (Media)').item.json.id }}",
+              "postiz image": "={{ $json.path }}"
+            },
+            "schema": [
+              {
+                "id": "id",
+                "type": "string",
+                "display": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "id",
+                "defaultMatch": true
+              },
+              {
+                "id": "Name",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "recordid",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "recordid",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "google drive",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "google drive",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "transcript",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "transcript",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "initial script",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "initial script",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "start",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "start",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "upload media",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "upload media",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post to socials",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Post to socials",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post shorts",
+                "type": "boolean",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Post shorts",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_title",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_description",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_description",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_thumbnail_text",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_thumbnail_text",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "twitter single",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "twitter single",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "twitter_thread",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "twitter_thread",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "linkedin_post",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "linkedin_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "facebook_post",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "facebook_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "facebook_story_caption",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "facebook_story_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "instagram_post",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "instagram_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "instagram_reel",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "instagram_reel",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "tiktok_caption",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "tiktok_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_shorts_caption",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_shorts_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Short form Video",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Short form Video",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image for socials",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Image for socials",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "postiz image",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "postiz image",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "postiz video",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "postiz video",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Record ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "Record ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update"
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "e93e3769-7209-4134-ba6c-586e440b2c86",
+        "name": "📥 Download Video from Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "☁️ Downloads video from Google Drive\n• Input: Google Drive file ID from Airtable\n• Field: 'Short form Video'\n• Output: Binary video data\n• Formats: MP4, MOV, AVI supported\n🔗 Feeds directly into Postiz upload pipeline",
+        "position": [
+          1660,
+          100
+        ],
+        "parameters": {
+          "fileId": "{{FILEID_ID}}",
+          "options": {},
+          "operation": "download"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "cMdQMNaewaEQ6Mi3",
+            "name": "Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "ec6aa9d3-584a-4fb7-a526-765b48e5b2cf",
+        "name": "📥 Download Image from Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "☁️ Downloads image from Google Drive\n• Input: Google Drive file ID from Airtable\n• Field: 'Image for socials'\n• Output: Binary image data\n• Used across all visual social platforms\n📱 Optimized for social media dimensions",
+        "position": [
+          1660,
+          300
+        ],
+        "parameters": {
+          "fileId": "{{FILEID_ID}}",
+          "options": {},
+          "operation": "download"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "cMdQMNaewaEQ6Mi3",
+            "name": "Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "eed5e518-e6ba-4a07-89a5-eb254edcd4ec",
+        "name": "📝 Workflow Documentation",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "width": 2390,
+          "height": 900,
+          "content": " ## 📝 POSTIZ MEDIA UPLOAD WORKFLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 PURPOSE:\nAutomated media upload pipeline that downloads videos and images from Google Drive and uploads them to Postiz storage for social media posting.\n\n🔄 WORKFLOW PROCESS:\n1. Webhook triggers the workflow\n2. Fetch media metadata from Airtable\n3. Download video + image from Google Drive\n4. Upload both files to Postiz storage\n5. Save Postiz file paths back to Airtable\n\n🔧 TECHNICAL DETAILS:\n• API: Postiz /upload endpoint (multipart-form-data)\n• Storage: Converts Google Drive files → Postiz URLs\n• Integration: Updates Airtable with Postiz paths\n• Required: All media must be uploaded before posting\n\n\n\n\n\n\n\n\n⚠️ CRITICAL NOTES:\n• Cannot use external URLs in Postiz posts\n• Files must be uploaded to google drive first - id referenced in airtable\n• Enables reference tracking for all platforms\n\n📊 DATA FLOW:\nGoogle Drive → Download → Postiz Upload → Airtable Update\n\n🔗 CONNECTS TO:\nMain social media posting workflows that reference these uploaded file paths for Instagram, Twitter, LinkedIn, Facebook, and YouTube posting.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "005cadcd-777a-4718-a4fd-8c601c7030c1",
+        "name": "🔗 integrations",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📋 Fetches all connected social media integrations from Postiz\n• Gets integration IDs for Instagram, Twitter, LinkedIn, etc.\n• Required for platform-specific posting\n• Returns: id, name, identifier, disabled status",
+        "position": [
+          1080,
+          1380
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/integrations",
+          "options": {},
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "2d6f74c0-e556-4700-97bc-1b1e2237e03e",
+        "name": "🔀 Platform Router",
+        "type": "n8n-nodes-base.switch",
+        "notes": "🎯 Routes integrations to appropriate posting workflows\n• Instagram: cmcotolny0001pnal2i86mkrh\n• Twitter Alt: cmcg6ifpn001hmx9gakul0358\n• Twitter Main: cmcf026ts0001mx9g6o8t5xc4\n• LinkedIn: linkedin-page identifier\n• Facebook: facebook identifier\n• YouTube: youtube identifier\n⚠️ Integration IDs are unique per Postiz installation",
+        "position": [
+          1320,
+          1320
+        ],
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "outputKey": "instagram",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "3fc7d2c2-cd01-46ec-b4d1-6e4966722314",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.id }}",
+                      "rightValue": "=cmcotolny0001pnal2i86mkrh"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "x alt",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "6236f9fa-bd4c-46c3-bfbb-4d50c7461fcb",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.id }}",
+                      "rightValue": "cmcg6ifpn001hmx9gakul0358"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "x main",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "c0c50e74-7492-4009-9abc-9240cb69d135",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.id }}",
+                      "rightValue": "cmcf026ts0001mx9g6o8t5xc4"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "linkedin-page",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "88d69331-8d87-48ef-85de-75404b9569d3",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.identifier }}",
+                      "rightValue": "linkedin-page"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "facebook",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "d5f1681e-2384-46f4-adcb-65ccc08e7606",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.identifier }}",
+                      "rightValue": "facebook"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "youtube",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "047aae0a-c0f8-44b2-bc41-203287526cb5",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.identifier }}",
+                      "rightValue": "youtube"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              }
+            ]
+          },
+          "options": {}
+        },
+        "typeVersion": 3.2
+      },
+      {
+        "id": "7f44b9a2-fa18-4f85-8e8b-0df193e817e3",
+        "name": "🐦 X/Twitter Posts",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📱 Posts to Twitter/X using Postiz API\n• Uses cleaned 'twitter single' content from Airtable\n• Includes image from 'postiz image' field\n• Posts immediately (type: 'now')\n• Settings: type='post' for regular tweets\n💡 Content must be cleaned to prevent JSON errors",
+        "position": [
+          1820,
+          1180
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n   \"type\": \"now\",\n  \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n  \"order\": \"\",\n  \"shortLink\": true,\n  \"inter\": 0,\n  \n  \"tags\": [\n    {\n      \"value\": \"\",\n      \"label\": \"\"\n    }\n  ],\n \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"{{ $json.id }}\"\n      },\n      \"value\": [\n        {\n          \"content\": \"{{ $('📊 Content Database (Posts)').item.json['twitter single'] }}\",\n          \"image\": [\n            {\n              \"id\": \"1\",\n              \"path\": \"{{ $('📊 Content Database (Posts)').item.json.postiz_twitter }}\"\n            }\n          ]\n        }\n      ],\n       \"settings\": {\n          \"type\": \"post\"\n        }\n      }\n      ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "25817540-d225-432b-9e09-b766d2817947",
+        "name": "💼 LinkedIn Publisher",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📊 Posts professional content to LinkedIn\n• Uses cleaned 'linkedin_post' content (processed by Code2)\n• Targets LinkedIn Pages (business accounts)\n• Professional formatting and tone\n• Image support for visual content\n✅ Content cleaning prevents JSON formatting errors",
+        "position": [
+          1840,
+          1540
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n   \"type\": \"now\",\n  \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n  \"order\": \"\",\n  \"shortLink\": true,\n  \"inter\": 0,\n  \n  \"tags\": [\n    {\n      \"value\": \"\",\n      \"label\": \"\"\n    }\n  ],\n \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"{{ $json.id }}\"\n      },\n      \"value\": [\n        {\n          \"content\": \"{{ $json.linkedin_post }}\",\n          \"image\": [\n            {\n              \"id\": \"1\",\n              \"path\": \"{{ $('📊 Content Database (Posts)').item.json['postiz image'] }}\"\n            }\n          ]\n        }\n      ],\n       \"settings\": {\n          \"type\": \"post\"\n        }\n      }\n      ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "4b40a5d7-d62e-4ad8-be51-cad72578c102",
+        "name": "🐦 X/Twitter Alt Account",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📱 Alternative Twitter/X account posting\n• Duplicate of main Twitter posting for secondary account\n• Uses same 'twitter single' content\n• Different integration ID for alt account\n• Maintains consistency across multiple X accounts\n🔄 Part of multi-account social strategy",
+        "position": [
+          1840,
+          1360
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n   \"type\": \"now\",\n  \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n  \"order\": \"\",\n  \"shortLink\": true,\n  \"inter\": 0,\n  \n  \"tags\": [\n    {\n      \"value\": \"\",\n      \"label\": \"\"\n    }\n  ],\n \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"{{ $json.id }}\"\n      },\n      \"value\": [\n        {\n          \"content\": \"{{ $('📊 Content Database (Posts)').item.json['twitter single'] }}\",\n          \"image\": [\n            {\n              \"id\": \"1\",\n                  \"path\": \"{{ $('📊 Content Database (Posts)').item.json.postiz_twitter }}\"\n\n            }\n          ]\n        }\n      ]\n       }\n      ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "d1ae77ee-cd24-4556-a2b8-cbc6e03a0890",
+        "name": "🧹 Instagram Content Cleaner",
+        "type": "n8n-nodes-base.code",
+        "notes": "⚠️ CRITICAL: Fixes JSON formatting issues\n• Removes line breaks (\\n), carriage returns (\\r), tabs (\\t)\n• Replaces multiple spaces with single spaces\n• Prevents 'JSON parameter needs to be valid JSON' errors\n• Essential for Instagram caption processing\n🚫 Without this: API calls fail with malformed JSON",
+        "position": [
+          1540,
+          1080
+        ],
+        "parameters": {
+          "jsCode": "// 🧹 INSTAGRAM CONTENT CLEANER\n// Critical: Prevents 'JSON parameter needs to be valid JSON' errors\nlet content = $('📊 Content Database (Posts)').item.json.instagram_post;\n\ncontent = content\n  .replace(/[\\n\\r\\t]+/g, ' ')    // Replace all line breaks and tabs with spaces\n  .replace(/\\s{2,}/g, ' ')       // Replace multiple spaces with single space\n  .trim();                       // Remove leading/trailing whitespace\n\nreturn [{\n  json: {\n    ...items[0].json,\n    instagram_post: content\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "4df5a42d-013a-4842-a917-2e079da7a486",
+        "name": "📸 Instagram Publisher",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📱 Posts visual content to Instagram\n• Uses cleaned 'instagram_caption' (processed by Code1)\n• Requires image for all Instagram posts\n• Tags: 'instagram' for tracking\n• Settings: type='post' for feed posts\n✅ Working configuration with proper content cleaning",
+        "position": [
+          1820,
+          1000
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n  \"type\": \"now\",\n  \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n  \"shortLink\": true,\n  \"tags\": [\n    { \"value\": \"instagram\", \"label\": \"Instagram\" }\n  ],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"{{ $json.id }}\"\n      },\n      \"value\": [\n        {\n          \"content\": \"{{ $json.instagram_post }}\",\n          \"image\": [\n            {\n              \"id\": \"1\",\n              \"path\": \"{{ $('📊 Content Database (Posts)').item.json['postiz image'] }}\"\n            }\n          ]\n        }\n      ],\n       \"settings\": {\n          \"type\": \"post\"\n        }\n      }\n      ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "c5ae7985-3f36-4225-bb64-4c2b674a2fe0",
+        "name": "📊 Content Database (Posts)",
+        "type": "n8n-nodes-base.airtable",
+        "notes": "📋 Fetches social media content from Airtable\n• Same table/record as media source\n• Contains: platform-specific post content\n• Fields: instagram_caption, linkedin_post, twitter single, faceboook\n• Feeds content into cleaning and posting workflows\n🔄 Central content repository for all platforms",
+        "position": [
+          740,
+          1380
+        ],
+        "parameters": {
+          "id": "={{ $json.query.RecordId }}",
+          "base": {
+            "mode": "list",
+            "value": "appTFomwpoQ8GVsSo"
+          },
+          "table": {
+            "mode": "list",
+            "value": "tblRnaXqxrvcQhqBw"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "qzdthb44cvi2IEO0",
+            "name": "Airtable Personal Access Token account 2"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "a0f582b4-aa2c-4bc0-b9cb-2033d5e23d09",
+        "name": "🧹 LinkedIn Content Cleaner",
+        "type": "n8n-nodes-base.code",
+        "notes": "⚠️ CRITICAL: Fixes JSON formatting for LinkedIn\n• Same cleaning logic as Instagram cleaner\n• Removes problematic characters: \\n, \\r, \\t\n• Prevents API failures with malformed JSON\n• Essential for LinkedIn professional content\n💼 Maintains professional formatting while ensuring JSON validity",
+        "position": [
+          1640,
+          1540
+        ],
+        "parameters": {
+          "jsCode": "// 🧹 LINKEDIN CONTENT CLEANER\n// Critical: Prevents 'JSON parameter needs to be valid JSON' errors\nlet content = $('📊 Content Database (Posts)').item.json.linkedin_post;\n\ncontent = content\n  .replace(/[\\n\\r\\t]+/g, ' ')    // Replace all line breaks and tabs with spaces\n  .replace(/\\s{2,}/g, ' ')       // Replace multiple spaces with single space\n  .trim();                       // Remove leading/trailing whitespace\n\nreturn [{\n  json: {\n    ...items[0].json,\n    linkedin_post: content\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "5efa8626-343b-4ac9-a489-596d3404fd07",
+        "name": "📘 Facebook Publisher",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📱 Posts content to Facebook\n• Uses cleaned 'faceboook' content (processed by Code3)\n• Supports both images and videos\n• Similar functionality to Instagram\n• Settings: type='post' for feed posts\n🔵 Part of Meta ecosystem alongside Instagram",
+        "position": [
+          1840,
+          1740
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n   \"type\": \"now\",\n  \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n  \"order\": \"\",\n  \"shortLink\": true,\n  \"inter\": 0,\n  \n  \"tags\": [\n    {\n      \"value\": \"\",\n      \"label\": \"\"\n    }\n  ],\n \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"{{ $json.id }}\"\n      },\n      \"value\": [\n        {\n          \"content\": \"{{ $json.faceboook_post }}\",\n          \"image\": [\n            {\n              \"id\": \"1\",\n              \"path\": \"{{ $('📊 Content Database (Posts)').item.json['postiz image'] }}\"\n            }\n          ]\n        }\n      ],\n       \"settings\": {\n          \"type\": \"post\"\n        }\n      }\n      ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "805df154-3f9e-493c-b950-7c2b59fe62e7",
+        "name": "🧹 Facebook Content Cleaner",
+        "type": "n8n-nodes-base.code",
+        "notes": "⚠️ CRITICAL: Fixes JSON formatting for Facebook\n• Cleans 'faceboook' field from Airtable\n• Same regex patterns as other cleaners\n• Prevents JSON parsing errors in API calls\n• Essential for Facebook posting reliability\n📘 Part of Meta content processing pipeline",
+        "position": [
+          1640,
+          1740
+        ],
+        "parameters": {
+          "jsCode": "// 🧹 FACEBOOK CONTENT CLEANER\n// Critical: Prevents 'JSON parameter needs to be valid JSON' errors\nlet content = $('📊 Content Database (Posts)').item.json.facebook_post;\n\ncontent = content\n  .replace(/[\\n\\r\\t]+/g, ' ')    // Replace all line breaks and tabs with spaces\n  .replace(/\\s{2,}/g, ' ')       // Replace multiple spaces with single space\n  .trim();                       // Remove leading/trailing whitespace\n\nreturn [{\n  json: {\n    ...items[0].json,\n    faceboook_post: content\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "197238c4-a400-4d12-858d-e5a0379f7a77",
+        "name": "📝 Complete Workflow Guide",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          980
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 2400,
+          "height": 1200,
+          "content": "## 📱 SOCIAL MEDIA POSTING WORKFLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 PURPOSE:\nAutomated multi-platform social media posting using Postiz API. Distributes content across Instagram, Twitter/X (2 accounts), LinkedIn, and Facebook with platform-specific content cleaning and formatting.\n\n🔄 COMPLETE WORKFLOW PROCESS:\n1. 📊 Fetch social media content from Airtable database\n2. 🔗 Get integration IDs for all connected social platforms\n3. 🔀 Route each platform to appropriate content processor\n4. 🧹 Clean content to prevent JSON formatting errors\n5. 📱 Post to respective social media platforms simultaneously\n\n📋 PLATFORM COVERAGE:\n• 📸 Instagram (Visual content + captions)\n• 🐦 Twitter/X Main Account (Text + images)\n• 🐦 Twitter/X Alt Account (Duplicate posting)\n• 💼 LinkedIn (Professional content)\n• 📘 Facebook (Meta ecosystem posting)\n\n⚠️ CRITICAL CONTENT CLEANING:\n• Removes line breaks (\\n), carriage returns (\\r), tabs (\\t)\n• Replaces multiple spaces with single spaces\n• Prevents 'JSON parameter needs to be valid JSON' errors\n• ESSENTIAL: Without cleaning, all API calls fail!\n\n🔧 TECHNICAL SPECIFICATIONS:\n• API: Postiz /posts endpoint (POST)\n• Authentication: HTTP Header Auth\n• Content-Type: application/json\n• Posting Type: Immediate ('now') + 1 minute delay\n• Media: References pre-uploaded Postiz image paths\n• Rate Limit: 30 requests/hour (API beta limitation)\n\n🔗 DATA SOURCES:\n• Content: Airtable \n• Media: Pre-uploaded via separate media upload workflow\n• Fields: instagram_caption, linkedin_post, twitter single, faceboook\n• Images: References 'postiz image' field paths\n\n⚡ EXECUTION FLOW:\nAirtable → Integrations → Platform Router → Content Cleaners → Social Publishers\n\n🚨 TROUBLESHOOTING:\n• JSON Errors: Check content cleaning nodes\n• 500 Errors: Verify integration IDs and account connections\n• Missing Media: Ensure media upload workflow ran first\n• Rate Limits: Space out executions (30/hour limit)\n\n🔄 DEPENDENCIES:\n• Requires: Media upload workflow (for image/video paths)\n• Connects to: Analytics and monitoring workflows\n• Updates: Airtable with posting status and URLs\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4fcdcc17-949a-4b2f-ae70-a22e0f2da504",
+        "name": "🎬 YouTube Publisher",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📺 Posts content to YouTube (Note: Uses Facebook content)\n• Currently using 'faceboook' content field\n• Uses 'postiz image' instead of video\n• May need adjustment for proper YouTube video posting\n• YouTube typically requires video content, not images\n⚠️ Configuration may need refinement for YouTube specifics",
+        "position": [
+          1880,
+          2940
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n \"type\": \"now\",\n \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n \"order\": \"\",\n \"shortLink\": true,\n \"inter\": 0,\n \"tags\": [\n   {\n     \"value\": \"\",\n     \"label\": \"\"\n   }\n ],\n \"posts\": [\n   {\n     \"integration\": {\n       \"id\": \"{{ $json.id }}\"\n     },\n     \"value\": [\n       {\n         \"content\": \"{{ $('📊 Content Database (Video)').item.json.youtube_shorts_caption }}\",\n         \"image\": [\n           {\n             \"id\": \"1\",\n             \"path\": \"{{ $('📊 Content Database (Video)').item.json['postiz video'] }}\"\n           }\n         ]\n       }\n     ],\n     \"settings\": {\n       \"__type\": \"youtube\",\n       \"title\": \"{{ $('📊 Content Database (Video)').item.json.youtube_title }}\",\n       \"type\": \"public\",\n       \"tags\": [\"tag1\", \"tag2\"],\n       \"categoryId\": \"22\",\n       \"madeForKids\": false\n     }\n   }\n ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "48f59939-c58a-4837-8377-a412cbb2439e",
+        "name": "🧹 Facebook Video Cleaner",
+        "type": "n8n-nodes-base.code",
+        "notes": "⚠️ CRITICAL: Content cleaner for Facebook videos\n• Processes Facebook content for video posts\n• References 'Airtable' node (video workflow)\n• Same cleaning regex as other cleaners\n• Prevents JSON formatting errors\n📹 Part of Facebook video content pipeline",
+        "position": [
+          1580,
+          2680
+        ],
+        "parameters": {
+          "jsCode": "// 🧹 FACEBOOK VIDEO CONTENT CLEANER\n// Critical: Prevents 'JSON parameter needs to be valid JSON' errors\nlet content = $('📊 Content Database (Video)').item.json.facebook_story_caption;\n\ncontent = content\n  .replace(/[\\n\\r\\t]+/g, ' ')    // Replace all line breaks and tabs with spaces\n  .replace(/\\s{2,}/g, ' ')       // Replace multiple spaces with single space\n  .trim();                       // Remove leading/trailing whitespace\n\nreturn [{\n  json: {\n    ...items[0].json,\n    facebook_story_caption: content\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "243b21a0-540c-4069-ac04-26b8ef107ebb",
+        "name": "📘 Facebook Video Publisher",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📱 Posts video content to Facebook\n• Uses Facebook content with '11111' test suffix\n• References 'postiz video' for video content\n• Part of Facebook video strategy\n• Same API structure as other platforms\n🎬 Facebook video content distribution",
+        "position": [
+          1880,
+          2680
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n   \"type\": \"now\",\n  \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n  \"order\": \"\",\n  \"shortLink\": true,\n  \"inter\": 0,\n  \n  \"tags\": [\n    {\n      \"value\": \"\",\n      \"label\": \"\"\n    }\n  ],\n \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"{{ $json.id }}\"\n      },\n      \"value\": [\n        {\n          \"content\": \"{{ $('📊 Content Database (Video)').item.json.facebook_story_caption }}\",\n          \"image\": [\n            {\n              \"id\": \"1\",\n              \"path\": \"{{ $('📊 Content Database (Video)').item.json['postiz video'] }}\"\n            }\n          ]\n        }\n      ],\n       \"settings\": {\n          \"type\": \"post\"\n        }\n      }\n      ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "d5d60a64-f453-4ebb-b72d-7bf3a2e94f10",
+        "name": "📊 Content Database (Video)",
+        "type": "n8n-nodes-base.airtable",
+        "notes": "📋 Content source for video workflow\n• Same table/record as other Airtable nodes\n• Provides content for video-based posts\n• Contains uploaded video paths ('postiz video')\n• Feeds into video content processing\n🎬 Specialized for video content distribution",
+        "position": [
+          880,
+          2740
+        ],
+        "parameters": {
+          "id": "={{ $json.query.RecordId }}",
+          "base": {
+            "mode": "list",
+            "value": "appTFomwpoQ8GVsSo"
+          },
+          "table": {
+            "mode": "list",
+            "value": "tblRnaXqxrvcQhqBw"
+          },
+          "options": {}
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "4c773e3c-6c88-41ea-b9a4-12f22a32f812",
+        "name": "📹 Instagram Video Publisher",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📱 Posts video content to Instagram\n• Uses cleaned caption from video cleaner\n• References 'postiz video' field (uploaded video)\n• Can be used for Reels or regular video posts\n• Same structure as image posts but with video\n🎬 Supports Instagram's video content strategy",
+        "position": [
+          1880,
+          2460
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/posts",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n  \"type\": \"now\",\n  \"date\": \"{{ $now.plus(1, 'minute').toISO() }}\",\n  \"shortLink\": true,\n  \"tags\": [\n    { \"value\": \"instagram\", \"label\": \"Instagram\" }\n  ],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"{{ $json.id }}\"\n      },\n      \"value\": [\n        {\n          \"content\": \"{{ $json.instagram_reel }}\",\n          \"image\": [\n            {\n              \"id\": \"1\",\n              \"path\": \"{{ $('📊 Content Database (Video)').item.json['postiz video'] }}\"\n            }\n          ]\n        }\n      ],\n       \"settings\": {\n          \"type\": \"post\"\n        }\n      }\n      ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "72144a39-2990-46a3-a034-7f876351f8b0",
+        "name": "🧹 Instagram Video Cleaner",
+        "type": "n8n-nodes-base.code",
+        "notes": "⚠️ CRITICAL: Content cleaner for video workflow\n• Same cleaning logic as image workflow\n• Processes Instagram captions for video posts\n• References different Airtable node ('Airtable' vs 'Airtable2')\n• Prevents JSON errors in video posting\n📹 Part of video-specific content pipeline",
+        "position": [
+          1580,
+          2460
+        ],
+        "parameters": {
+          "jsCode": "// 🧹 INSTAGRAM VIDEO CONTENT CLEANER\n// Critical: Prevents 'JSON parameter needs to be valid JSON' errors\nlet content = $('📊 Content Database (Video)').item.json.instagram_reel;\n\ncontent = content\n  .replace(/[\\n\\r\\t]+/g, ' ')    // Replace all line breaks and tabs with spaces\n  .replace(/\\s{2,}/g, ' ')       // Replace multiple spaces with single space\n  .trim();                       // Remove leading/trailing whitespace\n\nreturn [{\n  json: {\n    ...items[0].json,\n    instagram_reel: content\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "a58ad06d-fcff-4a2b-b7dc-7ca7ca7e5327",
+        "name": "🔀 Video Platform Router",
+        "type": "n8n-nodes-base.switch",
+        "notes": "🎯 Routes video-based content to platforms\n• Instagram: For video posts and reels\n• Facebook: For video content\n• YouTube: For long-form video uploads\n• Simplified routing for video workflow\n📹 Specialized for video content distribution",
+        "position": [
+          1320,
+          2740
+        ],
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "outputKey": "instagram",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "3fc7d2c2-cd01-46ec-b4d1-6e4966722314",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.id }}",
+                      "rightValue": "=cmcotolny0001pnal2i86mkrh"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "facebook",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "d5f1681e-2384-46f4-adcb-65ccc08e7606",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.identifier }}",
+                      "rightValue": "facebook"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "youtube",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "047aae0a-c0f8-44b2-bc41-203287526cb5",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.identifier }}",
+                      "rightValue": "youtube"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              }
+            ]
+          },
+          "options": {}
+        },
+        "typeVersion": 3.2
+      },
+      {
+        "id": "16c129d8-4a74-43f7-8457-cb3c9122acf0",
+        "name": "🔗 integrations (Branch 2)",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📋 Secondary integrations fetch for video workflow\n• Duplicate of main integrations node\n• Supports video-based posting workflow\n• Gets platform IDs for Instagram/Facebook video posts\n• Enables parallel processing of different content types",
+        "position": [
+          1100,
+          2740
+        ],
+        "parameters": {
+          "url": "https://postiz.yourdomain.com/api/public/v1/integrations",
+          "options": {},
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "25c76242-2527-4b09-8169-25f0d6e1821c",
+        "name": "📝 Video Workflow Overview",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          20,
+          2260
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 2380,
+          "height": 940,
+          "content": "## 🎬 VIDEO POSTING WORKFLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 PURPOSE:\nAutomated video content distribution across Instagram, Facebook, and YouTube using Postiz API. Specialized workflow for video content with platform-specific processing and cleaning.\n\n🔄 WORKFLOW EXECUTION:\n1. 📊 Fetch video content from Airtable database (recuoYjg4icStHsMK)\n2. 🔗 Get integration IDs for video-enabled platforms\n3. 🔀 Route platforms to appropriate video processors\n4. 🧹 Clean content for Instagram & Facebook (YouTube bypassed)\n5. 📹 Publish to video platforms simultaneously\n\n📹 PLATFORM COVERAGE:\n• 📱 Instagram: Video posts & Reels (✅ Working)\n• 📘 Facebook: Video content (⚠️ Test mode)\n• 🎬 YouTube: Long-form videos (🚨 Broken)\n\n⚡ EXECUTION FLOW:\nAirtable → Integrations → Video Router → [3 Parallel Paths]\n├── Instagram: Cleaner → Publisher\n├── Facebook: Cleaner → Publisher  \n└── YouTube: [Direct] → Publisher\n\n🗄️ DATA SOURCE:\n• Base: Netkreatives.com \n• Table: Youtube tool \n• Video Field: 'postiz video'\n• Content Fields: instagram_caption, faceboook\n\n\n🔧 TECHNICAL SPECS:\n• Method: POST\n• Auth: HTTP Header (Postiz credentials)\n• Timing: Immediate posting (+1 minute delay)\n• Media: Pre-uploaded video paths\n• Content-Type: application/json"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e12c5d52-cba9-4917-9a1c-17e44a550a13",
+        "name": "🔍 Content Validator & Cleaner1",
+        "type": "n8n-nodes-base.code",
+        "notes": "✅ Comprehensive validation and cleaning\n• Validates content for all platforms\n• Character limit enforcement\n• JSON-safe content cleaning\n• Media availability checks\n• Error and warning collection",
+        "position": [
+          740,
+          1660
+        ],
+        "parameters": {
+          "jsCode": "// 📊 COMPREHENSIVE CONTENT VALIDATION & PREPARATION\nconst item = $input.first();\nconst data = item.json;\n\n// Validation results\nconst validation = {\n  hasContent: false,\n  hasMedia: false,\n  platforms: [],\n  errors: [],\n  warnings: []\n};\n\n// Content fields mapping\nconst contentFields = {\n  instagram: 'instagram_caption',\n  twitter: 'twitter single',\n  linkedin: 'linkedin_post',\n  facebook: 'faceboook'\n};\n\n// Media fields\nconst mediaFields = ['postiz image', 'postiz video'];\n\n// Validate content for each platform\nfor (const [platform, field] of Object.entries(contentFields)) {\n  if (data[field] && data[field].trim().length > 0) {\n    validation.platforms.push(platform);\n    validation.hasContent = true;\n  } else {\n    validation.warnings.push(`Missing ${platform} content in field '${field}'`);\n  }\n}\n\n// Validate media availability\nfor (const field of mediaFields) {\n  if (data[field] && data[field].trim().length > 0) {\n    validation.hasMedia = true;\n    break;\n  }\n}\n\nif (!validation.hasMedia) {\n  validation.warnings.push('No media files available (image or video)');\n}\n\n// Critical validations\nif (!validation.hasContent) {\n  validation.errors.push('No content available for any platform');\n}\n\nif (validation.platforms.length === 0) {\n  validation.errors.push('No valid platforms found with content');\n}\n\n// Prepare cleaned content for each platform\nconst cleanedContent = {};\nfor (const [platform, field] of Object.entries(contentFields)) {\n  if (data[field]) {\n    // Enhanced content cleaning\n    let content = data[field]\n      .replace(/[\\n\\r\\t]+/g, ' ')           // Line breaks and tabs\n      .replace(/\\s{2,}/g, ' ')             // Multiple spaces\n      .replace(/[\"']/g, (match) => match === '\"' ? '\\\"' : \"'\")  // Escape quotes\n      .replace(/[\\\\]/g, '\\\\\\\\')             // Escape backslashes\n      .trim();                             // Trim whitespace\n    \n    // Platform-specific length validation\n    const limits = {\n      twitter: 280,\n      instagram: 2200,\n      linkedin: 3000,\n      facebook: 63206\n    };\n    \n    if (content.length > limits[platform]) {\n      validation.warnings.push(`${platform} content exceeds ${limits[platform]} characters (${content.length})`);\n      content = content.substring(0, limits[platform] - 3) + '...';\n    }\n    \n    cleanedContent[platform] = content;\n  }\n}\n\nreturn [{\n  json: {\n    originalData: data,\n    validation: validation,\n    cleanedContent: cleanedContent,\n    recordId: data.id,\n    processedAt: new Date().toISOString(),\n    mediaAvailable: {\n      image: !!data['postiz image'],\n      video: !!data['postiz video'],\n      imagePath: data['postiz image'] || null,\n      videoPath: data['postiz video'] || null\n    }\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "b973a280-202c-4cc0-b691-e03506e525a0",
+        "name": "📋 Content Availability Check1",
+        "type": "n8n-nodes-base.if",
+        "notes": "🔍 Validates processed content\n• Ensures content exists for posting\n• Checks for critical validation errors\n• Routes to error handling if needed\n• Prevents unnecessary API calls",
+        "position": [
+          960,
+          1660
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 1,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "has_content",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.validation.hasContent }}",
+                "rightValue": true
+              },
+              {
+                "id": "no_errors",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.validation.errors.length }}",
+                "rightValue": 0
+              }
+            ]
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "bc714a0a-a511-466f-ac0c-754426bd12dc",
+        "name": "❌ Content Error1",
+        "type": "n8n-nodes-base.stopAndError",
+        "notes": "🚫 Handles missing/invalid content\n• Detailed validation results\n• Platform-specific feedback\n• Record identification\n• Debugging information",
+        "position": [
+          1120,
+          1840
+        ],
+        "parameters": {
+          "errorMessage": "No valid content found for posting"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b74388c2-6f88-4cf1-b098-88dad5287a37",
+        "name": "🎯 Upload",
+        "type": "n8n-nodes-base.webhook",
+        "notes": "🚀 Entry point for social media automation\n• Webhook URL: /webhook/328d95ae-3de0-41bf-a8bf-52071bdb36d3\n• Triggers entire posting workflow\n• Can be called from external systems\n• Starts both media upload and content posting processes",
+        "position": [
+          780,
+          300
+        ],
+        "webhookId": "5f9b5e6f-cb89-44f5-ab63-81bb663b02e2",
+        "parameters": {
+          "path": "328d95ae-3de0-41bf-a8bf-52071bdb36d3",
+          "options": {}
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "92997282-93db-4a88-889f-ef56e9b13f39",
+        "name": "Post",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          520,
+          1380
+        ],
+        "webhookId": "7263d416-6333-429d-9767-528fc6dced38",
+        "parameters": {
+          "path": "7263d416-6333-429d-9767-528fc6dced38",
+          "options": {}
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "8c1ccf7a-8251-47d2-a378-3762aa8591bd",
+        "name": "Video",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          600,
+          2740
+        ],
+        "webhookId": "26fd48c7-7ef9-44ad-9816-feedd75426f4",
+        "parameters": {
+          "path": "26fd48c7-7ef9-44ad-9816-feedd75426f4",
+          "options": {}
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "b1edc2de-fcea-4e8c-a924-bc9da4f36e3c",
+        "name": "📊 Fixed Results Processor",
+        "type": "n8n-nodes-base.code",
+        "notes": "📈 FIXED: Now correctly maps integration IDs to platforms\n• Uses your exact integration IDs from Switch node\n• Detects success via postId field\n• Tracks all platforms correctly\n• No more 'undefined' platforms!",
+        "position": [
+          2100,
+          1400
+        ],
+        "parameters": {
+          "jsCode": "// 📊 FIXED RESULTS PROCESSOR (MINIMAL CHANGES)\nconst items = $input.all();\n\n// Integration ID to platform mapping (from your working Switch node)\nconst integrationToPlatform = {\n  'cmcotolny0001pnal2i86mkrh': { platform: 'instagram', account: 'main' },\n  'cmcg6ifpn001hmx9gakul0358': { platform: 'x', account: 'alt' },\n  'cmcf026ts0001mx9g6o8t5xc4': { platform: 'x', account: 'main' },\n  'cmcf02lp60003mx9gv2yff255': { platform: 'linkedin', account: 'main' },\n  'cmcf054k4000bmx9gg9va2ce1': { platform: 'facebook', account: 'main' },\n  'cmcouv8y00001kub0bb6cchea': { platform: 'youtube', account: 'main' }\n};\n\nconst results = {\n  totalPosts: items.length,\n  successful: 0,\n  failed: 0,\n  platforms: {},\n  errors: [],\n  postIds: [],\n  executionSummary: {\n    recordId: null,\n    startTime: new Date().toISOString(),\n    platforms: [],\n    overallStatus: 'success'\n  }\n};\n\n// Process each posting result\nfor (const item of items) {\n  const response = item.json;\n  \n  // Get platform info from integration ID in the response\n  const platformInfo = integrationToPlatform[response.integration] || { platform: 'unknown', account: 'main' };\n  const platform = platformInfo.platform;\n  const account = platformInfo.account;\n  \n  if (!results.platforms[platform]) {\n    results.platforms[platform] = {\n      attempted: 0,\n      successful: 0,\n      failed: 0,\n      accounts: {}\n    };\n  }\n  \n  results.platforms[platform].attempted++;\n  \n  if (!results.platforms[platform].accounts[account]) {\n    results.platforms[platform].accounts[account] = {\n      status: 'unknown',\n      postId: null,\n      error: null,\n      integrationId: response.integration\n    };\n  }\n  \n  // Check if the post was successful - Postiz returns 'postId' on success\n  if (response.postId && response.postId.length > 0) {\n    results.successful++;\n    results.platforms[platform].successful++;\n    results.platforms[platform].accounts[account].status = 'success';\n    results.platforms[platform].accounts[account].postId = response.postId;\n    results.postIds.push({\n      platform: platform,\n      account: account,\n      postId: response.postId,\n      integrationId: response.integration,\n      url: response.url || null\n    });\n  } else {\n    results.failed++;\n    results.platforms[platform].failed++;\n    results.platforms[platform].accounts[account].status = 'failed';\n    \n    // Extract error message\n    let errorMessage = 'Unknown error';\n    if (response.error) {\n      errorMessage = typeof response.error === 'string' ? response.error : JSON.stringify(response.error);\n    } else if (response.message) {\n      errorMessage = response.message;\n    } else if (!response.postId) {\n      errorMessage = 'No post ID returned from Postiz';\n    }\n    \n    results.platforms[platform].accounts[account].error = errorMessage;\n    results.errors.push({\n      platform: platform,\n      account: account,\n      error: errorMessage,\n      integrationId: response.integration,\n      details: response\n    });\n  }\n}\n\n// Set overall status\nif (results.failed > 0) {\n  results.executionSummary.overallStatus = results.successful > 0 ? 'partial' : 'failed';\n}\n\n// Try to get record ID from Airtable node\ntry {\n  const airtableData = $('📊 Content Database (Posts)1').first();\n  if (airtableData && airtableData.json.id) {\n    results.executionSummary.recordId = airtableData.json.id;\n  }\n} catch (e) {\n  console.log('Could not get record ID from Airtable node');\n}\n\nresults.executionSummary.platforms = Object.keys(results.platforms);\n\n// Add debug info\nresults.debug = {\n  itemCount: items.length,\n  sampleResponse: items[0]?.json || null,\n  integrationMappings: Object.keys(integrationToPlatform).length,\n  platformsProcessed: Object.keys(results.platforms)\n};\n\nreturn [{ json: results }];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "d1d3833e-2209-4c11-84de-a35ba7f1775d",
+        "name": "🖼️ Image Upload to Postiz2",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "🔄 Uploads image files to Postiz storage\n• Endpoint: POST /upload\n• Content-Type: multipart-form-data\n• Input: Binary image data from Google Drive\n• Output: Postiz file ID and path for posts\n• Supports: JPG, PNG, GIF formats\n📱 Used across Instagram, Twitter, LinkedIn, Facebook",
+        "position": [
+          1880,
+          520
+        ],
+        "parameters": {
+          "url": "=https://postiz.yourdomain.com/api/public/v1/upload",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "file",
+                "parameterType": "formBinaryData",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mEU0ecS6LOVkcowP",
+            "name": "Postiz"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "2786d270-9637-4773-9289-b4147bef6ba0",
+        "name": "💾 Save Image Path1",
+        "type": "n8n-nodes-base.airtable",
+        "notes": "🔄 Updates Airtable with Postiz image path\n• Operation: Update record\n• Field: 'postiz image' = upload response path\n• Used by all image-based social posts\n• Maintains referential integrity\n📊 Enables tracking of media usage across platforms",
+        "position": [
+          2100,
+          520
+        ],
+        "parameters": {
+          "base": {
+            "mode": "list",
+            "value": "appTFomwpoQ8GVsSo"
+          },
+          "table": {
+            "mode": "list",
+            "value": "tblRnaXqxrvcQhqBw"
+          },
+          "columns": {
+            "value": {
+              "id": "={{ $('📊 Content Database (Media)').item.json.id }}",
+              "postiz_twitter": "={{ $json.path }}"
+            },
+            "schema": [
+              {
+                "id": "id",
+                "type": "string",
+                "display": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "id",
+                "defaultMatch": true
+              },
+              {
+                "id": "Name",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "recordid",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "recordid",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "google drive",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "google drive",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "transcript",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "transcript",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "initial script",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "initial script",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "start",
+                "type": "boolean",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "start",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "upload media",
+                "type": "boolean",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "upload media",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post to socials",
+                "type": "boolean",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Post to socials",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post shorts",
+                "type": "boolean",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Post shorts",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Short form Video",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Short form Video",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image for socials",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Image for socials",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "postiz image",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "postiz image",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "postiz video",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "postiz video",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "twitter image",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "twitter image",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "postiz_twitter",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "postiz_twitter",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Record ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "Record ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_title",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_description",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_description",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_thumbnail_text",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_thumbnail_text",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "twitter single",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "twitter single",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "twitter_thread",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "twitter_thread",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "linkedin_post",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "linkedin_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "facebook_post",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "facebook_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "facebook_story_caption",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "facebook_story_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "instagram_post",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "instagram_post",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "instagram_reel",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "instagram_reel",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "tiktok_caption",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "tiktok_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "youtube_shorts_caption",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": false,
+                "required": false,
+                "displayName": "youtube_shorts_caption",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update"
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "0a4e8a7d-efef-4771-abdd-1e998072b38a",
+        "name": "📥 Download x image from Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "☁️ Downloads image from Google Drive\n• Input: Google Drive file ID from Airtable\n• Field: 'Image for socials'\n• Output: Binary image data\n• Used across all visual social platforms\n📱 Optimized for social media dimensions",
+        "position": [
+          1660,
+          520
+        ],
+        "parameters": {
+          "fileId": "{{FILEID_ID}}",
+          "options": {},
+          "operation": "download"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "1d285bf8-dc2a-4a35-b364-990bcbd718de",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          880,
+          440
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "3a573341-05dd-45de-8db8-c3050877631b",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1100,
+          440
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "5150e645-480f-428a-b261-32d53ba9c0b3",
+                "name": "query.RecordId",
+                "type": "string",
+                "value": "recuoYjg4icStHsMK"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "",
+    "connections": {
+      "Post": {
+        "main": [
+          [
+            {
+              "node": "📊 Content Database (Posts)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Video": {
+        "main": [
+          [
+            {
+              "node": "📊 Content Database (Video)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "📊 Content Database (Media)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🎯 Upload": {
+        "main": [
+          [
+            {
+              "node": "📊 Content Database (Media)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔗 integrations": {
+        "main": [
+          [
+            {
+              "node": "🔀 Platform Router",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🐦 X/Twitter Posts": {
+        "main": [
+          [
+            {
+              "node": "📊 Fixed Results Processor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔀 Platform Router": {
+        "main": [
+          [
+            {
+              "node": "🧹 Instagram Content Cleaner",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "🐦 X/Twitter Posts",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "🐦 X/Twitter Alt Account",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "🧹 LinkedIn Content Cleaner",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "🧹 Facebook Content Cleaner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "💼 LinkedIn Publisher": {
+        "main": [
+          [
+            {
+              "node": "📊 Fixed Results Processor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📘 Facebook Publisher": {
+        "main": [
+          [
+            {
+              "node": "📊 Fixed Results Processor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📸 Instagram Publisher": {
+        "main": [
+          [
+            {
+              "node": "📊 Fixed Results Processor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🐦 X/Twitter Alt Account": {
+        "main": [
+          [
+            {
+              "node": "📊 Fixed Results Processor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔀 Video Platform Router": {
+        "main": [
+          [
+            {
+              "node": "🧹 Instagram Video Cleaner",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "🧹 Facebook Video Cleaner",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "🎬 YouTube Publisher",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📹 Video Upload to Postiz": {
+        "main": [
+          [
+            {
+              "node": "💾 Save Video Path",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🧹 Facebook Video Cleaner": {
+        "main": [
+          [
+            {
+              "node": "📘 Facebook Video Publisher",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔗 integrations (Branch 2)": {
+        "main": [
+          [
+            {
+              "node": "🔀 Video Platform Router",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🧹 Instagram Video Cleaner": {
+        "main": [
+          [
+            {
+              "node": "📹 Instagram Video Publisher",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📊 Content Database (Media)": {
+        "main": [
+          [
+            {
+              "node": "📥 Download Video from Drive",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "📥 Download Image from Drive",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "📥 Download x image from Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📊 Content Database (Posts)": {
+        "main": [
+          [
+            {
+              "node": "🔍 Content Validator & Cleaner1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📊 Content Database (Video)": {
+        "main": [
+          [
+            {
+              "node": "🔗 integrations (Branch 2)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🧹 Facebook Content Cleaner": {
+        "main": [
+          [
+            {
+              "node": "📘 Facebook Publisher",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🧹 LinkedIn Content Cleaner": {
+        "main": [
+          [
+            {
+              "node": "💼 LinkedIn Publisher",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📥 Download Image from Drive": {
+        "main": [
+          [
+            {
+              "node": "🖼️ Image Upload to Postiz",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📥 Download Video from Drive": {
+        "main": [
+          [
+            {
+              "node": "📹 Video Upload to Postiz",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🖼️ Image Upload to Postiz": {
+        "main": [
+          [
+            {
+              "node": "💾 Save Image Path",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🧹 Instagram Content Cleaner": {
+        "main": [
+          [
+            {
+              "node": "📸 Instagram Publisher",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🖼️ Image Upload to Postiz2": {
+        "main": [
+          [
+            {
+              "node": "💾 Save Image Path1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📋 Content Availability Check1": {
+        "main": [
+          [
+            {
+              "node": "🔗 integrations",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "❌ Content Error1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📥 Download x image from Drive": {
+        "main": [
+          [
+            {
+              "node": "🖼️ Image Upload to Postiz2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔍 Content Validator & Cleaner1": {
+        "main": [
+          [
+            {
+              "node": "📋 Content Availability Check1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 41,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 7
+      },
+      "n8n-nodes-base.switch": {
+        "count": 2
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 3
+      },
+      "n8n-nodes-base.airtable": {
+        "count": 6
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 3
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 13
+      },
+      "n8n-nodes-base.stopAndError": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Kurt Bijl",
+    "username": "netkreatives",
+    "bio": "I believe AI is a force multiplier — but only if you know how to use it. I create high-quality, easy-to-follow content for people like me: driven, curious, and ready to build.",
+    "verified": false,
+    "links": [
+      "https://www.youtube.com/@netkreatives"
+    ],
+    "avatar": "https://gravatar.com/avatar/831ce0571e0bdadd19929abcce5d44c15c9d7280d7c4db7492be1b30f69fae4b?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 2,
+      "icon": "file:airtable.svg",
+      "name": "n8n-nodes-base.airtable",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-goals-level-up-your-vocabulary-with-vonage-and-n8n/",
+                "icon": "🎯",
+                "label": "2021 Goals: Level Up Your Vocabulary With Vonage and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-sms-the-low-code-way-with-airtable-twilio-programmable-sms-and-n8n/",
+                "icon": "📱",
+                "label": "Sending SMS the Low-Code Way with Airtable, Twilio Programmable SMS, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automating-conference-organization-processes-with-n8n/",
+                "icon": "🙋‍♀️",
+                "label": "Automating Conference Organization Processes with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.airtable/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/airtable/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Airtable"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTcwIj48cGF0aCBmaWxsPSIjZmNiNDAwIiBkPSJNODkgNC44IDE2LjIgMzQuOWMtNC4xIDEuNy00IDcuNC4xIDkuMWw3My4yIDI5YzYuNCAyLjYgMTMuNiAyLjYgMjAgMGw3My4yLTI5YzQuMS0xLjYgNC4xLTcuNC4xLTkuMWwtNzMtMzAuMUMxMDMuMiAyIDk1LjcgMiA4OSA0LjgiLz48cGF0aCBmaWxsPSIjMThiZmZmIiBkPSJNMTA1LjkgODguOXY3Mi41YzAgMy40IDMuNSA1LjggNi43IDQuNWw4MS42LTMxLjdjMS45LS43IDMuMS0yLjUgMy4xLTQuNVY1Ny4yYzAtMy40LTMuNS01LjgtNi43LTQuNUwxMDkgODQuM2MtMS45LjgtMy4xIDIuNi0zLjEgNC42Ii8+PHBhdGggZmlsbD0iI2Y4MmI2MCIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctMi41IDEuMkw5LjEgMTMwYy0zLjIgMS42LTcuNC0uOC03LjQtNC40VjU3LjVjMC0xLjMuNy0yLjQgMS42LTMuM3EuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNSA0LjMgNy4xLjUgOC45Ii8+PHBhdGggZmlsbD0iI2JhMWU0NSIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctNTkuNC01MHEuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNCA0LjMgNyAuNSA4LjgiLz48L3N2Zz4="
+      },
+      "displayName": "Airtable",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.switch",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "If",
+            "Path",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Branch",
+            "Case"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.switch/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Interrupteur",
+        "color": "#506000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "Switch",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 528,
+      "icon": "fa:exclamation-triangle",
+      "name": "n8n-nodes-base.stopAndError",
+      "codex": {
+        "data": {
+          "alias": [
+            "Throw error",
+            "Error",
+            "Exception"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.stopanderror/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Arrêter et erreur",
+        "color": "#ff0000"
+      },
+      "iconData": {
+        "icon": "exclamation-triangle",
+        "type": "icon"
+      },
+      "displayName": "Stop and Error",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 33,
+      "name": "Médias sociaux"
+    }
+  ],
+  "image": []
+}

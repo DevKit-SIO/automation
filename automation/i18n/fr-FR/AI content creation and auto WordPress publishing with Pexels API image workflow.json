@@ -1,0 +1,2110 @@
+{
+  "id": 5159,
+  "name": "Création de contenu IA et publication automatique sur WordPress avec le flux de travail d'image de l'API Pexels",
+  "views": 8267,
+  "recentViews": 14,
+  "totalViews": 8267,
+  "createdAt": "2025-06-23T15:48:04.145Z",
+  "description": "### Flux de travail de création de contenu et de publication sur WordPress alimenté par l'IA\n\n**Résumé**\n\nCe flux de travail automatise l'ensemble du processus de création de contenu de blog, de la génération d'idées et de la rédaction d'articles à l'aide de Google Gemini, à la recherche d'images sur Pexels et à la publication directement sur votre site WordPress. Il utilise Google Sheets comme un hub central pour gérer les idées de contenu et suivre leur statut, le tout orchestré via des formulaires interactifs n8n.\n\n**Caractéristiques clés**\n\n*   **Contenu alimenté par l'IA :** Tire parti de Google Gemini pour générer :\n    *   Des articles de blog complets basés sur des invites.\n    *   Des mots-clés pertinents pour la recherche d'images.\n    *   De nouvelles idées de sujets de blog.\n*   **Sourcing d'images automatisé :** Recherche Pexels pour des images appropriées basées sur des mots-clés générés par l'IA et les télécharge.\n*   **Intégration WordPress :**\n    *   Crée de nouveaux articles avec un titre et un contenu générés par l'IA.\n    *   Télécharge les images sourcées dans la bibliothèque multimédia WordPress.\n    *   Définit l'image téléchargée comme image à la une de l'article.\n*   **Gestion de Google Sheets :**\n    *   Récupère les idées de contenu (invites) marquées comme \"non générées\".\n    *   Met à jour la feuille après qu'un article soit généré avec l'ID de l'article, le titre et la date de génération.\n    *   Ajoute de nouvelles idées de sujets de blog générées par l'IA à la feuille.\n*   **Formulaires interactifs :**\n    *   Formulaire principal de déclenchement pour choisir entre générer du contenu ou ajouter de nouvelles idées.\n    *   Formulaires pour saisir des sujets pour la génération d'idées.\n    *   Formulaires de confirmation à la fin des processus.\n*   **Analyse de sortie structurée :** Assure que les réponses de l'IA pour la génération de sujets sont correctement formatées en JSON.\n\n**Comment ça fonctionne**\n\nLe flux de travail est initié via un `Form Trigger: Select Action` n8n, permettant à l'utilisateur de choisir l'un des deux chemins principaux :\n\n**1. Chemin de génération de contenu :**\n    *   **Récupérer l'idée :** Le nœud `Fetch unprocessed ideas` (Google Sheets) récupère une ligne de votre feuille où la colonne \"Generated\" est \"no\".\n    *   **Définir l'invite :** Le nœud `Set prompt` prépare le sujet de la feuille pour l'IA.\n    *   **Générer l'article :** Le nœud `Generate article AI` (Agent Langchain avec Google Gemini) prend l'invite et rédige un article complet.\n    *   **Générer le mot-clé d'image :** Le nœud `Generate image keyword AI` (Agent Langchain avec Google Gemini) crée un terme de recherche concis basé sur le sujet de l'article.\n    *   **Rechercher l'image :** Le nœud `Search Pexels image` (HTTP Request) utilise le mot-clé généré pour trouver une image pertinente via l'API Pexels.\n    *   **Créer un article WordPress :** Le nœud `Create WordPress post` publie l'article généré par l'IA et les métadonnées initiales de l'image sur votre site WordPress.\n    *   **Télécharger et télécharger l'image :** Le nœud `Download Pexels image` (HTTP Request) récupère le fichier image réel, et le nœud `Upload image` (HTTP Request) le télécharge dans votre bibliothèque multimédia WordPress.\n    *   **Définir l'image à la une :** Le nœud `Set featured image` (HTTP Request) lie l'image téléchargée comme image à la une du nouvel article créé.\n    *   **Mettre à jour la feuille :** Le nœud `Update Google Sheet` marque l'idée comme \"oui\" dans votre Google Sheet et ajoute l'ID et le titre de l'article WordPress.\n    *   **Confirmation :** Un nœud `Form: End post generation` affiche un message de complétion.\n\n**2. Chemin d'ajout d'idées :**\n    *   **Saisir le sujet :** Le nœud `Form: Enter topic for ideas` invite l'utilisateur à entrer un sujet général.\n    *   **Générer des sujets :** Le nœud `Generate blog topics AI` (Agent Langchain avec Google Gemini et Structured Output Parser) génère cinq idées de sujets de blog optimisées pour le SEO basées sur l'entrée de l'utilisateur, formatées en JSON.\n    *   **Traiter les sujets :** Le nœud `Split topics` sépare la liste générée de sujets en éléments individuels.\n    *   **Ajouter à la feuille :** Pour chaque sujet, le nœud `Add ideas to sheet` (Google Sheets) l'ajoute comme une nouvelle ligne, marquée avec \"Generated: no\".\n    *   **Boucle ou fin :** Le nœud `Form: Add more topics?` demande à l'utilisateur s'il souhaite générer plus d'idées ou mettre fin au processus.\n        *   Si \"NEXT\", il boucle de nouveau vers le `Form: Enter topic for ideas`.\n        *   Si \"END\", un nœud `Form: End idea generation` affiche un message de complétion avec la liste des sujets ajoutés.\n\n**Nœuds utilisés**\n\n*   Form Trigger\n*   If\n*   Google Sheets\n*   Set\n*   Agent Langchain (avec le modèle de chat Google Gemini)\n*   Structured Output Parser (Langchain)\n*   HTTP Request (pour les mises à jour de l'API Pexels et de WordPress Media/Post)\n*   WordPress\n*   Split Out\n*   Form (pour l'interaction utilisateur et les messages de complétion)\n*   Sticky Note (pour les instructions dans le flux de travail)\n\n**Instructions de configuration**\n\n1.  **Identifiants :**\n    *   **Google Sheets :** Configurez vos identifiants OAuth2 Google Sheets dans les nœuds `Fetch unprocessed ideas`, `Update Google Sheet`, et `Add ideas to sheet`.\n    *   **WordPress :** Configurez vos identifiants API WordPress dans les nœuds `Create WordPress post`, `Upload image`, et `Set featured image`.\n    *   **Google Gemini :** Configurez votre clé API Google Gemini (PaLM) dans les nœuds `Gemini model for article`, `Gemini model for image keyword`, et `Gemini model for topics`.\n2.  **Clés API et URL :**\n    *   **Pexels :** Dans le nœud `Search Pexels image`, remplacez `&lt;YOUR_PEXELS_API_KEY&gt;` dans l'en-tête `Authorization` par votre véritable clé API Pexels.\n    *   **URL WordPress :** Dans les nœuds `Upload image` et `Set featured image`, remplacez `&lt;YOUR_WORDPRESS_URL&gt;` dans le champ URL par le domaine de votre site WordPress (par exemple, `yourblog.com`).\n3.  **Configuration de Google Sheet :**\n    *   Assurez-vous que votre Google Sheet (spécifié par `Document ID` dans les nœuds Google Sheets) a une feuille nommée `Sheet1` (ou mettez à jour le paramètre `Sheet Name`).\n    *   La feuille doit avoir au moins les colonnes suivantes : `Prompt` (pour l'idée/sujet de blog), `Generated` (pour suivre le statut, par exemple, \"no\" ou \"yes\"), `row_number` (automatiquement peuplé par n8n lors de la lecture), `Date`, `Title` (pour le titre final de l'article WordPress), `Post ID`.\n4.  **Activez le flux de travail.** Le `Form Trigger: Select Action` fournira une URL de webhook pour initier le processus.\n\n**Idées de personnalisation**\n\n*   Modifiez les invites de l'IA dans les nœuds de l'Agent Langchain pour différents tons, styles ou structures de contenu.\n*   Changez les modèles Google Gemini utilisés pour différents équilibres coût/performance.\n*   Intégrez d'autres sources d'images au lieu de ou en plus de Pexels.\n*   Ajoutez des étapes pour le partage sur les réseaux sociaux après la publication d'un article.\n*   Étendez Google Sheet pour suivre plus de métriques comme le nombre de mots ou les mots-clés cibles.\n*   Mettez en œuvre une gestion des erreurs plus sophistiquée.\n\n**Cas d'utilisation**\n\n*   Automatisation de la génération de contenu de blog pour des blogs personnels ou d'entreprise.\n*   Rationalisation des efforts de marketing de contenu.\n*   Remplissage rapide de nouveaux sites Web avec du contenu initial.\n*   Assistance aux agences SEO dans la création de contenu préliminaire pour les clients.\n*   Aider les blogueurs solitaires à maintenir un calendrier de publication cohérent.",
+  "workflow": {
+    "meta": {
+      "instanceId": "ee764605661f484417a5505724882cb4f8c547a6bf9bef1f89eacbbcb7cca6ab"
+    },
+    "nodes": [
+      {
+        "id": "aa01f852-aa12-4001-9bc4-94fd0bbd0e88",
+        "name": "Fetch Unprocessed Ideas",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -980,
+          800
+        ],
+        "parameters": {
+          "options": {
+            "dataLocationOnSheet": {
+              "values": {
+                "rangeDefinition": "detectAutomatically"
+              }
+            }
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupValue": "no",
+                "lookupColumn": "Generated"
+              }
+            ]
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U/edit#gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U"
+          }
+        },
+        "executeOnce": false,
+        "typeVersion": 4.5
+      },
+      {
+        "id": "3ab71903-3b38-4891-a769-2d0304cb4bad",
+        "name": "Set Prompt",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -780,
+          800
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3e8d2523-66aa-46fe-adcc-39dc78b9161e",
+                "name": "prompt",
+                "type": "string",
+                "value": "={{ $json.Prompt }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "23e7d119-2d0f-41df-8e94-67bdd95bf6c0",
+        "name": "Create WordPress Post",
+        "type": "n8n-nodes-base.wordpress",
+        "position": [
+          -760,
+          1180
+        ],
+        "parameters": {
+          "title": "={{ $('Fetch Unprocessed Ideas').item.json.Prompt }}",
+          "additionalFields": {
+            "status": "publish",
+            "content": "={{ $('Generate Article AI').item.json.output }}\n\nImage by: {{ $('Search Pexels Image').item.json.photos[0].photographer }}\n{{ $('Search Pexels Image').item.json.photos[0].photographer_url }}"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a07f4264-c011-4925-a8c6-d5fa11ec809b",
+        "name": "Upload Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "onError": "continueRegularOutput",
+        "position": [
+          -380,
+          1180
+        ],
+        "parameters": {
+          "url": "https://<YOUR_WORDPRESS_URL>/wp-json/wp/v2/media",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "binaryData",
+          "sendHeaders": true,
+          "authentication": "predefinedCredentialType",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Disposition",
+                "value": "=attachment; filename=\"cover-{{ $('Create WordPress Post').item.json.id }}.jpg\""
+              }
+            ]
+          },
+          "inputDataFieldName": "data",
+          "nodeCredentialType": "wordpressApi"
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "cbbae382-12b2-47c7-8fd8-13df5236bbdc",
+        "name": "Set Featured Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -200,
+          1180
+        ],
+        "parameters": {
+          "url": "=https://<YOUR_WORDPRESS_URL>/wp-json/wp/v2/posts/{{ $('Create WordPress Post').item.json.id }}",
+          "method": "POST",
+          "options": {},
+          "sendQuery": true,
+          "authentication": "predefinedCredentialType",
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "featured_media",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          },
+          "nodeCredentialType": "wordpressApi"
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "cc2d86a1-cc0f-46fc-81ee-ec02801b29cf",
+        "name": "Update Google Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -20,
+          1180
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Date": "={{ $now.format('dd/LL/yyyy') }}",
+              "Title": "={{ $('Create WordPress Post').item.json.title.raw }}",
+              "Post ID": "={{ $('Create WordPress Post').item.json.id }}",
+              "Generated": "yes",
+              "row_number": "={{ $('Fetch Unprocessed Ideas').item.json.row_number }}"
+            },
+            "schema": [
+              {
+                "id": "Date",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Date",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Prompt",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Prompt",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Title",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Post ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Generated",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Generated",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "row_number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "row_number"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U/edit#gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U/edit?usp=drivesdk",
+            "cachedResultName": "n8n-wp"
+          }
+        },
+        "typeVersion": 4.5
+      },
+      {
+        "id": "74a74b39-d14c-44b7-920b-bfd343225a87",
+        "name": "Generate Article AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -600,
+          800
+        ],
+        "parameters": {
+          "text": "=You are an SEO expert. Write an article based on this topic: {{ $('Fetch Unprocessed Ideas').item.json.Prompt }}\nInstructions:\n-In the introduction, present the topic that will be discussed in the rest of the text.\n-The introduction should be about 120 words.\n-The conclusion should be about 120 words.\n-In the conclusion, summarize everything said in the article and present the reader with final conclusions.\n-Write a maximum of 4-5 chapters and expand on them.\n-Chapters should maintain a logical sequence and not repeat the same concepts.\n-Chapters should be interconnected, not isolated blocks of text. The text should be fluent and follow a linear logic.\n-Do not start chapters with \"Chapter 1\", \"Chapter 2\", \"Chapter 3\"... just write the chapter title.\n-Use HTML for text formatting, but limit yourself to using bold, italics, paragraphs, lists, and tables.\n-Do not place the result in a ```html code block, only the text itself.\n-Do not use markdown formatting.\n-Delve into the topic you are writing about; do not provide only superficial information.\n-I expect only HTML format in the response.\nDO NOT INCLUDE ```html\nWRITE SO IT DOESN'T LOOK LIKE AI - do not use long dashes, and in titles and subheadings, capitalize only the first word.\n\nIf possible, add data in a table.",
+          "options": {},
+          "promptType": "define"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "0be71cb1-6b52-4227-a70d-c0e01033f8c4",
+        "name": "Generate Image Keyword AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -280,
+          800
+        ],
+        "parameters": {
+          "text": "=Choose an expression based on which you will find a matching graphic in Pexels API.\nTopic: {{ $('Fetch Unprocessed Ideas').item.json.Prompt }} \nInstructions:\n- Choose one expression that will best match to find a graphic.\n- Use a general category to always match a graphic.\n- Do not use any HTML characters.\n- Return only a string containing the expression.\n- Do not use quotation marks. The only allowed special characters are \":\" and \",\".\n- Make each one unique so there are no 2 identical graphics.",
+          "options": {},
+          "promptType": "define"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "f7da0b58-b5ae-48b3-a69a-739512282179",
+        "name": "Gemini Model for Article",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          -620,
+          940
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-1.5-flash-latest"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5af891b9-069d-4e48-8b93-e04413d85e7c",
+        "name": "Gemini Model for Image Keyword",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          -300,
+          940
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-1.5-flash-latest"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3b0f4db2-e2d1-4590-b08b-a37039db7f70",
+        "name": "Search Pexels Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -960,
+          1180
+        ],
+        "parameters": {
+          "url": "=https://api.pexels.com/v1/search?query={{ encodeURIComponent($('Generate Image Keyword AI').item.json.output) }}&per_page=1",
+          "options": {},
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "<YOUR_PEXELS_API_KEY>"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "7fb8b8fe-4e6b-4af8-8d6b-9419096350d2",
+        "name": "Download Pexels Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "onError": "continueRegularOutput",
+        "position": [
+          -560,
+          1180
+        ],
+        "parameters": {
+          "url": "={{ $('Search Pexels Image').item.json.photos[0].src.large2x }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "32b7c739-19e0-4115-8d7e-35a2db6423bb",
+        "name": "Form Trigger: Select Action",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -1580,
+          580
+        ],
+        "webhookId": "09988680-2d17-4e68-b1e1-81fef6163a0d",
+        "parameters": {
+          "options": {
+            "path": "wpcontent",
+            "buttonLabel": "Next",
+            "appendAttribution": false
+          },
+          "formTitle": "Create Content",
+          "formFields": {
+            "values": [
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "Task",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Generate Content"
+                    },
+                    {
+                      "option": "Add Ideas"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "bc2a6f22-a0f7-4933-b660-a0f4dbd52de4",
+        "name": "If Generate Content",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -1340,
+          580
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "loose"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "41e4b502-f201-47a2-a244-ac705528f843",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                },
+                "leftValue": "={{ $json.Task }}",
+                "rightValue": "Generate Content"
+              }
+            ]
+          },
+          "looseTypeValidation": true
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "18bdad61-7286-4e66-bdc3-f37d404f8dc0",
+        "name": "Add Ideas to Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -40,
+          400
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Title": "=",
+              "Prompt": "={{ $json.Topic }}",
+              "Generated": "no"
+            },
+            "schema": [
+              {
+                "id": "Date",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Date",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Prompt",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Prompt",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Title",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Post ID",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Post ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Generated",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Generated",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U/edit#gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UDaTATWOnYorewjEF5-G9edgSBjc2_Rb50BZVFbAu8U/edit?usp=drivesdk",
+            "cachedResultName": "n8n-wp"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "d7697c4b-e651-414c-a7eb-171ef43110b6",
+        "name": "Generate Blog Topics AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -700,
+          400
+        ],
+        "parameters": {
+          "text": "=Prepare a blog topic - Make the title great for SEO.\n\nNOTE.\nGenerate 5 topics.\nIn the response, provide JSON code: \n{\n  \"Topic\": \"Sample topic\"\n}\nDo not add markdown, do not add '''json'.\nDo not add numbers to topics.\n\nWrite about {{ $json.Topic }}",
+          "options": {},
+          "promptType": "define",
+          "hasOutputParser": true
+        },
+        "executeOnce": false,
+        "typeVersion": 2
+      },
+      {
+        "id": "b6c75452-0f77-426e-bf0f-c20ecaf620e4",
+        "name": "Form: Enter Topic for Ideas",
+        "type": "n8n-nodes-base.form",
+        "position": [
+          -980,
+          400
+        ],
+        "webhookId": "fcee9395-085e-4831-9bbf-32ce2f571027",
+        "parameters": {
+          "options": {
+            "buttonLabel": "NEXT"
+          },
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "Topic"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "63701441-2b94-4a59-804c-ff25494749db",
+        "name": "Form: Add More Topics?",
+        "type": "n8n-nodes-base.form",
+        "position": [
+          240,
+          400
+        ],
+        "webhookId": "e897fa2c-f8a3-4e4e-ae03-14725ba1d705",
+        "parameters": {
+          "options": {
+            "buttonLabel": "NEXT",
+            "formDescription": "={{ $items().map(item => \"- \" + item.json.Prompt).join('\\n') }}"
+          },
+          "formFields": {
+            "values": [
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "What next?",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "END"
+                    },
+                    {
+                      "option": "NEXT"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "562cd4ea-8fc2-43bb-a0f8-b84e63e55807",
+        "name": "If Add More Topics",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          460,
+          400
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "73836e3b-ce8d-4e69-be29-82971a6bd82c",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                },
+                "leftValue": "={{ $json[\"What next?\"] }}",
+                "rightValue": "NEXT"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "754f0694-c09b-46b0-9566-293889ecd68a",
+        "name": "Gemini Model for Topics",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          -740,
+          560
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-1.5-flash-latest"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "72976425-ebbf-4d31-97b4-898648c13b20",
+        "name": "Parse AI Topic Output",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "position": [
+          -500,
+          560
+        ],
+        "parameters": {
+          "jsonSchemaExample": "[\n  {\n    \"Topic\": \"Example topic 1\"\n  },\n  {\n    \"Topic\": \"Example topic 2\"\n  },\n  {\n    \"Topic\": \"Example topic 3\"\n  },\n    {\n    \"Topic\": \"Example topic 4\"\n  },\n  {\n    \"Topic\": \"Example topic 5\"\n  }\n]"
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "c9c8c275-31c0-4a5f-a324-c27f3c18031b",
+        "name": "Split Topics",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          -300,
+          400
+        ],
+        "parameters": {
+          "options": {},
+          "fieldToSplitOut": "output"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "424cab92-8a0a-4407-972a-b82186d600f2",
+        "name": "Form: End Idea Generation",
+        "type": "n8n-nodes-base.form",
+        "position": [
+          680,
+          420
+        ],
+        "webhookId": "ea907aa5-971f-4a0d-89a1-d834177d09c8",
+        "parameters": {
+          "options": {},
+          "operation": "completion",
+          "completionTitle": "END",
+          "completionMessage": "={{ $items(\"Generate Blog Topics AI\")[0].json.output.map(item => \"- \" + item.Topic).join('\\n') }}"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f15c02d2-44a1-450e-95ee-c95445dbcafc",
+        "name": "Form: End Post Generation",
+        "type": "n8n-nodes-base.form",
+        "position": [
+          180,
+          1180
+        ],
+        "webhookId": "ea907aa5-971f-4a0d-89a1-d834177d09c8",
+        "parameters": {
+          "options": {},
+          "operation": "completion",
+          "completionTitle": "END",
+          "completionMessage": "={{ $items().map(item => \"- \" + item.json.Title).join('\\n') }}"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f25aabe7-ae32-4db9-9e37-3612a7f21a64",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1040,
+          260
+        ],
+        "parameters": {
+          "color": 5,
+          "height": 400,
+          "content": "## Generate Topics\nWhat topics should be generated?"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d5a4794e-1857-421b-b33f-cc3493f55e0e",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -120,
+          260
+        ],
+        "parameters": {
+          "color": 5,
+          "height": 380,
+          "content": "## Add to Sheet\nAdd as topics for which posts have not yet been generated."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a8929634-52bc-414b-8301-e98fcae5e940",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          180,
+          260
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 220,
+          "height": 380,
+          "content": "## Add More?\nSelect in the form to add another 5 topics."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e2c3d8ad-eb78-441c-9576-082f91568131",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          440,
+          260
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 220,
+          "height": 380,
+          "content": "## Start Over or End\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ad74f19e-8811-4d2e-ba1d-b78df9ada687",
+        "name": "API Settings Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1580,
+          1140
+        ],
+        "parameters": {
+          "width": 960,
+          "height": 280,
+          "content": "## WordPress & Pexels API Settings\nEdit settings by entering your WordPress data and Pexels API key.\n- `Search Pexels Image` node: Add Pexels API Key in Headers -> Authorization.\n- `Upload Image` & `Set Featured Image` nodes: Update URL with your WordPress site URL."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7f04b46b-0918-4afd-98ec-e1433f9ebdb7",
+        "name": "Workflow Instructions",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1640,
+          -200
+        ],
+        "parameters": {
+          "width": 500,
+          "height": 940,
+          "content": "# Workflow Instructions\n\nThis workflow automates content creation, from idea generation to publishing on WordPress.\n\n**Prerequisites:**\n1.  Google Sheets account & a sheet with columns: `Date`, `Prompt`, `Title`, `Post ID`, `Generated`, `row_number`.\n2.  WordPress site with REST API enabled.\n3.  Google Gemini API Key.\n4.  Pexels API Key.\n\n**Setup Steps:**\n1.  **Credentials:** Configure credentials for Google Sheets, WordPress, and Google Gemini in the respective n8n nodes.\n2.  **API Keys & URLs:**\n    *   In `Search Pexels Image` node: Set your Pexels API key in the `Authorization` header.\n    *   In `Upload Image` & `Set Featured Image` nodes: Replace `<YOUR_WORDPRESS_URL>` with your site's URL.\n3.  **Google Sheet:** Ensure `Document ID` and `Sheet Name` (e.g., `Sheet1`) are correct in all Google Sheets nodes.\n4.  **Activate Workflow.**\n\n**How it works:**\nThe workflow starts with `Form Trigger: Select Action`:\n*   **Generate Content:** Fetches ideas marked `no` in `Generated` column, creates an article, finds an image, posts to WordPress, and updates the sheet.\n*   **Add Ideas:** Prompts for a general topic, generates 5 blog ideas, adds them to the sheet, and asks if you want to generate more."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Set Prompt": {
+        "main": [
+          [
+            {
+              "node": "Generate Article AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Topics": {
+        "main": [
+          [
+            {
+              "node": "Add Ideas to Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload Image": {
+        "main": [
+          [
+            {
+              "node": "Set Featured Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Add Ideas to Sheet": {
+        "main": [
+          [
+            {
+              "node": "Form: Add More Topics?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Add More Topics": {
+        "main": [
+          [
+            {
+              "node": "Form: Enter Topic for Ideas",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Form: End Idea Generation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Featured Image": {
+        "main": [
+          [
+            {
+              "node": "Update Google Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Article AI": {
+        "main": [
+          [
+            {
+              "node": "Generate Image Keyword AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Generate Content": {
+        "main": [
+          [
+            {
+              "node": "Fetch Unprocessed Ideas",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Form: Enter Topic for Ideas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Pexels Image": {
+        "main": [
+          [
+            {
+              "node": "Create WordPress Post",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Google Sheet": {
+        "main": [
+          [
+            {
+              "node": "Form: End Post Generation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create WordPress Post": {
+        "main": [
+          [
+            {
+              "node": "Download Pexels Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Pexels Image": {
+        "main": [
+          [
+            {
+              "node": "Upload Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse AI Topic Output": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Generate Blog Topics AI",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Form: Add More Topics?": {
+        "main": [
+          [
+            {
+              "node": "If Add More Topics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Unprocessed Ideas": {
+        "main": [
+          [
+            {
+              "node": "Set Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gemini Model for Topics": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Generate Blog Topics AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Blog Topics AI": {
+        "main": [
+          [
+            {
+              "node": "Split Topics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gemini Model for Article": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Generate Article AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Image Keyword AI": {
+        "main": [
+          [
+            {
+              "node": "Search Pexels Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Form Trigger: Select Action": {
+        "main": [
+          [
+            {
+              "node": "If Generate Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Form: Enter Topic for Ideas": {
+        "main": [
+          [
+            {
+              "node": "Generate Blog Topics AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gemini Model for Image Keyword": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Generate Image Keyword AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 30,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 2
+      },
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.form": {
+        "count": 4
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.wordpress": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 6
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 4
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.outputParserStructured": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Mateusz Kosiorek",
+    "username": "mkosiorek",
+    "bio": "",
+    "verified": false,
+    "links": [
+      "https://gowp.pl"
+    ],
+    "avatar": "https://gravatar.com/avatar/74f993b2db63294d6f1acd3adecf7fccf8f5a3003f849f39e9d445a619802221?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "HTTP Request",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "If",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 118,
+      "icon": "file:wordpress.svg",
+      "name": "n8n-nodes-base.wordpress",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.wordpress/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/wordpress/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Wordpress"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTAwIiBoZWlnaHQ9IjI1MDAiIHZpZXdCb3g9IjguMzk5IDguNCA1MS4yIDUxLjIiPjxwYXRoIGZpbGw9IiMyMTc1OUIiIGQ9Ik0zNCA1OS42QzE5LjgxMyA1OS42IDguMjkzIDQ4LjI5MyA4LjQgMzRTMTkuMjggOC40IDM0IDguNCA1OS42IDE5LjkyIDU5LjYgMzQgNDguMTg3IDU5LjYgMzQgNTkuNm03LjU3My0zLjk0Ny03LjI1My0xOS41Mi02LjgyNyAxOS45NDdjNS4wMTQgMS4xNzQgOC40MjcgMS40OTMgMTQuMDgtLjQyN20tMTcuNzA2LTEuMDY2LTEwLjg4LTI5Ljc2Yy0xLjQ5NCAzLjItMS44MTMgNS44NjctMi4wMjcgOS4xNzMuMTA3IDguNzQ2IDUuMDEzIDE2Ljc0NiAxMi45MDcgMjAuNTg3TTU2LjkzNCAzNGMuMTA2LTUuNjUzLTIuNDUzLTEwLjEzMy0yLjY2Ny0xMC43NzMuMjE0IDQuMzc0LS40MjcgNi42MTMtMS4xNzMgOS4wNjdsLTcuNDY3IDIxLjQ0QzU1LjAxNCA0OC4wOCA1Ni44MjYgMzkuNjUzIDU3LjA0IDM0em0tMjMuNjgtLjk2LTMuNjI3LTkuOTItMi42NjctLjIxM2MtMS4wNjYtLjc0Ny0uNDI3LTEuOTIuMzItMS45MiA0LjguMzIgNy40NjYuMzIgMTIuMjY3IDAgMS4xNzQgMCAxLjQ5MyAxLjcwNy4xMDYgMS45MmwtMi41Ni4yMTMgOC4zMTkgMjQuNTMzIDMuOTQ2LTEzLjQ0Yy4yMTQtNS44NjYtMS4zODctNi41MDYtMy41Mi0xMC43NzMtMS43MDctMy4zMDcuMTA3LTYuNTA3IDMuNDE0LTYuNjEzLTIuNjY4LTIuNTYtOC4xMDctNS43Ni0xNS4yNTQtNS44NjdzLTE0LjcyIDMuNTItMTkuMiAxMC4zNDdsNy44OTQtLjIxM2MuOTYuNDI3LjUzMyAxLjgxMyAwIDEuOTJsLTIuNzczLjIxMyA4LjMyIDI0Ljk2eiIvPjwvc3ZnPg=="
+      },
+      "displayName": "Wordpress",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Sticky Note",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1179,
+      "icon": "fa:code",
+      "name": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "codex": {
+        "data": {
+          "alias": [
+            "json",
+            "zod"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.outputparserstructured/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Output Parsers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Structured Output Parser"
+      },
+      "iconData": {
+        "icon": "code",
+        "type": "icon"
+      },
+      "displayName": "Structured Output Parser",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Split Out"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1274,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.form",
+      "codex": {
+        "data": {
+          "alias": [
+            "_Form",
+            "form",
+            "table",
+            "submit",
+            "post",
+            "page",
+            "step",
+            "stage",
+            "multi"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.form/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Form"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

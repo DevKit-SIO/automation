@@ -1,0 +1,658 @@
+{
+  "id": 5815,
+  "name": "Gestion automatisée des stocks avec création de bons de commande Airtable et e-mails aux fournisseurs",
+  "views": 226,
+  "recentViews": 1,
+  "totalViews": 226,
+  "createdAt": "2025-07-09T09:45:50.624Z",
+  "description": "**Description détaillée de cette automatisation :**\n\nIl s'agit d'un flux de travail entièrement automatisé de chaîne d'approvisionnement et d'approvisionnement quotidien qui maintient les niveaux de stock de produits sains et les fournisseurs informés, en générant et en envoyant automatiquement des bons de commande (BC) et en synchronisant les statuts des BC dans Airtable.\n\n---\n\n### **📅 Déclencheurs quotidiens**\n\n* Deux nœuds `Schedule Trigger` s'exécutent :\n\n  * L'un s'exécute à minuit (00:00) pour gérer les faibles stocks et la création de nouveaux bons de commande.\n  * L'autre s'exécute à 1:00 AM pour traiter les BC en attente existants et envoyer des e-mails aux fournisseurs.\n\n---\n\n### **🚦 Décomposition étape par étape**\n\n#### 1️⃣ **Obtenir les produits avec un faible stock**\n\n* Recherche dans la “Table des Produits” dans Airtable les articles où `{stock_level} &lt;= {reorder_threshold}`.\n* Détecte les produits qui ont besoin d'être réapprovisionnés.\n\n#### 2️⃣ **Obtenir les détails des fournisseurs**\n\n* Récupère les données des fournisseurs pour chaque produit en faible stock en utilisant son `supplier_id`.\n\n#### 3️⃣ **Calculer la quantité de réapprovisionnement dynamique**\n\n* Le code JS calcule une quantité de réapprovisionnement optimale :\n\n  * Utilise `average_daily_sales × (lead_time × 1.5) × safety_margin (1.2)`\n  * Ajoute un tampon supplémentaire pour que la nouvelle commande couvre à la fois la demande immédiate et le prochain cycle.\n\n#### 4️⃣ **Rechercher les BC existants**\n\n* Recherche dans la table “Bons de Commande” les BC actifs (statut `En attente` ou `Envoyé`) correspondant à chaque produit.\n* Empêche les commandes en double.\n\n#### 5️⃣ **Supprimer les commandes de produits en double**\n\n* Le nœud JS compare les produits en faible stock actuels avec les BC existants.\n* Filtre les produits déjà couverts, de sorte que de nouveaux BC ne soient créés que pour les produits réellement non couverts.\n\n#### 6️⃣ **Créer de nouveaux bons de commande**\n\n* Pour les produits filtrés, crée de nouveaux enregistrements de BC dans Airtable avec :\n\n  * `product_name`\n  * `product_id`\n  * `reorder_qty` calculé\n  * informations et e-mail du fournisseur\n  * statut initial `En attente`\n\n---\n\n### **📧 Traiter les bons de commande en attente existants et envoyer des e-mails aux fournisseurs**\n\n#### 7️⃣ **Obtenir les bons de commande qui sont en attente**\n\n* Recherche dans Airtable tous les BC avec le statut `En attente`.\n\n#### 8️⃣ **Grouper les produits avec les fournisseurs**\n\n* Le code JS groupe ces BC par `supplier_id`.\n* Construit un résumé (total des produits, quantité totale) et un e-mail HTML avec un tableau stylisé des articles.\n\n#### 9️⃣ **Envoyer des e-mails de BC aux fournisseurs**\n\n* Utilise Brevo (SendInBlue) pour envoyer des e-mails.\n* L'objet et le contenu incluent des détails de commande spécifiques au fournisseur.\n\n#### 🔄 **Mettre à jour les statuts des BC à Envoyé**\n\n* Extrait les ID d'enregistrement Airtable des BC envoyés.\n* Met à jour ces BC dans Airtable, changeant le statut de `En attente` → `Envoyé`.\n\n---\n\n### **📌 Résumé**\n\n✅ S'exécute tous les jours\n✅ Calcule dynamiquement les besoins de réapprovisionnement\n✅ Évite les commandes en double\n✅ Crée automatiquement des bons de commande dans Airtable\n✅ Regroupe et envoie des résumés quotidiens de BC aux fournisseurs\n✅ Met à jour le statut des BC après l'envoi de l'e-mail\n\n---\n\n### **⚙ Tables impliquées**\n\n* **Table des Produits :** stocke les produits, les niveaux de stock, les seuils de réapprovisionnement, les ventes moyennes quotidiennes, les références des fournisseurs.\n* **Table des Fournisseurs :** stocke les e-mails des fournisseurs et les métadonnées.\n* **Table des Bons de Commande :** suit les commandes de produits avec les ID des fournisseurs, le statut, les quantités, etc.\n\n---\n\nCe flux de travail rend l'approvisionnement quotidien entièrement automatisé : détecte le risque de rupture de stock, crée des BC intelligemment, maintient les fournisseurs synchronisés par e-mail et met à jour les statuts des commandes dans une boucle fermée — parfait pour toute petite ou moyenne entreprise utilisant Airtable + N8N.",
+  "workflow": {
+    "meta": {
+      "instanceId": "b6731f6e46273cffeac6b5188a5b3bcb0840c00108e73b48ae2b799ac6e8e081",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "fe401179-5a8b-4232-b148-9bf4d96ceb9b",
+        "name": "Get Products with low stock",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          -2340,
+          -540
+        ],
+        "parameters": {},
+        "typeVersion": 2.1
+      },
+      {
+        "id": "46bfdc76-b244-41a9-a686-09c8eb140968",
+        "name": "Get supplier Details for those low stock products",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          -2120,
+          -540
+        ],
+        "parameters": {},
+        "typeVersion": 2.1
+      },
+      {
+        "id": "836a5efb-0cad-4508-8703-911241f0b847",
+        "name": "Calculate Dynamic Re-order Quantity",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -1900,
+          -540
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "7d04d71d-3d40-4575-b567-6e6bb8712e3a",
+        "name": "Run Every Mid Night",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -2520,
+          -540
+        ],
+        "parameters": {},
+        "typeVersion": 1.2
+      },
+      {
+        "id": "50c4223b-83d7-4204-a2ad-75b390b9298b",
+        "name": "Create purchase records in table",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          -2160,
+          -280
+        ],
+        "parameters": {},
+        "typeVersion": 2.1
+      },
+      {
+        "id": "87965ea3-6e2a-495d-a040-fcf15ba8bb2a",
+        "name": "Search records",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          -2500,
+          -280
+        ],
+        "parameters": {},
+        "typeVersion": 2.1,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "18390f14-6622-4f6c-8c24-ec123c4a807e",
+        "name": "Remove Duplicate Product Orders",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -2340,
+          -280
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "cc7b13bc-d8f8-4c26-b503-5d9a8fcfd010",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -2600,
+          -980
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "790b9e2e-63fb-4d15-b0e9-47d1ab6dfdd2",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -1360,
+          -520
+        ],
+        "parameters": {},
+        "typeVersion": 1.2
+      },
+      {
+        "id": "93b3ea8a-5b0a-41b6-863c-1c78bc6ec59d",
+        "name": "Get Purchase Orders which are pending",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          -1120,
+          -520
+        ],
+        "parameters": {},
+        "typeVersion": 2.1
+      },
+      {
+        "id": "4ba6d12d-cbe6-418e-a9bb-102f54451b03",
+        "name": "Group products with suppliers",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -900,
+          -520
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "ce853473-aa77-4215-a7e2-4b584f6b5986",
+        "name": "Get the record id's of PO",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -720,
+          -400
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "275e3674-127b-4acf-92cd-c554b61239f9",
+        "name": "Update the PO status to sent",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          -500,
+          -540
+        ],
+        "parameters": {},
+        "typeVersion": 2.1
+      },
+      {
+        "id": "fd03a9df-1892-465b-9dc5-6c13cb2c1f16",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1420,
+          -980
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e725f7f0-85a1-4cec-af79-fee429ff2667",
+        "name": "Send PO to suppliers via Email",
+        "type": "n8n-nodes-base.sendInBlue",
+        "position": [
+          -700,
+          -700
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Search records": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicate Product Orders",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Purchase Orders which are pending",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Run Every Mid Night": {
+        "main": [
+          [
+            {
+              "node": "Get Products with low stock",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get the record id's of PO": {
+        "main": [
+          [
+            {
+              "node": "Update the PO status to sent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Products with low stock": {
+        "main": [
+          [
+            {
+              "node": "Get supplier Details for those low stock products",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Group products with suppliers": {
+        "main": [
+          [
+            {
+              "node": "Send PO to suppliers via Email",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Get the record id's of PO",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send PO to suppliers via Email": {
+        "main": [
+          []
+        ]
+      },
+      "Remove Duplicate Product Orders": {
+        "main": [
+          [
+            {
+              "node": "Create purchase records in table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create purchase records in table": {
+        "main": [
+          []
+        ]
+      },
+      "Calculate Dynamic Re-order Quantity": {
+        "main": [
+          [
+            {
+              "node": "Search records",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Purchase Orders which are pending": {
+        "main": [
+          [
+            {
+              "node": "Group products with suppliers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get supplier Details for those low stock products": {
+        "main": [
+          [
+            {
+              "node": "Calculate Dynamic Re-order Quantity",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 15,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 4
+      },
+      "n8n-nodes-base.airtable": {
+        "count": 6
+      },
+      "n8n-nodes-base.sendInBlue": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "iamvaar",
+    "username": "iamvaar",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.youtube.com/@just4saradhaa"
+    ],
+    "avatar": "https://gravatar.com/avatar/e1fb0dc258d8f0b3950f191987367ea325b3f05ba737b671375e592af3fe7aaf?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 2,
+      "icon": "file:airtable.svg",
+      "name": "n8n-nodes-base.airtable",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-goals-level-up-your-vocabulary-with-vonage-and-n8n/",
+                "icon": "🎯",
+                "label": "2021 Goals: Level Up Your Vocabulary With Vonage and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-sms-the-low-code-way-with-airtable-twilio-programmable-sms-and-n8n/",
+                "icon": "📱",
+                "label": "Sending SMS the Low-Code Way with Airtable, Twilio Programmable SMS, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automating-conference-organization-processes-with-n8n/",
+                "icon": "🙋‍♀️",
+                "label": "Automating Conference Organization Processes with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.airtable/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/airtable/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Airtable"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTcwIj48cGF0aCBmaWxsPSIjZmNiNDAwIiBkPSJNODkgNC44IDE2LjIgMzQuOWMtNC4xIDEuNy00IDcuNC4xIDkuMWw3My4yIDI5YzYuNCAyLjYgMTMuNiAyLjYgMjAgMGw3My4yLTI5YzQuMS0xLjYgNC4xLTcuNC4xLTkuMWwtNzMtMzAuMUMxMDMuMiAyIDk1LjcgMiA4OSA0LjgiLz48cGF0aCBmaWxsPSIjMThiZmZmIiBkPSJNMTA1LjkgODguOXY3Mi41YzAgMy40IDMuNSA1LjggNi43IDQuNWw4MS42LTMxLjdjMS45LS43IDMuMS0yLjUgMy4xLTQuNVY1Ny4yYzAtMy40LTMuNS01LjgtNi43LTQuNUwxMDkgODQuM2MtMS45LjgtMy4xIDIuNi0zLjEgNC42Ii8+PHBhdGggZmlsbD0iI2Y4MmI2MCIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctMi41IDEuMkw5LjEgMTMwYy0zLjIgMS42LTcuNC0uOC03LjQtNC40VjU3LjVjMC0xLjMuNy0yLjQgMS42LTMuM3EuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNSA0LjMgNy4xLjUgOC45Ii8+PHBhdGggZmlsbD0iI2JhMWU0NSIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctNTkuNC01MHEuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNCA0LjMgNyAuNSA4LjgiLz48L3N2Zz4="
+      },
+      "displayName": "Airtable",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 820,
+      "icon": "file:brevo.svg",
+      "name": "n8n-nodes-base.sendInBlue",
+      "codex": {
+        "data": {
+          "alias": [
+            "sendinblue"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.brevo/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/brevo/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing",
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Brevo"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iMjQiIGN5PSIyNCIgcj0iMjQiIGZpbGw9IiMwQjk5NkUiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzEuNTA0IDIxLjgxYzEuNDgzLTEuNDU0IDIuMTc5LTMuMTMzIDIuMTc5LTUuMTc1IDAtNC4yMi0zLjEwNi03LjAzNS03Ljc4Ny03LjAzNUgxNC40djMwaDkuMjdDMzAuNzE4IDM5LjYgMzYgMzUuMjg5IDM2IDI5LjU3YzAtMy4xMzItMS42MjItNS45NDUtNC40OTYtNy43Nm0tMTIuOTMyLTguMzA4aDYuODZjMi4zMTcgMCAzLjg0OCAxLjMxNiAzLjg0OCAzLjMxMyAwIDIuMjY5LTEuOTkzIDMuOTk0LTYuMDcyIDUuMzEtMi43ODEuODYxLTQuMDMyIDEuNTg4LTQuNDk2IDIuNDUxbC0uMTQuMDAyem00LjcyNyAyMi4xOTZoLTQuNzI3di00LjYzYzAtMi4wNDIgMS43NjItNC4wMzkgNC4yMTktNC44MSAyLjE3OS0uNzI3IDMuOTg1LTEuNDU0IDUuNTE2LTIuMjI0IDIuMDM5IDEuMTgxIDMuMjkgMy4yMjIgMy4yOSA1LjM1NiAwIDMuNjMtMy41MjMgNi4zMDgtOC4yOTggNi4zMDgiLz48L3N2Zz4="
+      },
+      "displayName": "Brevo",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de Documents"
+    }
+  ],
+  "image": []
+}

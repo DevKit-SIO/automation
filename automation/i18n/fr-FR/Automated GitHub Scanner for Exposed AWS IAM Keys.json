@@ -1,0 +1,1431 @@
+{
+  "id": 5021,
+  "name": "Scanner GitHub automatisé pour les clés IAM AWS exposées",
+  "views": 821,
+  "recentViews": 1,
+  "totalViews": 821,
+  "createdAt": "2025-06-18T13:22:16.072Z",
+  "description": "# Scanner GitHub automatisé pour les clés IAM AWS exposées\n\n## Aperçu\n\nCe flux de travail n8n scanne automatiquement GitHub à la recherche de clés d'accès IAM AWS exposées associées à votre compte AWS, aidant les équipes de sécurité à identifier et à répondre rapidement aux violations de sécurité potentielles. Lorsque des clés compromises sont trouvées, le flux de travail génère des rapports de sécurité détaillés et envoie des notifications Slack avec des étapes de remédiation exploitables.\n\n## 🔑 Fonctionnalités clés\n\n- **Scan automatisé des clés IAM AWS** : Vérifie régulièrement les clés d'accès AWS exposées sur GitHub\n- **Alertes de sécurité en temps réel** : Envoie des notifications Slack immédiates lorsque des clés compromises sont détectées\n- **Rapports de sécurité complets** : Génère des rapports détaillés avec des informations sur l'exposition et une évaluation des risques\n- **Étapes de remédiation exploitables** : Fournit des instructions claires pour sécuriser les identifiants compromis\n- **Surveillance continue** : Maintient une surveillance continue de votre environnement AWS\n\n## 📋 Étapes du flux de travail\n\n1. **Lister les utilisateurs AWS** : Récupère tous les utilisateurs de votre compte AWS\n2. **Diviser les utilisateurs pour traitement** : Traite chaque utilisateur individuellement\n3. **Obtenir les clés d'accès des utilisateurs** : Récupère les clés d'accès pour chaque utilisateur\n4. **Filtrer uniquement les clés actives** : Se concentre uniquement sur les clés d'accès actuellement actives\n5. **Rechercher sur GitHub les clés exposées** : Scanne les dépôts GitHub à la recherche de clés d'accès exposées\n6. **Agrégat des résultats de recherche** : Consolide et déduplique les résultats de recherche\n7. **Vérifier les clés compromises** : Détermine si des clés ont été exposées\n8. **Générer un rapport de sécurité** : Crée des rapports de sécurité détaillés pour les clés compromises\n9. **Extraire les noms d'utilisateur AWS** : Extrait les noms d'utilisateur de la réponse AWS pour notification\n10. **Formater l'alerte Slack** : Prépare des notifications Slack complètes\n11. **Envoyer la notification Slack** : Livrer des alertes avec des informations exploitables\n12. **Continuer le scan** : Maintient un cycle de surveillance continue\n\n## 🛠️ Exigences de configuration\n\n### Prérequis\n\n- Instance n8n active\n- Compte AWS avec autorisations IAM\n- Compte/token GitHub pour rechercher des dépôts\n- Espace de travail Slack pour les notifications\n\n### Identifiants requis\n\n1. **Identifiants AWS** :\n   - Utilisateur IAM avec des autorisations pour lister les utilisateurs et les clés d'accès\n   - ID de clé d'accès et clé d'accès secrète\n\n2. **Identifiants GitHub** :\n   - Jeton d'accès personnel avec autorisations de recherche\n\n3. **Identifiants Slack** :\n   - URL de webhook pour votre canal de notification\n\n## ⚙️ Configuration\n\n1. **Configuration AWS** :\n   - Configurez le nœud \"Lister les utilisateurs AWS\" avec vos identifiants AWS\n   - Assurez-vous d'avoir les autorisations IAM appropriées pour lister les utilisateurs et les clés d'accès\n\n2. **Configuration GitHub** :\n   - Configurez le nœud \"Rechercher sur GitHub les clés exposées\" avec votre jeton GitHub\n   - Ajustez les paramètres de recherche si nécessaire\n\n3. **Configuration Slack** :\n   - Configurez le nœud Slack avec votre URL de webhook\n   - Personnalisez le format de notification si désiré\n\n## 🚀 Utilisation\n\n### Exécution du flux de travail\n\n1. **Exécution manuelle** : Cliquez sur \"Exécuter le flux de travail\" pour lancer un scan immédiat\n2. **Exécution planifiée** : Configurez un calendrier pour exécuter des scans périodiques (recommandé quotidiennement ou hebdomadairement)\n\n### Compatibilité des dépôts\n\nCe flux de travail est compatible avec les dépôts GitHub publics et privés auxquels vous avez accès. Il scannera tous les dépôts que vous avez la permission de visualiser en fonction de vos identifiants GitHub.\n\n### Gestion des alertes\n\nLorsqu'une clé compromise est détectée :\n\n1. Examinez la notification Slack pour des détails sur l'exposition\n2. Suivez les étapes de remédiation recommandées :\n   - Désactivez immédiatement la clé compromise\n   - Créez une nouvelle clé si nécessaire\n   - Enquêtez sur la source de l'exposition\n   - Mettez à jour tous les services utilisant la clé compromise\n\n## ⚠️ Avertissement\n\nCe modèle de flux de travail est fourni à des fins de référence uniquement pour démontrer comment automatiser le scan d'exposition des clés IAM AWS. Veuillez noter :\n\n- Le processus de scan peut produire de faux positifs car il ne correspond qu'aux modèles potentiels de clés d'accès AWS\n- Vérifiez toujours manuellement toute exposition signalée avant de prendre des mesures\n- Désactiver ou supprimer des clés d'accès sans vérification appropriée pourrait avoir des impacts négatifs significatifs sur votre environnement\n- Comprenez quels systèmes et applications dépendent des clés d'accès identifiées avant de les désactiver\n- Ce modèle doit être personnalisé pour s'adapter à votre environnement spécifique et à vos politiques de sécurité\n\n**IMPORTANT** : Utilisez ce flux de travail avec prudence et uniquement après avoir bien compris votre environnement AWS. Les auteurs de ce modèle ne sont pas responsables des perturbations ou des dommages résultant de son utilisation.\n\n## 🔒 Considérations de sécurité\n\n- Ce flux de travail nécessite un accès à des identifiants AWS sensibles\n- Stockez tous les identifiants en toute sécurité dans n8n\n- Examinez et faites tourner les clés d'accès régulièrement\n\n## 📝 Options de personnalisation\n\n- Ajustez les paramètres de recherche GitHub pour un scan plus ciblé\n- Personnalisez le format et le contenu des notifications Slack\n- Modifiez la génération de rapports de sécurité selon vos besoins spécifiques\n- Intégrez d'autres canaux de notification (email, MS Teams, etc.)\n\n### Optionnel : Activer les boutons interactifs Slack\n\nLe format de notification Slack Block Kit prend en charge des boutons interactifs qui peuvent être implémentés si vous souhaitez effectuer des actions directement depuis Slack :\n\n1. **Désactiver la clé** : Ce bouton peut être configuré pour désactiver automatiquement la clé d'accès IAM AWS compromise\n2. **Voir les détails** : Ce bouton peut être configuré pour afficher des informations supplémentaires sur l'exposition\n3. **Accuser réception** : Ce bouton peut être utilisé pour marquer l'alerte comme reconnue\n\nPour rendre ces boutons fonctionnels :\n\n1. **Configurer une application Slack en mode socket** :\n   - Créez une application Slack dans le [Slack API Console](https://api.slack.com/apps)\n   - Activez le mode socket et les composants interactifs\n   - Abonnez-vous à l'événement `block_actions` pour capturer les clics sur les boutons\n\n2. **Créer un point de terminaison Webhook n8n** :\n   - Ajoutez un nouveau nœud webhook pour recevoir les événements de clic sur les boutons Slack\n   - Créez des flux de travail séparés pour chaque action de bouton\n\n3. **Implémenter la désactivation de la clé AWS** :\n   - Pour le bouton \"Désactiver la clé\", créez un flux de travail qui utilise le nœud de requête HTTP n8n pour appeler l'API `UpdateAccessKey` d'AWS IAM\n   - Exemple de requête HTTP qui peut être implémentée dans n8n :\n     ```\n     Méthode : POST\n     URL : https://iam.amazonaws.com/\n     Paramètres de requête :\n       Action : UpdateAccessKey\n       AccessKeyId : AKIAIOSFODNN7EXAMPLE\n       Statut : Inactif\n       UserName : {{$json.username}}\n       Version : 2010-05-08\n     ```\n\n4. **Mettre à jour le format du message Slack** :\n   - Modifiez le nœud `Format Slack Alert` pour inclure votre URL de webhook dans les valeurs d'action des boutons\n   - Ajoutez des valeurs callback_id et action_id pour identifier quel bouton a été cliqué\n\nCette implémentation permet une réponse immédiate aux incidents de sécurité directement depuis l'interface Slack, réduisant le temps de réponse et améliorant la posture de sécurité.",
+  "workflow": {
+    "id": "Tcy2xebw2oGWMxUN",
+    "meta": {
+      "instanceId": "c62c01f3e843893075a10f252ec7d6d69e5ab593af019f50055d506cb3081b99",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "🕵️‍♂️ Automated GitHub Scanner for Exposed AWS IAM Keys",
+    "tags": [
+      {
+        "id": "XuoVybTXeUXuim6G",
+        "name": "✅ Live",
+        "createdAt": "2025-06-08T07:59:43.586Z",
+        "updatedAt": "2025-06-08T07:59:43.586Z"
+      },
+      {
+        "id": "MbPHhZHgb39Syuoa",
+        "name": "🔐 SecOps",
+        "createdAt": "2025-04-20T05:18:20.689Z",
+        "updatedAt": "2025-06-08T08:01:56.494Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "84edf6c4-fc87-4b34-86c6-ad72c15cafe8",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -880,
+          75
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b2c1157f-c1eb-4d22-95d0-6ec166a93a4a",
+        "name": "Split Users for Processing",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          -220,
+          75
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "ae5a0e4f-892c-4a75-bdcc-36253fbc7274",
+        "name": "Get User Access Keys",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "url": "https://iam.amazonaws.com",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "authentication": "predefinedCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "Action",
+                "value": "ListAccessKeys"
+              },
+              {
+                "name": "Version",
+                "value": "2010-05-08"
+              },
+              {
+                "name": "UserName",
+                "value": "={{ $json.username }}"
+              }
+            ]
+          },
+          "nodeCredentialType": "aws"
+        },
+        "credentials": {
+          "aws": {
+            "id": "Y0EXCbx12345678",
+            "name": "AWS account"
+          }
+        },
+        "typeVersion": 4.1
+      },
+      {
+        "id": "0946f05d-11f0-480b-934a-c996bbb9551e",
+        "name": "Filter Active Keys Only",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          220,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 1,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "active-key-check",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.ListAccessKeysResponse.ListAccessKeysResult.AccessKeyMetadata[0].Status }}",
+                "rightValue": "Active"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "8f9db031-245e-4c00-bdb9-4ed55e9b57b2",
+        "name": "Search GitHub for Exposed Keys",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          880,
+          0
+        ],
+        "parameters": {
+          "url": "={{ $json.simpleSearch.searchUrl }}",
+          "options": {
+            "timeout": 10000,
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          },
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "githubApi"
+        },
+        "credentials": {
+          "githubApi": {
+            "id": "3fz93A0mgyxzXGOL",
+            "name": "GitHub account"
+          }
+        },
+        "typeVersion": 4.1
+      },
+      {
+        "id": "a6cd482c-86d2-49ac-aefe-6beec92c98af",
+        "name": "Aggregate Search Results",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1100,
+          0
+        ],
+        "parameters": {
+          "jsCode": "// Aggregate all search results\nconst allResults = [];\nconst accessKeyId = $input.first().json.accessKeyId;\nconst userName = $input.first().json.userName;\n\nfor (const item of $input.all()) {\n  if (item.json.total_count > 0) {\n    allResults.push(...item.json.items);\n  }\n}\n\n// Remove duplicates based on repository and file path\nconst uniqueResults = allResults.filter((item, index, self) => \n  index === self.findIndex(t => t.repository.full_name === item.repository.full_name && t.path === item.path)\n);\n\nreturn [{\n  accessKeyId,\n  userName,\n  totalMatches: uniqueResults.length,\n  repositories: uniqueResults,\n  isCompromised: uniqueResults.length > 0\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "75ed15ec-fdee-4644-a83c-6b47005dcac1",
+        "name": "Check For Compromised Keys",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1320,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "loose"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "ebf33a67-f8f3-4700-8579-1d33b7a642d5",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                },
+                "leftValue": "isCompromised",
+                "rightValue": "={{ $json.isCompromised }}"
+              }
+            ]
+          },
+          "looseTypeValidation": true
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "57753be8-33d2-4172-94a2-0d5a4f7c73ec",
+        "name": "Generate Security Report",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1540,
+          0
+        ],
+        "parameters": {
+          "jsCode": "// Generate comprehensive security report - Notification Only (No Automatic Actions)\nconst data = $input.item.json;\n\nconst report = {\n  timestamp: new Date().toISOString(),\n  accessKeyId: data.accessKeyId,\n  userName: data.userName,\n  status: data.isCompromised ? 'COMPROMISED' : 'SAFE',\n  totalRepositories: data.totalMatches,\n  repositories: data.repositories.map(repo => ({\n    name: repo.repository.full_name,\n    url: repo.html_url,\n    path: repo.path,\n    score: repo.score\n  })),\n  actionTaken: data.isCompromised ? 'Security team notified - Manual review required' : 'No action required',\n  riskLevel: data.totalMatches > 5 ? 'HIGH' : data.totalMatches > 0 ? 'MEDIUM' : 'LOW',\n  notificationSent: data.isCompromised ? true : false,\n  requiresManualAction: data.isCompromised ? true : false,\n  recommendedActions: data.isCompromised ? [\n    'Manually disable the compromised access key',\n    'Generate new access keys for affected services',\n    'Remove exposed keys from repositories',\n    'Audit recent API usage for this key'\n  ] : []\n};\n\nreturn [report];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "f2634090-b035-4592-ad56-b970c2bff14c",
+        "name": "Continue Scanning",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          2340,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "158340f1-4dc4-4b4c-933f-95a28be524dc",
+        "name": "Slack",
+        "type": "n8n-nodes-base.slack",
+        "position": [
+          2020,
+          0
+        ],
+        "webhookId": "47dc1fb0-71c0-40f6-8263-88880f01a436",
+        "parameters": {
+          "text": "={{ $json.message }}",
+          "select": "channel",
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "C08Q2H8SRUP"
+          },
+          "otherOptions": {}
+        },
+        "credentials": {
+          "slackApi": {
+            "id": "i1yhHILyYn12345678",
+            "name": "Slack account"
+          }
+        },
+        "typeVersion": 2.3
+      },
+      {
+        "id": "c0300832-418b-4fa8-98b6-2b799f2bcfe6",
+        "name": "Format Slack Alert",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1760,
+          0
+        ],
+        "parameters": {
+          "jsCode": "/**\n * GitHub Scanner for Exposed AWS IAM Keys - Data Processor\n * \n * This script processes the results from the AWS IAM Key scanner workflow\n * and formats them for reporting and notification purposes.\n */\n\n// Main entry point - this is what n8n will call\n// Input: items array from n8n workflow\n// Output: Slack Block Kit UI format (blocks array only)\nconst items = $input.all();\n\n// Process the input data\nconst scanResults = items.map(item => item.json);\nconst processedResults = processIAMScanResults(scanResults);\n\n// Format for markdown notification\nconst markdownNotification = formatForMarkdownNotification(processedResults);\n// Return as array of objects for n8n\nreturn [{ message: markdownNotification }];\n\n/**\n * Process scan results and format them for reporting\n * @param {Array} scanResults - Array of scan result objects from the workflow\n * @returns {Array} Array of formatted result objects\n */\nfunction processIAMScanResults(scanResults) {\n  if (!Array.isArray(scanResults) || scanResults.length === 0) {\n    return [{\n      status: 'NO_RESULTS',\n      timestamp: new Date().toISOString(),\n      message: 'No scan results to process'\n    }];\n  }\n\n  // Process each scan result\n  const processedResults = scanResults.map(result => {\n    // Create a deep copy to avoid modifying the original data\n    const processedResult = JSON.parse(JSON.stringify(result));\n    \n    // Ensure we have the required fields\n    if (!processedResult.timestamp) {\n      processedResult.timestamp = new Date().toISOString();\n    }\n    \n    // Calculate risk metrics if not provided\n    if (!processedResult.riskLevel) {\n      processedResult.riskLevel = calculateRiskLevel(processedResult);\n    }\n    \n    // Generate recommended actions if not provided\n    if (!processedResult.recommendedActions || processedResult.recommendedActions.length === 0) {\n      processedResult.recommendedActions = generateRecommendedActions(processedResult);\n    }\n    \n    return processedResult;\n  });\n\n  return processedResults;\n}\n  \n  /**\n   * Calculate risk level based on scan result data\n   * @param {Object} result - Individual scan result\n   * @returns {string} Risk level (HIGH, MEDIUM, LOW)\n   */\n  function calculateRiskLevel(result) {\n    // Default to MEDIUM if we can't determine\n    if (!result || !result.status) {\n      return 'MEDIUM';\n    }\n    \n    // Determine risk level based on status and other factors\n    if (result.status === 'COMPROMISED') {\n      // Public repositories or repositories with many contributors increase risk\n      if (result.repositories && result.repositories.some(repo => {\n        return repo.score >= 0.8; // High score indicates higher risk\n      })) {\n        return 'HIGH';\n      }\n      return 'MEDIUM';\n    } else if (result.status === 'POTENTIAL_EXPOSURE') {\n      return 'MEDIUM';\n    } else {\n      return 'LOW';\n    }\n  }\n  \n  /**\n   * Generate recommended actions based on scan result\n   * @param {Object} result - Individual scan result\n   * @returns {Array} List of recommended actions\n   */\n  function generateRecommendedActions(result) {\n    const commonActions = [\n      'Review the exposure details in the security report',\n      'Rotate affected access keys immediately'\n    ];\n    \n    if (result.status === 'COMPROMISED') {\n      return [\n        ...commonActions,\n        'Disable the compromised access key',\n        'Generate new access keys for affected services',\n        'Remove exposed keys from repositories',\n        'Audit recent API usage for this key'\n      ];\n    } else if (result.status === 'POTENTIAL_EXPOSURE') {\n      return [\n        ...commonActions,\n        'Verify if the exposure is a false positive',\n        'Consider rotating keys as a precaution'\n      ];\n    } else {\n      return [\n        'No immediate action required',\n        'Continue monitoring for potential exposures'\n      ];\n    }\n  }\n  \n  /**\n   * Format scan results for Slack-compatible markdown notification\n   * @param {Array} processedResults - Processed scan results\n   * @returns {string} Slack-compatible markdown formatted notification text\n   */\n  function formatForMarkdownNotification(processedResults) {\n    if (!Array.isArray(processedResults) || processedResults.length === 0) {\n      return `🔒 *AWS IAM Key Scan Completed*\\n\\nNo exposed AWS IAM keys were detected in this scan.`;\n    }\n  \n    // Count compromised keys\n    const compromisedCount = processedResults.filter(r => r.status === 'COMPROMISED').length;\n    \n    if (compromisedCount === 0) {\n      return `🔒 *AWS IAM Key Scan Completed*\\n\\nNo exposed AWS IAM keys were detected in this scan.`;\n    }\n    \n    // Create Slack-compatible notification for compromised keys\n    let markdown = `⚠️ *ALERT: AWS IAM Keys Exposed*\\n\\n*${compromisedCount}* AWS IAM keys have been potentially exposed on GitHub. Immediate action required.\\n\\n`;\n    \n    // Add details for each compromised key\n    processedResults.filter(r => r.status === 'COMPROMISED').forEach((result, index) => {\n      markdown += `*Exposure ${index + 1}*\\n\\n`;\n      \n      // Add repository information in a cleaner format\n      markdown += `*Exposure Details:*\\n`;\n      result.repositories.forEach(repo => {\n        markdown += `• *Repository:* ${repo.name}\\n`;\n        markdown += `• *Path:* \\`${repo.path}\\`\\n`;\n        markdown += `• *Risk Score:* ${repo.score.toFixed(2)}\\n\\n`;\n      });\n      \n      // Add risk level and action taken in a compact format\n      markdown += `*Risk Level:* ${result.riskLevel} | *Action Taken:* ${result.actionTaken || 'None'}\\n\\n`;\n      \n      // Add recommended actions with better formatting\n      markdown += `*Recommended Actions:*\\n`;\n      result.recommendedActions.forEach(action => {\n        markdown += `• ${action}\\n`;\n      });\n      markdown += `\\n`;\n    });\n    \n    return markdown;\n  }\n\n  \n  // Export functions for use in n8n workflow\n  module.exports = {\n    processIAMScanResults,\n    calculateRiskLevel,\n    generateRecommendedActions,\n    formatForMarkdownNotification\n  };"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "3ed685c7-27b5-4a00-840a-6f9dddff6d3f",
+        "name": "Prepare Github Search",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          440,
+          0
+        ],
+        "parameters": {
+          "jsCode": "/**\n * Simplified GitHub Search for AWS Access Keys\n * This script generates optimized search queries for finding exposed AWS access keys on GitHub\n */\n\n/**\n * Generates a GitHub API search URL for a given AWS access key\n * @param {Object} inputData - The input data containing AWS access key information\n * @returns {Object} - Search information including URL and query\n */\nfunction generateGitHubSearchQuery(inputData) {\n  try {\n    // Extract access key information from input\n    let accessKeyId;\n    let userName;\n    \n    // Handle different input formats\n    if (inputData && typeof inputData === 'object') {\n      // Check for n8n workflow format\n      if (inputData.ListAccessKeysResponse && \n          inputData.ListAccessKeysResponse.ListAccessKeysResult && \n          inputData.ListAccessKeysResponse.ListAccessKeysResult.AccessKeyMetadata && \n          Array.isArray(inputData.ListAccessKeysResponse.ListAccessKeysResult.AccessKeyMetadata) && \n          inputData.ListAccessKeysResponse.ListAccessKeysResult.AccessKeyMetadata.length > 0) {\n        \n        accessKeyId = inputData.ListAccessKeysResponse.ListAccessKeysResult.AccessKeyMetadata[0].AccessKeyId;\n        userName = inputData.ListAccessKeysResponse.ListAccessKeysResult.AccessKeyMetadata[0].UserName;\n      } \n      // Direct object format\n      else if (inputData.accessKeyId) {\n        accessKeyId = inputData.accessKeyId;\n        userName = inputData.userName || 'unknown';\n      }\n    }\n    \n    // Validate we have an access key\n    if (!accessKeyId) {\n      console.error('No valid AWS access key ID found in input');\n      return { error: 'No valid AWS access key ID found in input' };\n    }\n    \n    // Create the most effective search query\n    // Based on testing, the exact match with quotes is most reliable\n    const searchQuery = `\"${accessKeyId}\" in:file`;\n    \n    // Generate the GitHub API search URL\n    const searchUrl = `https://api.github.com/search/code?q=${encodeURIComponent(searchQuery)}`;\n    \n    return {\n      accessKeyId,\n      userName,\n      searchQuery,\n      searchUrl,\n      note: 'A single exact match query is typically sufficient for finding exposed AWS keys'\n    };\n  } catch (error) {\n    console.error('Error generating GitHub search query:', error);\n    return { error: `Error generating GitHub search query: ${error.message}` };\n  }\n}\n\n/**\n * For more comprehensive searches, this function generates multiple search patterns\n * This is optional and can be used if the simple search doesn't yield results\n * @param {string} accessKeyId - The AWS access key ID to search for\n * @returns {Array} - Array of search queries and URLs\n */\nfunction generateComprehensiveSearch(accessKeyId) {\n  if (!accessKeyId) {\n    return { error: 'No access key ID provided' };\n  }\n  \n  // Search patterns for access keys (in order of effectiveness)\n  const searchQueries = [\n    `\"${accessKeyId}\" in:file`,           // Exact match (most effective)\n    `${accessKeyId} in:file`,              // Without quotes (catches more results but may have false positives)\n    `AWS_ACCESS_KEY_ID=${accessKeyId} in:file`,  // Environment variable format\n    `aws_access_key_id: ${accessKeyId} in:file`, // YAML/config format\n    `accessKeyId: ${accessKeyId} in:file`        // JavaScript/JSON format\n  ];\n  \n  return searchQueries.map(query => ({\n    searchQuery: query,\n    searchUrl: `https://api.github.com/search/code?q=${encodeURIComponent(query)}`\n  }));\n}\n\n// For n8n integration\nfunction processForN8n() {\n  try {\n    // Get input data\n    const inputData = $input.item.json;\n    \n    // Generate the simplified search (recommended approach)\n    const simpleSearch = generateGitHubSearchQuery(inputData);\n    \n    // For backward compatibility, also generate the comprehensive search\n    // if an access key was successfully extracted\n    let comprehensiveSearch = [];\n    if (simpleSearch.accessKeyId) {\n      comprehensiveSearch = generateComprehensiveSearch(simpleSearch.accessKeyId);\n    }\n    \n    return {\n      simpleSearch,\n      comprehensiveSearch,\n      recommendation: 'The simple search is recommended for most cases. Only use comprehensive search if simple search yields no results.'\n    };\n  } catch (error) {\n    console.error('Error in n8n processing:', error);\n    return { error: `Error in n8n processing: ${error.message}` };\n  }\n}\n\n// For standalone usage\nif (typeof module !== 'undefined' && module.exports) {\n  module.exports = {\n    generateGitHubSearchQuery,\n    generateComprehensiveSearch\n  };\n} else {\n  // For n8n execution\n  return processForN8n();\n}"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "e58f0cd8-13df-41eb-9a9c-99efc7eba0c4",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -900,
+          -680
+        ],
+        "parameters": {
+          "width": 1120,
+          "height": 580,
+          "content": "# 🔐🕵️‍♂️ GitHub Scanner for Exposed AWS IAM Keys – Quick Overview\n\n## ⚙️ Workflow at a Glance\n\n1. 🔍 **Automated Discovery**  \n   Scans GitHub repositories for exposed AWS IAM access keys associated with your AWS account.\n\n2. 🧠 **Intelligent Filtering**  \n   Processes only active access keys and eliminates duplicate findings.\n\n3. 🚨 **Risk Assessment**  \n   Evaluates exposure severity and assigns risk levels (High/Medium/Low) based on findings.\n\n4. 📣 **Actionable Alerts**  \n   Sends detailed Slack notifications with interactive buttons for immediate response.\n\n5. 🛠️ **Remediation Guidance**  \n   Provides step-by-step instructions for securing compromised credentials.\n\n6. 🔄 **Continuous Monitoring**  \n   Maintains ongoing surveillance to detect new exposures quickly.\n\n---\n\n*🛡️ This workflow helps security teams quickly identify and respond to potential security breaches from exposed AWS credentials.*\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ef29b02b-f2a4-4642-a5c4-c9685b0e2c22",
+        "name": "Rate Limit Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          660,
+          0
+        ],
+        "webhookId": "850e337e-d261-456a-86c1-1725d77f9e52",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "714724b6-9aaf-4d17-97b7-1a3fd3dcaeae",
+        "name": "List AWS Users1",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -660,
+          80
+        ],
+        "parameters": {
+          "url": "https://iam.amazonaws.com",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "authentication": "predefinedCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "Action",
+                "value": "ListUsers"
+              },
+              {
+                "name": "Version",
+                "value": "2010-05-08"
+              }
+            ]
+          },
+          "nodeCredentialType": "aws"
+        },
+        "credentials": {
+          "aws": {
+            "id": "Y0EXCbx12345678",
+            "name": "AWS account"
+          }
+        },
+        "typeVersion": 4.1
+      },
+      {
+        "id": "a1448a68-81aa-4571-8f62-617c57daa6e6",
+        "name": "Extract AWS Usernames",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -440,
+          75
+        ],
+        "parameters": {
+          "jsCode": "// n8n Function node: Extract usernames from AWS ListUsersResponse\n\nconst allInputs = $input.all();\n\n// Find the ListUsersResponse input\nconst listUsersInput = allInputs.find(item => item.json.ListUsersResponse);\n\nif (!listUsersInput) {\n  throw new Error('No ListUsersResponse found in input data');\n}\n\n// Extract users array from the response\nconst users = listUsersInput.json\n  .ListUsersResponse\n  .ListUsersResult\n  .Users || [];\n\n// Extract usernames and return each as a separate item for looping\nconst usernameItems = users.map(user => ({\n  json: { username: user.UserName }\n}));\n\n// Return array of individual username objects\nreturn usernameItems;"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "2339c570-93a3-4c1a-ae0d-2eb9810eeee8",
+        "name": "Disable Access Keys",
+        "type": "n8n-nodes-base.httpRequest",
+        "disabled": true,
+        "position": [
+          1200,
+          -620
+        ],
+        "parameters": {
+          "url": "https://iam.amazonaws.com",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "authentication": "predefinedCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "Action",
+                "value": "UpdateAccessKey"
+              },
+              {
+                "name": "AccessKeyId",
+                "value": "AKIAEXAMPLEACCESSKEY1"
+              },
+              {
+                "name": "UserName",
+                "value": "user@domain.com"
+              },
+              {
+                "name": "Status",
+                "value": "Inactive"
+              },
+              {
+                "name": "Version",
+                "value": "2010-05-08"
+              }
+            ]
+          },
+          "nodeCredentialType": "aws"
+        },
+        "credentials": {
+          "aws": {
+            "id": "Y0EXCbx12345678",
+            "name": "AWS account"
+          }
+        },
+        "typeVersion": 4.1
+      },
+      {
+        "id": "99938eb1-580b-4a91-b7a7-83464b33053e",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          240,
+          -680
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 1200,
+          "height": 580,
+          "content": "## 🚨 Automate Disable Access Keys\n\n### 1. Prerequisites\n\n- Configure AWS credentials in n8n with appropriate IAM permissions  \n- Create an `Extract_Key_Info` node that provides the compromised key's ID and username  \n\n### 2. Workflow Integration\n\n- Add this node after your key detection logic  \n- Connect it to trigger when a compromised key is confirmed  \n\n### 3. Security Considerations\n\n- Ensure your AWS credentials have the `iam:UpdateAccessKey` permission  \n- Consider adding verification steps before automatic disabling  \n- Implement notification steps after key disabling (e.g., Slack, email)  \n\n---\n\nThis implementation enables **immediate remediation of security risks** by automatically disabling compromised AWS access keys as soon as they're discovered in GitHub repositories.\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "d96b586a-4739-4ef5-84c8-c71ff9f3e1e6",
+    "connections": {
+      "Slack": {
+        "main": [
+          [
+            {
+              "node": "Continue Scanning",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "List AWS Users1": {
+        "main": [
+          [
+            {
+              "node": "Extract AWS Usernames",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rate Limit Wait": {
+        "main": [
+          [
+            {
+              "node": "Search GitHub for Exposed Keys",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Continue Scanning": {
+        "main": [
+          [
+            {
+              "node": "Split Users for Processing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Slack Alert": {
+        "main": [
+          [
+            {
+              "node": "Slack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get User Access Keys": {
+        "main": [
+          [
+            {
+              "node": "Filter Active Keys Only",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract AWS Usernames": {
+        "main": [
+          [
+            {
+              "node": "Split Users for Processing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Github Search": {
+        "main": [
+          [
+            {
+              "node": "Rate Limit Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Active Keys Only": {
+        "main": [
+          [
+            {
+              "node": "Prepare Github Search",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate Search Results": {
+        "main": [
+          [
+            {
+              "node": "Check For Compromised Keys",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Security Report": {
+        "main": [
+          [
+            {
+              "node": "Format Slack Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check For Compromised Keys": {
+        "main": [
+          [
+            {
+              "node": "Generate Security Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Users for Processing": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get User Access Keys",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search GitHub for Exposed Keys": {
+        "main": [
+          [
+            {
+              "node": "Aggregate Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "List AWS Users1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 18,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 2
+      },
+      "n8n-nodes-base.code": {
+        "count": 5
+      },
+      "n8n-nodes-base.noOp": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.slack": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 4
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Niranjan G",
+    "username": "niranjan",
+    "bio": "Cybersecurity leader turning complex workflows into seamless, AI-driven automations.",
+    "verified": true,
+    "links": [
+      "https://securityinsights.io/"
+    ],
+    "avatar": "https://gravatar.com/avatar/d5b41d6bfd3c47b67a8bb21192c64334b9ae9498ea5602aae36f02160850e5ae?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "icon": "fa:arrow-right",
+      "name": "n8n-nodes-base.noOp",
+      "codex": {
+        "data": {
+          "alias": [
+            "nothing"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.noop/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Aucune opération, ne rien faire",
+        "color": "#b0b0b0"
+      },
+      "iconData": {
+        "icon": "arrow-right",
+        "type": "icon"
+      },
+      "displayName": "No Operation, do nothing",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "icon": "file:slack.svg",
+      "name": "n8n-nodes-base.slack",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/slack/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Slack"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgMTUwLjg1MiAxNTAuODUyIj48dXNlIHhsaW5rOmhyZWY9IiNhIiB4PSIuOTI2IiB5PSIuOTI2Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZS13aWR0aD0iMS44NTIiPjxwYXRoIGZpbGw9IiNlMDFlNWEiIHN0cm9rZT0iI2UwMWU1YSIgZD0iTTQwLjc0MSA5My41NWMwLTguNzM1IDYuNjA3LTE1Ljc3MiAxNC44MTUtMTUuNzcyczE0LjgxNSA3LjAzNyAxNC44MTUgMTUuNzcydjM4LjgyNGMwIDguNzM3LTYuNjA3IDE1Ljc3NC0xNC44MTUgMTUuNzc0cy0xNC44MTUtNy4wMzctMTQuODE1LTE1Ljc3MnoiLz48cGF0aCBmaWxsPSIjZWNiMjJkIiBzdHJva2U9IiNlY2IyMmQiIGQ9Ik05My41NSAxMDcuNDA4Yy04LjczNSAwLTE1Ljc3Mi02LjYwNy0xNS43NzItMTQuODE1czcuMDM3LTE0LjgxNSAxNS43NzItMTQuODE1aDM4LjgyNmM4LjczNSAwIDE1Ljc3MiA2LjYwNyAxNS43NzIgMTQuODE1cy03LjAzNyAxNC44MTUtMTUuNzcyIDE0LjgxNXoiLz48cGF0aCBmaWxsPSIjMmZiNjdjIiBzdHJva2U9IiMyZmI2N2MiIGQ9Ik03Ny43NzggMTUuNzcyQzc3Ljc3OCA3LjAzNyA4NC4zODUgMCA5Mi41OTMgMHMxNC44MTUgNy4wMzcgMTQuODE1IDE1Ljc3MnYzOC44MjZjMCA4LjczNS02LjYwNyAxNS43NzItMTQuODE1IDE1Ljc3MnMtMTQuODE1LTcuMDM3LTE0LjgxNS0xNS43NzJ6Ii8+PHBhdGggZmlsbD0iIzM2YzVmMSIgc3Ryb2tlPSIjMzZjNWYxIiBkPSJNMTUuNzcyIDcwLjM3MUM3LjAzNyA3MC4zNzEgMCA2My43NjMgMCA1NS41NTZzNy4wMzctMTQuODE1IDE1Ljc3Mi0xNC44MTVoMzguODI2YzguNzM1IDAgMTUuNzcyIDYuNjA3IDE1Ljc3MiAxNC44MTVzLTcuMDM3IDE0LjgxNS0xNS43NzIgMTQuODE1eiIvPjxnIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiPjxwYXRoIGZpbGw9IiNlY2IyMmQiIHN0cm9rZT0iI2VjYjIyZCIgZD0iTTc3Ljc3OCAxMzMuMzMzYzAgOC4yMDggNi42MDcgMTQuODE1IDE0LjgxNSAxNC44MTVzMTQuODE1LTYuNjA3IDE0LjgxNS0xNC44MTUtNi42MDctMTQuODE1LTE0LjgxNS0xNC44MTVINzcuNzc4eiIvPjxwYXRoIGZpbGw9IiMyZmI2N2MiIHN0cm9rZT0iIzJmYjY3YyIgZD0iTTEzMy4zMzQgNzAuMzcxaC0xNC44MTVWNTUuNTU2YzAtOC4yMDcgNi42MDctMTQuODE1IDE0LjgxNS0xNC44MTVzMTQuODE1IDYuNjA3IDE0LjgxNSAxNC44MTUtNi42MDcgMTQuODE1LTE0LjgxNSAxNC44MTV6Ii8+PHBhdGggZmlsbD0iI2UwMWU1YSIgc3Ryb2tlPSIjZTAxZTVhIiBkPSJNMTQuODE1IDc3Ljc3OEgyOS42M3YxNC44MTVjMCA4LjIwNy02LjYwNyAxNC44MTUtMTQuODE1IDE0LjgxNVMwIDEwMC44IDAgOTIuNTkzczYuNjA3LTE0LjgxNSAxNC44MTUtMTQuODE1eiIvPjxwYXRoIGZpbGw9IiMzNmM1ZjEiIHN0cm9rZT0iIzM2YzVmMSIgZD0iTTcwLjM3MSAxNC44MTVWMjkuNjNINTUuNTU2Yy04LjIwNyAwLTE0LjgxNS02LjYwNy0xNC44MTUtMTQuODE1UzQ3LjM0OCAwIDU1LjU1NiAwczE0LjgxNSA2LjYwNyAxNC44MTUgMTQuODE1eiIvPjwvZz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Slack",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lors du clic sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 29,
+      "name": "SecOps"
+    }
+  ],
+  "image": []
+}

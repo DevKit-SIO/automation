@@ -1,0 +1,1063 @@
+{
+  "id": 5193,
+  "name": "Gratteur de contenu basé sur des mots-clés Pinterest avec agent IA et automatisation BrightData",
+  "views": 718,
+  "recentViews": 1,
+  "totalViews": 718,
+  "createdAt": "2025-06-24T08:38:03.685Z",
+  "description": "# Gratteur de contenu basé sur des mots-clés Pinterest avec agent IA et automatisation BrightData\n\n## Aperçu\n\nCe flux de travail n8n automatise le grattage de contenu Pinterest basé sur des mots-clés fournis par l'utilisateur en utilisant l'API de BrightData et l'agent IA Claude Sonnet 4. Le système traite intelligemment les mots-clés, initie des travaux de grattage, surveille les progrès et formate les données extraites en sorties structurées.\n\n## Composants d'architecture\n\n### 🧠 Contrôleur alimenté par IA\n- **Modèle Claude Sonnet 4** : Traite et comprend les mots-clés avant d'initier le grattage\n- **Agent IA** : Agit comme le contrôleur intelligent coordonnant toutes les étapes de grattage\n\n### 📥 Entrée de données\n- **Déclencheur de formulaire** : Interface d'entrée de mots-clés conviviale\n- **Champ de mots-clés** : Champ d'entrée requis pour les termes de recherche Pinterest\n\n### 🚀 Pipeline de grattage\n1. **Lancer le travail de grattage** : Envoie les mots-clés à l'API BrightData\n2. **Surveillance de l'état** : Vérifie en continu les progrès du grattage\n3. **Récupération des données** : Télécharge le contenu gratté terminé\n4. **Traitement des données** : Formate et structure les données brutes\n5. **Stockage** : Enregistre les résultats dans Google Sheets\n\n## Nœuds de flux de travail\n\n### 1. Entrée de mots-clés Pinterest\n- **Type** : Déclencheur de formulaire\n- **But** : Point d'entrée pour la soumission de mots-clés par l'utilisateur\n- **Configuration** : \n  - Titre du formulaire : \"Pinterest\"\n  - Champ requis : \"Mots-clés\"\n\n### 2. Modèle de chat Anthropic\n- **Type** : Modèle de langage (Claude Sonnet 4)\n- **Modèle** : `claude-sonnet-4-20250514`\n- **But** : Traitement des mots-clés alimenté par IA et orchestration du flux de travail\n\n### 3. Agent de grattage basé sur des mots-clés\n- **Type** : Agent IA\n- **But** : Orchestrer l'ensemble du processus de grattage\n- **Instructions** :\n  - Initie le grattage Pinterest avec les mots-clés fournis\n  - Surveille l'état du grattage jusqu'à l'achèvement\n  - Télécharge les données grattées finales\n  - Présente les données brutes grattées en sortie\n\n### 4. Grattage Pinterest BrightData\n- **Type** : Outil de requête HTTP\n- **Méthode** : POST\n- **Point de terminaison** : `https://api.brightdata.com/datasets/v3/trigger`\n- **Paramètres** :\n  - `dataset_id` : `gd_lk0sjs4d21kdr7cnlv`\n  - `include_errors` : `true`\n  - `type` : `discover_new`\n  - `discover_by` : `keyword`\n  - `limit_per_input` : `2`\n- **But** : Crée un nouvel instantané de grattage basé sur des mots-clés\n\n### 5. Vérifier l'état du grattage\n- **Type** : Outil de requête HTTP\n- **Méthode** : GET\n- **Point de terminaison** : `https://api.brightdata.com/datasets/v3/progress/{snapshot_id}`\n- **But** : Surveille les progrès du travail de grattage\n- **Renvoie** : Valeurs d'état comme \"en cours\" ou \"prêt\"\n\n### 6. Récupérer les données de l'instantané Pinterest\n- **Type** : Outil de requête HTTP\n- **Méthode** : GET\n- **Point de terminaison** : `https://api.brightdata.com/datasets/v3/snapshot/{snapshot_id}`\n- **But** : Télécharge les données grattées terminées\n- **Déclencheur** : S'exécute lorsque l'état est \"prêt\"\n\n### 7. Formater et extraire le contenu Pinterest\n- **Type** : Nœud de code (JavaScript)\n- **But** : Analyse et structure les données brutes grattées\n- **Champs extraits** :\n  - URL\n  - ID de publication\n  - Titre\n  - Contenu\n  - Date de publication\n  - Utilisateur\n  - J'aime et commentaires\n  - Médias\n  - URL de l'image\n  - Catégories\n  - Hashtags\n\n### 8. Enregistrer les données Pinterest dans Google Sheets\n- **Type** : Nœud Google Sheets\n- **Opération** : Ajouter\n- **Colonnes mappées** :\n  - URL de publication\n  - Titre\n  - Contenu\n  - URL de l'image\n\n### 9. Attendre 1 minute (Désactivé)\n- **Type** : Outil de code\n- **But** : Ajoute un délai entre les vérifications d'état (actuellement désactivé)\n- **Durée** : 60 secondes\n\n## Exigences de configuration\n\n### Identifiants requis\n\n1. **API Anthropic**\n   - ID d'identifiant : `ANTHROPIC_CREDENTIAL_ID`\n   - Requis pour l'accès à Claude Sonnet 4\n\n2. **API BrightData**\n   - Clé API : `BRIGHT_DATA_API_KEY`\n   - Requis pour le service de grattage Pinterest\n\n3. **OAuth2 Google Sheets**\n   - ID d'identifiant : `GOOGLE_SHEETS_CREDENTIAL_ID`\n   - Requis pour le stockage des données\n\n### Espaces réservés de configuration\n\nRemplacez les espaces réservés suivants par des valeurs réelles :\n\n- `WEBHOOK_ID_PLACEHOLDER` : ID de webhook de déclencheur de formulaire\n- `GOOGLE_SHEET_ID_PLACEHOLDER` : ID du document Google Sheets cible\n- `WORKFLOW_VERSION_ID` : version du flux de travail n8n\n- `INSTANCE_ID_PLACEHOLDER` : identifiant d'instance n8n\n- `WORKFLOW_ID_PLACEHOLDER` : identifiant unique du flux de travail\n\n## Flux de données\n\n```\nEntrée utilisateur (Mots-clés) \n    ↓\nTraitement de l'agent IA (Claude)\n    ↓\nCréation de travail de grattage BrightData\n    ↓\nBoucle de surveillance de l'état\n    ↓\nRécupération des données (lorsque prêt)\n    ↓\nFormatage et extraction de contenu\n    ↓\nStockage dans Google Sheets\n```\n\n## Structure des données de sortie\n\nChaque épingle Pinterest grattée contient :\n\n- **URL** : Lien direct vers l'épingle Pinterest\n- **ID de publication** : Identifiant unique Pinterest\n- **Titre** : Titre/entête de l'épingle\n- **Contenu** : Texte de description de l'épingle\n- **Date de publication** : Horodatage de publication\n- **Utilisateur** : Nom d'utilisateur Pinterest\n- **Engagement** : Nombre de j'aime et de commentaires\n- **Médias** : Informations sur le type de média\n- **URL de l'image** : Lien direct vers l'image\n- **Catégories** : Étiquettes de catégorisation de l'épingle\n- **Hashtags** : Hashtags associés\n- **Commentaires** : Texte des commentaires des utilisateurs\n\n## Instructions d'utilisation\n\n1. **Configuration initiale** :\n   - Configurez tous les identifiants API requis\n   - Remplacez les valeurs des espaces réservés par des ID réels\n   - Créez le document Google Sheets cible\n\n2. **Exécution du flux de travail** :\n   - Accédez à l'URL du déclencheur de formulaire\n   - Entrez les mots-clés Pinterest souhaités\n   - Soumettez le formulaire pour initier le grattage\n\n3. **Surveillance des progrès** :\n   - L'agent IA gérera automatiquement la surveillance de l'état\n   - Aucune intervention manuelle requise pendant le grattage\n\n4. **Accès aux résultats** :\n   - Les données structurées seront automatiquement enregistrées dans Google Sheets\n   - Chaque exécution ajoute de nouvelles données à la feuille existante\n\n## Notes techniques\n\n- **Limitation de taux** : L'API BrightData a une limitation de taux intégrée\n- **Limites de données** : La configuration actuelle limite à 2 épingles par mot-clé\n- **Vérification d'état** : Vérification automatique de l'état jusqu'à l'achèvement\n- **Gestion des erreurs** : Inclut la capture d'erreurs dans les requêtes de grattage\n- **Traitement asynchrone** : Prend en charge les travaux de grattage de longue durée\n\n## Options de personnalisation\n\n- **Ajuster les limites de données** : Modifier le paramètre `limit_per_input`\n- **Activer le minuteur d'attente** : Activer le nœud d'attente désactivé pour des travaux plus longs\n- **Champs de données personnalisés** : Modifier le code de formatage pour des champs supplémentaires\n- **Stockage alternatif** : Remplacer Google Sheets par d'autres options de stockage\n\n## Modèle de Google Sheets d'exemple\n\nCréez une copie de la structure de feuille d'exemple :\n```\nhttps://docs.google.com/spreadsheets/d/SAMPLE_SHEET_ID/edit\n```\n\nColonnes requises :\n- URL de publication\n- Titre  \n- Contenu\n- URL de l'image\n\n## Dépannage\n\n- **Erreurs d'authentification** : Vérifiez que tous les identifiants API sont correctement configurés\n- **Échecs de grattage** : Vérifiez l'état de l'API BrightData et les limites de taux\n- **Problèmes de formatage des données** : Examinez le code de formatage JavaScript pour des erreurs d'analyse\n- **Erreurs Google Sheets** : Assurez-vous des autorisations OAuth2 appropriées et de l'accès à la feuille\n\n\nPour toute question ou assistance, veuillez contacter : [Email](mailto:info@incrementors.com) ou\n[remplissez ce formulaire](https://www.incrementors.com/contact-us/)",
+  "workflow": {
+    "id": "WORKFLOW_ID_PLACEHOLDER",
+    "meta": {
+      "instanceId": "INSTANCE_ID_PLACEHOLDER",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "MCP: Pinterest Keyword-Based Content Scraper with AI Agent & BrightData Automation",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "5234018f-d12c-439f-9713-2a7cd9cb239f",
+        "name": "Anthropic Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "position": [
+          -240,
+          320
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "claude-sonnet-4-20250514",
+            "cachedResultName": "Claude 4 Sonnet"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "anthropicApi": {
+            "id": "ANTHROPIC_CREDENTIAL_ID",
+            "name": "Anthropic API"
+          }
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "e3ebf96d-a8d9-41cf-b5bc-d7eda3776aa2",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          280,
+          -200
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 500,
+          "height": 260,
+          "content": "🤖 AI Agent  \nProcesses input keyword via language model (Claude). Acts as controller for all scraping-related steps.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b47df625-4d67-4d9c-b94c-dc32a09077be",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1080,
+          260
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 320,
+          "height": 260,
+          "content": "⏱️ Wait Timer (Disabled)  \nWaits 1 minute before retrying scraping status. Currently disabled but useful for longer jobs.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a674d3dc-ff9f-42fc-8bc4-737a64ef0bd1",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          700,
+          360
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 320,
+          "height": 260,
+          "content": "📦 Download Scraped Data  \nFetches scraped Pinterest data once the snapshot status is \"ready\". This returns actual content data.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "966c2317-199b-439a-9651-37fde866eae2",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          380,
+          360
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 280,
+          "height": 260,
+          "content": "🔄 Check Snapshot Progress  \nContinuously checks scraping status (like \"running\", \"ready\") using `snapshot_id`. Loops until data is ready.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "28aaa784-5cb2-42db-b170-284cbf3bfcdb",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          40,
+          280
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 280,
+          "height": 280,
+          "content": "🚀 Launch Scraping Job  \nSends the keyword to BrightData API using POST request to create a scraping snapshot. Returns a `snapshot_id`.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "38c7467d-cc5f-4e7e-acfc-339e9700ff49",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -320,
+          200
+        ],
+        "parameters": {
+          "width": 280,
+          "height": 260,
+          "content": "🧠 Claude Sonnet 4 Model  \nUsed to intelligently process, understand, or enrich keywords before initiating scrape via the AI agent.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5fc7d5ee-83a4-4f5f-b41b-270af43f6f2c",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -40,
+          -240
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 260,
+          "height": 280,
+          "content": "📥 Keyword Input Form  \nUser submits keywords here to initiate scraping. This is the entry trigger for the Pinterest automation.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "dcdb9696-579f-49fc-bab0-3f81a4f87595",
+        "name": "BrightData Pinterest Scraping",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          140,
+          400
+        ],
+        "parameters": {
+          "url": "https://api.brightdata.com/datasets/v3/trigger",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', `This HTTP POST request sends the user's chat input (like \"Food\") to the BrightData Pinterest collector. The collector uses this input to create a new scraping snapshot based on the keyword. The request body includes a sessionId, action, and chatInput, and the response will return a snapshot_id which will be used in the next steps to fetch the scraped data.\n[{\"keyword\":\"food\"}]`, 'json') }}",
+          "sendBody": true,
+          "sendQuery": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "dataset_id",
+                "value": "gd_lk0sjs4d21kdr7cnlv"
+              },
+              {
+                "name": "include_errors",
+                "value": "true"
+              },
+              {
+                "name": "type",
+                "value": "discover_new"
+              },
+              {
+                "name": "discover_by",
+                "value": "keyword"
+              },
+              {
+                "name": "limit_per_input",
+                "value": "2"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BRIGHT_DATA_API_KEY"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "9657f18e-62d4-44d4-8537-39175b983f17",
+        "name": "Check Scraping Status",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          460,
+          480
+        ],
+        "parameters": {
+          "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', `use snapshot id to create http request url \nfor example:\nhttps://api.brightdata.com/datasets/v3/progress/your_snapshot_id`, 'string') }}",
+          "options": {},
+          "sendQuery": true,
+          "sendHeaders": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "format",
+                "value": "json"
+              }
+            ]
+          },
+          "toolDescription": "Makes an HTTP request to check the status of snapshot_id and returns the status like \"ready\" or \"running\". If the status received is \"running\", then make another HTTP request.",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BRIGHT_DATA_API_KEY"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "d2af5353-509f-4a82-b861-f66c5add7abb",
+        "name": "Fetch Pinterest Snapshot Data",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          800,
+          460
+        ],
+        "parameters": {
+          "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', `make http request URL with snapshot_id \nfor example:\nhttps://api.brightdata.com/datasets/v3/snapshot/your_snapshot_id`, 'string') }}",
+          "options": {},
+          "sendQuery": true,
+          "sendHeaders": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "format",
+                "value": "json"
+              }
+            ]
+          },
+          "toolDescription": "Makes an HTTP request if when you snapshot_id in ready status and returns the response data",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BRIGHT_DATA_API_KEY"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "72be1274-d741-46b1-8fb9-edfd4dc44e69",
+        "name": "Pinterest Keyword Input",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          40,
+          -120
+        ],
+        "webhookId": "WEBHOOK_ID_PLACEHOLDER",
+        "parameters": {
+          "options": {},
+          "formTitle": "Pinterest",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "Keywords",
+                "requiredField": true
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ea43cb15-38f9-46c7-b1da-320a2687d65a",
+        "name": "Wait for 1 Minute",
+        "type": "@n8n/n8n-nodes-langchain.toolCode",
+        "disabled": true,
+        "position": [
+          1180,
+          360
+        ],
+        "parameters": {
+          "jsCode": "async function sleep(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n\n// ⏱️ 1 Minute = 60000 ms\nawait sleep(60000);\n\nreturn [\n  {\n    json: {\n      message: \"1 minute wait done\",\n      originalInput: $json[\"message\"] || \"No input\"\n    }\n  }\n];\n"
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "834ca6f4-0f62-4de3-a321-20455864df1f",
+        "name": "Keyword-based Scraping Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          360,
+          -120
+        ],
+        "parameters": {
+          "text": "=\nYou are an AI-powered Pinterest content scraping agent. Your goal is to find relevant content based on user-provided keywords.\n\n**Instructions:**\n1. The user will provide a keyword {{ $json.Keywords }}.\n2. Your primary task is to initiate a Pinterest content scraping job using the provided `BrightData Pinterest Scraping` tool with the given keyword.\n3. Once the scraping job is launched, you must use the `Check Scraping Status` tool to monitor its progress. You need to keep checking the status until it reports \"ready\". If the status is \"running\", you should indicate that you are waiting and will check again.\n4. Once the status is \"ready\", use the `Fetch Pinterest Snapshot Data` tool to download the scraped content.\n5. After successfully fetching the data, present the raw scraped data as your final output.",
+          "options": {},
+          "promptType": "define"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "29790c94-25fc-4bb3-89ec-1bc64bf0558d",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -440,
+          -480
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 660,
+          "height": 140,
+          "content": "📌 Notes Placeholder  \nCurrently unused — ideal for adding documentation, reminders, or tips related to this automation.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "65d06d4d-4ff4-4db6-a8fa-3ffb4cc144e6",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1120,
+          -200
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 380,
+          "height": 280,
+          "content": "\"This is the final output step where formatted Pinterest content is saved for future use, reporting, or distribution.\""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7bad4070-9b30-4929-89c0-7130a6021349",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          800,
+          -220
+        ],
+        "parameters": {
+          "width": 260,
+          "height": 280,
+          "content": "Extracts and structures scraped Pinterest data into clean fields like Title, URL, Content, Image URL, Hashtags, etc."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e5e34ef4-5344-4aff-9dc9-3094362c35f0",
+        "name": "Format & Extract Pinterest Content",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          880,
+          -120
+        ],
+        "parameters": {
+          "jsCode": "const results = [];\n\nfor (const item of $input.all()) {\n  const rawOutput = item.json.output;\n\n  if (!rawOutput) continue;\n\n  const records = rawOutput.split(/\\*\\*Pin \\d+:\\*\\*/g);\n\n  for (let i = 1; i < records.length; i++) {\n    const recordText = records[i];\n    if (recordText.trim() === '') continue;\n\n    const extractedItem = {};\n\n    // Extract fields using updated regex\n    const urlMatch = recordText.match(/- \\*\\*URL:\\*\\* (.*)/);\n    if (urlMatch) extractedItem.URL = urlMatch[1].trim();\n\n    const postIdMatch = recordText.match(/- \\*\\*Post ID:\\*\\* (.*)/);\n    if (postIdMatch) extractedItem.PostID = postIdMatch[1].trim();\n\n    const titleMatch = recordText.match(/- \\*\\*Title:\\*\\* (.*)/);\n    if (titleMatch) extractedItem.Title = titleMatch[1].trim();\n\n    const contentMatch = recordText.match(/- \\*\\*Content:\\*\\* (.*)/);\n    if (contentMatch) extractedItem.Content = contentMatch[1].trim();\n\n    const datePostedMatch = recordText.match(/- \\*\\*Date Posted:\\*\\* (.*)/);\n    if (datePostedMatch) extractedItem.DatePosted = datePostedMatch[1].trim();\n\n    const userMatch = recordText.match(/- \\*\\*User:\\*\\* (.*)/);\n    if (userMatch) extractedItem.User = userMatch[1].trim();\n\n    const engagementMatch = recordText.match(/- \\*\\*Engagement:\\*\\* (\\d+) likes, (\\d+) comment/);\n    if (engagementMatch) {\n      extractedItem.Likes = parseInt(engagementMatch[1], 10);\n      extractedItem.Comments = parseInt(engagementMatch[2], 10);\n    }\n\n    const mediaMatch = recordText.match(/- \\*\\*Media:\\*\\* (.*)/);\n    if (mediaMatch) extractedItem.Media = mediaMatch[1].trim();\n\n    const imageUrlMatch = recordText.match(/- \\*\\*Image URL:\\*\\* (.*)/);\n    if (imageUrlMatch) extractedItem.ImageURL = imageUrlMatch[1].trim();\n\n    const categoriesMatch = recordText.match(/- \\*\\*Categories:\\*\\* (.*)/);\n    if (categoriesMatch) {\n      extractedItem.Categories = categoriesMatch[1].split(',').map(s => s.trim());\n    }\n\n    const hashtagsMatch = recordText.match(/- \\*\\*Hashtags:\\*\\* (.*)/);\n    if (hashtagsMatch) {\n      extractedItem.Hashtags = hashtagsMatch[1].split(',').map(s => s.trim());\n    }\n\n    const commentMatch = recordText.match(/- \\*\\*Comment:\\*\\* (.*)/);\n    if (commentMatch) extractedItem.Comment = commentMatch[1].trim();\n\n    const commentsSectionMatch = recordText.match(/- \\*\\*Comments:\\*\\* (.*)/);\n    if (commentsSectionMatch) {\n      extractedItem.CommentsText = commentsSectionMatch[1].split(',').map(s => s.trim());\n    }\n\n    if (Object.keys(extractedItem).length > 0) {\n      results.push({ json: extractedItem });\n    }\n  }\n}\n\nreturn results;\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "7528da1f-032c-49f6-b088-997119a72b36",
+        "name": "Save Pinterest Data to Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1260,
+          -120
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Title": "={{ $json.Title }}",
+              "Content": "={{ $json.Content }}",
+              "Post URL": "={{ $json.URL }}",
+              "Image URL": "={{ $json.ImageURL }}"
+            },
+            "schema": [
+              {
+                "id": "Post URL",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Post URL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Title",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Content",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Content",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image URL",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Image URL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "GOOGLE_SHEET_ID_PLACEHOLDER"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "GOOGLE_SHEETS_CREDENTIAL_ID",
+            "name": "Google Sheets OAuth2"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "1ed9bda3-86ca-4699-b5a5-c90672a7dc9f",
+        "name": "Sticky Note11",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          700,
+          -520
+        ],
+        "parameters": {
+          "color": 7,
+          "content": "Create a copy of this sample sheet:\n\nhttps://docs.google.com/spreadsheets/d/SAMPLE_SHEET_ID/edit"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "WORKFLOW_VERSION_ID",
+    "connections": {
+      "Wait for 1 Minute": {
+        "ai_tool": [
+          [
+            {
+              "node": "Keyword-based Scraping Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Keyword-based Scraping Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Scraping Status": {
+        "ai_tool": [
+          [
+            {
+              "node": "Keyword-based Scraping Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinterest Keyword Input": {
+        "main": [
+          [
+            {
+              "node": "Keyword-based Scraping Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Keyword-based Scraping Agent": {
+        "main": [
+          [
+            {
+              "node": "Format & Extract Pinterest Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "BrightData Pinterest Scraping": {
+        "ai_tool": [
+          [
+            {
+              "node": "Keyword-based Scraping Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Pinterest Snapshot Data": {
+        "ai_tool": [
+          [
+            {
+              "node": "Keyword-based Scraping Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format & Extract Pinterest Content": {
+        "main": [
+          [
+            {
+              "node": "Save Pinterest Data to Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 20,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 11
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequestTool": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.toolCode": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatAnthropic": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Shiv Gupta",
+    "username": "shivgupta",
+    "bio": "",
+    "verified": true,
+    "links": [],
+    "avatar": "https://gravatar.com/avatar/99e608b2a5f6abbef6aa958506c47c4a5fb6ba7b78f54fa11e765424e17ac909?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1145,
+      "icon": "file:anthropic.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "codex": {
+        "data": {
+          "alias": [
+            "claude",
+            "sonnet",
+            "opus"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatanthropic/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Anthropic"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzdEN0Q4NyIgZD0iTTMyLjczIDBoLTYuOTQ1TDM4LjQ1IDMyaDYuOTQ1ek0xMi42NjUgMCAwIDMyaDcuMDgybDIuNTktNi43MmgxMy4yNWwyLjU5IDYuNzJoNy4wODJMMTkuOTI5IDB6bS0uNzAyIDE5LjMzNyA0LjMzNC0xMS4yNDYgNC4zMzQgMTEuMjQ2eiIvPjwvc3ZnPg=="
+      },
+      "displayName": "Anthropic Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1197,
+      "icon": "fa:code",
+      "name": "@n8n/n8n-nodes-langchain.toolCode",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolcode/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Recommended Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Outil de code"
+      },
+      "iconData": {
+        "icon": "code",
+        "type": "icon"
+      },
+      "displayName": "Code Tool",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}
