@@ -1,0 +1,711 @@
+{
+  "id": 3826,
+  "name": "Agent de chat IA : Dumpling AI + GPT-4o pour sauvegarder automatiquement les données des entreprises locales dans Airtable",
+  "views": 1156,
+  "recentViews": 1,
+  "totalViews": 1156,
+  "createdAt": "2025-05-01T19:21:12.203Z",
+  "description": "### À qui cela s'adresse-t-il ?\nCe flux de travail s'adresse aux spécialistes du marketing numérique, aux propriétaires de petites entreprises, aux agences de génération de leads et aux assistants virtuels qui ont besoin d'un moyen évolutif pour trouver et stocker des leads d'entreprises locales en utilisant l'IA. Il est particulièrement utile pour les équipes qui souhaitent enrichir les leads avec des informations d'actualités en temps réel et sauvegarder les données structurées dans Airtable.\n\n---\n\n### Quel problème ce flux de travail résout-il ?\nLa recherche manuelle d'entreprises locales et le fait de rester à jour avec les actualités pertinentes prennent du temps et sont inefficaces. Cette automatisation élimine ce fardeau en utilisant des agents de chat Dumpling AI pour générer des leads et du contexte, GPT-4o pour résumer, et Airtable pour stocker tout en un seul endroit.\n\n---\n\n### Ce que fait ce flux de travail\nCe flux de travail IA écoute un déclencheur manuel dans n8n et exécute les étapes suivantes :\n1. Extrait des leads d'entreprises locales en utilisant un **Agent d'Entreprises Locales** de Dumpling AI.\n2. Récupère les actualités actuelles liées au type d'entreprise ou à l'emplacement en utilisant un **Agent d'Actualités** de Dumpling AI.\n3. Utilise GPT-4o pour combiner les deux réponses en un résumé lisible par un humain.\n4. Extrait des données de lead structurées comme le nom, la catégorie et la ville.\n5. Sauvegarde le résumé et les données de lead dans Airtable pour un suivi facile.\n\n---\n\n### Configuration\n\n#### 1. **Créer des agents IA dans Dumpling AI**\n- Connectez-vous sur [Dumpling AI](https://app.dumplingai.com)\n- Créez deux agents distincts :\n  - **Agent d'Entreprises Locales** : Conçu pour répondre avec des listes structurées d'entreprises par emplacement et catégorie.\n  - **Agent d'Actualités** : Conçu pour récupérer des actualités récentes pertinentes et des résumés sur un secteur ou une région spécifique.\n- Après avoir configuré chaque agent, copiez la **Clé de l'Agent** de Dumpling AI. Ces clés seront nécessaires dans les en-têtes de vos nœuds de requête HTTP dans n8n.\n\n#### 2. **Déclencheur Manuel**\n- Ce flux de travail commence par un déclencheur manuel à l'intérieur de n8n, qui est lorsque le message de chat est reçu.\n- Cela facilite les tests et la réutilisation, surtout pendant la configuration.\n\n#### 3. **Obtenir des données d'entreprises locales de Dumpling AI**\n- Le premier nœud de requête HTTP envoie une invite comme `Listez 5 des meilleures entreprises immobilières à Atlanta avec adresse complète et services`.\n- Incluez votre **Clé de l'Agent d'Entreprises Locales** dans l'en-tête `x-agent-key`.\n- La réponse renverra une liste structurée de leads d'entreprises.\n\n#### 4. **Obtenir le contexte des actualités de Dumpling AI**\n- Le deuxième nœud de requête HTTP envoie une invite telle que `Donnez-moi les dernières actualités liées au marché immobilier à Atlanta`.\n- Utilisez votre **Clé de l'Agent d'Actualités** dans l'en-tête.\n- Cela récupère un ensemble bref de résumés d'actualités récentes pertinents pour les entreprises recherchées.\n\n#### 5. **Utiliser GPT-4o pour fusionner et résumer**\n- Le nœud GPT combine la liste des entreprises et des actualités en un résumé cohérent.\n- Vous pouvez modifier l'invite pour produire un format de paragraphe, des points de balle ou des notes structurées.\n\n#### 6. **Sauvegarder le lead dans Airtable**\n- Le nœud Airtable envoie tous les champs structurés dans votre base et table sélectionnées.\n- Assurez-vous de connecter votre compte Airtable et de confirmer que les colonnes correspondent exactement.\n\n---\n\n### Comment personnaliser ce flux de travail\n- Remplacez l'invite à l'intérieur du nœud HTTP pour vous concentrer sur différents types d'entreprises ou villes.\n- Développez la sortie GPT pour inclure des informations supplémentaires sur les leads comme des sites web, des numéros de téléphone ou des e-mails si l'agent les inclut.\n- Ajoutez un déclencheur webhook pour permettre à ce flux d'être exécuté via un chatbot, une application externe ou un bouton.\n- Liez à HubSpot ou un autre CRM pour synchroniser les leads automatiquement.\n- Dupliquez le processus pour fonctionner pour plusieurs secteurs en parallèle.\n\n---\n\n### Remarques finales\n- Vous devez d'abord créer et configurer vos agents Dumpling AI avant d'exécuter ce flux de travail.\n- Les Clés des Agents de Dumpling AI sont requises dans les deux nœuds de requête HTTP.\n- Ce flux est modulaire et flexible, prêt pour des intégrations CRM plus approfondies.\n- Le déclencheur manuel est excellent pour les tests, mais vous pouvez ajouter un nœud Webhook pour l'automatiser.\n\nCe flux de travail vous aide à lancer un processus intelligent de génération de leads qui combine la découverte d'entreprises ciblées par emplacement, des insights générés par l'IA et une sortie structurée compatible avec les CRM, le tout alimenté par Dumpling AI et OpenAI.",
+  "workflow": {
+    "id": "MyJ84ASqWdHGYuy0",
+    "meta": {
+      "instanceId": "a1ae5c8dc6c65e674f9c3947d083abcc749ef2546dff9f4ff01de4d6a36ebfe6",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "AI Chat Agent: Dumpling AI + GPT-4o to Auto-Save Local Business Data to Airtable",
+    "tags": [
+      {
+        "id": "TlcNkmb96fUfZ2eA",
+        "name": "Tutorials",
+        "createdAt": "2025-04-15T17:02:00.249Z",
+        "updatedAt": "2025-04-15T17:02:00.249Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "1617006d-20d8-44da-8410-1fbbd6bc317e",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -480,
+          -40
+        ],
+        "webhookId": "13e55a07-d144-403b-b465-2a539501b207",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "ccb3073d-4c39-44bf-bd7f-05a6ae0550cb",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1200,
+          -220
+        ],
+        "parameters": {
+          "width": 660,
+          "height": 900,
+          "content": "#### 🧠 Workflow Purpose\nAn interactive chat assistant that listens for incoming messages, processes them with AI, and uses Dumpling AI to fetch external information or complete tasks — with memory tracking.\n\n## 🔄 Workflow Steps\n\n### 1. Chat Trigger\n- Listens for chat messages (e.g., from a web app or messaging platform).\n\n### 2. OpenAI Chat Model\n- Processes the user's input using GPT-4o mini.\n\n### 3. Simple Memory Buffer\n- Keeps context from the last 10 exchanges to maintain a conversational flow.\n\n### 4. DumplingAI- News Agent and Local Business Finder Agent\n- Makes an external API call to Dumpling AI’s agent endpoint to search or generate responses based on user intent.\n\n### 5. AI Agent Node\n- Connects all components: language model, memory, and external tools.\n\n### 6. Airtable Tool – Dynamic Business Data Storage\n\n-This Airtable node auto-populates and updates a “Local Business” table using data returned from Dumpling AI’s Local Business Finder Agent. It maps essential fields such as:\n\n\n## ⚙️ Notes\n- Dumpling AI agent ID is pre-configured.\n- JSON response from Dumpling is parsed as usable data.\n- You can add routing or fallback logic based on Dumpling's results.\n\n##### 💡 Tip\nTo customize it for a specific domain (e.g., real estate, restaurant finder, course assistant), adjust the agent prompt or plug in a domain-specific tool module.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "266e0454-5133-4287-a449-2eb1d3d00485",
+        "name": "News Agent",
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "position": [
+          -20,
+          180
+        ],
+        "parameters": {
+          "url": "https://app.dumplingai.com/api/v1/agents/generate-completion",
+          "method": "POST",
+          "jsonBody": "={\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\":\"{{ $json.chatInput}}\"\n    }\n  ],\n  \"agentId\": \"\",\n  \"parseJson\": \"True\"\n  }",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "optimizeResponse": true
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "xamyMqCpAech5BeT",
+            "name": "Header Auth account"
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "b3d834d7-eeb5-4ce8-bb45-2d6b58f8c0a9",
+        "name": "Local Business Finder Agent",
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "position": [
+          100,
+          180
+        ],
+        "parameters": {
+          "url": "https://app.dumplingai.com/api/v1/agents/generate-completion",
+          "method": "POST",
+          "jsonBody": "={\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\":\"{{ $json.chatInput}}\"\n    }\n  ],\n  \"agentId\": \"\",\n  \"parseJson\": \"false\"\n  }",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "optimizeResponse": true
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "xamyMqCpAech5BeT",
+            "name": "Header Auth account"
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "bc75a2b5-8d99-487a-a9fc-12045b555207",
+        "name": "Track Last 10 Messages ",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          -160,
+          180
+        ],
+        "parameters": {
+          "contextWindowLength": 10
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "0eb2b921-360e-4043-8a2f-301d10113dfc",
+        "name": "Route AI Tasks with Dumpling + GPT + Memory",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -108,
+          -40
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "You are a helpful assistant\nUse the Local Business Finder Agent HTTP request tool to find local business\n\nUse the News agent HTTP request tool to get get news\n\nUse the Create and update Airtable tool to send results from the Local Business Finder Agent HTTP request tool"
+          }
+        },
+        "typeVersion": 1.8
+      },
+      {
+        "id": "948fafa9-6b4c-4656-b27f-ce5b1eb0d363",
+        "name": "Process Input with GPT-4o Mini",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -320,
+          180
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "gY2Jp4ypzmjcwwV6",
+            "name": "n8n free OpenAI API credits"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "4a07cedd-f40e-4123-a894-c53da751263f",
+        "name": "Save Business Results",
+        "type": "n8n-nodes-base.airtableTool",
+        "position": [
+          240,
+          180
+        ],
+        "parameters": {
+          "base": {
+            "__rl": true,
+            "mode": "list",
+            "value": "",
+            "cachedResultUrl": "https://airtable.com/appPSvSKdA6075xJC",
+            "cachedResultName": "Testing n8n"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "list",
+            "value": "",
+            "cachedResultUrl": "https://airtable.com/appPSvSKdA6075xJC/tblgxhdRFc2fGLV9o",
+            "cachedResultName": "Local business"
+          },
+          "columns": {
+            "value": {
+              "id": "=",
+              "Rating": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Rating', ``, 'number') }}",
+              "Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Address', ``, 'string') }}",
+              "Website": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Website', ``, 'string') }}",
+              "Category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Category', ``, 'string') }}",
+              "Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone_Number', ``, 'string') }}",
+              "Total Reviews": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Total_Reviews', ``, 'number') }}",
+              "Name of Restaurant": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name_of_Restaurant', ``, 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "id",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "id",
+                "defaultMatch": true
+              },
+              {
+                "id": "Name of Restaurant",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Name of Restaurant",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Rating",
+                "type": "number",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Rating",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Total Reviews",
+                "type": "number",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Total Reviews",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Address",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Address",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Phone Number",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Phone Number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Website",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Website",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Category",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Category",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "upsert"
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "H8PVkBgUPCcUhhRC",
+            "name": "Airtable Personal Access Token account"
+          }
+        },
+        "typeVersion": 2.1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "57c6329e-df0b-4eb4-9837-643c7de85e5e",
+    "connections": {
+      "News Agent": {
+        "ai_tool": [
+          [
+            {
+              "node": "Route AI Tasks with Dumpling + GPT + Memory",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Business Results": {
+        "ai_tool": [
+          [
+            {
+              "node": "Route AI Tasks with Dumpling + GPT + Memory",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Track Last 10 Messages ": {
+        "ai_memory": [
+          [
+            {
+              "node": "Route AI Tasks with Dumpling + GPT + Memory",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Route AI Tasks with Dumpling + GPT + Memory",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Local Business Finder Agent": {
+        "ai_tool": [
+          [
+            {
+              "node": "Route AI Tasks with Dumpling + GPT + Memory",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Process Input with GPT-4o Mini": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Route AI Tasks with Dumpling + GPT + Memory",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Route AI Tasks with Dumpling + GPT + Memory": {
+        "main": [
+          []
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 8,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.airtableTool": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.toolHttpRequest": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Yang",
+    "username": "yang",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/6c996ff9ed140535b522858466c376f84e755b851b34b0ad900e4e6568568f84?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire Simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1268,
+      "icon": "file:httprequest.svg",
+      "name": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolhttprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Recommended Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHBhdGggZmlsbD0iIzAwMDRGNSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNNDAgMjBDNDAgOC45NTMgMzEuMDQ3IDAgMjAgMFMwIDguOTUzIDAgMjBzOC45NTMgMjAgMjAgMjAgMjAtOC45NTMgMjAtMjBNMjAgMzYuOTQ2Yy0xLjExNSAwLTIuODYyLS45NzktNC41LTQuMjQ3LS43MDQtMS40MDctMS4zMDQtMy4xNTYtMS43NDctNS4wMTRIMjYuMTljLS4zODYgMS44NTUtLjk4NiAzLjYwNS0xLjY5IDUuMDE0LTEuNjM4IDMuMjY4LTMuMzg1IDQuMjQ3LTQuNSA0LjI0N00xMi45MDYgMjBjMCAxLjYxLjEwMyAzLjE2NC4yOTQgNC42M2gxMy42YTM2IDM2IDAgMCAwIC4yOTQtNC42M2MwLTEuNjEtLjEwMy0zLjE2NC0uMjk0LTQuNjNIMTMuMmEzNiAzNiAwIDAgMC0uMjk0IDQuNjNNMjAgMy4wNTRjMS4xMTUgMCAyLjg2Mi45NzcgNC41IDQuMjQ2LjcwNyAxLjQxNCAxLjMwNyAzLjEwNyAxLjY5MiA1LjAxNUgxMy43NWMuNDQzLTEuOTEgMS4wNDQtMy42MDIgMS43NS01LjAxNCAxLjYzOC0zLjI3IDMuMzg1LTQuMjQ3IDQuNS00LjI0N00zMC4xNDggMjBjMC0xLjU5LS4wOTQtMy4xMzgtLjMyNS00LjYzaDYuNDgxYy40MjEgMS40NzIuNjQyIDMuMDI2LjY0MiA0LjYzcy0uMjIgMy4xNTgtLjY0MiA0LjYzaC02LjQ4MWMuMjMxLTEuNDkyLjMyNS0zLjA0LjMyNS00LjYzTTI2LjI3NyA0LjI1NWMxLjM2IDIuMTA1IDIuNDM0IDQuODc3IDMuMSA4LjA2aDUuNzI4YTE2Ljk4IDE2Ljk4IDAgMCAwLTguODI4LTguMDZtLTE1LjY1NCA4LjA2aC01LjczYzEuODU4LTMuNjQ3IDUtNi41MzIgOC44My04LjA2LTEuMzYgMi4xMDUtMi40MzQgNC44NzctMy4xIDguMDZNMy4wNTQgMjBjMCAxLjYwMy4yMjMgMy4xNTcuNjQgNC42M2g2LjQyOGE0MCA0MCAwIDAgMS0uMjctNC42M2MwLTEuNTk0LjA5NC0zLjE0Mi4yNy00LjYzSDMuNjk1YTE3IDE3IDAgMCAwLS42NCA0LjYzbTIzLjIyMyAxNS43NDNjMS4zNi0yLjEwNCAyLjQzNC00Ljg3NSAzLjEtOC4wNThoNS43MjhhMTYuOTYgMTYuOTYgMCAwIDEtOC44MjggOC4wNThtLTEyLjU1NCAwYTE3IDE3IDAgMCAxLTguODMtOC4wNThoNS43M2MuNjY2IDMuMTgzIDEuNzQgNS45NTQgMy4xIDguMDU4IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4="
+      },
+      "displayName": "HTTP Request Tool",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de Leads"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}

@@ -1,0 +1,507 @@
+{
+  "id": 4004,
+  "name": "Surveillance des capteurs IOT à distance via MQTT et InfluxDB",
+  "views": 1245,
+  "recentViews": 1,
+  "totalViews": 1245,
+  "createdAt": "2025-05-12T21:47:36.071Z",
+  "description": ". \n\n# Lire et stocker les données des capteurs IOT avec le déclencheur MQTT et InfluxDB\n\ntonyduffy@protonmail.com\n\n\nCe flux de travail est destiné aux utilisateurs souhaitant un exemple pratique de la manière d'obtenir des données à partir de systèmes IOT distants en utilisant le protocole MQTT dans un environnement n8n.\n\nLe modèle fournit une mise en œuvre typique des nœuds n8n et des paramètres de configuration nécessaires pour lire et stocker les données IOT.\n\nLe flux de travail lit les données de température et d'humidité d'un système IOT distant, dans ce cas un capteur DHT22 connecté à un microcontrôleur ESP32. Les données sont analysées au format JSON correct, puis ingérées dans un seau de données InfluxDB. À partir de là, les valeurs de température et d'humidité stockées peuvent être affichées en temps réel.\n\nLe flux de travail peut être facilement modifié pour lire les données de tout appareil piloté par MQTT.\n\n## Configuration du capteur IOT à distance\n\nLe contrôleur ESP32 avec le capteur DHT22 fonctionne sur un simulateur Wokwi. Le simulateur utilise Micro Python pour publier un sujet MQTT \"wokwi-weather\" avec les charges utiles de température et d'humidité sur un courtier MQTT Mosquitto en ligne. Le nœud de déclenchement MQTT n8n s'abonne au sujet sur le courtier et lit les valeurs de charge utile lorsque des modifications sont publiées. Le nœud de code prépare ensuite la charge utile au format JSON. Le nœud de requête HTTP ingère les données dans un seau InfluxDB \n\n## Comment personnaliser ce flux de travail selon vos besoins\n\nSimulateur IOT ESP32 Wokwi\n\n* Vous devrez créer un compte gratuit sur Wokwi.com\n* Une fois créé, recherchez un projet \"Micro-Python MQTT Weather Logger (ESP32)\"\n* Ensuite, lorsque le projet de journalisation météo MQTT est ouvert, modifiez les lignes 28 et 29 comme suit\n    * 28 MQTT_CLIENT_ID = \"\"\n    * 29 MQTT_BROKER    = \"test.mosquitto.org\"\n* Vous pouvez ensuite démarrer la simulation en cliquant sur la flèche verte et cela connectera le courtier Mosquitto et le sujet \"wokwi-weather\" sera publié.\n* En cliquant sur le capteur DHT22, la barre de température et d'humidité apparaîtra et vous pourrez changer les valeurs pour envoyer des valeurs de charge utile mises à jour au courtier.\n\nInfluxDB\n\n Vous aurez besoin d'un accès à une base de données InfluxDB fonctionnelle pour utiliser ce flux de travail\n\nRemarque : Vous devrez fournir les éléments suivants pour que le nœud de requête HTTP se connecte à InfluxDB.\n\n* L'URL et le port de l'InfluxDB souhaité (Dans ce cas, l'InfluxDB fonctionne localement sur le port 8086 c'est-à-dire http://localhost:8086.)\n* Seau InfluxDB pour les données. (Dans ce cas, le nom du seau créé est \"wokwi-data\")\n* L'ID d'organisation de l'InfluxDB. Cela peut être obtenu à partir de la page d'administration d'InfluxDB\n* Un jeton API généré pour lire et écrire dans le seau InfluxDB. Créé à partir de l'administration d'InfluxDB\n\nflux de travail n8n.\n\n * Le nœud de déclenchement MQTT est configuré pour s'abonner au sujet \"wokwi-weather\" sur le courtier MQTT Mosquitto de test. Il lit les données de température et d'humidité envoyées par l'ESP32.\n * Le nœud de code utilise Javascript pour déplacer les charges utiles de température et d'humidité au format JSON. Cela est flexible et peut être facilement modifié.\n * Le nœud de requête HTTP poste les charges utiles JSON dans le seau InfluxDB.\n\n\n Lorsque ce qui précède est configuré, le flux de travail devrait fonctionner correctement.\n\nMerci à ceux qui ont téléchargé ce modèle. Faites-moi savoir ce que vous aimeriez construire. Contactez-moi à tonyduffy@protonmail.com",
+  "workflow": {
+    "id": "6pOGYw5O3iOY1Gc6",
+    "meta": {
+      "instanceId": "7221598654c32899e94731aab144bdcd338735c2ac218dc0873131caa0be0ef8",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Remote IOT Sensor monitoring via MQTT and InfluxDB",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "4997f226-f236-4d27-bea4-904744d9ff07",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -700,
+          -360
+        ],
+        "parameters": {
+          "width": 340,
+          "height": 120,
+          "content": "MQTT trigger subscribed to a topic called wokwi-weather via a Mosquitto MQTT broker. The trigger receives the temperature and humidity payloads from a DHT22 sensor connected to a remote ESP32 microcontroller "
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9d4f1da6-fda3-4312-a6b1-bd0ac499dde7",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -240,
+          -360
+        ],
+        "parameters": {
+          "height": 100,
+          "content": "Javascript code to extract the temperature and humidity values to ensure correct JSON format for the database"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d8f01dba-5019-457e-8c1a-99c802282fdf",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          140,
+          -360
+        ],
+        "parameters": {
+          "width": 260,
+          "height": 120,
+          "content": "HTTP request node posts temperature and humidity data from the DHT22 sensor to the InfluxDB data bucket running on a local host http://localhost:8086"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "020858a6-7771-4322-8eb6-b83e99b3563d",
+        "name": "Remote Sensor MQTT Trigger",
+        "type": "n8n-nodes-base.mqttTrigger",
+        "position": [
+          -580,
+          -220
+        ],
+        "parameters": {
+          "topics": "wokwi-weather",
+          "options": {}
+        },
+        "credentials": {
+          "mqtt": {
+            "id": "xtd75tjk1hKlQOba",
+            "name": "MQTT account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "51e6f59f-9b93-4121-8db4-7f47b929fdf5",
+        "name": "Data ingest to InfluxDB bucket",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          200,
+          -220
+        ],
+        "parameters": {
+          "url": "http://localhost:8086/api/v2/write?orgID=<Organization ID>&bucket=<InfluxDB bucket name>&precision=s",
+          "body": "={{ $json.payload }}",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "raw",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Token  <API Token value generated in InfluxDB>"
+              }
+            ]
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 4.2
+      },
+      {
+        "id": "6abe1212-b128-492f-b485-401a4315fcbc",
+        "name": "Payload data preparation node",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -180,
+          -220
+        ],
+        "parameters": {
+          "jsCode": "// Try to parse the incoming message as JSON\nlet data;\ntry {\n  data = JSON.parse($json.message); // $json.message is expected to be a JSON string\n} catch (e) {\n  // If parsing fails, throw an error\n  throw new Error(\"Invalid JSON in MQTT message\");\n}\n\n// Get the topic from the input, or use a default value\nconst topic = $json.topic || \"unknown-topic\";\n\n// Make sure humidity and temp are numbers\nif (typeof data.humidity !== \"number\" || typeof data.temp !== \"number\") {\n  throw new Error(\"Missing or invalid humidity/temp in MQTT message\");\n}\n\n// Create a formatted string like: \"topic_name humidity=45,temp=22\"\nconst line = `${topic} humidity=${data.humidity},temp=${data.temp}`;\n\n// Return the result in the expected format\nreturn [\n  {\n    json: {\n      payload: line\n    }\n  }\n];"
+        },
+        "typeVersion": 2
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "d1311dca-5edf-4f14-86b9-629937cd3416",
+    "connections": {
+      "Remote Sensor MQTT Trigger": {
+        "main": [
+          [
+            {
+              "node": "Payload data preparation node",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Payload data preparation node": {
+        "main": [
+          [
+            {
+              "node": "Data ingest to InfluxDB bucket",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.mqttTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Tony Duffy",
+    "username": "tduffy",
+    "bio": "",
+    "verified": false,
+    "links": [],
+    "avatar": "https://gravatar.com/avatar/7227374f269f5ae645a7586ea7d1ff26ccf852917c0f18b096eee88a9a814b34?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 364,
+      "icon": "file:mqtt.svg",
+      "name": "n8n-nodes-base.mqttTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.mqtttrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/mqtt/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "Development"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur MQTT"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGJhc2VQcm9maWxlPSJ0aW55IiBvdmVyZmxvdz0idmlzaWJsZSIgdmVyc2lvbj0iMS4yIiB2aWV3Qm94PSIwIDAgMzIwIDMyMCI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTcuMSAxMzMuOXY0Ni43YzczLjguMSAxMzQgNTkuMyAxMzUgMTMyLjRoNDUuNWMtMS4xLTk4LjQtODEuNS0xNzguMi0xODAuNS0xNzkuMSIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik03LjEgMzcuM1Y4NGMxMjcuNC4xIDIzMS4xIDEwMi41IDIzMi4xIDIyOC45aDQ1LjVjLTEtMTUxLjUtMTI1LTI3NC42LTI3Ny42LTI3NS42Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTMxMi45IDE5My41Vjk3LjZjLTExLjgtMTYuMS0yNS45LTMzLjQtNDAuNC00Ny44LTE2LTE1LjktMzQuMS0zMC4xLTUyLjMtNDIuN0gxMTljODguMyAzMS44IDE1OS4xIDEwMC4xIDE5My45IDE4Ni40Ii8+PHBhdGggZmlsbD0iIzYwNiIgZD0iTTcuMSAxODAuNnYxMTcuMWMwIDguNCA2LjggMTUuMyAxNS4zIDE1LjNIMTQyYy0xLTczLjItNjEuMS0xMzIuMy0xMzQuOS0xMzIuNG0wLTk2LjV2NDkuOGM5OSAuOSAxNzkuNCA4MC43IDE4MC40IDE3OS4xaDUxLjdDMjM4LjIgMTg2LjYgMTM0LjUgODQuMiA3LjEgODQuMW0zMDUuOCAyMTMuNVYxOTMuNUMyNzguMSAxMDcuMiAyMDcuMyAzOC45IDExOSA3LjFIMjIuNEMxNCA3LjEgNy4xIDEzLjkgNy4xIDIyLjR2MTVjMTUyLjYuOSAyNzYuNiAxMjQgMjc3LjYgMjc1LjZoMTNjOC40LS4xIDE1LjItNi45IDE1LjItMTUuNE0yNzIuNiA0OS44YzE0LjUgMTQuNCAyOC42IDMxLjcgNDAuNCA0Ny44VjIyLjRjMC04LjQtNi44LTE1LjMtMTUuMy0xNS4zaC03Ny4zYzE4IDEyLjYgMzYuMiAyNi44IDUyLjIgNDIuNyIvPjwvc3ZnPg=="
+      },
+      "displayName": "MQTT Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 5,
+      "name": "Ingénierie"
+    }
+  ],
+  "image": []
+}

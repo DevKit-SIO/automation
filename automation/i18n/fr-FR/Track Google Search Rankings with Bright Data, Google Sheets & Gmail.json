@@ -1,0 +1,1111 @@
+{
+  "id": 4310,
+  "name": "Suivre les classements de recherche Google avec Bright Data, Google Sheets et Gmail",
+  "views": 441,
+  "recentViews": 0,
+  "totalViews": 441,
+  "createdAt": "2025-05-22T10:43:11.946Z",
+  "description": "![Auto rank tracker workflow.PNG](fileId:1381)\nCe flux de travail automatise le suivi quotidien ou manuel des classements de mots-clés sur Google Search pour votre domaine cible. Les résultats sont enregistrés dans Google Sheets et envoyés par e-mail en utilisant [l'API SERP de Bright Data](https://brightdata.com/products/serp-api).\n\n**Exigences :**  \n- n8n (local ou cloud) avec les nœuds Google Sheets et Gmail activés  \n- Identifiants de l'API Bright Data  \n\n---\n\n## Cas d'utilisation principaux\n\n- Suivre automatiquement les classements de recherche Google pour plusieurs mots-clés et domaines\n- Maintenir des journaux de classement historiques dans Google Sheets pour l'analyse SEO\n- Recevoir des rapports par e-mail HTML programmés ou à la demande avec des résumés de classement\n- Personnaliser ou étendre pour un suivi et un reporting SEO avancés\n\n---\n\n## Comment ça fonctionne\n\nLe flux de travail est divisé en plusieurs étapes logiques :\n\n### 1. Déclencheurs de flux de travail\n- **Manuel :** Commencez en cliquant sur 'Tester le flux de travail' dans n8n.\n- **Programmé :** Déclenche automatiquement toutes les 24 heures via le Déclencheur de planification.\n\n### 2. Lire les mots-clés et les domaines cibles\n- Récupère les mots-clés et les domaines d'un document Google Sheets spécifié.\n- La feuille doit avoir des colonnes : `Mot-clé` et `Domaine`.\n\n### 3. Transformer les mots-clés\n- Formate chaque mot-clé pour les requêtes URL (les espaces deviennent `+`, par exemple, `expert SEO` → `seo+expert`).\n\n### 4. Traitement par lots\n- Traite les mots-clés par lots afin que chacun soit vérifié individuellement.\n\n### 5. Obtenir les résultats de recherche Google via Bright Data\n- Envoie une requête à l'API SERP de Bright Data pour chaque mot-clé avec la localisation (par défaut : États-Unis).\n- Reçoit le HTML brut des résultats de recherche.\n\n### 6. Analyser et trouver le classement\n- Extrait tous les liens non-Google du HTML.\n- Recherche le domaine cible parmi les résultats.\n- Capture le rang (position), l'URL et le nombre total de résultats vérifiés. Enregistre l'horodatage.\n\n### 7. Enregistrer les résultats dans Google Sheets\n- Ajoute les résultats (mot-clé, domaine, rang, URL trouvée, heure de vérification) à une feuille “Résultats” pour l'historique.\n\n### 8. Générer un rapport HTML et envoyer un e-mail\n- Construit un tableau HTML avec les classements actuels.\n- Envoie le tableau formaté aux destinataires spécifiés avec Gmail.\n\n---\n\n## Étapes de configuration\n\n1. **Google Sheets :**\n   - Créez une feuille nommée “Résultats”, et une autre avec des colonnes `Mot-clé` et `Domaine`.\n   - Mettez à jour l'ID du document et les noms des feuilles dans la configuration du flux de travail.\n\n2. **API Bright Data :**\n   - Acquérez votre jeton API Bright Data.\n   - Entrez-le dans l'en-tête d'autorisation du nœud 'Obtenir des classements' de la requête HTTP.\n\n3. **Gmail :**\n   - Connectez votre compte Gmail via OAuth2 dans n8n.\n   - Définissez votre e-mail de destination dans le nœud 'Envoyer un message par e-mail'.\n\n4. **Personnalisation de la localisation :**\n   - Modifiez le paramètre `gl=` dans l'URL de l'API SERP pour changer de pays/localisation (par exemple, `gl=GB` pour le Royaume-Uni).\n\n---\n\n## Remarques\n\n- Ce flux de travail est conçu pour les environnements n8n locaux ou cloud avec des identifiants de connecteur appropriés.\n- Personnalisez la taille des lots, la liste des destinataires ou la logique d'extraction des classements selon vos besoins.\n- Utilisez des notes autocollantes dans n8n pour des conseils supplémentaires sur la configuration et des astuces de flux de travail.\n\n---\n\nAvec ce flux de travail, vous disposez d'un processus automatisé et répétable pour surveiller, enregistrer et rapporter les classements de recherche Google pour vos domaines—idéal pour le SEO, le marketing numérique et le reporting aux clients ou aux parties prenantes.",
+  "workflow": {
+    "meta": {
+      "instanceId": "b3b467644dfa8e0c6797928cc6d8bf68d9415ef612f9ba2a0d45772e9aff0f75",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "65c5da22-3579-48d7-a37d-899c956a4b3a",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -1600,
+          575
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "8279787b-d056-4a46-aca3-2888416f46cf",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -1600,
+          240
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 24
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "5d17fa71-520a-45bf-82b4-ebb5025085c5",
+        "name": "Making Email Template",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -720,
+          40
+        ],
+        "parameters": {
+          "jsCode": "const simplifiedResults = items.map(item => {\n  return {\n    json: {\n      Keyword: item.json.Keyword,\n      rank: item.json.rank\n    }\n  };\n});\n\n// Start the HTML table\nlet emailContent = \"<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse;'>\";\n\n// Add table header\nemailContent += \"<tr><th>Keyword</th><th>Rank</th></tr>\";\n\n// Add table rows for each result\nsimplifiedResults.forEach(result => {\n  emailContent += `<tr><td>${result.json.Keyword}</td><td>${result.json.rank}</td></tr>`;\n});\n\n// Close the table tag\nemailContent += \"</table>\";\n\n// Return the email content with the table\nreturn [\n  {\n    json: {\n      emailBody: emailContent\n    }\n  }\n];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "f689b1b7-553f-4a88-ae8f-94de4bd6701a",
+        "name": "Reading Keywords",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -1380,
+          240
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1441108147,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fvWyTep-kTTyStxqKjgh3qlnH3uAC4c75uLMJQp8s6A/edit#gid=1441108147",
+            "cachedResultName": "Keyword"
+          },
+          "documentId": "={{ $credentials.googleSheetDocId }}"
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YBSRE682i2VDBuXC",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.5
+      },
+      {
+        "id": "3fb77ecb-4f3c-4e87-9ffb-70d5e38bb3ff",
+        "name": "Transforming Keywords",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -1160,
+          240
+        ],
+        "parameters": {
+          "jsCode": "// Get all rows from input\nconst items = $input.all();\n\n// Transform each row's 'Keyword' field\nreturn items.map(item => {\n  const keyword = item.json.Keyword || '';\n  const transformedKeyword = keyword.replaceAll(' ', '+');\n\n  return {\n    json: {\n      ...item.json,  // keep original data\n      transformedKeyword\n    }\n  };\n});\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "fe63d679-a349-4ce2-8d0b-9122da534aa8",
+        "name": "Loop over Keywords",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          -940,
+          240
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "2ad0d400-d52b-4401-8f65-c79d7b329c32",
+        "name": "Getting Ranks",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -720,
+          240
+        ],
+        "parameters": {
+          "url": "https://api.brightdata.com/request",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\"zone\": \"serp_n8n\",\"url\": \"https://www.google.com/search?q={{ $json.transformedKeyword }}&gl=US\", \n  \"format\": \"raw\"} ",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {{$credentials.brightDataApiKey}}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "99acbc30-b1d8-4c16-819a-20b4a186a56d",
+        "name": "Rank Finder",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -500,
+          240
+        ],
+        "parameters": {
+          "jsCode": "const html = $input.first().json.data;\nconst targetDomain = $('Reading Keywords').first().json.Domain; \n\n\nconst regex = /<a[^>]+href=\"(http[^\"]+)\"[^>]*>/g;\nlet match;\nlet links = [];\nwhile ((match = regex.exec(html)) !== null) {\n  const url = match[1];\n  if (\n    url.startsWith(\"http\") &&\n    !url.includes(\"google.com\") &&\n    !url.includes(\"/search?\") &&\n    !url.includes(\"webcache\")\n  ) {\n    links.push(url);\n  }\n}\n\n// Deduplicate and trim links\nlinks = [...new Set(links.map(link => link.trim()))];\n\n// Try to find the rank (position) of your target domain\nlet rank = null;\nlet foundUrl = null;\nfor (let i = 0; i < links.length; i++) {\n  if (links[i].includes(targetDomain)) {\n    rank = i + 1; // 1-based position\n    foundUrl = links[i];\n    break;\n  }\n}\n\n// Get current date and time\nconst now = new Date();\nconst dateTime = now.toLocaleString(); // e.g., \"5/19/2025, 2:30:00 PM\"\n\n// Output result\nreturn [\n  {\n    json: {\n      row: $('Loop over Keywords').first().json.row_number,\n      rank: rank || \"Not Ranked\",\n      url: foundUrl || \"N/A\",\n      totalResultsChecked: links.length,\n      found: !!foundUrl,\n      checkedAt: dateTime\n    }\n  }\n];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "eec8fa1e-c0c7-48a5-b7e4-9e5d9be3a52f",
+        "name": "Post Rank Results",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -280,
+          315
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "url": "={{ $json.url }}",
+              "rank": "={{ $json.rank }}",
+              "found": "={{ $json.found }}",
+              "Domain": "={{ $('Reading Keywords').item.json.Domain }}",
+              "Keyword": "={{ $('Reading Keywords').item.json.Keyword }}",
+              "checkedAt": "={{ $json.checkedAt }}",
+              "totalResultsChecked": "={{ $json.totalResultsChecked }}"
+            },
+            "schema": [
+              {
+                "id": "Keyword",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Keyword",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Domain",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Domain",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "rank",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "rank",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "url",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "url",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "totalResultsChecked",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "totalResultsChecked",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "found",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "found",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "checkedAt",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "checkedAt",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "Results"
+          },
+          "documentId": "={{ $credentials.googleSheetDocId }}"
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YBSRE682i2VDBuXC",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.5,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "86b5345d-6a6c-4c5b-9ca2-312ab627f69e",
+        "name": "Sending Email Message",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          -500,
+          40
+        ],
+        "webhookId": "71c2feef-d8c3-414b-8cab-d70082ab2df4",
+        "parameters": {
+          "sendTo": "={{ $credentials.recipientEmail }}",
+          "message": "={{ $json.emailBody }}",
+          "options": {},
+          "subject": "Ranked"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "9C4Tnt40p6JpYjIr",
+            "name": "Gmail account"
+          }
+        },
+        "executeOnce": true,
+        "typeVersion": 2.1
+      },
+      {
+        "id": "2aa430ee-b967-461e-9b20-97d34a1e5775",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -2480,
+          -360
+        ],
+        "parameters": {
+          "width": 780,
+          "height": 1740,
+          "content": "# n8n Workflow Explanation & Setup Guide\n\n## Workflow Overview\n\nThis n8n workflow automates keyword rank tracking on Google Search and emails the results. It works as follows:\n\n1. **Trigger**  \n   - Manually by clicking ‘Test workflow’ or automatically every 24 hours.\n\n2. **Read Keywords from Google Sheets**  \n   - Fetch keywords and target domains from a specified Google Sheets document.\n\n3. **Transform Keywords**  \n   - Format keywords for URL encoding (replace spaces with `+`).\n\n4. **Batch Processing**  \n   - Process each keyword individually.\n\n5. **Get Google Search Results**  \n   - Use BrightData API to fetch raw Google search HTML for each keyword.\n\n6. **Parse and Find Rank**  \n   - Extract URLs from search results and identify the rank of the target domain.\n\n7. **Save Results to Google Sheets**  \n   - Append rank results to a \"Results\" sheet.\n\n8. **Prepare Email Template**  \n   - Format results into an HTML table.\n\n9. **Send Email**  \n   - Email the results table to a specified recipient.\n\n---\n\n## Setup Instructions\n\n### 1. Google Sheets Setup\n\n- Create a Google Sheet with:\n  - A sheet containing `Keyword` and `Domain` columns.\n  - A sheet named \"Results\" for output.\n- Update the **document ID** and **sheet names** in:\n  - **\"Reading Keywords\"** node\n  - **\"Post Rank Results\"** node\n\n### 2. BrightData API Setup\n\n- Sign up for BrightData or a similar data provider.\n- Obtain your API token.\n- Replace the **Authorization Bearer token** in the **\"Getting Ranks\"** HTTP Request node.\n\n### 3. Gmail Email Setup\n\n- Set up Gmail OAuth2 credentials in n8n.\n- Ensure Gmail API access is enabled.\n- Change the recipient email address in the **\"Sending Email Message\"** node's `sendTo` field.\n\n### 4. Change Google Search Location\n\n- In the **\"Getting Ranks\"** node, the location is set via the URL parameter `gl=US`.\n- To change location, replace `US` with the desired country code:\n\n| Country         | Code |\n| -------------   | -----|\n| United States   | US   |\n| United Kingdom  | GB   |\n| Canada          | CA   |\n| Australia       | AU   |\n\nExample (for UK):\n\n```json\n\"url\": \"https://www.google.com/search?q={{ $json.transformedKeyword }}&gl=GB\"\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Rank Finder": {
+        "main": [
+          [
+            {
+              "node": "Post Rank Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Getting Ranks": {
+        "main": [
+          [
+            {
+              "node": "Rank Finder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reading Keywords": {
+        "main": [
+          [
+            {
+              "node": "Transforming Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Reading Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Post Rank Results": {
+        "main": [
+          [
+            {
+              "node": "Loop over Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop over Keywords": {
+        "main": [
+          [
+            {
+              "node": "Making Email Template",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Getting Ranks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Making Email Template": {
+        "main": [
+          [
+            {
+              "node": "Sending Email Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sending Email Message": {
+        "main": [
+          []
+        ]
+      },
+      "Transforming Keywords": {
+        "main": [
+          [
+            {
+              "node": "Loop over Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Reading Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 3
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Daniel Shashko",
+    "username": "tomax",
+    "bio": "AI automation specialist and a marketing enthusiast. More than 6 years of experience in SEO/GEO. Senior SEO at Bright Data.",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/daniel-shashko/"
+    ],
+    "avatar": "https://gravatar.com/avatar/31799e2fe30c8219e446a569adc6841d460ef4091592003856f5bb787f5db19f?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    }
+  ],
+  "image": [
+    {
+      "id": 1381,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Auto_rank_tracker_workflow_ba48acb64a.PNG"
+    }
+  ]
+}

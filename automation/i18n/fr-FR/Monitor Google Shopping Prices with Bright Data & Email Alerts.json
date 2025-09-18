@@ -1,0 +1,1254 @@
+{
+  "id": 4554,
+  "name": "Surveiller les prix de Google Shopping avec Bright Data et alertes par e-mail",
+  "views": 305,
+  "recentViews": 0,
+  "totalViews": 305,
+  "createdAt": "2025-06-01T11:49:47.000Z",
+  "description": "## 🛒 Surveiller les prix de Google Shopping avec Bright Data et alertes par e-mail\nCe modèle nécessite une instance n8n auto-hébergée pour fonctionner.\n\nUne automatisation n8n complète qui surveille les prix des produits quotidiennement en utilisant le jeu de données Google Shopping de Bright Data et envoie des alertes par e-mail intelligentes lorsque les conditions de prix sont remplies.\n\n---\n\n## 📋 Aperçu\nCe flux de travail fournit une solution automatisée de surveillance des prix qui suit les prix des produits de Google Shopping quotidiennement et envoie des notifications par e-mail intelligentes. Parfait pour la surveillance du commerce électronique, l'analyse des concurrents, la chasse aux bonnes affaires et la gestion des stocks.\n\n---\n\n## ✨ Caractéristiques clés\n* 🕘 **Surveillance programmée :** Vérifications de prix automatisées quotidiennes à 9h\n* 🛍️ **Intégration Google Shopping :** Utilise le jeu de données de Bright Data pour des prix précis\n* 📊 **Comparaison de prix intelligente :** Compare les prix actuels avec les données historiques\n* 📧 **Alertes intelligentes :** Envoie des e-mails uniquement lorsque les prix répondent aux critères\n* 📈 **Stockage de données :** Met à jour Google Sheets avec les dernières données de prix\n* 🔄 **Traitement par lots :** Gère plusieurs produits avec limitation de taux\n* ⚡ **Rapide et fiable :** Gestion des erreurs intégrée\n* 🎯 **Filtres personnalisables :** Logique de comparaison de prix avancée\n\n---\n\n## 🎯 Ce que fait ce flux de travail\n1. Déclencheur de planification : S'exécute quotidiennement à 9h\n2. Récupération de données : Récupère la liste des produits depuis Google Sheets\n3. Extraction de prix : Récupère les prix actuels en utilisant Bright Data\n4. Mise à jour des données : Met à jour Google Sheets avec les nouveaux prix\n5. Comparaison de prix : Compare les nouveaux prix aux anciens\n6. Filtrage intelligent : Filtre les produits qui répondent aux critères d'alerte\n7. Notifications par e-mail : Envoie des alertes pour les changements qualifiants\n8. Limitation de taux : Ajoute un délai entre les e-mails\n\n### Points de données de sortie\n\n| Champ         | Description                | Exemple                          |\n| :------------ | :------------------------- | :------------------------------- |\n| URL du produit   | URL originale de Google Shopping | https://shopping.google.com/product/... |\n| Nom du produit  | Titre du produit              | iPhone 15 Pro Max 256 Go          |\n| Évaluations       | Score d'évaluation du produit       | 4.5                              |\n| Avis       | Nombre d'avis          | 1,247                            |\n| Ancien prix     | Prix précédent             | 1 199,00 €                        |\n| Nouveau prix     | Prix actuel récupéré      | 1 199,00 €                        |\n| Horodatage     | Quand la vérification a eu lieu    | 2025-05-30T09:00:00Z             |\n\n---\n\n## 🚀 Instructions de configuration\n\n### Prérequis\n* Instance n8n (auto-hébergée ou cloud)\n* Compte Google avec accès à Sheets\n* Compte Bright Data avec accès au jeu de données Google Shopping\n* Compte Gmail pour les notifications\n\n### Étapes\n1. Importez le JSON du flux de travail dans n8n\n2. Configurez les identifiants Bright Data et l'accès au jeu de données\n3. Configurez Google Sheets avec les colonnes requises\n4. Configurez les identifiants OAuth2 de Gmail\n5. Mettez à jour les ID de feuille et les paramètres de planification\n6. Testez avec des produits d'exemple et activez\n\n---\n\n## 📖 Guide d'utilisation\n\n### Structure de la feuille Google\nVotre feuille Google doit avoir les colonnes suivantes pour garantir le bon fonctionnement du flux de travail :\n\n* **URL du produit** (Texte) : L'URL directe vers la page produit Google Shopping. C'est l'identifiant principal du produit.\n* **Nom du produit** (Texte) : Le nom du produit. Cela sera automatiquement peuplé ou mis à jour par le flux de travail.\n* **Ancien prix** (Nombre/Monnaie) : Le prix du produit lors de la vérification précédente. Cette colonne est cruciale pour la comparaison des prix.\n* **Nouveau prix** (Nombre/Monnaie) : Le prix le plus récemment récupéré du produit.\n* **Évaluations** (Nombre) : La note étoilée du produit.\n* **Avis** (Nombre) : Le nombre total d'avis pour le produit.\n* **Horodatage** (Datetime) : La date et l'heure auxquelles la vérification des prix a été effectuée.\n\n### Ajout de produits\n* Ajoutez des URL de Google Shopping à votre feuille Google.\n* Le flux de travail récupérera les détails des produits et suivra les prix.\n* Les données historiques de prix s'accumulent au fil du temps.\n\n### Comprendre les alertes de prix\nLe paramètre par défaut pour ce flux de travail est d'envoyer une alerte par e-mail lorsque le **nouveau prix est égal à l'ancien prix**. Cela peut sembler contre-intuitif, mais c'est utile pour des scénarios spécifiques, tels que :\n\n* **Surveillance des prix stables :** Si vous suivez un produit et souhaitez être informé lorsque son prix est resté constant dans le temps, indiquant une opportunité d'achat stable potentielle ou un point de référence.\n* **Vérification de la cohérence des données :** Pour confirmer que le processus de récupération fonctionne correctement et récupère systématiquement le même prix lorsque aucun changement n'est attendu.\n\nVous pouvez facilement **personnaliser la logique d'alerte** pour déclencher sur différentes conditions comme décrit ci-dessous.\n\n### Personnalisation de la logique d'alerte\n* **Baisse de prix :** `new_price < old_price`\n* **Baisse significative :** `new_price < (old_price * 0.9)` (par exemple, le prix a baissé de plus de 10 %)\n* **Augmentations de prix :** `new_price > old_price`\n* **Tout changement :** `new_price != old_price`\n\n### Lecture des résultats\n* Données de prix en temps réel\n* Suivi historique\n* Métadonnées du produit\n* Horodatages pour chaque vérification\n\n---\n\n## 🔧 Options de personnalisation\n* **Ajouter plus de données :** Descriptions, disponibilité, informations sur le vendeur, expédition, images\n* **Modifier les modèles d'e-mail :** Personnaliser l'objet et le corps\n* **Multiples destinataires :** Dupliquez le nœud d'e-mail et changez les destinataires\n* **Intégration Webhook :** Ajouter des déclencheurs en temps réel ou des alertes Slack\n\n---\n\n## 🚨 Dépannage\n* **Échec de la connexion Bright Data :** Vérifiez les identifiants API et l'accès au jeu de données\n* **Aucune donnée de prix extraite :** Vérifiez les URL et testez avec différents produits\n* **Autorisation Google Sheets refusée :** Ré-authentifiez et vérifiez le partage\n* **E-mails non envoyés :** Ré-authentifiez Gmail OAuth et vérifiez les destinataires\n* **Filtre non fonctionnel :** Vérifiez les formats de prix et la logique\n* **Échec du flux de travail :** Vérifiez les journaux, la logique de réessai et l'état du réseau\n\n---\n\n## 📊 Cas d'utilisation et exemples\n* **Surveillance du commerce électronique :** Suivre les prix des concurrents et les tendances\n* **Chasse aux bonnes affaires :** Recevez des alertes pour les baisses de prix sur les articles de votre liste de souhaits\n* **Gestion des stocks :** Surveillez les prix des fournisseurs pour l'approvisionnement\n* **Recherche de marché :** Analyser les tendances de prix et générer des rapports\n\n---\n\n## ⚙️ Configuration avancée\n* **Traitement par lots :** Augmentez la taille des lots, ajoutez des délais, utilisez le traitement parallèle\n* **Historique des prix :** Stockez les données historiques, calculez des moyennes, prévoyez des tendances\n* **Intégration d'outils :** CRM, Slack, bases de données, outils BI (Tableau, Power BI)\n\n---\n\n## 📈 Performance et limites\n* **URL unique :** 2–5 secondes\n* **Demandes simultanées :** 3–5 (dépend du plan Bright Data)\n* **Précision des données :** 95 %+\n* **Taux de réussite :** 90 %+\n* **Capacité quotidienne :** 100–500 produits\n* **Mémoire :** ~100 Mo par exécution\n* **Appels API :** 1 Bright Data + 2 Google Sheets par produit\n\n---\n\n## 🤝 Support et communauté\n* **Forum n8n :** &lt;https://community.n8n.io&gt;\n* **Documentation :** &lt;https://docs.n8n.io&gt;\n* **Support Bright Data :** Via votre tableau de bord Bright Data\n* **Problèmes GitHub :** Signalez des bogues et demandez des fonctionnalités\n\n---\n\n## 🎯 Prêt à l'emploi !\nVotre flux de travail fournit une base solide pour la surveillance automatisée des prix. Personnalisez-le pour répondre à vos besoins spécifiques et cas d'utilisation pour une efficacité maximale dans le suivi des prix de Google Shopping avec des notifications par e-mail intelligentes.\n\n---\n\n**Veuillez noter que ce modèle utilise des nœuds communautaires. Assurez-vous de comprendre les risques avant d'utiliser des nœuds communautaires.**",
+  "workflow": {
+    "id": "JWDeOEU4U1dqg0Vb",
+    "meta": {
+      "instanceId": "bc8ca75c203589705ae2e446cad7181d6f2a7cc1766f958ef9f34810e53b8cb2",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Daily Price Tracking with Bright Data in n8n + Smart Alerts on Price Drops",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "11da53a7-4296-4e62-b8b6-fc527925be20",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -40,
+          60
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 9
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ad294df7-f1d6-4e32-920c-745b854adec9",
+        "name": "Format Price Data",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1180,
+          60
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ab93ebd8-c88e-4fd9-8b0b-cd77f0a427f6",
+                "name": "old_price",
+                "type": "string",
+                "value": "={{ $('Read Google Shopping URLs').item.json['New Price'] }}"
+              },
+              {
+                "id": "be7bb08c-c9ca-44df-97ff-9cde478e62b8",
+                "name": "new_price",
+                "type": "string",
+                "value": "={{ $json['New Price'] }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "5ac9d43d-71e5-4b7c-ac11-c349d7eabaa7",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          460,
+          -100
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "#### Extract Product Data \nThis step scrapes detailed product information (e.g., name, ID, price, review count, ratings) from the provided Google Shopping URLs using BrightData."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bd3c2cf7-a7a1-4e7c-a3d8-52a76724e528",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          100,
+          -100
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "#### Input Product URLs  \nThis step reads Google Shopping product URLs from a Google Sheet. These URLs are the sources for extracting product data using BrightData."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0c69407f-5272-4398-bd91-7b388ef5fd43",
+        "name": "Read Google Shopping URLs",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          220,
+          60
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/",
+            "cachedResultName": "Data"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://docs.google.com/spreadsheets/"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "BBMKS5qimHDutU5E",
+            "name": "Add Your Sheet Here"
+          }
+        },
+        "typeVersion": 4.6,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "1f4beb71-26ff-4136-baef-7bbc32f79eb4",
+        "name": "Extract Product Info (BrightData)",
+        "type": "@brightdata/n8n-nodes-brightdata.brightData",
+        "position": [
+          560,
+          60
+        ],
+        "parameters": {
+          "urls": "=[{\"url\":\"{{ $json['Product URL'] }}\"}]",
+          "resource": "webScrapper",
+          "dataset_id": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gd_ltppk50q18kdw67omz",
+            "cachedResultName": "Google Shopping"
+          },
+          "include_errors": true,
+          "requestOptions": {}
+        },
+        "credentials": {
+          "brightdataApi": {
+            "id": "LEN5aKRDjDi96CUd",
+            "name": "Select your Tab Name"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "57d80688-0309-4791-914f-f3e50a172e82",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          800,
+          -100
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "#### Update Prices in Google Sheet\nThis step updates the Google Sheet with the latest product prices scraped from Google Shopping. It enables easy comparison with previously stored prices.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c4a28312-eacf-43a9-abf4-be4ee8b5cd5f",
+        "name": "Update Sheet with New Prices",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          900,
+          60
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Ratings": "={{ $json.rating }}",
+              "Reviews": "={{ $json.reviews_count }}",
+              "New Price": "={{ $json.item_price }}",
+              "Product URL": "={{ $json.url }}",
+              "Product name": "={{ $json.title }}"
+            },
+            "schema": [
+              {
+                "id": "Product URL",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Product URL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Product name",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Product name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Old Price",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "Old Price",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Total Price",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "Total Price",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Ratings",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Ratings",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Reviews",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Reviews",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "New Price",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "New Price",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "row_number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Product URL"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Niak14QnnwMPNcX8PRoqBIpciHD78dS0t35stVvT_aA/edit#gid=0",
+            "cachedResultName": "Data"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://docs.google.com/spreadsheets/d/1Niak14QnnwMPNcX8PRoqBIpciHD78dS0t35stVvT_aA/edit?gid=0#gid=0"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "BBMKS5qimHDutU5E",
+            "name": "Social Sharing Automation"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "f44ac341-0377-4f44-b234-6a02b8852d6a",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1360,
+          -100
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "#### Check for Price Drop\nThis step compares the newly scraped price with the previously stored price in the sheet. It filters the data to pass through only if the new price is lower than the old price.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2c722696-0b3e-4ae2-bed2-0b003f074e8e",
+        "name": "Filter Price Drop",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          1460,
+          60
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "6e2e7834-0fa0-4ccf-a45a-5c21e9d366c0",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ parseFloat($json.new_price.replace(/[$,]/g, '')) }}",
+                "rightValue": "={{ parseFloat($json.old_price.replace(/[$,]/g, '')) }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "83cf809a-4e07-43a0-95b3-306f3ae59845",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1720,
+          -100
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "#### Loop Through Dropped Prices\nThis step iterates over each product that had a price drop. It enables the workflow to handle each item individually—checking and processing them one by one.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2cc4ff30-914c-45b2-b7ed-0c4120bcf6c3",
+        "name": "Loop Over Price Drop Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          1820,
+          60
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "d7265c9e-1c11-445d-add4-be7004dc5ebc",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2060,
+          -100
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "#### Send Notification Email\nThis step sends an email alert for products whose prices have dropped. The email typically includes product details like name, old price, new price, and possibly the product URL.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "79b755b1-73f2-41d2-b4cd-29ae14b1257d",
+        "name": "Notify Price Drop via Email",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          2160,
+          60
+        ],
+        "webhookId": "9700ee51-fb71-4db5-98f4-58bdc624aeeb",
+        "parameters": {
+          "sendTo": "demo@example.com",
+          "message": "=Hey,\n\nYou are missing the opportunity to buy the product on the bottom line.\nProduct URL: {{ $('Update Sheet with New Prices').item.json['Product URL'] }}",
+          "options": {},
+          "subject": "Hurry UP Price is Gonna Up",
+          "emailType": "text"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "gVmVsyjENjEeeaq9",
+            "name": "demo@example.com"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "fa53cc05-25e5-4a95-8f0c-e3e29377b761",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2400,
+          -100
+        ],
+        "parameters": {
+          "width": 300,
+          "height": 340,
+          "content": "#### Wait Before Next Iteration\nThis step introduces a wait/pause after sending each email to prevent spam or hitting rate limits—especially useful when dealing with many notifications.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ba9a1a50-38cb-41b3-afd8-b3141416574c",
+        "name": "5 Minute Pause Between Emails",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          2520,
+          60
+        ],
+        "webhookId": "76383906-8074-4352-a586-95ba7287ca16",
+        "parameters": {
+          "unit": "minutes"
+        },
+        "typeVersion": 1.1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "04d650c5-0431-41de-8fcb-06fdb078fcb0",
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Read Google Shopping URLs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Price Drop": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Price Drop Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Price Data": {
+        "main": [
+          [
+            {
+              "node": "Filter Price Drop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Google Shopping URLs": {
+        "main": [
+          [
+            {
+              "node": "Extract Product Info (BrightData)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Price Drop Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Notify Price Drop via Email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Notify Price Drop via Email": {
+        "main": [
+          [
+            {
+              "node": "5 Minute Pause Between Emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Sheet with New Prices": {
+        "main": [
+          [
+            {
+              "node": "Format Price Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "5 Minute Pause Between Emails": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Price Drop Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Product Info (BrightData)": {
+        "main": [
+          [
+            {
+              "node": "Update Sheet with New Prices",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 16,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 7
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "@brightdata/n8n-nodes-brightdata.brightData": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Dvir Sharon",
+    "username": "dvirsharon",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/dvirsharon/"
+    ],
+    "avatar": "https://gravatar.com/avatar/d4b4c307f57e7cb9e3019ff85af132db6e69a27f9010799dfd28f4db0c8cdcac?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filtrer",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    }
+  ],
+  "image": []
+}

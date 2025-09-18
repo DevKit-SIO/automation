@@ -1,0 +1,732 @@
+{
+  "id": 4837,
+  "name": "Enrichissement Automatisé des Leads AI : Salesforce vers Explorium pour des Données de Prospects Améliorées",
+  "views": 1229,
+  "recentViews": 1,
+  "totalViews": 1229,
+  "createdAt": "2025-06-10T06:39:17.145Z",
+  "description": "Enrichissement des Leads Salesforce avec Explorium\n\n# Modèle\n\nTéléchargez le fichier json suivant et importez-le dans un nouveau workflow n8n :\n\n[salesforce\\_workflow.json](https://raw.githubusercontent.com/explorium-ai/integrations-templates/main/n8n/automated-ai-lead-enrichment-salesforce-to-explorium-for-enhanced-prospect-data.json)\n\n![Enrichissement Automatisé des Leads AI_ Salesforce vers Explorium pour des Données de Prospects Améliorées.png](fileId:2629)\n\n\n\n# Aperçu\n\nCe workflow n8n surveille votre instance Salesforce pour de nouveaux leads et les enrichit automatiquement avec les informations de contact manquantes. Lorsqu'un lead est créé, le workflow :\n\n1. Détecte le nouveau lead via le déclencheur Salesforce\n2. Fait correspondre le lead avec la base de données d'Explorium en utilisant le nom et l'entreprise\n3. Enrichit le lead avec des adresses e-mail professionnelles et des numéros de téléphone\n4. Met à jour l'enregistrement du lead Salesforce avec les informations de contact découvertes\n\nCette automatisation garantit que votre équipe de vente dispose toujours des informations de contact les plus à jour pour les nouveaux leads, améliorant les taux de contact et accélérant le processus de vente.\n\n# Caractéristiques Clés\n\n* **Traitement en Temps Réel** : Se déclenche automatiquement lorsque de nouveaux leads sont créés dans Salesforce\n* **Correspondance Intelligente** : Utilise le nom et l'entreprise du lead pour trouver la bonne personne dans la base de données d'Explorium\n* **Enrichissement des Contacts** : Ajoute des e-mails professionnels, des téléphones mobiles et des numéros de téléphone de bureau\n* **Traitement par Lots** : Gère efficacement plusieurs leads pour optimiser l'utilisation de l'API\n* **Gestion des Erreurs** : Continue de traiter d'autres leads même si certains échouent à correspondre\n* **Mises à Jour Sélectives** : Met à jour uniquement les leads qui correspondent avec succès dans Explorium\n\n# Prérequis\n\nAvant de configurer ce workflow, assurez-vous d'avoir :\n\n1. **Instance n8n** (auto-hébergée ou cloud)\n2. **Compte Salesforce** avec :\n   * Accès API OAuth2 activé\n   * Permissions sur l'objet Lead (lecture/écriture)\n   * Limites d'utilisation de l'API disponibles\n3. **Identifiants API Explorium** (jeton Bearer) - [Obtenez la clé API explorium](https://developers.explorium.ai/reference/getting_your_api_key)\n4. Compréhension de base de la gestion des leads Salesforce\n\n# Exigences Salesforce\n\n## Champs de Lead Requis\n\nLe workflow attend ces champs de lead standard Salesforce :\n\n* `FirstName` - Prénom du lead\n* `LastName` - Nom de famille du lead\n* `Company` - Nom de l'entreprise\n* `Email` - Sera peuplé/mis à jour par le workflow\n* `Phone` - Sera peuplé/mis à jour par le workflow\n* `MobilePhone` - Sera peuplé/mis à jour par le workflow\n\n## Permissions API\n\nVotre utilisateur d'intégration Salesforce a besoin de :\n\n* Accès en lecture à l'objet Lead\n* Accès en écriture aux champs de l'objet Lead (Email, Phone, MobilePhone)\n* API activée sur le profil utilisateur\n* Appels API restants suffisants dans vos limites d'organisation\n\n# Installation & Configuration\n\n## Étape 1 : Importer le Workflow\n\n1. Copiez le JSON du workflow à partir du modèle\n2. Dans n8n : Naviguez vers **Workflows** → **Ajouter un Workflow** → **Importer depuis un Fichier**\n3. Collez le JSON et cliquez sur **Importer**\n\n## Étape 2 : Configurer les Identifiants OAuth2 de Salesforce\n\n1. Cliquez sur le nœud **Déclencheur Salesforce**\n2. Sous Identifiants, cliquez sur **Créer Nouveau**\n3. Suivez le flux OAuth2 :\n   * **ID Client** : De votre Application Connectée Salesforce\n   * **Secret Client** : De votre Application Connectée Salesforce\n   * **URL de Retour** : Copiez depuis n8n et ajoutez à votre Application Connectée\n4. Autorisez la connexion\n5. Enregistrez les identifiants sous \"Connexion de compte Salesforce\"\n\n**Remarque** : Utilisez les mêmes identifiants pour tous les nœuds Salesforce dans le workflow.\n\n## Étape 3 : Configurer les Identifiants API Explorium\n\n1. Cliquez sur le nœud **Match\\_prospect**\n2. Sous Identifiants, cliquez sur **Créer Nouveau** (Authentification par En-tête HTTP)\n3. Configurez l'en-tête :\n   * **Nom** : `Authorization`\n   * **Valeur** : `Bearer YOUR_EXPLORIUM_API_TOKEN`\n4. Enregistrez sous \"Compte Auth Header\"\n5. Appliquez les mêmes identifiants au nœud **Enrichir les Informations de Contacts Explorium**\n\n## Étape 4 : Vérifier les Paramètres des Nœuds\n\n1. **Déclencheur Salesforce** :\n   * Déclencher Sur : `Lead Created`\n   * Temps de Polling : Chaque minute (ajustez selon vos besoins)\n\n2. **Obtenir les Leads Salesforce** :\n   * Opération : `Get All`\n   * Condition : `CreatedDate = TODAY` (récupère les leads d'aujourd'hui)\n   * Limite : 20 (ajustez selon le volume)\n\n3. **Boucle sur les Éléments** :\n   * Taille de Lot : 6 (optimal pour les limites de taux API)\n\n## Étape 5 : Activer le Workflow\n\n1. Enregistrez le workflow\n2. Basculez l'interrupteur **Actif** sur ON\n3. Le workflow surveillera désormais les nouveaux leads chaque minute\n\n## Descriptions Détailées des Nœuds\n\n1. **Déclencheur Salesforce** : Interroge Salesforce chaque minute pour de nouveaux leads\n2. **Obtenir les Leads d'Aujourd'hui** : Récupère tous les leads créés aujourd'hui pour s'assurer qu'aucun n'est manqué\n3. **Boucle sur les Éléments** : Traite les leads par lots de 6 pour l'efficacité\n4. **Correspondre au Prospect** : Recherche dans Explorium une personne correspondante en utilisant le nom + l'entreprise\n5. **Filtrer** : Vérifie si une correspondance valide a été trouvée\n6. **Extraire les ID de Prospect** : Collecte tous les ID de prospects correspondants\n7. **Enrichir les Contacts** : Récupère des informations de contact détaillées d'Explorium\n8. **Fusionner** : Combine les données de lead originales avec les résultats d'enrichissement\n9. **Séparer** : Sépare les enregistrements enrichis individuels\n10. **Mettre à Jour le Lead** : Met à jour Salesforce avec les nouvelles informations de contact\n\n## Cartographie des Données\n\nLe workflow mappe les données d'Explorium aux champs Salesforce comme suit :\n\n| Champ Explorium      | Champ Salesforce | Logique de Repli                    |\n| ------------------- | ---------------- | ----------------------------------- |\n| `emails[0].address` | Email            | Se replie sur `professions_email`   |\n| `mobile_phone`      | MobilePhone      | Se replie sur `phone_numbers[1]`    |\n| `phone_numbers[0]`  | Phone            | Se replie sur `mobile_phone`        |\n\n# Utilisation & Surveillance\n\n## Fonctionnement Automatique\n\nUne fois activé, le workflow s'exécute automatiquement :\n\n1. Vérifie les nouveaux leads chaque minute\n2. Traite tous les leads créés depuis la dernière vérification\n3. Met à jour les leads avec les informations de contact découvertes\n4. Continue de fonctionner jusqu'à ce qu'il soit désactivé\n\n## Test Manuel\n\nPour tester le workflow manuellement :\n\n1. Créez un lead de test dans Salesforce\n2. Cliquez sur \"Exécuter le Workflow\" dans n8n\n3. Surveillez l'exécution pour voir chaque étape\n4. Vérifiez que le lead a été mis à jour dans Salesforce\n\n## Surveillance des Exécutions\n\nSuivez les performances du workflow :\n\n1. Allez dans **Exécutions** dans n8n\n2. Filtrez par ce workflow\n3. Examinez les exécutions réussies et échouées\n4. Vérifiez les journaux pour toute erreur ou problème\n\n# Dépannage\n\n## Problèmes Courants\n\n**Aucun lead n'est traité**\n\n* Vérifiez que le workflow est activé\n* Vérifiez que les limites API de Salesforce n'ont pas été dépassées\n* Assurez-vous que les nouveaux leads ont les champs FirstName, LastName et Company peuplés\n* Confirmez que la connexion OAuth est toujours valide\n\n**Les leads ne correspondent pas dans Explorium**\n\n* Vérifiez que les noms d'entreprise sont exacts (pas d'abréviations)\n* Vérifiez que les prénoms et noms de famille sont correctement formatés\n* Certaines personnes peuvent ne pas être dans la base de données d'Explorium\n* Essayez de tester avec des entreprises/contacts connus\n\n**Les informations de contact ne se mettent pas à jour**\n\n* Vérifiez la sécurité au niveau des champs Salesforce\n* Vérifiez que l'utilisateur d'intégration a des permissions d'édition\n* Assurez-vous que les champs Email, Phone et MobilePhone sont modifiables\n* Vérifiez les règles de validation bloquant les mises à jour\n\n**Erreurs d'authentification**\n\n* Salesforce : Réautorisez la connexion OAuth\n* Explorium : Vérifiez que le jeton Bearer est valide et non expiré\n* Vérifiez que les quotas API n'ont pas été dépassés\n\n## Gestion des Erreurs\n\nLe workflow inclut une gestion des erreurs intégrée :\n\n* Les correspondances échouées n'arrêtent pas le traitement des autres leads\n* Chaque lot est traité indépendamment\n* Les exécutions échouées sont enregistrées pour révision\n* Des succès partiels sont possibles (certains leads mis à jour, d'autres ignorés)\n\n# Meilleures Pratiques\n\n## Qualité des Données\n\n1. **Assurez-vous que les données des leads sont complètes** : FirstName, LastName et Company doivent être peuplés\n2. **Utilisez des noms d'entreprise complets** : \"Microsoft Corporation\" correspond mieux que \"MSFT\"\n3. **Standardisez la saisie des données** : Un formatage cohérent améliore les taux de correspondance\n\n## Optimisation des Performances\n\n1. **Ajustez la taille des lots** : Réduisez si vous atteignez les limites de l'API, augmentez pour l'efficacité\n2. **Modifiez la fréquence de polling** : Chaque minute pour un volume élevé, moins fréquent pour un volume plus faible\n3. **Définissez des limites appropriées** : Équilibrez entre la vitesse de traitement et l'utilisation de l'API\n\n## Conformité & Confidentialité\n\n1. **Permissions des données** : Assurez-vous d'avoir les droits pour enrichir les données des leads\n2. **Conformité au RGPD** : Tenez compte des réglementations sur la confidentialité dans votre région\n3. **Conservation des données** : Suivez les politiques de données de votre organisation\n4. **Piste de vérification** : Surveillez qui a accès aux données enrichies\n\n# Options de Personnalisation\n\n## Étendre l'Enrichissement\n\nAjoutez plus d'enrichissement d'Explorium en :\n\n1. Ajoutant des données firmographiques (taille de l'entreprise, revenus)\n2. Incluant des informations technographiques\n3. Ajoutant des profils de médias sociaux\n4. Ajoutant la vérification du titre de poste et du département\n\n## Modifier les Conditions de Déclenchement\n\nChangez quand l'enrichissement se produit :\n\n* Déclencher sur les mises à jour de leads (pas seulement à la création)\n* Ajouter des filtres de source de lead spécifiques\n* Traiter uniquement les leads de certaines campagnes\n* Inclure des seuils de score de lead\n\n## Ajouter des Notifications\n\nAméliorez avec des alertes :\n\n* Envoyer un e-mail aux représentants des ventes lorsque les leads sont enrichis\n* Envoyer des notifications Slack pour des correspondances de grande valeur\n* Créer des tâches pour les leads qui n'ont pas pu être enrichis\n* Enregistrer les métriques d'enrichissement sur des tableaux de bord\n\n# Considérations API\n\n## Limites Salesforce\n\n* Appels API : Chaque exécution utilise \\~4 appels API Salesforce\n* Fréquence de polling : Tenez compte de votre limite API quotidienne\n* Traitement par lots : Réduit l'utilisation de l'API par rapport au traitement individuel\n\n## Limites Explorium\n\n* API de Correspondance : Un appel par lot de leads\n* API d'Enrichissement : Un appel par lot de prospects correspondants\n* Limites de taux : Respectez les demandes par minute de votre plan\n\n# Architecture d'Intégration\n\nCe workflow peut faire partie d'un système de gestion des leads plus large :\n\n1. **Capture de Leads** → **Ce Workflow** → **Scoring de Leads** → **Attribution**\n2. Peut déclencher des workflows supplémentaires en fonction des résultats d'enrichissement\n3. Compatible avec l'automatisation Salesforce existante (Process Builder, Flows)\n4. Fonctionne aux côtés d'autres outils d'enrichissement\n\n# Considérations de Sécurité\n\n* **Identifiants** : Stockés en toute sécurité dans le système d'identifiants de n8n\n* **Transmission des données** : Utilise HTTPS pour tous les appels API\n* **Contrôle d'accès** : Limitez qui peut modifier le workflow\n* **Journalisation des audits** : Toutes les exécutions sont enregistrées avec des détails\n\n# Ressources de Support\n\nPour assistance avec :\n\n* **Problèmes n8n** : Consultez la documentation n8n ou le forum communautaire\n* **Intégration Salesforce** : Référez-vous à la documentation API Salesforce\n* **API Explorium** : Contactez le support Explorium pour des questions sur l'API\n* **Logique de Workflow** : Consultez les journaux d'exécution pour le débogage",
+  "workflow": {
+    "id": "lYime3cPitmd1PhU",
+    "meta": {
+      "instanceId": "0a70652f43c1b29dd16c35b61a38fd31c8004f58bc7e723bf43262a797407c77",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Automated AI Lead Enrichment: Salesforce to Explorium for Enhanced Prospect Data",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "202398ac-d6ca-475f-8b79-c41af407b449",
+        "name": "Salesforce Trigger",
+        "type": "n8n-nodes-base.salesforceTrigger",
+        "position": [
+          -448,
+          -144
+        ],
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "triggerOn": "leadCreated"
+        },
+        "credentials": {
+          "salesforceOAuth2Api": {}
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2955a288-89fc-48ce-8800-79b132995a76",
+        "name": "Update Lead",
+        "type": "n8n-nodes-base.salesforce",
+        "position": [
+          1216,
+          -144
+        ],
+        "parameters": {
+          "leadId": "={{ $('Salesforce Trigger').item.json.Id}}",
+          "operation": "update",
+          "updateFields": {
+            "city": "={{ $json.city || null }}",
+            "email": "={{ $json.professions_email || null }}",
+            "phone": "={{ $json.phone_numbers?.[0]?.phone_number || \"null\" }}\n",
+            "state": "={{ $json.region_name || '' }}",
+            "title": "={{ $json.experience?.[0]?.title?.name || null }}",
+            "company": "={{ $json.company_name || null }}",
+            "country": "={{ $json.country_name || null }}",
+            "website": "={{ $json.experience?.[0]?.company?.website || null }}",
+            "mobilePhone": "={{ $json.mobile_phone }}"
+          }
+        },
+        "credentials": {
+          "salesforceOAuth2Api": {}
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "753426ff-253a-42d1-97fb-4d763cbe6a9a",
+        "name": "Extract Prospect IDs from Matched Results",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          176,
+          -144
+        ],
+        "parameters": {
+          "jsCode": "const allItems = $input.all();\nconst prospectIds = allItems.map(item => \n  item.json.matched_prospects.map(prospect => prospect.prospect_id)\n).flat();\n\nreturn [{\n  json: {\n    prospect_ids: prospectIds\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "b2e365db-cee2-413b-8694-d1bec26922cf",
+        "name": "Merge",
+        "type": "n8n-nodes-base.merge",
+        "position": [
+          768,
+          -144
+        ],
+        "parameters": {
+          "mode": "combine",
+          "options": {},
+          "fieldsToMatchString": "data[0].prospect_id"
+        },
+        "typeVersion": 3.1
+      },
+      {
+        "id": "54af2346-5af4-4e99-bdf0-23aa265ff5fd",
+        "name": "Filter non-matched",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          -48,
+          -144
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "6896e951-8d66-41b1-87a5-a96d2e049675",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.matched_prospects.some(prospect => prospect.prospect_id !== null).toBoolean() }}",
+                "rightValue": "null"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "f79429c8-2b0f-432e-ba02-2f5fe414691d",
+        "name": "Code - flatten",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          992,
+          -144
+        ],
+        "parameters": {
+          "jsCode": "return $input.all().map(item => \n    item.json.data.map(prospect => ({\n      prospect_id: prospect.prospect_id,\n      ...prospect.data\n    }))\n  ).flat()"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "1d107b76-97e6-4658-adb2-240d9747087b",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          128,
+          160
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 760,
+          "height": 1780,
+          "content": "## Workflow Overview\n\n### Node 1: Salesforce Trigger\nThis node listens for real-time events from the connected Salesforce account, specifically monitoring for new lead creation events.\n\n- **Event**: leadCreated\n- **Trigger Type**: Real-time webhook\n\nOnce triggered, the node passes metadata about the newly created lead to the next step in the flow.\n\n### Node 2: Match_prospect\nThis node sends the lead's data to Explorium's AI-powered prospect matching API in real time.\n\n- **Method**: POST\n- **Endpoint**: https://api.explorium.ai/v1/prospects/match\n- **Authentication**: Generic Header Auth (using a configured credential)\n- **Headers**: Content-Type: application/json\n\nThe request body is dynamically built from lead data, typically including: full_name, company_name, email, phone_number, linkedin. These fields are matched against Explorium's intelligence graph to return enriched or validated profiles.\n\n**Response Output**: total_matches, matched_prospects, and a prospect_id. Each response is used downstream to enrich and update lead information.\n\n### Node 3: Filter non-matched\nThis node filters the output from the Match_prospect step to ensure that only valid, matched results continue in the flow. Only records that contain at least one matched prospect with a non-null prospect_id are passed forward.\n\n**Filter Logic**: Keeps only leads that have successful prospect matches from Explorium\n\n### Node 4: Extract Prospect IDs from Matched Results\nThis node extracts all valid prospect_id values from previously matched prospects and compiles them into a flat array. It loops over all matched items, extracts each prospect_id from the matched_prospects array and returns a single object with an array of all prospect_ids.\n\n### Node 5: Explorium Enrich Contacts Information\nThis node performs bulk enrichment of contacts by querying Explorium with a list of matched prospect_ids.\n\n**Node Configuration:**\n- **Method**: POST\n- **Endpoint**: https://api.explorium.ai/v1/prospects/contacts_information/bulk_enrich\n- **Authentication**: Header Auth (using saved credentials)\n- **Headers**: \"Content-Type\": \"application/json\", \"Accept\": \"application/json\"\n\nReturns enriched contact information, such as:\n- **emails**: professional/personal email addresses\n- **phone_numbers**: mobile and work numbers\n- **professions_email**, **professional_email_status**, **mobile_phone**\n\n### Node 6: Explorium Enrich Profiles\nThis additional enrichment node provides supplementary contact data enhancement, running in parallel with the primary enrichment process to maximize data collection from different Explorium endpoints.\n\n### Node 7: Merge\nThis node combines multiple data streams from the parallel enrichment processes into a single output, allowing you to consolidate data from different Explorium enrichment endpoints. The \"combine\" setting indicates it will merge the incoming data streams rather than overwriting them.\n\n### Node 8: Code - flatten\nThis custom code node processes and transforms the merged enrichment data before updating the Salesforce lead. It can be used to:\n- Flatten nested data structures from Explorium responses\n- Format data according to Salesforce field requirements\n- Apply business logic or data validation\n- Map Explorium fields to Salesforce lead properties\n- Handle data type conversions and null values\n\n### Node 9: Update Lead\nThis final node updates the original lead in Salesforce using the enriched data returned by Explorium.\n\n- **Credential**: Salesforce OAuth2 or Username/Password\n- **Resource**: Lead\n- **Operation**: Update Lead\n\nThe node updates the existing lead record with enriched information including additional contact details, professional data, and enhanced company information obtained through the Explorium enrichment process."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bd157488-f022-4dd9-ae7d-a0dcddfcd026",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -544,
+          160
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 640,
+          "height": 620,
+          "content": "# Automatically enrich leads in Salesforce using Explorium MCP\n\nThis n8n workflow streamlines the process of enriching lead information by automatically detecting new leads created in Salesforce, processing them through Explorium's AI-powered tools, and updating the same leads back in Salesforce with enhanced prospect details.\n\n## Credentials Required\n\nTo use this workflow, set up the following credentials in your n8n environment:\n\n### Salesforce\n- **Type**: OAuth2 or Username/Password\n- **Used for**: triggering on new leads, updating lead records\n\n### Explorium API\n- **Type**: Generic Header Auth\n- **Header**: Authorization\n- **Value**: Bearer YOUR_API_KEY\n\nGo to Settings → Credentials, create these two credentials, and assign them in the respective nodes before running the workflow."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7806056d-7937-4817-840d-22331e133a96",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          912,
+          160
+        ],
+        "parameters": {
+          "width": 600,
+          "height": 620,
+          "content": "## Workflow Flow Summary\n\n1. **Trigger**: Salesforce webhook triggers on new lead creation\n2. **Match**: Find prospect matches using Explorium based on lead data\n3. **Filter**: Keep only successfully matched prospects\n4. **Extract**: Compile prospect IDs for bulk enrichment\n5. **Enrich**: Parallel enrichment of contact information through multiple Explorium endpoints\n6. **Merge**: Combine enrichment results into unified data\n7. **Transform**: Flatten and prepare data for Salesforce update (Code node)\n8. **Update**: Update the original lead record in Salesforce with enriched data\n\nThis workflow ensures comprehensive lead enrichment while maintaining data quality and providing seamless integration within your Salesforce environment. The parallel enrichment structure maximizes data collection efficiency, and the filtering ensures only high-quality matches are processed, resulting in enhanced lead records with valuable prospect intelligence."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0710c152-06e5-4ba6-b975-83105893f54d",
+        "name": "Match Prospects",
+        "type": "@exploriumai/n8n-nodes-explorium-ai.exploriumApiNode",
+        "position": [
+          -240,
+          -144
+        ],
+        "parameters": {
+          "operation": "match-prospects",
+          "parameters_match-prospects": {
+            "body": "={\n  \"prospects_to_match\": [\n    {\n      \"full_name\": \"\"{{ ($('Salesforce Trigger').item.json.FirstName || '') + ' ' + ($('Salesforce Trigger').item.json.LastName || '') }}\"\",\n      \"company_name\": \"{{ $('Salesforce Trigger').item.json.Company || '' }}\"\"\n    }\n  ]\n}"
+          }
+        },
+        "credentials": {
+          "exploriumApi": {}
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f57d6faa-e907-41e1-96d4-adc730eb3843",
+        "name": "Enrich Contact Information",
+        "type": "@exploriumai/n8n-nodes-explorium-ai.exploriumApiNode",
+        "position": [
+          464,
+          -272
+        ],
+        "parameters": {
+          "operation": "enrich-prospects-contacts",
+          "parameters_enrich-prospects-contacts": {
+            "body": "={{ { \"prospect_ids\": $json.prospect_ids } }}"
+          }
+        },
+        "credentials": {
+          "exploriumApi": {}
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4269416b-6dd8-4d5d-8649-8b2550b9254d",
+        "name": "Enrich Prospects Profile",
+        "type": "@exploriumai/n8n-nodes-explorium-ai.exploriumApiNode",
+        "position": [
+          464,
+          -48
+        ],
+        "parameters": {
+          "operation": "enrich-prospects-profiles",
+          "parameters_enrich-prospects-profiles": {
+            "body": "={{ { \"prospect_ids\": $json.prospect_ids } }}"
+          }
+        },
+        "credentials": {
+          "exploriumApi": {}
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "572eb16c-97f7-4717-b1d2-74620cfbb838",
+    "connections": {
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Code - flatten",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - flatten": {
+        "main": [
+          [
+            {
+              "node": "Update Lead",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Match Prospects": {
+        "main": [
+          [
+            {
+              "node": "Filter non-matched",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter non-matched": {
+        "main": [
+          [
+            {
+              "node": "Extract Prospect IDs from Matched Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Salesforce Trigger": {
+        "main": [
+          [
+            {
+              "node": "Match Prospects",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enrich Prospects Profile": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Enrich Contact Information": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Prospect IDs from Matched Results": {
+        "main": [
+          [
+            {
+              "node": "Enrich Contact Information",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Enrich Prospects Profile",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 12,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 2
+      },
+      "n8n-nodes-base.merge": {
+        "count": 1
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.salesforce": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-base.salesforceTrigger": {
+        "count": 1
+      },
+      "@exploriumai/n8n-nodes-explorium-ai.exploriumApiNode": {
+        "count": 3
+      }
+    }
+  },
+  "user": {
+    "name": "explorium",
+    "username": "explorium",
+    "bio": "Explorium empowers businesses to build high-performance GTM agents with specialized data infrastructure. Our seamless API integrations and high-quality data drive faster agent development and better results. With years of experience and robust data sets, we deliver context-aware solutions, helping AI agents achieve human-level support.\nExplorium is the essential data partner for teams building agent-driven technologies.",
+    "verified": true,
+    "links": [
+      "https://explorium.ai"
+    ],
+    "avatar": "https://gravatar.com/avatar/688391f68b95bca17d847fde8a69c9f75ba641d3b9fbb2708456fc53dcd813e0?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 24,
+      "icon": "file:merge.svg",
+      "name": "n8n-nodes-base.merge",
+      "codex": {
+        "data": {
+          "alias": [
+            "Join",
+            "Concatenate",
+            "Wait"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-sync-data-between-two-systems/",
+                "icon": "🏬",
+                "label": "How to synchronize data between two systems (one-way vs. two-way sync"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.merge/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Fusionner"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTc3XzUxOCkiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTAgNDhDMCAyMS40OTAzIDIxLjQ5MDMgMCA0OCAwSDExMkMxMzguNTEgMCAxNjAgMjEuNDkwMyAxNjAgNDhWNTZIMTk2LjI1MkMyNDAuNDM1IDU2IDI3Ni4yNTIgOTEuODE3MiAyNzYuMjUyIDEzNlYxOTJDMjc2LjI1MiAyMTQuMDkxIDI5NC4xNjEgMjMyIDMxNi4yNTIgMjMySDM1MlYyMjRDMzUyIDE5Ny40OSAzNzMuNDkgMTc2IDQwMCAxNzZINDY0QzQ5MC41MSAxNzYgNTEyIDE5Ny40OSA1MTIgMjI0VjI4OEM1MTIgMzE0LjUxIDQ5MC41MSAzMzYgNDY0IDMzNkg0MDBDMzczLjQ5IDMzNiAzNTIgMzE0LjUxIDM1MiAyODhWMjgwSDMxNi4yNTJDMjk0LjE2MSAyODAgMjc2LjI1MiAyOTcuOTA5IDI3Ni4yNTIgMzIwVjM3NkMyNzYuMjUyIDQyMC4xODMgMjQwLjQzNSA0NTYgMTk2LjI1MiA0NTZIMTYwVjQ2NEMxNjAgNDkwLjUxIDEzOC41MSA1MTIgMTEyIDUxMkg0OEMyMS40OTAzIDUxMiAwIDQ5MC41MSAwIDQ2NFY0MDBDMCAzNzMuNDkgMjEuNDkwMyAzNTIgNDggMzUySDExMkMxMzguNTEgMzUyIDE2MCAzNzMuNDkgMTYwIDQwMFY0MDhIMTk2LjI1MkMyMTMuOTI1IDQwOCAyMjguMjUyIDM5My42NzMgMjI4LjI1MiAzNzZWMzIwQzIyOC4yNTIgMjk0Ljc4NCAyMzguODU5IDI3Mi4wNDQgMjU1Ljg1MyAyNTZDMjM4Ljg1OSAyMzkuOTU2IDIyOC4yNTIgMjE3LjIxNiAyMjguMjUyIDE5MlYxMzZDMjI4LjI1MiAxMTguMzI3IDIxMy45MjUgMTA0IDE5Ni4yNTIgMTA0SDE2MFYxMTJDMTYwIDEzOC41MSAxMzguNTEgMTYwIDExMiAxNjBINDhDMjEuNDkwMyAxNjAgMCAxMzguNTEgMCAxMTJWNDhaTTEwNCA0OEMxMDguNDE4IDQ4IDExMiA1MS41ODE3IDExMiA1NlYxMDRDMTEyIDEwOC40MTggMTA4LjQxOCAxMTIgMTA0IDExMkg1NkM1MS41ODE3IDExMiA0OCAxMDguNDE4IDQ4IDEwNFY1NkM0OCA1MS41ODE3IDUxLjU4MTcgNDggNTYgNDhIMTA0Wk00NTYgMjI0QzQ2MC40MTggMjI0IDQ2NCAyMjcuNTgyIDQ2NCAyMzJWMjgwQzQ2NCAyODQuNDE4IDQ2MC40MTggMjg4IDQ1NiAyODhINDA4QzQwMy41ODIgMjg4IDQwMCAyODQuNDE4IDQwMCAyODBWMjMyQzQwMCAyMjcuNTgyIDQwMy41ODIgMjI0IDQwOCAyMjRINDU2Wk0xMTIgNDA4QzExMiA0MDMuNTgyIDEwOC40MTggNDAwIDEwNCA0MDBINTZDNTEuNTgxNyA0MDAgNDggNDAzLjU4MiA0OCA0MDhWNDU2QzQ4IDQ2MC40MTggNTEuNTgxNyA0NjQgNTYgNDY0SDEwNEMxMDguNDE4IDQ2NCAxMTIgNDYwLjQxOCAxMTIgNDU2VjQwOFoiIGZpbGw9IiM1NEI4QzkiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTc3XzUxOCI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Merge",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 324,
+      "icon": "file:salesforce.svg",
+      "name": "n8n-nodes-base.salesforce",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.salesforce/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/salesforce/"
+              }
+            ]
+          },
+          "categories": [
+            "Sales",
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Salesforce"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNzUgNTMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwYTFlMCIgZD0iTTMwLjc3NyA1LjY1M2MyLjQtMi40NzYgNS43Mi00LjA0IDkuMzkyLTQuMDQgNC44OTUgMCA5LjEzNiAyLjczMiAxMS40MTIgNi43NzNhMTUuNyAxNS43IDAgMCAxIDYuNDYtMS4zNjZjOC44MjMgMCAxNS45MzcgNy4yIDE1LjkzNyAxNi4wOHMtNy4xNDMgMTYuMDg4LTE1LjkzNyAxNi4wODhjLTEuMDggMC0yLjEzNC0uMTE0LTMuMTMtLjMxM2ExMS42OCAxMS42OCAwIDAgMS0xMC4yIDUuOTc3IDExLjc1IDExLjc1IDAgMCAxLTUuMDk0LTEuMTY3Yy0yLjAyIDQuNzUzLTYuNzQ1IDguMS0xMi4yMzggOC4xLTUuNzIgMC0xMC42MTUtMy42MTQtMTIuNDk0LTguNy0uODMzLjE3MS0xLjY4Mi4yNTctMi41MzMuMjU2QzUuNTIyIDQzLjM0MSAwIDM3Ljc2MyAwIDMwLjg0N2ExMi41MiAxMi41MiAwIDAgMSA2LjE3Ni0xMC44MTUgMTQuMSAxNC4xIDAgMCAxLTEuMTk1LTUuNzJDNC45NTUgNi40MzIgMTEuNDE1IDAgMTkuMzI1IDBhMTQuMzQgMTQuMzQgMCAwIDEgMTEuNDQxIDUuNjYzIi8+PHBhdGggZD0ibTEwLjcxMiAyNi44NTYuMzEzLS44MjVjLjA1Ny0uMTQyLjE0Mi0uMDg1LjItLjA1N2wuMjU2LjE3YTMuNTMgMy41MyAwIDAgMCAxLjk2NC41N2MuNjU1IDAgMS4wOC0uMzQyIDEuMDgtLjgyNXYtLjAyOGMwLS41MTItLjYyNi0uNy0xLjM2Ni0uOTRsLS4xNy0uMDU3Yy0uOTk2LS4yODUtMi4wNzgtLjctMi4wNzgtMS45NjR2LS4wMjhjMC0xLjE5NS45NjgtMi4wNSAyLjM2Mi0yLjA1aC4xNDJjLjgyNSAwIDEuNTk0LjIyOCAyLjE2My41OTguMDU3LjAyOC4xMTQuMDg1LjA4NS4xN2wtLjMxMy44MjVjLS4wNTcuMTQyLS4yLjA1Ny0uMi4wNTdhNC4zIDQuMyAwIDAgMC0xLjkzNS0uNDg0Yy0uNTk4IDAtLjk2OC4zMTMtLjk2OC43NHYuMDI4YzAgLjQ4NC42NTUuNyAxLjM5NS45NGwuMTQyLjAyOGMuOTk2LjMxMyAyLjA1Ljc0IDIuMDUgMS45NjR2LjAyOGMwIDEuMy0uOTQgMi4xMDYtMi40NDggMi4xMDYtLjc0IDAtMS40NS0uMTE0LTIuMjItLjUxMi0uMTQyLS4wODUtLjI4NS0uMTQyLS40MjctLjI1Ni0uMDI4LS4wNTctLjA4NS0uMDg1LS4wMjgtLjJ6bTIyLjIgMCAuMzEzLS44MjVjLjA1Ny0uMTQyLjE3LS4wODUuMi0uMDU3bC4yNTYuMTdhMy41MyAzLjUzIDAgMCAwIDEuOTY0LjU3Yy42NTUgMCAxLjA4LS4zNDIgMS4wOC0uODI1di0uMDI4YzAtLjUxMi0uNjI2LS43LTEuMzY2LS45NGwtLjE3LS4wNTdjLS45OTYtLjI4NS0yLjA3OC0uNy0yLjA3OC0xLjk2NHYtLjAyOGMwLTEuMTk1Ljk2OC0yLjA1IDIuMzYyLTIuMDVoLjE0MmMuODI1IDAgMS41OTQuMjI4IDIuMTYzLjU5OC4wNTcuMDI4LjExNC4wODUuMDg1LjE3bC0uMzEzLjgyNWMtLjA1Ny4xNDItLjIuMDU3LS4yLjA1N2E0LjMgNC4zIDAgMCAwLTEuOTM1LS40ODRjLS41OTggMC0uOTY4LjMxMy0uOTY4Ljc0di4wMjhjMCAuNDg0LjY1NS43IDEuMzk1Ljk0bC4xNDIuMDI4Yy45OTYuMzEzIDIuMDUuNzQgMi4wNSAxLjk2NHYuMDI4YzAgMS4zLS45NCAyLjEwNi0yLjQ0OCAyLjEwNi0uNzQgMC0xLjQ1LS4xMTQtMi4yMi0uNTEyLS4xNDItLjA4NS0uMjg1LS4xNDItLjQyNy0uMjU2IDAtLjA1Ny0uMDU3LS4wODUtLjAyOC0uMnptMTYuNDUtMy45Yy4xMTQuNDI3LjIuODgyLjIgMS4zNjZzLS4wNTcuOTQtLjIgMS4zNjZhMi44IDIuOCAwIDAgMS0uNTcgMS4xIDIuNzUgMi43NSAwIDAgMS0uOTY4Ljc0cS0uNTk3LjI1NS0xLjM2Ni4yNTZjLS43NjkuMDAxLS45NjgtLjA4NS0xLjM2Ni0uMjU2cy0uNy0uNDI3LS45NjgtLjc0YTMgMyAwIDAgMS0uNTctMS4xYy0uMTE1LS40MTctLjItLjg4Mi0uMi0xLjM2NnMuMDU3LS45NC4yLTEuMzY2Yy4xMTQtLjQyNy4zMTMtLjc5Ny41Ny0xLjFhMi43NSAyLjc1IDAgMCAxIC45NjgtLjc0IDMuNCAzLjQgMCAwIDEgMS4zNjYtLjI4NWMuNTEyIDAgLjk2OC4wODUgMS4zNjYuMjg1LjM5OC4xNy43LjQyNy45NjguNzRhMyAzIDAgMCAxIC41NyAxLjFtLTEuMjggMS4zMzhjMC0uNzQtLjE0Mi0xLjMtLjM5OC0xLjcwOHMtLjY4My0uNTk4LTEuMjI0LS41OThjLS41NyAwLS45NjguMi0xLjIyNC41OThzLS4zOTguOTY4LS4zOTggMS43MDguMTQyIDEuMy4zOTggMS43MzZjLjI1Ni4zOTguNjU1LjU5OCAxLjIyNC41OThzLjk2OC0uMiAxLjIyNC0uNTk4Yy4yODUtLjM5OC4zOTgtLjk5Ni4zOTgtMS43MzZtMTEuNjk3IDIuMTM0LjMxMy44NTRjLjAyOC4xMTQtLjA1Ny4xNDItLjA1Ny4xNDItLjQ4NC4yLTEuMTM4LjMxMy0xLjc5My4zMTNxLTEuNjUgMC0yLjUwNC0uOTRjLS44NTQtLjk0LS44NTQtMS40OC0uODU0LTIuNTMzIDAtLjQ4NC4wNTctLjk0LjItMS4zNjZzLjM0Mi0uNzk3LjYyNi0xLjFhMyAzIDAgMCAxIDEuMDI1LS43NCAzLjYgMy42IDAgMCAxIDEuNDIzLS4yODUgOCA4IDAgMCAxIC45MzkuMDU3Yy4yODUuMDU3LjY4My4xNDIuODU0LjIyOC4wMjggMCAuMTE0LjA1Ny4wODUuMTQybC0uMzEzLjg1NGMtLjA1Ny4xNDItLjE0Mi4wODUtLjE0Mi4wODVhNCA0IDAgMCAwLTEuMzM4LS4yYy0uNjI2IDAtMS4xLjItMS4zOTUuNjI2LS4zMTMuMzk4LS40ODQuOTQtLjQ4NCAxLjY4IDAgLjc5Ny4yIDEuMzY2LjU0IDEuNzM2cy44MjUuNTQgMS40NS41NGMuMjU2IDAgLjQ4NC0uMDI4LjY4My0uMDU3cy4zOTgtLjA4NS41OTgtLjE3Yy0uMDI4LjA1Ny4wODUuMDI4LjE0Mi4xNDJ6bTYuNDYtMy43MjhjLjI4NS45NjguMTQyIDEuNzkzLjExNCAxLjg1IDAgLjExNC0uMTE0LjExNC0uMTE0LjExNGgtNC4yOTdjLjAyOC42NTUuMTcgMS4xLjUxMiAxLjQyMy4zMTMuMzEzLjc5Ny41MTIgMS40OC41MTIgMS4wMjUgMCAxLjQ1LS4yIDEuNzY1LS4zMTMgMCAwIC4xMTQtLjAyOC4xNy4wODVsLjI4NS43OTdjLjA1Ny4xNDIgMCAuMTctLjAyOC4yLS4yNTYuMTQyLS45LjQyNy0yLjE2My40MjctLjU5OCAwLTEuMTM4LS4wODUtMS41NjUtLjI1NnMtLjc5Ny0uMzk4LTEuMDgtLjctLjQ4NC0uNjgzLS42MjYtMS4wOGMtLjE0Mi0uNDI3LS4yLS44ODItLjItMS4zNjZzLjA1Ny0uOTQuMi0xLjM2NmMuMTE0LS40MjcuMzEzLS43OTcuNTctMS4xcy41OTgtLjU3Ljk5Ni0uNzRjLjM5OC0uMi44ODItLjI4NSAxLjQyMy0uMjg1LjQ1NSAwIC44ODIuMDg1IDEuMjI0LjI1Ni4yNTYuMTE0LjU0LjMxMy44MjUuNjI2LjE0Mi4xMTQuMzk4LjU0LjUxMi45NHptLTQuMjcuOWgzLjA0NWMtLjAyOC0uMzk4LS4xMTQtLjc0LS4yODUtMS4wMjUtLjI1Ni0uMzk4LS42MjYtLjYyNi0xLjE5NS0uNjI2cy0uOTY4LjIyOC0xLjIyNC42MjZjLS4xNy4yNTYtLjI1Ni41OTgtLjM0MiAxLjAyNXptLTMwLjA4Mi0uOWMuMjg1Ljk2OC4xNDIgMS43OTMuMTQyIDEuODUgMCAuMTE0LS4xMTQuMTE0LS4xMTQuMTE0aC00LjI5N2MuMDI4LjY1NS4xNyAxLjEuNTEyIDEuNDIzLjMxMy4zMTMuNzk3LjUxMiAxLjQ4LjUxMiAxLjAyNSAwIDEuNDUtLjIgMS43NjUtLjMxMyAwIDAgLjExNC0uMDI4LjE3LjA4NWwuMjg1Ljc5N2MuMDU3LjE0MiAwIC4xNy0uMDI4LjItLjI1Ni4xNDItLjkuNDI3LTIuMTYzLjQyNy0uNTk4IDAtMS4xMzgtLjA4NS0xLjU2NS0uMjU2cy0uNzk3LS4zOTgtMS4wOC0uNy0uNDg0LS42ODMtLjYyNi0xLjA4Yy0uMTQyLS40MjctLjItLjg4Mi0uMi0xLjM2NnMuMDU3LS45NC4yLTEuMzY2Yy4xMTQtLjQyNy4zMTMtLjc5Ny41Ny0xLjFzLjU5OC0uNTcuOTk2LS43NGMuMzk4LS4yLjg4Mi0uMjg1IDEuNDIzLS4yODUuNDU1IDAgLjg4Mi4wODUgMS4yMjQuMjU2LjI1Ni4xMTQuNTQuMzEzLjgyNS42MjYuMTE0LjExNC4zOTguNTQuNDg0Ljk0em0tNC4yNy45aDMuMDc0Yy0uMDI4LS4zOTgtLjExNC0uNzQtLjI4NS0xLjAyNS0uMjU2LS4zOTgtLjYyNi0uNjI2LTEuMTk1LS42MjZzLS45NjguMjI4LTEuMjI0LjYyNmMtLjIuMjU2LS4yODUuNTk4LS4zNyAxLjAyNW0tNy41NDItLjIyOC43LjA4NXYtLjE3YzAtLjU3LS4xMTQtLjg1NC0uMzQyLTEuMDI1cy0uNTk4LS4yODUtMS4wNTMtLjI4NWMwIDAtMS4wNTMgMC0xLjg3OC40MjctLjAyOC4wMjgtLjA1Ny4wMjgtLjA1Ny4wMjhzLS4xMTQuMDI4LS4xNDItLjA1N2wtLjMxMy0uODI1Yy0uMDU3LS4xMTQuMDI4LS4xNy4wMjgtLjE3LjM5OC0uMzEzIDEuMy0uNDg0IDEuMy0uNDg0YTggOCAwIDAgMSAxLjEzOC0uMTE0cTEuMjggMCAxLjk2NC41OThjLjY4NC41OTguNjgzIDEuMDI1LjY4MyAxLjkwN3YzLjkyN3MwIC4xMTQtLjA4NS4xNDJjMCAwLS4xNy4wNTctLjMxMy4wODVsLTEuMDguMmE2LjYgNi42IDAgMCAxLTEuMy4xMTRjLS40MjcgMC0uNzk3LS4wMjgtMS4xMzgtLjExNGEyLjggMi44IDAgMCAxLS44ODItLjM3IDEuOSAxLjkgMCAwIDEtLjU3LS42ODNjLS4xNDItLjI1Ni0uMi0uNTk4LS4yLS45NjhhMi4yNiAyLjI2IDAgMCAxIC4yMjgtLjk5NmMuMTQzLS4yOTYuMzctLjUxMi42MjYtLjdzLjU3LS4zMTMuODgyLS40MjdhNC4zIDQuMyAwIDAgMSAxLjA1My0uMTQybC43NC4wMjh6bS0xLjcwOCAzLjAxN3MuMzk4LjMxMyAxLjI1Mi4yNTZjLjYyNi0uMDI4IDEuMTY3LS4xNDIgMS4xNjctLjE0MnYtMS45NTVzLS41NC0uMDg1LTEuMTY3LS4wODVjLS44ODIgMC0xLjI1Mi4zMTMtMS4yNTIuMzEzLS4yNTYuMTctLjM3LjQ1NS0uMzcuODI1YTEuMSAxLjEgMCAwIDAgLjE0Mi41NjljLjAyOC4wNTcuMDU3LjExNC4yMjguMjI4em0zNi4yODYtNS4yMDhjLS4wMjguMTE0LS4yNTYuNy0uMzEzLjktLjAyOC4wODUtLjA4NS4xMTQtLjE3LjExNCAwIDAtLjI1Ni0uMDU3LS40ODQtLjA1N2EyLjMgMi4zIDAgMCAwLS41NjkuMDg1Yy0uMi4wNTctLjM3LjE3LS41NC4zMTNzLS4yODUuMzctLjM3LjYyNi0uMTQyLjY4My0uMTQyIDEuMTM4djMuMTg3YzAgLjA4NS0uMDU3LjE0Mi0uMTQyLjE0MmgtMS4xMjhjLS4wODUgMC0uMTQyLS4wNTctLjE0Mi0uMTQydi02LjRjMC0uMDg1LjA1Ny0uMTQyLjExNC0uMTQyaDEuMWMuMDg1IDAgLjExNC4wNTcuMTE0LjE0MnYuNTEyYTEuOSAxLjkgMCAwIDEgLjctLjU0Yy4yNDUtLjExMy41Ny0uMiAxLjEtLjE3LjI4NS4wMjguNjU1LjA4NS43LjExNC4xMTQuMDI4LjE3LjA1Ny4xNDIuMTd6bS0xMC41Ni0yLjk2Yy4wMjggMCAuMTE0LjA1Ny4wODUuMTQybC0uMzQyLjljLS4wMjguMDU3LS4wNTcuMTE0LS4yLjA1Ny0uMDI4IDAtLjA4NS0uMDI4LS4yMjgtLjA1Ny0uMDg1LS4wMjgtLjIyOC0uMDI4LS4zNDItLjAyOC0uMTcgMC0uMzEzLjAyOC0uNDU1LjA1N3MtLjI1Ni4xMTQtLjM3LjIyOC0uMjI4LjI1Ni0uMzEzLjQ1NWE0LjMgNC4zIDAgMCAwLS4yMjguOTY4aDEuMzY2Yy4xMTQgMCAuMTQyLjA1Ny4xNDIuMTQybC0uMTcuODgyYy0uMDI4LjE0Mi0uMTQyLjExNC0uMTQyLjExNGgtMS40MjNsLS45IDUuNDkzYy0uMTE0LjU3LS4yMjggMS4wNTMtLjM3IDEuNDVzLS4zMTMuNjgzLS41Ny45NjhjLS4yMjguMjU2LS40ODQuNDU1LS43OTcuNTQtLjI4NS4xMTQtLjY1NS4xNy0xLjA1My4xNy0uMiAwLS4zOTggMC0uNjI2LS4wNTdhMS42IDEuNiAwIDAgMS0uMzk4LS4xMTRjLS4wNTctLjAyOC0uMDg1LS4wODUtLjA1Ny0uMTdsLjI5My0uODYzYy4wNTctLjExNC4xNDItLjA1Ny4xNDItLjA1N2wuMjI4LjA4NWMuMTE0LjAyOC4yMjguMDI4LjM0Mi4wMjhxLjMgMCAuNTEyLS4wODVjLjE3LS4wNTcuMjg1LS4xNy4zOTgtLjMxM3MuMi0uMzQyLjMxMy0uNTk4cS4xNTgtLjUxOS4yNTYtMS4wNTNsLjk2OC01LjM4aC0uOTRjLS4xMTQgMC0uMTQyLS4wNTctLjE0Mi0uMTQybC4xNy0uODgyYy4wMjgtLjE0Mi4xNDItLjExNC4xNDItLjExNGguOTY4bC4wNTctLjI4NWMuMTQyLS44NTQuNDI3LTEuNTA4Ljg1NC0xLjkzNXMxLjA1My0uNjU1IDEuODItLjY1NXEuMzAyLjAwMy41OTguMDU3Yy4xMTQtLjAyOC4yNTYgMCAuMzk4LjA1N3ptLTE5LjE4MiA5LjI1YzAgLjA4NS0uMDU3LjE0Mi0uMTE0LjE0MmgtMS4xMzhjLS4wODUgMC0uMTE0LS4wNTctLjExNC0uMTQydi05LjEzNmMwLS4wNTcuMDU3LS4xNDIuMTE0LS4xNDJoMS4xMzhjLjA4NSAwIC4xMTQuMDU3LjExNC4xNDJ6Ii8+PC9nPjwvc3ltYm9sPjwvc3ZnPg=="
+      },
+      "displayName": "Salesforce",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 2,
+          "name": "Sales"
+        },
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filtrer",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1256,
+      "icon": "file:salesforce.svg",
+      "name": "n8n-nodes-base.salesforceTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.salesforcetrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/salesforce/"
+              }
+            ]
+          },
+          "categories": [
+            "Sales",
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Salesforce"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNzUgNTMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwYTFlMCIgZD0iTTMwLjc3NyA1LjY1M2MyLjQtMi40NzYgNS43Mi00LjA0IDkuMzkyLTQuMDQgNC44OTUgMCA5LjEzNiAyLjczMiAxMS40MTIgNi43NzNhMTUuNyAxNS43IDAgMCAxIDYuNDYtMS4zNjZjOC44MjMgMCAxNS45MzcgNy4yIDE1LjkzNyAxNi4wOHMtNy4xNDMgMTYuMDg4LTE1LjkzNyAxNi4wODhjLTEuMDggMC0yLjEzNC0uMTE0LTMuMTMtLjMxM2ExMS42OCAxMS42OCAwIDAgMS0xMC4yIDUuOTc3IDExLjc1IDExLjc1IDAgMCAxLTUuMDk0LTEuMTY3Yy0yLjAyIDQuNzUzLTYuNzQ1IDguMS0xMi4yMzggOC4xLTUuNzIgMC0xMC42MTUtMy42MTQtMTIuNDk0LTguNy0uODMzLjE3MS0xLjY4Mi4yNTctMi41MzMuMjU2QzUuNTIyIDQzLjM0MSAwIDM3Ljc2MyAwIDMwLjg0N2ExMi41MiAxMi41MiAwIDAgMSA2LjE3Ni0xMC44MTUgMTQuMSAxNC4xIDAgMCAxLTEuMTk1LTUuNzJDNC45NTUgNi40MzIgMTEuNDE1IDAgMTkuMzI1IDBhMTQuMzQgMTQuMzQgMCAwIDEgMTEuNDQxIDUuNjYzIi8+PHBhdGggZD0ibTEwLjcxMiAyNi44NTYuMzEzLS44MjVjLjA1Ny0uMTQyLjE0Mi0uMDg1LjItLjA1N2wuMjU2LjE3YTMuNTMgMy41MyAwIDAgMCAxLjk2NC41N2MuNjU1IDAgMS4wOC0uMzQyIDEuMDgtLjgyNXYtLjAyOGMwLS41MTItLjYyNi0uNy0xLjM2Ni0uOTRsLS4xNy0uMDU3Yy0uOTk2LS4yODUtMi4wNzgtLjctMi4wNzgtMS45NjR2LS4wMjhjMC0xLjE5NS45NjgtMi4wNSAyLjM2Mi0yLjA1aC4xNDJjLjgyNSAwIDEuNTk0LjIyOCAyLjE2My41OTguMDU3LjAyOC4xMTQuMDg1LjA4NS4xN2wtLjMxMy44MjVjLS4wNTcuMTQyLS4yLjA1Ny0uMi4wNTdhNC4zIDQuMyAwIDAgMC0xLjkzNS0uNDg0Yy0uNTk4IDAtLjk2OC4zMTMtLjk2OC43NHYuMDI4YzAgLjQ4NC42NTUuNyAxLjM5NS45NGwuMTQyLjAyOGMuOTk2LjMxMyAyLjA1Ljc0IDIuMDUgMS45NjR2LjAyOGMwIDEuMy0uOTQgMi4xMDYtMi40NDggMi4xMDYtLjc0IDAtMS40NS0uMTE0LTIuMjItLjUxMi0uMTQyLS4wODUtLjI4NS0uMTQyLS40MjctLjI1Ni0uMDI4LS4wNTctLjA4NS0uMDg1LS4wMjgtLjJ6bTIyLjIgMCAuMzEzLS44MjVjLjA1Ny0uMTQyLjE3LS4wODUuMi0uMDU3bC4yNTYuMTdhMy41MyAzLjUzIDAgMCAwIDEuOTY0LjU3Yy42NTUgMCAxLjA4LS4zNDIgMS4wOC0uODI1di0uMDI4YzAtLjUxMi0uNjI2LS43LTEuMzY2LS45NGwtLjE3LS4wNTdjLS45OTYtLjI4NS0yLjA3OC0uNy0yLjA3OC0xLjk2NHYtLjAyOGMwLTEuMTk1Ljk2OC0yLjA1IDIuMzYyLTIuMDVoLjE0MmMuODI1IDAgMS41OTQuMjI4IDIuMTYzLjU5OC4wNTcuMDI4LjExNC4wODUuMDg1LjE3bC0uMzEzLjgyNWMtLjA1Ny4xNDItLjIuMDU3LS4yLjA1N2E0LjMgNC4zIDAgMCAwLTEuOTM1LS40ODRjLS41OTggMC0uOTY4LjMxMy0uOTY4Ljc0di4wMjhjMCAuNDg0LjY1NS43IDEuMzk1Ljk0bC4xNDIuMDI4Yy45OTYuMzEzIDIuMDUuNzQgMi4wNSAxLjk2NHYuMDI4YzAgMS4zLS45NCAyLjEwNi0yLjQ0OCAyLjEwNi0uNzQgMC0xLjQ1LS4xMTQtMi4yMi0uNTEyLS4xNDItLjA4NS0uMjg1LS4xNDItLjQyNy0uMjU2IDAtLjA1Ny0uMDU3LS4wODUtLjAyOC0uMnptMTYuNDUtMy45Yy4xMTQuNDI3LjIuODgyLjIgMS4zNjZzLS4wNTcuOTQtLjIgMS4zNjZhMi44IDIuOCAwIDAgMS0uNTcgMS4xIDIuNzUgMi43NSAwIDAgMS0uOTY4Ljc0cS0uNTk3LjI1NS0xLjM2Ni4yNTZjLS43NjkuMDAxLS45NjgtLjA4NS0xLjM2Ni0uMjU2cy0uNy0uNDI3LS45NjgtLjc0YTMgMyAwIDAgMS0uNTctMS4xYy0uMTE1LS40MTctLjItLjg4Mi0uMi0xLjM2NnMuMDU3LS45NC4yLTEuMzY2Yy4xMTQtLjQyNy4zMTMtLjc5Ny41Ny0xLjFhMi43NSAyLjc1IDAgMCAxIC45NjgtLjc0IDMuNCAzLjQgMCAwIDEgMS4zNjYtLjI4NWMuNTEyIDAgLjk2OC4wODUgMS4zNjYuMjg1LjM5OC4xNy43LjQyNy45NjguNzRhMyAzIDAgMCAxIC41NyAxLjFtLTEuMjggMS4zMzhjMC0uNzQtLjE0Mi0xLjMtLjM5OC0xLjcwOHMtLjY4My0uNTk4LTEuMjI0LS41OThjLS41NyAwLS45NjguMi0xLjIyNC41OThzLS4zOTguOTY4LS4zOTggMS43MDguMTQyIDEuMy4zOTggMS43MzZjLjI1Ni4zOTguNjU1LjU5OCAxLjIyNC41OThzLjk2OC0uMiAxLjIyNC0uNTk4Yy4yODUtLjM5OC4zOTgtLjk5Ni4zOTgtMS43MzZtMTEuNjk3IDIuMTM0LjMxMy44NTRjLjAyOC4xMTQtLjA1Ny4xNDItLjA1Ny4xNDItLjQ4NC4yLTEuMTM4LjMxMy0xLjc5My4zMTNxLTEuNjUgMC0yLjUwNC0uOTRjLS44NTQtLjk0LS44NTQtMS40OC0uODU0LTIuNTMzIDAtLjQ4NC4wNTctLjk0LjItMS4zNjZzLjM0Mi0uNzk3LjYyNi0xLjFhMyAzIDAgMCAxIDEuMDI1LS43NCAzLjYgMy42IDAgMCAxIDEuNDIzLS4yODUgOCA4IDAgMCAxIC45MzkuMDU3Yy4yODUuMDU3LjY4My4xNDIuODU0LjIyOC4wMjggMCAuMTE0LjA1Ny4wODUuMTQybC0uMzEzLjg1NGMtLjA1Ny4xNDItLjE0Mi4wODUtLjE0Mi4wODVhNCA0IDAgMCAwLTEuMzM4LS4yYy0uNjI2IDAtMS4xLjItMS4zOTUuNjI2LS4zMTMuMzk4LS40ODQuOTQtLjQ4NCAxLjY4IDAgLjc5Ny4yIDEuMzY2LjU0IDEuNzM2cy44MjUuNTQgMS40NS41NGMuMjU2IDAgLjQ4NC0uMDI4LjY4My0uMDU3cy4zOTgtLjA4NS41OTgtLjE3Yy0uMDI4LjA1Ny4wODUuMDI4LjE0Mi4xNDJ6bTYuNDYtMy43MjhjLjI4NS45NjguMTQyIDEuNzkzLjExNCAxLjg1IDAgLjExNC0uMTE0LjExNC0uMTE0LjExNGgtNC4yOTdjLjAyOC42NTUuMTcgMS4xLjUxMiAxLjQyMy4zMTMuMzEzLjc5Ny41MTIgMS40OC41MTIgMS4wMjUgMCAxLjQ1LS4yIDEuNzY1LS4zMTMgMCAwIC4xMTQtLjAyOC4xNy4wODVsLjI4NS43OTdjLjA1Ny4xNDIgMCAuMTctLjAyOC4yLS4yNTYuMTQyLS45LjQyNy0yLjE2My40MjctLjU5OCAwLTEuMTM4LS4wODUtMS41NjUtLjI1NnMtLjc5Ny0uMzk4LTEuMDgtLjctLjQ4NC0uNjgzLS42MjYtMS4wOGMtLjE0Mi0uNDI3LS4yLS44ODItLjItMS4zNjZzLjA1Ny0uOTQuMi0xLjM2NmMuMTE0LS40MjcuMzEzLS43OTcuNTctMS4xcy41OTgtLjU3Ljk5Ni0uNzRjLjM5OC0uMi44ODItLjI4NSAxLjQyMy0uMjg1LjQ1NSAwIC44ODIuMDg1IDEuMjI0LjI1Ni4yNTYuMTE0LjU0LjMxMy44MjUuNjI2LjE0Mi4xMTQuMzk4LjU0LjUxMi45NHptLTQuMjcuOWgzLjA0NWMtLjAyOC0uMzk4LS4xMTQtLjc0LS4yODUtMS4wMjUtLjI1Ni0uMzk4LS42MjYtLjYyNi0xLjE5NS0uNjI2cy0uOTY4LjIyOC0xLjIyNC42MjZjLS4xNy4yNTYtLjI1Ni41OTgtLjM0MiAxLjAyNXptLTMwLjA4Mi0uOWMuMjg1Ljk2OC4xNDIgMS43OTMuMTQyIDEuODUgMCAuMTE0LS4xMTQuMTE0LS4xMTQuMTE0aC00LjI5N2MuMDI4LjY1NS4xNyAxLjEuNTEyIDEuNDIzLjMxMy4zMTMuNzk3LjUxMiAxLjQ4LjUxMiAxLjAyNSAwIDEuNDUtLjIgMS43NjUtLjMxMyAwIDAgLjExNC0uMDI4LjE3LjA4NWwuMjg1Ljc5N2MuMDU3LjE0MiAwIC4xNy0uMDI4LjItLjI1Ni4xNDItLjkuNDI3LTIuMTYzLjQyNy0uNTk4IDAtMS4xMzgtLjA4NS0xLjU2NS0uMjU2cy0uNzk3LS4zOTgtMS4wOC0uNy0uNDg0LS42ODMtLjYyNi0xLjA4Yy0uMTQyLS40MjctLjItLjg4Mi0uMi0xLjM2NnMuMDU3LS45NC4yLTEuMzY2Yy4xMTQtLjQyNy4zMTMtLjc5Ny41Ny0xLjFzLjU5OC0uNTcuOTk2LS43NGMuMzk4LS4yLjg4Mi0uMjg1IDEuNDIzLS4yODUuNDU1IDAgLjg4Mi4wODUgMS4yMjQuMjU2LjI1Ni4xMTQuNTQuMzEzLjgyNS42MjYuMTE0LjExNC4zOTguNTQuNDg0Ljk0em0tNC4yNy45aDMuMDc0Yy0uMDI4LS4zOTgtLjExNC0uNzQtLjI4NS0xLjAyNS0uMjU2LS4zOTgtLjYyNi0uNjI2LTEuMTk1LS42MjZzLS45NjguMjI4LTEuMjI0LjYyNmMtLjIuMjU2LS4yODUuNTk4LS4zNyAxLjAyNW0tNy41NDItLjIyOC43LjA4NXYtLjE3YzAtLjU3LS4xMTQtLjg1NC0uMzQyLTEuMDI1cy0uNTk4LS4yODUtMS4wNTMtLjI4NWMwIDAtMS4wNTMgMC0xLjg3OC40MjctLjAyOC4wMjgtLjA1Ny4wMjgtLjA1Ny4wMjhzLS4xMTQuMDI4LS4xNDItLjA1N2wtLjMxMy0uODI1Yy0uMDU3LS4xMTQuMDI4LS4xNy4wMjgtLjE3LjM5OC0uMzEzIDEuMy0uNDg0IDEuMy0uNDg0YTggOCAwIDAgMSAxLjEzOC0uMTE0cTEuMjggMCAxLjk2NC41OThjLjY4NC41OTguNjgzIDEuMDI1LjY4MyAxLjkwN3YzLjkyN3MwIC4xMTQtLjA4NS4xNDJjMCAwLS4xNy4wNTctLjMxMy4wODVsLTEuMDguMmE2LjYgNi42IDAgMCAxLTEuMy4xMTRjLS40MjcgMC0uNzk3LS4wMjgtMS4xMzgtLjExNGEyLjggMi44IDAgMCAxLS44ODItLjM3IDEuOSAxLjkgMCAwIDEtLjU3LS42ODNjLS4xNDItLjI1Ni0uMi0uNTk4LS4yLS45NjhhMi4yNiAyLjI2IDAgMCAxIC4yMjgtLjk5NmMuMTQzLS4yOTYuMzctLjUxMi42MjYtLjdzLjU3LS4zMTMuODgyLS40MjdhNC4zIDQuMyAwIDAgMSAxLjA1My0uMTQybC43NC4wMjh6bS0xLjcwOCAzLjAxN3MuMzk4LjMxMyAxLjI1Mi4yNTZjLjYyNi0uMDI4IDEuMTY3LS4xNDIgMS4xNjctLjE0MnYtMS45NTVzLS41NC0uMDg1LTEuMTY3LS4wODVjLS44ODIgMC0xLjI1Mi4zMTMtMS4yNTIuMzEzLS4yNTYuMTctLjM3LjQ1NS0uMzcuODI1YTEuMSAxLjEgMCAwIDAgLjE0Mi41NjljLjAyOC4wNTcuMDU3LjExNC4yMjguMjI4em0zNi4yODYtNS4yMDhjLS4wMjguMTE0LS4yNTYuNy0uMzEzLjktLjAyOC4wODUtLjA4NS4xMTQtLjE3LjExNCAwIDAtLjI1Ni0uMDU3LS40ODQtLjA1N2EyLjMgMi4zIDAgMCAwLS41NjkuMDg1Yy0uMi4wNTctLjM3LjE3LS41NC4zMTNzLS4yODUuMzctLjM3LjYyNi0uMTQyLjY4My0uMTQyIDEuMTM4djMuMTg3YzAgLjA4NS0uMDU3LjE0Mi0uMTQyLjE0MmgtMS4xMjhjLS4wODUgMC0uMTQyLS4wNTctLjE0Mi0uMTQydi02LjRjMC0uMDg1LjA1Ny0uMTQyLjExNC0uMTQyaDEuMWMuMDg1IDAgLjExNC4wNTcuMTE0LjE0MnYuNTEyYTEuOSAxLjkgMCAwIDEgLjctLjU0Yy4yNDUtLjExMy41Ny0uMiAxLjEtLjE3LjI4NS4wMjguNjU1LjA4NS43LjExNC4xMTQuMDI4LjE3LjA1Ny4xNDIuMTd6bS0xMC41Ni0yLjk2Yy4wMjggMCAuMTE0LjA1Ny4wODUuMTQybC0uMzQyLjljLS4wMjguMDU3LS4wNTcuMTE0LS4yLjA1Ny0uMDI4IDAtLjA4NS0uMDI4LS4yMjgtLjA1Ny0uMDg1LS4wMjgtLjIyOC0uMDI4LS4zNDItLjAyOC0uMTcgMC0uMzEzLjAyOC0uNDU1LjA1N3MtLjI1Ni4xMTQtLjM3LjIyOC0uMjI4LjI1Ni0uMzEzLjQ1NWE0LjMgNC4zIDAgMCAwLS4yMjguOTY4aDEuMzY2Yy4xMTQgMCAuMTQyLjA1Ny4xNDIuMTQybC0uMTcuODgyYy0uMDI4LjE0Mi0uMTQyLjExNC0uMTQyLjExNGgtMS40MjNsLS45IDUuNDkzYy0uMTE0LjU3LS4yMjggMS4wNTMtLjM3IDEuNDVzLS4zMTMuNjgzLS41Ny45NjhjLS4yMjguMjU2LS40ODQuNDU1LS43OTcuNTQtLjI4NS4xMTQtLjY1NS4xNy0xLjA1My4xNy0uMiAwLS4zOTggMC0uNjI2LS4wNTdhMS42IDEuNiAwIDAgMS0uMzk4LS4xMTRjLS4wNTctLjAyOC0uMDg1LS4wODUtLjA1Ny0uMTdsLjI5My0uODYzYy4wNTctLjExNC4xNDItLjA1Ny4xNDItLjA1N2wuMjI4LjA4NWMuMTE0LjAyOC4yMjguMDI4LjM0Mi4wMjhxLjMgMCAuNTEyLS4wODVjLjE3LS4wNTcuMjg1LS4xNy4zOTgtLjMxM3MuMi0uMzQyLjMxMy0uNTk4cS4xNTgtLjUxOS4yNTYtMS4wNTNsLjk2OC01LjM4aC0uOTRjLS4xMTQgMC0uMTQyLS4wNTctLjE0Mi0uMTQybC4xNy0uODgyYy4wMjgtLjE0Mi4xNDItLjExNC4xNDItLjExNGguOTY4bC4wNTctLjI4NWMuMTQyLS44NTQuNDI3LTEuNTA4Ljg1NC0xLjkzNXMxLjA1My0uNjU1IDEuODItLjY1NXEuMzAyLjAwMy41OTguMDU3Yy4xMTQtLjAyOC4yNTYgMCAuMzk4LjA1N3ptLTE5LjE4MiA5LjI1YzAgLjA4NS0uMDU3LjE0Mi0uMTE0LjE0MmgtMS4xMzhjLS4wODUgMC0uMTE0LS4wNTctLjExNC0uMTQydi05LjEzNmMwLS4wNTcuMDU3LS4xNDIuMTE0LS4xNDJoMS4xMzhjLjA4NSAwIC4xMTQuMDU3LjExNC4xNDJ6Ii8+PC9nPjwvc3ltYm9sPjwvc3ZnPg=="
+      },
+      "displayName": "Salesforce Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 2,
+          "name": "Sales"
+        },
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de Leads"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    }
+  ],
+  "image": [
+    {
+      "id": 2629,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Automated_AI_Lead_Enrichment_Salesforce_to_Explorium_for_Enhanced_Prospect_Data_a4587ce172.png"
+    }
+  ]
+}

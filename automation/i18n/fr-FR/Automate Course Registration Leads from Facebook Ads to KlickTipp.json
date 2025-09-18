@@ -1,0 +1,284 @@
+{
+  "id": 3786,
+  "name": "Automatiser l'enregistrement des leads de cours à partir des annonces Facebook vers KlickTipp",
+  "views": 2395,
+  "recentViews": 1,
+  "totalViews": 2395,
+  "createdAt": "2025-04-29T13:22:51.792Z",
+  "description": "![FB WF.png](fileId:1856)\n\n**Avertissement de la communauté :** Ce flux de travail utilise des nœuds communautaires KlickTipp.\n\n**Comment ça fonctionne :**  \n\n**Intégration des annonces de leads Facebook à KlickTipp :**  \nCe flux de travail transfère automatiquement les informations des leads soumises via les annonces de leads Facebook vers KlickTipp. Il est idéal pour automatiser les inscriptions aux cours ou des campagnes similaires, permettant des séquences d'e-mails ciblées basées sur les entrées des utilisateurs.  \n\n**Gestion des données :**  \nLes données des leads provenant de Facebook sont reçues via un webhook, associées aux champs personnalisés de KlickTipp, et le contact est étiqueté pour la segmentation et l'automatisation.\n\n\n**Fonctionnalités clés**  \n\n**Déclencheur Webhook pour les annonces de leads Facebook :**  \n- Capture les nouvelles soumissions de formulaires de leads de Facebook, y compris :\n  - Nom\n  - Adresse e-mail\n  - Cours choisi\n  - Méthode de paiement préférée\n  - Commentaires optionnels  \n\n**Cartographie et validation des données :**  \n- Mappe les valeurs des champs Facebook aux champs personnalisés prédéfinis dans KlickTipp  \n\n**Gestion des abonnés dans KlickTipp :**  \n- Ajoute ou met à jour les leads en tant qu'abonnés dans KlickTipp  \n- Inclut la cartographie vers des champs personnalisés tels que :\n  - `Choix de cours`\n  - `Option de paiement`\n  - `Commentaire`  \n- Assigne des étiquettes pertinentes pour les déclencheurs de campagne automatisés\n\n\n**Instructions de configuration**  \n\n**1. Préparer les champs personnalisés de KlickTipp :**  \nAvant d'utiliser le flux de travail, créez les champs personnalisés suivants dans KlickTipp sous → Contacts → Champs personnalisés :  \n\n| **Nom du champ**            | **Type de champ** |\n|------------------------------------------|----------------|\n| Annonces de leads Facebook \\| Commentaire            | Texte           |\n| Annonces de leads Facebook \\| Choix de cours      | Texte           |\n| Annonces de leads Facebook \\| Option de paiement     | Texte           |\n\n**2. Configuration des annonces de leads Facebook :**  \n- Créez un formulaire de leads sous le gestionnaire d'annonces Facebook  \n- Incluez des champs personnalisés pour l'intérêt du cours, la préférence de paiement et les commentaires   \n\n**3. Configurer le webhook Facebook dans n8n :**  \n- Utilisez le nœud des annonces de leads Facebook pour créer un webhook  \n- Authentifiez votre compte Facebook  \n- Choisissez la page et le formulaire de leads correspondant  \n- Enregistrez et activez le webhook  \n\n**4. Mapper les données aux champs de KlickTipp :**  \n- Ouvrez le nœud KlickTipp pour vous authentifier avec vos identifiants (nom d'utilisateur & mot de passe)  \n- Mappez les champs du webhook Facebook aux champs personnalisés correspondants dans KlickTipp. \n\n\n**Tests et déploiement**  \n\n**Effectuer un test :**  \n- Utilisez l'outil de test de Meta pour générer un lead de test  \n- Exécutez le flux de travail n8n une fois manuellement  \n\nRemarque : l'e-mail de test Facebook (par exemple, test@fb.com) est invalide—attendez-vous à une erreur dans KlickTipp lors des tests. Vous pouvez épingler la sortie du nœud et manipuler l'adresse pour une adresse de test valide.\n\n\n**Logique du flux de travail**  \n\n1. **Déclencheur Webhook de Facebook :** Initie le flux de travail lors de la soumission d'un nouveau formulaire de leads  \n2. **Ajouter ou mettre à jour le contact dans KlickTipp :** Soumet les données mappées dans votre compte KlickTipp \n\n\n**Avantages**  \n\n**Gestion automatisée des leads :**  \nAucun transfert de données manuel nécessaire—les nouveaux leads Facebook sont instantanément envoyés à KlickTipp.  \n\n**Campagnes personnalisées :**  \nSegmentez les leads en fonction du cours sélectionné ou de la méthode de paiement pour des e-mails de suivi ciblés.   \n\n\n**Remarques :**  \n\n**Personnalisation :**  \nAjustez les mappages de champs dans le nœud KlickTipp en fonction de la structure de votre formulaire de leads. Assurez-vous que tous les champs requis (e-mail, opt-in, etc.) sont correctement mappés.  \n\n**Ressources :**  \n- Utilisez l'[outil de test des annonces de leads Meta](https://developers.facebook.com/tools/lead-ads-testing) pour simuler des soumissions de leads lors de la configuration.\n- Consultez notre article de base de connaissances [Envoyer des leads Facebook à KlickTipp avec Make ou n8n](https://www.klicktipp.com/de/support/wissensdatenbank/facebook-leads-make-n8n-integration/) pour en savoir plus.\n- [Utiliser le nœud communautaire KlickTipp dans n8n](https://www.klicktipp.com/support/knowledge-base/install-klicktipp-node-n8n/)\n- [Automatiser les flux de travail : Intégration de KlickTipp dans n8n](https://www.klicktipp.com/support/knowledge-base/klicktipp-integration-n8n/)",
+  "workflow": {
+    "meta": {
+      "instanceId": "95b3ab5a70ab1c8c1906357a367f1b236ef12a1409406fd992f60255f0f95f85",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "0b6d74c3-e034-40be-9f42-df42c2ffbb03",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1088,
+          1056
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 1219,
+          "height": 898,
+          "content": "### Introduction\nThis workflow streamlines the process of capturing leads via Facebook Lead Ads and transferring them automatically into KlickTipp. It ensures that contact data is accurately mapped and added to KlickTipp to trigger personalized email campaigns.\n\n### Benefits\n- **Automated lead import**: New leads from Facebook forms are automatically synced to KlickTipp without manual effort.\n- **Seamless campaign activation**: Tags can be assigned during the process, instantly triggering follow-up campaigns like welcome emails or webinar reminders.\n- **Reliable data structure**: Validated form entries are mapped to predefined custom fields, ensuring a high-quality contact base in KlickTipp.\n\n### Key Feature\n- **Facebook Lead Ads Trigger**: Captures form submissions from Facebook Ads in real-time.\n- **Data Processing**: Assigns and formats lead data based on field mappings:\n  - Maps standard Facebook fields (name, email) directly.\n  - Matches custom fields such as course selection, payment method, and comments to KlickTipp custom fields.\n- **Subscriber Management in KlickTipp**: Adds or updates contacts with structured mapping to custom fields. Tags can be dynamically added for segmentation:\n  - Personal data: First name, email address.\n  - Form responses: Selected course, payment method, comments.\n  - Tag-based segmentation for automated workflows.\n\n#### Setup Instructions\n1. Set up the Facebook Leads Ads (choose your form) and KlickTipp nodes (choose opt-in, tagging and field mapping) in your n8n instance.\n2. Authenticate your Facebook Lead Ads and KlickTipp accounts.\n3. Create the necessary custom fields to match the data structure\n4. Verify and customize field assignments in the workflow to align with your specific form and subscriber list setup.\n\nCustom Fields:\n- `Facebook Leads Ads | Comment` (Text)\n- `Facebook Leads Ads | Course choice` (Text)\n- `Facebook Leads Ads | Payment option` (Text)\n\n\n### Testing and Deployment\n1. Perform a test with the meta developer tool verify the transmission. (⚠️ Attention: KlickTipp rightfully rejects this test address test@fb.com due to its validation rules, as it cannot receive emails. You can manipulate the output in the node for testing.)\n2. Confirm new subscribers appear in KlickTipp with mapped fields and tags.\n3. Launch your campaign in Facebook with full automation in place.\n\n- **Customization**: Adjust tag names and field mappings in the KlickTipp module of Make to fit your specific setup. Ensure any additional fields are created beforehand in KlickTipp to avoid sync errors."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "84d11f91-5a50-49a0-a511-93d83fa434f4",
+        "name": "Facebook Lead Ads Trigger",
+        "type": "n8n-nodes-base.facebookLeadAdsTrigger",
+        "notes": "This node listens for new leads generated via Facebook Lead Ads. When a user submits a form on Facebook or Instagram, it triggers the workflow and captures the lead's details.",
+        "position": [
+          1472,
+          848
+        ],
+        "webhookId": "04c33978-2df7-4ab1-a37c-3ab3c0a0d21f",
+        "parameters": {
+          "form": {
+            "__rl": true,
+            "mode": "list",
+            "value": "989636452637732",
+            "cachedResultName": "Integrations Manual - Kursregistrierung"
+          },
+          "page": {
+            "__rl": true,
+            "mode": "list",
+            "value": "315574741814190",
+            "cachedResultUrl": "https://facebook.com/315574741814190",
+            "cachedResultName": "KlickTipp"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "facebookLeadAdsOAuth2Api": {
+            "id": "bBzZPOu1M8YbIM9L",
+            "name": "Facebook Lead Ads account 3"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "e4532533-b447-4340-b750-6e3c47809cb8",
+        "name": "Subscribe lead in KlickTipp",
+        "type": "n8n-nodes-klicktipp.klicktipp",
+        "notes": "Subscribes the incoming Facebook lead to the KlickTipp. This allows automatic follow-up, tagging, or integration with email campaigns.",
+        "position": [
+          1792,
+          848
+        ],
+        "parameters": {
+          "email": "={{ $json.data.email }}",
+          "fields": {
+            "dataFields": [
+              {
+                "fieldId": "fieldFirstName",
+                "fieldValue": "={{ // Extracts the first name (the first part of the full name), which will be identified by the letters before the first empty space \" \". This implementation only supports the first name.\n$json[\"data\"][\"full name\"].split(\" \")[0] }}"
+              },
+              {
+                "fieldId": "fieldLastName",
+                "fieldValue": "={{ // Extracts the last name (the last part of the full name), which will be identified by the letters after the last empty space \" \". This implementation does not support double names.\n$json[\"data\"][\"full name\"].split(\" \").pop() }}"
+              },
+              {
+                "fieldId": "field216784",
+                "fieldValue": "={{ $json.data['hast_du_zusätzliche_kommentare_für_uns?'] }}"
+              },
+              {
+                "fieldId": "field216785",
+                "fieldValue": "={{ $json.data['welcher_kurs_interessiert_dich?'] }}"
+              },
+              {
+                "fieldId": "field216786",
+                "fieldValue": "={{ $json.data['was_ist_deine_bevorzugte_zahlungsweise?'] }}"
+              }
+            ]
+          },
+          "listId": "358895",
+          "resource": "subscriber",
+          "operation": "subscribe"
+        },
+        "credentials": {
+          "klickTippApi": {
+            "id": "K9JyBdCM4SZc1cXl",
+            "name": "DEMO KlickTipp account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 2
+      },
+      {
+        "id": "5d7437f8-00d7-44dc-8402-90338b129831",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1200,
+          720
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 496,
+          "height": 320,
+          "content": "## Listen to new submissions"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1a86ade5-d7f0-4718-b259-fe2b71bab03c",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1712,
+          720
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 496,
+          "height": 320,
+          "content": "## Subscribe contact"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Facebook Lead Ads Trigger": {
+        "main": [
+          [
+            {
+              "node": "Subscribe lead in KlickTipp",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 5,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-klicktipp.klicktipp": {
+        "count": 1
+      },
+      "n8n-nodes-base.facebookLeadAdsTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "KlickTipp",
+    "username": "KlickTipp",
+    "bio": "Reach more people. 100% GDPR compliant. Quickly create automated email campaigns, SMS and marketing automations. Market your knowledge independently of Google & Co., sell lucrative products and activate your customers.",
+    "verified": true,
+    "links": [
+      "https://www.klicktipp.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/38677fedcb7c47d414fa2b6ecabb1f51a1f0efaecd06f316971632d6c192e2ff?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1226,
+      "icon": "file:facebook.svg",
+      "name": "n8n-nodes-base.facebookLeadAdsTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.facebookleadadstrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/credentials/facebookleadads/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur d'annonces de leads Facebook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MCA2MCI+PHBhdGggZmlsbD0iIzE4NzdmMiIgZD0iTTU5LjUgMzBDNTkuNSAxMy43MSA0Ni4yOS41IDMwIC41Uy41IDEzLjcxLjUgMzBjMCAxNC43MiAxMC43OSAyNi45MyAyNC44OSAyOS4xNFYzOC41M0gxNy45VjMwaDcuNDl2LTYuNWMwLTcuMzkgNC40LTExLjQ4IDExLjE0LTExLjQ4IDMuMjMgMCA2LjYuNTggNi42LjU4djcuMjZoLTMuNzJjLTMuNjYgMC00LjgxIDIuMjctNC44MSA0LjYxVjMwaDguMThsLTEuMzEgOC41M0gzNC42djIwLjYxQzQ4LjcxIDU2LjkzIDU5LjUgNDQuNzIgNTkuNSAzMCIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik00MS40OCAzOC41MyA0Mi43OSAzMGgtOC4xOHYtNS41M2MwLTIuMzMgMS4xNC00LjYxIDQuODEtNC42MWgzLjcyVjEyLjZzLTMuMzgtLjU4LTYuNi0uNThjLTYuNzQgMC0xMS4xNCA0LjA4LTExLjE0IDExLjQ4VjMwaC03LjV2OC41M2g3LjQ5djIwLjYxYzEuNS4yNCAzLjA0LjM2IDQuNjEuMzZzMy4xMS0uMTIgNC42MS0uMzZWMzguNTN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Facebook Lead Ads Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de leads"
+    }
+  ],
+  "image": [
+    {
+      "id": 1856,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/FB_WF_9d2da06727.png"
+    }
+  ]
+}

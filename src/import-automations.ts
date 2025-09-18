@@ -98,7 +98,7 @@ class ImportAutomations {
         }
     }
 
-    async _getAutomations(rows: number = 100): Promise<void> {
+    async _getAutomations(rows: number = 200): Promise<void> {
         const {refresh, translate} = this.options
         let categories: Array<Category> = []
         let foundWorkflows: number = 0;

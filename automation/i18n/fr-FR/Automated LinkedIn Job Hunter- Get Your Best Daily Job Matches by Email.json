@@ -1,0 +1,1449 @@
+{
+  "id": 3543,
+  "name": "Chasseur d'Emplois Automatisé sur LinkedIn : Recevez Vos Meilleures Correspondances Quotidiennes par Email",
+  "views": 2209,
+  "recentViews": 1,
+  "totalViews": 2209,
+  "createdAt": "2025-04-13T16:34:43.497Z",
+  "description": "## Aperçu\n\nCe modèle n8n automatise le processus fastidieux de recherche d'emplois sur LinkedIn. En intégrant des outils de web scraping et en tirant parti de l'IA (Google Gemini) pour un appariement intelligent, ce flux de travail fournit une liste sélectionnée des 5 opportunités d'emploi les plus pertinentes publiées au cours des dernières 24 heures directement dans votre boîte de réception chaque jour, en fonction de votre CV unique et de vos préférences. Le coût est seulement 0,1 USD par jour et aucune souscription n'est nécessaire.\n\n## Pour qui est-ce ?\n\nCe modèle est idéal pour :\n\n- Les chercheurs d'emploi actifs souhaitant gagner du temps et des efforts.\n- Les professionnels cherchant à surveiller discrètement de nouvelles opportunités pertinentes.\n- Les individus recherchant un fil d'emploi hautement personnalisé adapté à leur CV et à leurs préférences.\n- Quiconque se sent submergé par la recherche manuelle d'emploi sur LinkedIn.\n\n## Ce qui est inclus :\n\n- **Modèle de Flux de Travail n8n :** Le fichier de flux de travail complet (`.json`) prêt à être importé dans votre instance n8n.\n- **Guidage Vidéo :** Une vidéo explicative étape par étape vous montrant exactement comment configurer et configurer le flux de travail.\n\n## Quel problème ce flux de travail résout-il ?\n\nTrouver le bon emploi sur LinkedIn peut être écrasant et chronophage. Passer au crible des centaines d'annonces, adapter les recherches et vérifier quotidiennement demande un effort considérable. Ce flux de travail résout le problème de la recherche d'emploi manuelle et répétitive en automatisant le processus de découverte et de filtrage, garantissant que vous voyez les opportunités les plus pertinentes sans le travail quotidien et réduisant le risque de manquer votre rôle idéal.\n\n## Ce que fait ce flux de travail :\n\nCe flux de travail automatise les étapes suivantes :\n\n1. **Récupération d'Emplois Planifiée :** S'exécute automatiquement (par défaut : quotidiennement à 8h) pour trouver les derniers emplois.\n2. **Traitement de CV :** Télécharge votre CV (PDF) depuis Google Drive et extrait le contenu textuel.\n3. **Scraping LinkedIn Ciblé :** Utilise Apify pour extraire les annonces d'emploi récentes de LinkedIn en fonction de votre URL de recherche personnalisée.\n4. **Appariement Alimenté par l'IA :** Emploie un agent IA (Google Gemini) pour analyser les emplois extraits par rapport au texte de votre CV et aux préférences spécifiées.\n5. **Classement et Sélection des 5 Meilleurs :** Identifie et classe les opportunités, sélectionnant les 5 meilleures correspondances pour vous.\n6. **Rapport Email Personnalisé :** Génère et envoie un email HTML détaillé contenant les 5 meilleurs emplois, y compris le nom de l'entreprise, le titre du poste, l'industrie, une raison personnalisée pour la correspondance, et un lien direct pour postuler.\n\n## Configuration :\n\nSuivez ces étapes pour configurer le flux de travail :\n\n1. **Connexions Principales :**\n    - Connectez vos comptes Google Drive et Gmail à n8n via la section des Identifiants.\n    - Assurez-vous que votre environnement n8n a accès/identifiants configurés pour le modèle IA utilisé par le nœud Agent IA (par exemple, Google Gemini).\n2. **Intégration Apify :**\n    - Inscrivez-vous pour un compte Apify ([apify.com](https://apify.com/)) et obtenez votre clé API.\n    - **Action :** Dans le nœud `Input`, collez votre clé API Apify dans le champ `Value` pour l'attribution `ApifyAPIKey`.\n3. **Configuration du CV :**\n    - Téléchargez votre CV actuel au format PDF sur votre Google Drive.\n    - **Action :** Trouvez l'ID de fichier du CV téléchargé dans Google Drive (partie du lien partageable). Collez cet ID de fichier dans le paramètre `File ID` au sein du nœud `DownloadResume` (Google Drive).\n4. **Définition de la Recherche LinkedIn :**\n    - Allez sur LinkedIn Jobs ([www.linkedin.com/jobs/search/](https://www.linkedin.com/jobs/search/)) en utilisant une fenêtre de navigateur *incognito/privée* pour vous assurer d'obtenir une URL publique.\n    - Appliquez tous vos filtres souhaités (mots-clés, emplacement, date de publication, type de poste, industrie, etc.).\n    - Copiez l'*URL complète* de la barre d'adresse de votre navigateur.\n    - **Action :** Dans le nœud `ScrapeLinkedin` (HTTP Request), naviguez vers le paramètre `Body` &gt; `JSON`. Remplacez l'URL d'exemple dans le tableau `urls` `[ \"YOUR_LINKEDIN_SEARCH_URL_HERE\" ]` par l'URL que vous venez de copier. *Assurez-vous que l'URL est entourée de guillemets doubles.*\n5. **Entrées de Personnalisation :**\n    - **Action :** Allez dans le nœud `Input` :\n        - Dans l'attribution `Preference`, remplacez le texte d'exemple dans le champ `Value` par vos préférences d'emploi détaillées (par exemple, \"Recherche de postes de Data Scientist à distance dans des entreprises SaaS de moins de 1000 employés, forte préférence pour un accent sur Python/ML\").\n        - Dans l'attribution `EmailAddressToReceiveJobRecommendations`, entrez l'adresse email où vous souhaitez recevoir la liste quotidienne des emplois dans le champ `Value`.\n6. **Configuration de l'Expéditeur d'Email :**\n    - **Action :** Dans le nœud `Email the top job recommendations` (Gmail), assurez-vous que le bon identifiant Gmail (le compte à partir duquel vous souhaitez envoyer des emails *de*) est sélectionné.\n\n## Comment personnaliser ce flux de travail :\n\n- **Plan de Fonctionnement :** Modifiez les paramètres dans le nœud `Schedule Trigger` pour changer l'heure ou la fréquence (par exemple, deux fois par jour, hebdomadaire).\n- **Critères de Recherche d'Emploi :** Mettez à jour l'URL de recherche LinkedIn dans le nœud `ScrapeLinkedin` chaque fois que vous souhaitez cibler différents rôles, industries ou emplacements.\n- **Préférences d'Appariement :** Affinez le texte dans le champ `Preference` au sein du nœud `Input` pour guider le processus d'appariement de l'IA plus précisément.\n- **Comportement de l'IA :** Les utilisateurs avancés peuvent ajuster l'invite système dans le nœud `AI Agent: Find Best-matched jobs` pour changer la façon dont l'IA analyse ou présente les informations (assurez-vous que la structure de sortie correspond toujours aux attentes du nœud `Structured Output Parser` et de l'email).\n- **Nombre d'Emplois Extraits :** Changez la valeur `count` (par exemple, de 100) dans le `JSON Body` du nœud `ScrapeLinkedin`. Notez que des nombres plus élevés peuvent augmenter les coûts/utilisation d'Apify.\n- **Nombre d'Emplois Envoyés par Email :** Pour changer le nombre de recommandations (par exemple, top 3 ou top 10), vous devrez :\n    - Modifier l'invite IA dans le nœud `AI Agent: Find Best-matched jobs` pour demander le nombre souhaité.\n    - Ajuster l'exemple/schema du nœud `Structured Output Parser` si nécessaire.\n    - Mettre à jour le code HTML dans le nœud `Email the top job recommendations` pour boucler correctement et afficher le nouveau nombre d'emplois.\n- **Apparence de l'Email :** Éditez le HTML dans le champ `Message` du nœud `Email the top job recommendations` pour personnaliser le style, les couleurs ou la mise en page de l'email.\n\n## Catégorie :\n\nRecherche d'Emploi, Automatisation, IA, Productivité, Gestion de Carrière",
+  "workflow": {
+    "id": "zbVcv0SXPc4fA0FI",
+    "meta": {
+      "instanceId": "f638a47e4e563f91fde8b98ed9f5fa6a9faa41a207143e9ce05d85200c905524",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Automated LinkedIn Job Hunter_READY",
+    "tags": [
+      {
+        "id": "eCN4xVqsbzoJ8LSK",
+        "name": "Linkedin",
+        "createdAt": "2025-04-13T06:21:01.552Z",
+        "updatedAt": "2025-04-13T06:21:01.552Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "552c3242-41c5-4c10-b47c-8ae9056aa5c8",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1120,
+          -240
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1598d426-c2b0-4234-88e9-1e7d4a4ca1d6",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -1040,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 1.2
+      },
+      {
+        "id": "b76e5f4c-4580-4610-ab17-a2fd5c491480",
+        "name": "SetResumeField",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          160,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "38b207b4-d050-47fe-8474-474aa8785627",
+        "name": "Input",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -740,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "ee42cded-74c0-491b-8204-560ff3e2afe9",
+        "name": "Structured Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "position": [
+          1780,
+          380
+        ],
+        "parameters": {},
+        "typeVersion": 1.2
+      },
+      {
+        "id": "338c3855-364f-4e82-b72c-102d3064a0d3",
+        "name": "Auto-fixing Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+        "position": [
+          1560,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "4b9fc6a8-8bd7-47b4-9959-172a4861f943",
+        "name": "DownloadResume",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          -440,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "aa36c256-4773-40a2-9cc2-a72890523799",
+        "name": "Extract Information from Resume PDF",
+        "type": "n8n-nodes-base.extractFromFile",
+        "position": [
+          -140,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "c1816082-faea-4939-8e87-f856095a11f5",
+        "name": "ScrapeLinkedin",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          460,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 4.2
+      },
+      {
+        "id": "d858bfc1-5dd6-496d-b98e-ddafe37790a1",
+        "name": "AI Agent: Find Best-matched jobs",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          1440,
+          -80
+        ],
+        "parameters": {},
+        "retryOnFail": true,
+        "typeVersion": 1.8
+      },
+      {
+        "id": "7fe3f538-e328-4744-a293-b587e629bf2b",
+        "name": "Email the top job recommendations",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          2020,
+          -80
+        ],
+        "webhookId": "03a0f1de-696a-4a97-b58a-1b2b8376af1b",
+        "parameters": {},
+        "typeVersion": 2.1
+      },
+      {
+        "id": "09752314-56ee-4acd-8c27-fe29d8f95b7b",
+        "name": "Combine all job information into a single text string",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1100,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "7927ff54-6f36-4a6c-a0ba-978f334fedd2",
+        "name": "Aggregate all returned items",
+        "type": "n8n-nodes-base.aggregate",
+        "position": [
+          800,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "67f6a40f-57f5-4ae1-8739-95f6d11084fe",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1100,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8ce3b47c-003d-40bc-b959-13a3c12ee4fd",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -800,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d85cf606-661c-4572-a5af-c847a7cce987",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -500,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "368a4335-9d20-41e6-bb9d-e9a2c08b6f64",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -220,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0e2c74f5-46a7-443a-aa46-1168daba23cb",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          80,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9d08a88e-1a3e-4859-a2ab-4f1c7fd99cc0",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          360,
+          20
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "79f36fc2-0855-42f0-aef6-6ceb65b9c673",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          740,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "144ee189-e09d-4fdb-93a9-9d09b7f5f3a3",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1020,
+          80
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fa0a3270-269a-4039-8926-0784f514d301",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1320,
+          -400
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e897ca2d-d9cd-4fde-a904-89a33a39dfed",
+        "name": "Sticky Note10",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1960,
+          -180
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "95516d59-c66e-4a7f-9345-17ca12d486de",
+        "name": "Sticky Note11",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1120,
+          460
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0fc3508d-2cae-4ac8-af55-751316d3e815",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          1420,
+          120
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "2ea765b2-8d2e-4093-bd54-5a48609d88a4",
+        "name": "Google Gemini Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          1520,
+          360
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "fd5d31b5-6e67-456d-b7b2-cbeded17a213",
+    "connections": {
+      "Input": {
+        "main": [
+          [
+            {
+              "node": "DownloadResume",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DownloadResume": {
+        "main": [
+          [
+            {
+              "node": "Extract Information from Resume PDF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ScrapeLinkedin": {
+        "main": [
+          [
+            {
+              "node": "Aggregate all returned items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SetResumeField": {
+        "main": [
+          [
+            {
+              "node": "ScrapeLinkedin",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent: Find Best-matched jobs",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Auto-fixing Output Parser",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Auto-fixing Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "AI Agent: Find Best-matched jobs",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Auto-fixing Output Parser",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate all returned items": {
+        "main": [
+          [
+            {
+              "node": "Combine all job information into a single text string",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent: Find Best-matched jobs": {
+        "main": [
+          [
+            {
+              "node": "Email the top job recommendations",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Information from Resume PDF": {
+        "main": [
+          [
+            {
+              "node": "SetResumeField",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Combine all job information into a single text string": {
+        "main": [
+          [
+            {
+              "node": "AI Agent: Find Best-matched jobs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 26,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 3
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.aggregate": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 12
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.extractFromFile": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.outputParserAutofixing": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.outputParserStructured": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Tianyi",
+    "username": "muzi",
+    "bio": "Ph.D. in Machine Learning from the University of Toulouse.\nExperienced automation consultant specializing in optimizing workflows for Content creation and Marketing teams. ",
+    "verified": true,
+    "links": [
+      "www.linkedin.com/in/tianyi-li-v"
+    ],
+    "avatar": "https://gravatar.com/avatar/43163225998120af2d88664551ec779ceb7518ef30b5a6c27f81649a0fb641d0?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les Champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1175,
+      "icon": "fa:tools",
+      "name": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.outputparserautofixing/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Output Parsers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Analyseur de Sortie Auto-correctif"
+      },
+      "iconData": {
+        "icon": "tools",
+        "type": "icon"
+      },
+      "displayName": "Auto-fixing Output Parser",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1179,
+      "icon": "fa:code",
+      "name": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "codex": {
+        "data": {
+          "alias": [
+            "json",
+            "zod"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.outputparserstructured/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Output Parsers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Analyseur de Sortie Structurée"
+      },
+      "iconData": {
+        "icon": "code",
+        "type": "icon"
+      },
+      "displayName": "Structured Output Parser",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1235,
+      "icon": "file:extractFromFile.svg",
+      "name": "n8n-nodes-base.extractFromFile",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "Excel",
+            "xls",
+            "xlsx",
+            "ods",
+            "tabular",
+            "decode",
+            "decoding",
+            "Move Binary Data",
+            "Binary",
+            "File",
+            "PDF",
+            "JSON",
+            "HTML",
+            "ICS",
+            "iCal",
+            "txt",
+            "Text",
+            "RTF",
+            "XML",
+            "64",
+            "Base64",
+            "Convert"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.extractfromfile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Extraire du Fichier"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuOTM3NSAyQzAuNDE5NzMzIDIgMCAyLjQxOTczIDAgMi45Mzc1VjM3LjMyMjFDMCAzNy44Mzk5IDAuNDE5NzMzIDM4LjI1OTYgMC45Mzc1IDM4LjI1OTZIMjYuMjE1NEMyNi43MzMyIDM4LjI1OTYgMjcuMTUyOSAzNy44Mzk5IDI3LjE1MjkgMzcuMzIyMUwyNy4xNTI5IDMwLjY3MTlMMTYuNzk2OSAzMC42NzE5QzE0Ljg5ODQgMzAuNjcxOSAxMy4zNTk0IDI5LjEzMjkgMTMuMzU5NCAyNy4yMzQ0VjI1LjM1OTRDMTMuMzU5NCAyMy40NjA5IDE0Ljg5ODQgMjEuOTIxOSAxNi43OTY5IDIxLjkyMTlIMjcuMTUyOUwyNy4xNTI5IDE1Ljc4MjFIMTQuMzA4M0MxMy43OTA2IDE1Ljc4MjEgMTMuMzcwOCAxNS4zNjI0IDEzLjM3MDggMTQuODQ0NlYySDAuOTM3NVoiIGZpbGw9IiMzNTNGNkUiLz4KPHBhdGggZD0iTTE2LjAyNzEgMkMxNS45NDA4IDIgMTUuODcwOCAyLjA2OTk2IDE1Ljg3MDggMi4xNTYyNVYxMi44MTM0QzE1Ljg3MDggMTMuMDcyMyAxNi4wODA3IDEzLjI4MjEgMTYuMzM5NiAxMy4yODIxSDI2Ljk5NjdDMjcuMDgzIDEzLjI4MjEgMjcuMTUyOSAxMy4yMTIyIDI3LjE1MjkgMTMuMTI1OUwyNy4xNTI5IDEyLjYxNzFDMjcuMTUyOSAxMi4zNjg4IDI3LjA1NDUgMTIuMTMwNyAyNi44NzkxIDExLjk1NUwxNy4yMjI1IDIuMjc1MzhDMTcuMDQ2NiAyLjA5OTA4IDE2LjgwNzkgMiAxNi41NTg4IDJIMTYuMDI3MVoiIGZpbGw9IiMzNTNGNkUiLz4KPHBhdGggZD0iTTI5Ljc2NDIgMzQuNjUwM0MyOS4wMzQgMzMuOTE2IDI5LjAzNzQgMzIuNzI4OCAyOS43NzE2IDMxLjk5ODZMMzMuNjE5NyAyOC4xNzE5TDE2Ljc5NjkgMjguMTcxOUMxNi4yNzkxIDI4LjE3MTkgMTUuODU5NCAyNy43NTIxIDE1Ljg1OTQgMjcuMjM0NFYyNS4zNTk0QzE1Ljg1OTQgMjQuODQxNiAxNi4yNzkxIDI0LjQyMTkgMTYuNzk2OSAyNC40MjE5TDMzLjU0MTIgMjQuNDIxOUwyOS43NzE2IDIwLjY3MzNDMjkuMDM3NCAxOS45NDMxIDI5LjAzNCAxOC43NTU5IDI5Ljc2NDIgMTguMDIxNkMzMC40OTQ0IDE3LjI4NzQgMzEuNjgxNiAxNy4yODQgMzIuNDE1OSAxOC4wMTQyTDM5LjQ0NzEgMjUuMDA2NEMzOS44MDEgMjUuMzU4MyA0MCAyNS44MzY4IDQwIDI2LjMzNTlDNDAgMjYuODM1IDM5LjgwMSAyNy4zMTM1IDM5LjQ0NzEgMjcuNjY1NUwzMi40MTU5IDM0LjY1NzZDMzEuNjgxNiAzNS4zODc4IDMwLjQ5NDQgMzUuMzg0NSAyOS43NjQyIDM0LjY1MDNaIiBmaWxsPSIjMzUzRjZFIi8+Cjwvc3ZnPgo="
+      },
+      "displayName": "Extract from File",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1236,
+      "icon": "file:aggregate.svg",
+      "name": "n8n-nodes-base.aggregate",
+      "codex": {
+        "data": {
+          "alias": [
+            "Aggregate",
+            "Combine",
+            "Flatten",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.aggregate/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agrégat"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjRkY2RDVBIiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMyIDE0OGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDE0NmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJINDRjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6bTAgOTZjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxNDZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYyNGMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDQ0Yy02LjYyNyAwLTEyLTUuMzczLTEyLTEyem0wIDk2YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTQ2YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkg0NGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik03NCA3NmMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDExNi4yMTdjMTcuNjczIDAgMzIgMTQuMzI3IDMyIDMydjU2YzAgMjYuOTc4IDEwLjI3MiA1MS41NTcgMjcuMTE5IDcwLjAzOSA1LjA1NSA1LjU0NSA1LjA1NSAxNC4zNzcgMCAxOS45MjItMTYuODQ3IDE4LjQ4Mi0yNy4xMTkgNDMuMDYxLTI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMtMTQuMzI3IDMyLTMyIDMySDg2Yy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTE2LjIxN2M0NC4xODMgMCA4MC0zNS44MTcgODAtODB2LTU2YzAtMzAuOTI4IDI1LjA3Mi01NiA1Ni01NmE1Ljc4MyA1Ljc4MyAwIDAgMCA1Ljc4My01Ljc4M3YtMzYuNDM0YTUuNzgzIDUuNzgzIDAgMCAwLTUuNzgzLTUuNzgzYy0zMC45MjggMC01Ni0yNS4wNzItNTYtNTZ2LTU2YzAtNDQuMTgzLTM1LjgxNy04MC04MC04MEg4NmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNzYgMjQ0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgzODhjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L2c+PGRlZnM+PGNsaXBQYXRoIGlkPSJhIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDUxMnY1MTJIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Aggregate",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 43,
+      "name": "Productivité Personnelle"
+    },
+    {
+      "id": 49,
+      "name": "Résumé IA"
+    }
+  ],
+  "image": []
+}

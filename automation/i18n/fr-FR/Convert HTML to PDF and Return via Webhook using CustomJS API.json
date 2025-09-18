@@ -1,0 +1,313 @@
+{
+  "id": 3331,
+  "name": "Convertir HTML en PDF et retourner via Webhook en utilisant l'API CustomJS",
+  "views": 2997,
+  "recentViews": 1,
+  "totalViews": 2997,
+  "createdAt": "2025-03-26T09:52:28.987Z",
+  "description": "![workflow.png](fileId:1048)!\n# n8n Workflow : Générateur de PDF à partir de HTML\n\nCe workflow n8n convertit le contenu HTML en un PDF stylisé et le renvoie en réponse via un webhook. Le workflow reçoit une entrée HTML, la traite en utilisant l'outil PDF de CustomJS, et renvoie le PDF résultant au demandeur d'origine du webhook.\n\n[@custom-js/n8n-nodes-pdf-toolkit](@custom-js/n8n-nodes-pdf-toolkit)\n\n## Fonctionnalités :\n\n- **Déclencheur Webhook** : Accepte les requêtes entrantes avec du contenu HTML.\n- **Conversion HTML en PDF** : Utilise CustomJS pour transformer le HTML en un PDF.\n- **Réponse** : Renvoie le PDF généré en réponse au webhook.\n\n## Exigences :\n\n- Instance n8n **auto-hébergée**\n- Une **clé API CustomJS** pour la conversion HTML en PDF\n- **Contenu HTML** à convertir en PDF\n\n## Étapes du Workflow :\n\n1. **Déclencheur Webhook** :\n\n   - Accepte les requêtes HTTP entrantes avec du contenu HTML.\n   - Ces données sont transmises au nœud suivant pour traitement.\n\n2. **Conversion HTML en PDF** :\n\n   - Utilise le nœud **CustomJS** pour convertir le HTML entrant en un document PDF.\n   - Vous pouvez personnaliser le contenu HTML pour correspondre aux exigences de conception.\n\n3. **Répondre au Webhook** :\n\n   - Envoie le PDF généré en tant que réponse binaire à la demande de webhook d'origine.\n\n---\n\n## Guide de Configuration :\n\n### 1. Configurer l'API CustomJS\n- Inscrivez-vous sur [CustomJS](https://www.customjs.space).\n- Récupérez votre clé API depuis la page de profil.\n![image.png](fileId:1051)\n- Ajoutez votre clé API en tant que credentials n8n.\n![image.png](fileId:1049)\n\n### 2. Concevoir le Workflow\n\n1. **Créer un Webhook** :\n\n   - Configurez un webhook pour déclencher le workflow lorsque du contenu HTML est reçu.\n\n2. **Préparer le Contenu HTML** :\n\n   - La requête entrante doit inclure le contenu HTML que vous souhaitez convertir en PDF.\n\n3. **Configurer le Nœud HTML en PDF** :\n\n   - Utilisez le nœud **HTML en PDF** pour convertir le HTML fourni en PDF.\n   - Le nœud utilise l'entrée HTML pour générer un PDF en utilisant l'API CustomJS.\n\n4. **Répondre avec le PDF** :\n\n   - Le nœud **Répondre au Webhook** enverra le PDF généré au demandeur d'origine en tant que réponse binaire.\n\n---\n\n## Exemple d'Entrée HTML :\n\n```html\n<h1>Bonjour CustomJS !</h1>\n<h2>CustomJS fournit l'ensemble d'outils manquant pour vos projets sans code</h2>\n```\n\n## Résultat PDF\n![image.png](fileId:1050)",
+  "workflow": {
+    "meta": {
+      "instanceId": "fcf18fc485cc336a31bc65574fd28e124660f468281b7aad773616b17903afe6",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "37bd6cc9-3cc4-442e-94c1-42972c0fce0d",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          80,
+          0
+        ],
+        "webhookId": "060dbacf-0feb-43d4-b4ac-44011a7dd1a4",
+        "parameters": {
+          "path": "060dbacf-0feb-43d4-b4ac-44011a7dd1a4",
+          "options": {},
+          "responseMode": "responseNode"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "3c05c0e4-7121-46d0-b35c-fc39cdd35ae7",
+        "name": "Respond to Webhook",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          580,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "respondWith": "binary"
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "3f5ba2a7-148d-4921-b2ca-9dee17a2b278",
+        "name": "HTML to PDF",
+        "type": "@custom-js/n8n-nodes-pdf-toolkit.html2Pdf",
+        "position": [
+          340,
+          0
+        ],
+        "parameters": {
+          "htmlInput": "<h1>Hello CustomJS!</h1>\n<h2>CustomJS provides the missing toolset for your no-code projects</h2>"
+        },
+        "credentials": {
+          "customJsApi": {
+            "id": "SZkqeEHVYyWhaGem",
+            "name": "CustomJS account"
+          }
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "HTML to PDF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTML to PDF": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 3,
+    "nodeTypes": {
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.respondToWebhook": {
+        "count": 1
+      },
+      "@custom-js/n8n-nodes-pdf-toolkit.html2Pdf": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "CustomJS",
+    "username": "customjs",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.customjs.space"
+    ],
+    "avatar": "https://gravatar.com/avatar/942ecdadf17761bc7f516b67fb0f3617809720caf8912cfd1815ed2a9f8b9ad3?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 535,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.respondToWebhook",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Répondre au Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Respond to Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de Document"
+    }
+  ],
+  "image": [
+    {
+      "id": 1048,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/workflow_804820ed4c.png"
+    },
+    {
+      "id": 1049,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/2_c0fb963201.png"
+    },
+    {
+      "id": 1050,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/image_8c8ec9172b.png"
+    },
+    {
+      "id": 1051,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/image_afd7ead671.png"
+    }
+  ]
+}

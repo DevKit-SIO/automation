@@ -1,0 +1,1701 @@
+{
+  "id": 4647,
+  "name": "Automatiser le marquage des e-mails Gmail avec Gemini AI et construire le graphique de connaissances InfraNodus avec des alertes Telegram",
+  "views": 369,
+  "recentViews": 0,
+  "totalViews": 369,
+  "createdAt": "2025-06-04T11:13:35.956Z",
+  "description": "## Marquage et brainstorming automatisés des e-mails Gmail\n\nCe modèle peut être utilisé pour **marquer automatiquement vos messages Gmail entrants avec l'IA** et pour **construire un graphique de connaissances** à partir des e-mails étiquetés avec un label spécifique afin de générer de nouvelles idées basées sur eux.\n\nVous pouvez également **recevoir des notifications concernant les e-mails avec les labels les plus importants via Telegram** ainsi que recevoir de nouvelles idées pendant que vous construisez un graphique de connaissances des messages entrants.\n\nLa génération d'idées est basée sur l'**[algorithme de détection des lacunes de contenu du graphique de connaissances InfraNodus](https://infranodus.com)**, qui construit un réseau à partir de votre contenu et trouve ensuite un angle mort et utilise l'IA pour générer une question de recherche ou une idée intéressante qui peut être utilisée pour combler cette lacune.\n\n![Lacune structurelle InfraNodus](https://infranodus.com/images/front/infranodus-structural-gaps-ideas@2x.jpg)\n\n\n## Pourquoi cela fonctionne-t-il si bien ?\n\nPensez à tous les e-mails professionnels que vous recevez qui contournent les filtres anti-spam. Probablement, ils sont déjà personnalisés pour vous. Maintenant, imaginez si vous construisez un graphique de connaissances à partir d'eux pendant plus d'un mois. Vous aurez alors **un dispositif d'idéation basé sur vos intérêts et votre profil marketing**. Maintenant, si vous identifiez les lacunes à l'intérieur et générez des questions de recherche intéressantes basées sur elles, vous **proposerez de nouvelles idées intéressantes** qui seront **pertinentes** (car elles touchent aux sujets qui vous importent), mais **novatrices**, car elles les relient de nouvelles manières.\n\n\n## À quoi cela sert-il ?\n\n- **Automatiser le marquage des messages entrants Gmail** avec le nouveau nœud Classifier n8n — beaucoup plus avancé que les règles de marquage Gmail par défaut.\n- Recevez des **notifications via Telegram** (ou un messager de votre choix) concernant les messages les plus importants et **soyez sûr de ne rien manquer d'important**.\n- Conservez les messages avec un certain label enregistrés dans le **graphique de connaissances** pour le brainstorming et l'idéation. \n- Chaque fois qu'un nouveau message de cette catégorie arrive, il est ajouté au graphique, changeant sa structure, une **nouvelle idée** est générée. Ainsi, au lieu de regarder chaque offre spécifique, vous les utilisez maintenant pour générer des **aperçus** pour vous.\n\n\n## Comment cela fonctionne\n\n\n- Étape 1 : Ce modèle peut être déclenché automatiquement lorsqu'un nouveau message Gmail arrive.\n*Remarque : vous devez connecter votre compte Gmail ici dans ce nœud*\n\n- Étape 2 : Nous utilisons le nouveau nœud Classifier AI n8n pour classer votre e-mail en fonction de son contenu. Vous devrez peut-être mettre à jour vers la version n8n 1.94 pour que cela fonctionne.\n*Remarque : nous aimons utiliser Gemini AI pour ce classificateur car c'est la même entreprise que Gmail, donc cela devrait être sûr avec les données*\n\n- Étape 3 : Après avoir classé le message, nous étiquetons le message avec le label approprié. \n*Remarque : vous devez créer les labels au préalable dans votre compte Gmail*\n\n- Étape 4 : Pour une certaine catégorie (par exemple, \"Affaires\"), vous formatez le message et l'enregistrez dans votre graphique InfraNodus. \n*Remarque : spécifiez votre [API InfraNodus](https://infranodus.com/api-access) ici et choisissez le nom du graphique. Il utilisera le [point de terminaison HTTP `graphAndEntries` d'InfraNodus](https://support.noduslabs.com/hc/en-us/articles/13605983537692-InfraNodus-API-Access-Points) et enregistrera vos données dans un graphique InfraNodus. \nPar défaut, nous enregistrons le graphique de connaissances textuelles en utilisant les paramètres `contextSettings` (il ne construira qu'un graphique textuel du contenu), mais vous pouvez prendre un paramètre alternatif à partir des paramètres de ce nœud HTTP InfraNodus et créer un graphique de connaissances sociales, qui montrera également les expéditeurs d'e-mails dans le graphique lui-même.*\n\n- Étape 5 (optionnelle) : Générez une question d'aperçu intéressante avec le [`graphAndAdvice` endpoint]((https://support.noduslabs.com/hc/en-us/articles/13605983537692-InfraNodus-API-Access-Points)) d'InfraNodus. \n\n- Étape 6 (optionnelle) : Ensuite, envoyez cet aperçu via Telegram à un chat.\n\n- Étape 7 (optionnelle) : Liez certains labels importants au deuxième nœud de notification Telegram, afin que vous receviez des messages importants pour les labels spécifiés.\n\n\n- Étape 8 (optionnelle) : Envoyez une notification Telegram \n\nNous utilisons Telegram, car il ne faut que 30 secondes pour configurer un bot avec une API (envoyez `/newbot` à [@botfather](https://t.me/botfather), contrairement à Discord ou Slack, qui sont longs et fastidieux à configurer. Vous pouvez également attacher un nœud d'envoi Gmail et générer un e-mail à la place. \n\n\n## Comment utiliser\n\nVous avez besoin d'un [compte et clé API InfraNodus GraphRAG](https://infranodus.com/use-case/ai-knowledge-graphs) pour utiliser ce flux de travail. \n\n- Créez un compte [InfraNodus](https://infranodus.com) ou connectez-vous.\n- Obtenez la clé API sur [https://infranodus.com/api-access](https://infranodus.com/api-access) et créez une clé d'autorisation Bearer pour les nœuds HTTP InfraNodus.\n- Ajoutez ce code d'autorisation dans les étapes 4 et 5 du flux de travail.  \n- Trouvez un nom pour le graphique et modifiez-le dans les nœuds HTTP InfraNodus dans les étapes 4 et 5 ainsi que dans le nœud Telegram à l'étape 6 qui envoie un lien vers le graphique.\n- Pour des paramètres de traitement de texte supplémentaires / de génération d'idées que vous pouvez utiliser dans les nœuds HTTP InfraNodus, consultez la page [points d'accès InfraNodus](https://support.noduslabs.com/hc/en-us/articles/13605983537692-InfraNodus-API-Access-Points). Par exemple, à l'étape 4, vous pouvez modifier les paramètres de traitement de texte pour construire un graphique de connaissances sociales (les paramètres sont disponibles dans la section Notes du nœud) et à l'étape 5, vous pouvez changer le `requestMode` de `question` à `idea` pour recevoir des idées commerciales à la place.\n- Autorisez votre compte Gmail pour les nœuds Gmail des étapes 2, 3, 7 et 8. Le moyen le plus simple de le configurer est d'ouvrir un compte API Google Console gratuit et de créer un point d'accès OAuth pour n8n. Vous pouvez ensuite le réutiliser avec d'autres services Google comme Google Sheets, Drive, etc. Donc, c'est une chose utile à avoir en général.\n- Configurez la clé API Gemini AI en suivant les instructions dans le nœud de classification Gemini AI à l'étape 2.\n- Configurez le bot nœud Telegram pour l'étape 8. Cela ne prend que 30 secondes : il suffit d'aller sur [@botfather](https://t.me/botfather) et de taper `/newbot` et vous aurez une clé API prête. Pour obtenir l'ID de conversation, suivez les instructions n8n / Telegram dans le nœud lui-même. \n- Une fois que tout est prêt, essayez d'exécuter le flux de travail automatisé par défaut pour tester si tout fonctionne bien. \n\n## Exigences\n\n- Un compte et une clé API [InfraNodus](https://infranodus.com/use-case/ai-knowledge-graphs)\n- Un client et une clé OAuth API Google Cloud pour l'accès Gmail\n- Une clé API Gemini AI\n- Une clé API de bot Telegram\n- Version n8n 1.94 et supérieure (pour que le nœud de classification de texte fonctionne)\n\n\n## Personnalisation de ce flux de travail\n\nConsultez nos **autres flux de travail n8n** sur [https://n8n.io/creators/infranodus/](https://n8n.io/creators/infranodus/) pour une analyse utile des lacunes de contenu, un panel d'experts, et des flux de travail marketing et de recherche qui utilisent GraphRAG pour une meilleure génération d'IA.\n\nEnfin, consultez [https://infranodus.com](https://infranodus.com) pour en savoir plus sur notre **technologie d'analyse de réseau** utilisée pour construire des graphiques de connaissances à partir de texte.\n\nPour **support**, veuillez contacter [https://support.noduslabs.com](https://support.noduslabs.com)\n\n\n\n\n\n",
+  "workflow": {
+    "id": "kuHROEwShNrG11Ea",
+    "meta": {
+      "instanceId": "2a26454b0172ffcb8d70ba77c235b1209f92cd71bf06c79ba609c7173b416d68"
+    },
+    "name": "Label Incoming Messages, Build a Knowledge Graph, Notify via Telegram",
+    "tags": [
+      {
+        "id": "sJk9cUvmMU8FkJXv",
+        "name": "AI",
+        "createdAt": "2025-05-20T13:16:15.636Z",
+        "updatedAt": "2025-05-20T13:16:15.636Z"
+      },
+      {
+        "id": "E52i6BJ7Ht6yF3OB",
+        "name": "Productivity",
+        "createdAt": "2025-06-04T10:29:27.533Z",
+        "updatedAt": "2025-06-04T10:29:27.533Z"
+      },
+      {
+        "id": "66wgFoDi9Xjl74M3",
+        "name": "Support",
+        "createdAt": "2025-05-21T17:06:32.355Z",
+        "updatedAt": "2025-05-21T17:06:32.355Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "ba46bc4c-7f6b-4482-ae2b-f1621695a0d4",
+        "name": "Gmail Trigger",
+        "type": "n8n-nodes-base.gmailTrigger",
+        "position": [
+          100,
+          1100
+        ],
+        "parameters": {
+          "simple": false,
+          "filters": {
+            "q": "-from:me"
+          },
+          "options": {},
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e8be32bf-2bb6-491a-8aba-a62efad5398d",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          900
+        ],
+        "parameters": {
+          "width": 304.10628068244364,
+          "height": 394.42512272977456,
+          "content": "## 1. When a new message arrives to your GMail inbox, trigger this workflow\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "43f13337-45f6-4485-b8b0-ec868340b168",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          360,
+          900
+        ],
+        "parameters": {
+          "width": 456,
+          "height": 697,
+          "content": "## 2. Classify the email by the topic\n\n### Specify the label types and descriptions in the Classifier Node.\n\nBy default, multiple labels can be applied, but you can switch this off in the node's settings.\n\nWe like using Gemini because it's run by the same company as Gmail, so you don't really expose more data than you need to other AIs. But you can use OpenAI if you don't mind."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "996d2cdd-a6b8-4e93-9d7a-4d6a63120107",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          880,
+          900
+        ],
+        "parameters": {
+          "width": 786,
+          "height": 1315,
+          "content": "## 3. Label the message with an appropriate tag\n\n### It will stay in the Inbox folder, but will also be stored in the Label folder, so you can have easy access to it to make sure you don't miss out on important emails. \n\n🚨  You need to create these labels before in your Gmail mailbox"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8b3d7ee8-7ef7-498a-a975-b578778f77d0",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "disabled": true,
+        "position": [
+          600,
+          1420
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o",
+            "cachedResultName": "gpt-4o"
+          },
+          "options": {}
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "911e7892-5219-47b0-84d7-cc931b3b1cf9",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2260,
+          1600
+        ],
+        "parameters": {
+          "width": 366,
+          "height": 555,
+          "content": "## Optional: 8. Notify via Telegram\n\n\n### Get notified about the most important messages on Telegram\n\nTo get the Telegram bot API, just start a chat with the [@botfather](https://t.me/botfather), set up its name, and you'll get the API key to use here. Takes 30 seconds. "
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bd63f009-14b4-46c8-b7d7-c17eba11ea71",
+        "name": "Label as Business",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          1120,
+          1200
+        ],
+        "webhookId": "58a51fb3-8280-4d3b-89b9-43120784be6e",
+        "parameters": {
+          "labelIds": [
+            "Label_3466297294634862775"
+          ],
+          "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+          "operation": "addLabels"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "0a887766-6e31-4719-878b-1df06aa537be",
+        "name": "Label as Personal",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          1120,
+          1440
+        ],
+        "webhookId": "77edaf02-0efa-48b6-a496-a7a7ba04fefd",
+        "parameters": {
+          "labelIds": [
+            "Label_8982059712942854310"
+          ],
+          "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+          "operation": "addLabels"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "aa488bb4-8987-40b1-982f-d062e895dceb",
+        "name": "Label as Urgent",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          1120,
+          1860
+        ],
+        "webhookId": "b148860f-9ed8-481d-8fe7-5a3679061de4",
+        "parameters": {
+          "labelIds": [
+            "Label_7826865676723242579"
+          ],
+          "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+          "operation": "addLabels"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "92180fdf-18c2-49d9-92ce-99fb0e0bffd7",
+        "name": "Label as Appointments",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          1120,
+          1660
+        ],
+        "webhookId": "2ab15b88-54de-4260-954c-05ac0c17a99f",
+        "parameters": {
+          "labelIds": [
+            "Label_912815023264112825"
+          ],
+          "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+          "operation": "addLabels"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "65a404c8-b96c-4388-9b11-80c947c1ce88",
+        "name": "Aggregate",
+        "type": "n8n-nodes-base.aggregate",
+        "position": [
+          1800,
+          1920
+        ],
+        "parameters": {
+          "options": {},
+          "aggregate": "aggregateAllItemData"
+        },
+        "executeOnce": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "3bbfb056-e76c-4321-91a1-364460b28f34",
+        "name": "InfraNodus Save to Graph",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "// optional context setting to save a social knowledge graph\n{{{ \"partOfSpeechToProcess\":\"HASHTAGS_AND_WORDS\", \"doubleSquarebracketsProcessing\":\"PROCESS_AS_MENTIONS\"} }}",
+        "position": [
+          2360,
+          1240
+        ],
+        "parameters": {
+          "url": "https://infranodus.com/api/v1/graphAndStatements?doNotSave=false&includeGraph=false&includeGraphSummary=true&includeStatements=false",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "name",
+                "value": "gmail_business"
+              },
+              {
+                "name": "statements",
+                "value": "={{ $json.statements }}"
+              },
+              {
+                "name": "contextSettings",
+                "value": "={{{ \"partOfSpeechToProcess\":\"HASHTAGS_AND_WORDS\", \"doubleSquarebracketsProcessing\":\"EXCLUDE\", \"mentionsProcessing\":\"EXCLUDE\"} }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpBearerAuth"
+        },
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "FPDx6PA5CtzGEIQc",
+            "name": "InfraNodus DeeMeeTree API Key"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 4.2
+      },
+      {
+        "id": "4b0620da-8be4-4cd1-883d-08ec95d9cf5d",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1740,
+          900
+        ],
+        "parameters": {
+          "width": 886,
+          "height": 515,
+          "content": "## 4. Save message with the \"business\" label (or a label you choose) into a specific [InfraNodus](https://infranodus.com) knowledge graph\n\n### You can access the graph any time to have a general overview of the business offers you receive and generate some interesting ideas from them.\n\n🚨 The name of the graph is provided in the `name` field. It can be accessed any time if you log in via [infranodus.com/your_user_name/graph_name/edit](infranodus.com/your_user_name/graph_name/edit)\n\nBy default, we build a text knowledge graph (without the emails on the graph). If you prefer to build just a social knowledge graph (with the emails), go to the node's Settings and copy the data in the `Notes` field to the `contextSettings` "
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a7361550-2fc9-4e71-b9b5-d4bbe678335a",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          2800,
+          1240
+        ],
+        "webhookId": "19682910-00a9-4ccf-8182-9aaf53e000fd",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "a0b4cb24-513e-4e51-8673-472a38cb2836",
+        "name": "Clean html and organize into statements",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1840,
+          1240
+        ],
+        "parameters": {
+          "jsCode": "\nlet statements = []\nfor (const item of $input.all()) {\n\n    const emailOrigin = $('Gmail Trigger').first().json.from.value[0].name\n    const cleanTextContent = removeHtmlCssScript($('Gmail Trigger').first().json.text)\n    statements.push('[[' + emailOrigin + ']] ' + '[' + $('Gmail Trigger').first().json.date?.split('T')[0] + '] ' + cleanTextContent)\n\n}\n\nreturn { statements: statements }\n\nfunction removeHtmlCssScript(text) {\n  if (!text || typeof text !== 'string') {\n    return '';\n  }\n  \n  let cleanText = text;\n  \n  // Remove script tags and their content (case insensitive)\n  cleanText = cleanText.replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '');\n  \n  // Remove style tags and their content (case insensitive)\n  cleanText = cleanText.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '');\n  \n  // Remove HTML comments\n  cleanText = cleanText.replace(/<!--[\\s\\S]*?-->/g, '');\n  \n  // Remove all remaining HTML tags\n  cleanText = cleanText.replace(/<[^>]*>/g, '');\n  \n  // Decode common HTML entities\n  const htmlEntities = {\n    '&amp;': '&',\n    '&lt;': '<',\n    '&gt;': '>',\n    '&quot;': '\"',\n    '&#39;': \"'\",\n    '&nbsp;': ' ',\n    '&copy;': '©',\n    '&reg;': '®',\n    '&trade;': '™'\n  };\n  \n  Object.keys(htmlEntities).forEach(entity => {\n    const regex = new RegExp(entity, 'g');\n    cleanText = cleanText.replace(regex, htmlEntities[entity]);\n  });\n  \n  // Clean up extra whitespace\n  cleanText = cleanText.replace(/\\s+/g, ' ').trim();\n  \n  return cleanText;\n}"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "d55f464d-0d0f-4f17-9abb-948d43565309",
+        "name": "InfraNodus Question Generator",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          3180,
+          1240
+        ],
+        "parameters": {
+          "url": "https://infranodus.com/api/v1/graphAndAdvice?doNotSave=true&optimize=gap&includeGraph=false&includeGraphSummary=true",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "aiTopics",
+                "value": "true"
+              },
+              {
+                "name": "requestMode",
+                "value": "question"
+              },
+              {
+                "name": "name",
+                "value": "gmail_business"
+              }
+            ]
+          },
+          "genericAuthType": "httpBearerAuth"
+        },
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "FPDx6PA5CtzGEIQc",
+            "name": "InfraNodus DeeMeeTree API Key"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "fbdca5de-9e84-4563-ad88-09130e260e5a",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2720,
+          900
+        ],
+        "parameters": {
+          "width": 686,
+          "height": 515,
+          "content": "## Optional: 5. Generate an interesting insight question based on the graph, after that message is received.\n\n### After the new message is saved, query the graph to generate an interesting insight question based on all the previously saved information. \n\n🚨 Make sure to specify the correct graph name as in Step 4 in this step, in the `name` field. \n\n🚨 You can also replace the `requestMode` with `idea`, in which case you receive not a question, but an idea.\n\nYou can also do it manually using the Analytics > Content Gaps panel in the graph itself: [infranodus.com/your_user_name/graph_name/edit](infranodus.com/your_user_name/graph_name/edit)"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "cd621b22-b5d3-44af-9bed-ef83784140fb",
+        "name": "Get Label's Name in Gmail",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          2020,
+          1920
+        ],
+        "webhookId": "884bace4-da36-4eb1-9d4f-628a68305921",
+        "parameters": {
+          "labelId": "={{ $json.data[0].labelIds.find(label => label.includes('Label')) }}",
+          "resource": "label",
+          "operation": "get"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "2fb4e4fa-cd1b-4dd4-a12e-16af50bf1561",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3500,
+          900
+        ],
+        "parameters": {
+          "width": 686,
+          "height": 515,
+          "content": "## 6. Optional: Send a new insight question to the Telegram chat\n\n### Send the new insight question to the Telegram chat\n\nYou can also send it to Discord or email or save it to a Google sheets file"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9ed340b9-a9ee-4844-af29-95d70e9f095d",
+        "name": "Send Insight to Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "onError": "continueRegularOutput",
+        "position": [
+          3760,
+          1240
+        ],
+        "webhookId": "763a4e22-fc79-4c83-88b0-caa263aa5bf5",
+        "parameters": {
+          "text": "=💭 Question: {{ $json.aiAdvice[0].text }} \nMore at [https://infranodus.com/your_user_name/gmail_business/edit](https://infranodus.com/your_user_name/gmail_business/edit)",
+          "chatId": "",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "jaBITBhfModUjHo9",
+            "name": "Telegram apartment notifications"
+          }
+        },
+        "retryOnFail": true,
+        "typeVersion": 1.2
+      },
+      {
+        "id": "e11bc8c5-be6d-4208-a6d8-e6f7f3f0aac5",
+        "name": "Send Notification via Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "position": [
+          2480,
+          1920
+        ],
+        "webhookId": "a067ddab-b70a-432a-85da-96e3f72a6ba3",
+        "parameters": {
+          "text": "=📬 Important email / Label: {{ $('Get Label\\'s Name in Gmail').item.json.name }} / Preview: \n{{ $('Gmail Trigger').item.json.subject }}: {{ $json.snippet }}\nRead more at https://mail.google.com/mail/u/0/#inbox/{{ $('Gmail Trigger').item.json.threadId }}",
+          "chatId": "",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "jaBITBhfModUjHo9",
+            "name": "Telegram apartment notifications"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "bc44b63e-f26e-4431-a9b9-f222cbf1c0cb",
+        "name": "Label as Invoices",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          1120,
+          2060
+        ],
+        "webhookId": "f9f2477f-a8ff-41c3-bf93-95e6db3c4727",
+        "parameters": {
+          "labelIds": [
+            "Label_961995338561265835"
+          ],
+          "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+          "operation": "addLabels"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "831683f8-1f8e-4007-bc18-2592df639b47",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          420,
+          1420
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-2.5-flash-preview-04-17"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "ivswOFTY8MYDbj5b",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e10e2405-8c6d-4a55-bb20-bd0b87d0d767",
+        "name": "Get Email's snippet",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          2320,
+          1920
+        ],
+        "webhookId": "93862f7b-cfd9-4349-80b2-1de84ab98e0d",
+        "parameters": {
+          "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+          "operation": "get"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "w7b4H8WpgY9Oit56",
+            "name": "Gmail supadelicious"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "53f9d6db-e981-4e6e-8a59-c8fc67821dbc",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 824,
+          "height": 874,
+          "content": "# Label Incoming Messages with AI, Build a Knowledge Graph for Selected Categories, then Notify via Telegram with a Insight for all Emails in Category\n\n## Automatically label your email using AI and save emails for selected categories to an [InfraNodus knowledge graph](https://infranodus.com) to have a visual summary of your content, then get notified via Telegram with an insight question based on this new input. \n\n \n![InfraNodus Graph](https://infranodus.com/images/front/infranodus-overview@2x.jpg)\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "64f8c1b0-9194-4aed-8822-0173f93e41d3",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          880,
+          0
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 524,
+          "height": 574,
+          "content": "## Setup Guide\n\n### To activate this workflow, you'll need to\n\n1. Create the labels you want to use in your Gmail account\n\n2. Set these labels in Step 3\n\n3. Describe how categorization should occur in the Step 2\n\n4. Add your Gemini API key in Step 2 (or OpenAI if you prefer)\n\n5. Add your [InfraNodus API](https://infranodus.com/api-access) creddentials in the Step 4 and Step 6.\n\n6. Optionally: change the `requestMode` to `idea` in the Step 5 if you prefer to receive ideas and not research questions.\n\n7. Choose which label category you want to be saved to your InfraNodus graph\n\n7. Optionally: choose which label category emails you want to be notified immediately about. Link them to the Step 7\n\n8. Optionally: add Telegram credentials if you want to be notified of a certain category emails via Telegram\n\n\nFor support, please, contact [https://support.noduslabs.com](https://support.noduslabs.com)\n\nTo open an InfraNodus account: [https://infranodus.com](https://infranodus.com)\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fc23ec5f-7bc5-487f-8a3f-1b84846e9af8",
+        "name": "Sticky Note10",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1720,
+          1600
+        ],
+        "parameters": {
+          "width": 466,
+          "height": 555,
+          "content": "## Optional: 7. Choose which emails you want to be notified immediately about\n\n\n### Link this node to the labels you want to be notified immediately about.\n\nI like to be notified of the personal, appointments, and urgent emails.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fc1d740a-8163-4c62-ba00-3737c292fa47",
+        "name": "Text Classifier",
+        "type": "@n8n/n8n-nodes-langchain.textClassifier",
+        "position": [
+          420,
+          1220
+        ],
+        "parameters": {
+          "options": {
+            "multiClass": true
+          },
+          "inputText": "=Subject: {{ $json.subject }}\nMessage:\n{{ $json.text }} ",
+          "categories": {
+            "categories": [
+              {
+                "category": "Business",
+                "description": "Business-related messages, including interesting offers, personalized partnership requests or opportunities. Avoid automated messages."
+              },
+              {
+                "category": "Personal",
+                "description": "Personal emails that are addressed to me directly, from friends, acquaintances, or very personal tone, not spam Avoid automated messages."
+              },
+              {
+                "category": "Appointments",
+                "description": "Important appointments and scheduled arrangements that should be in a calendar."
+              },
+              {
+                "category": "Urgent",
+                "description": "Things that should be attended urgently, avoid automated messages."
+              },
+              {
+                "category": "Invoices",
+                "description": "Emails that contain an invoice with a payment amount"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "cbebe7e2-cba3-4f86-9361-74ea100639b0",
+    "connections": {
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "InfraNodus Question Generator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Get Label's Name in Gmail",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gmail Trigger": {
+        "main": [
+          [
+            {
+              "node": "Text Classifier",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Label as Urgent": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Text Classifier": {
+        "main": [
+          [
+            {
+              "node": "Label as Business",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Label as Personal",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Label as Appointments",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Label as Urgent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Label as Invoices",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Label as Business": {
+        "main": [
+          [
+            {
+              "node": "Clean html and organize into statements",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Label as Personal": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Email's snippet": {
+        "main": [
+          [
+            {
+              "node": "Send Notification via Telegram",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Label as Appointments": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Text Classifier",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "InfraNodus Save to Graph": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Label's Name in Gmail": {
+        "main": [
+          [
+            {
+              "node": "Get Email's snippet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "InfraNodus Question Generator": {
+        "main": [
+          [
+            {
+              "node": "Send Insight to Telegram",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean html and organize into statements": {
+        "main": [
+          [
+            {
+              "node": "InfraNodus Save to Graph",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 28,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 7
+      },
+      "n8n-nodes-base.telegram": {
+        "count": 2
+      },
+      "n8n-nodes-base.aggregate": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 10
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "n8n-nodes-base.gmailTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.textClassifier": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "InfraNodus",
+    "username": "infranodus",
+    "bio": "I'm Dmitry, the founder of InfraNodus — an AI text network analysis tool. I'm passionate about networks and data visualization and its ability to reveal what everyone else is missing and to highlight different perspectives. I'm sharing the n8n templates that make use of this unique capability of InfraNodus for multiple scenarios.",
+    "verified": true,
+    "links": [
+      "https://infranodus.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/2c4026bed17ffbab6bc63bfd88f3a7375e83f7f2b1c92859a092f8bb3abbbc30?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "icon": "file:telegram.svg",
+      "name": "n8n-nodes-base.telegram",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-telegram-bots-with-n8n-a-no-code-platform/",
+                "icon": "💬",
+                "label": "Creating Telegram Bots with n8n, a No-Code Platform"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.telegram/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/telegram/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Telegram"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNjYgNjYiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzM3YWVlMiIgZD0iTTAgMzJjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMyczMyLTE0LjMyNyAzMi0zMlM0OS42NzMgMCAzMiAwIDAgMTQuMzI3IDAgMzIiLz48cGF0aCBmaWxsPSIjYzhkYWVhIiBkPSJtMjEuNjYxIDM0LjMzOCAzLjc5NyAxMC41MDhzLjQ3NS45ODMuOTgzLjk4MyA4LjA2OC03Ljg2NCA4LjA2OC03Ljg2NGw4LjQwNy0xNi4yMzctMjEuMTE5IDkuODk4eiIvPjxwYXRoIGZpbGw9IiNhOWM2ZDgiIGQ9Im0yNi42OTUgMzcuMDM0LS43MjkgNy43NDZzLS4zMDUgMi4zNzMgMi4wNjggMGw0LjY0NC00LjIwMyIvPjxwYXRoIGQ9Im0yMS43MyAzNC43MTItNy44MDktMi41NDVzLS45MzItLjM3OC0uNjMzLTEuMjM3Yy4wNjItLjE3Ny4xODYtLjMyOC41NTktLjU4OCAxLjczMS0xLjIwNiAzMi4wMjgtMTIuMDk2IDMyLjAyOC0xMi4wOTZzLjg1Ni0uMjg4IDEuMzYxLS4wOTdjLjIzMS4wODguMzc4LjE4Ny41MDMuNTQ4LjA0NS4xMzIuMDcxLjQxMS4wNjguNjg5LS4wMDMuMjAxLS4wMjcuMzg2LS4wNDUuNjc4LS4xODQgMi45NzgtNS43MDYgMjUuMTk4LTUuNzA2IDI1LjE5OHMtLjMzIDEuMy0xLjUxNCAxLjM0NWMtLjQzMi4wMTYtLjk1Ni0uMDcxLTEuNTgyLS42MS0yLjMyMy0xLjk5OC0xMC4zNTItNy4zOTQtMTIuMTI2LTguNThhLjM0LjM0IDAgMCAxLS4xNDYtLjIzOWMtLjAyNS0uMTI1LjEwOC0uMjguMTA4LS4yOHMxMy45OC0xMi40MjcgMTQuMzUyLTEzLjczMWMuMDI5LS4xMDEtLjA3OS0uMTUxLS4yMjYtLjEwNy0uOTI5LjM0Mi0xNy4wMjUgMTAuNTA2LTE4LjgwMSAxMS42MjktLjEwNC4wNjYtLjM5NS4wMjMtLjM5NS4wMjMiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Telegram",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 824,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmailTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.gmailtrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1236,
+      "icon": "file:aggregate.svg",
+      "name": "n8n-nodes-base.aggregate",
+      "codex": {
+        "data": {
+          "alias": [
+            "Aggregate",
+            "Combine",
+            "Flatten",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.aggregate/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agrégat"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjRkY2RDVBIiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMyIDE0OGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDE0NmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJINDRjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6bTAgOTZjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxNDZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYyNGMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDQ0Yy02LjYyNyAwLTEyLTUuMzczLTEyLTEyem0wIDk2YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTQ2YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkg0NGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik03NCA3NmMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDExNi4yMTdjMTcuNjczIDAgMzIgMTQuMzI3IDMyIDMydjU2YzAgMjYuOTc4IDEwLjI3MiA1MS41NTcgMjcuMTE5IDcwLjAzOSA1LjA1NSA1LjU0NSA1LjA1NSAxNC4zNzcgMCAxOS45MjItMTYuODQ3IDE4LjQ4Mi0yNy4xMTkgNDMuMDYxLTI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMtMTQuMzI3IDMyLTMyIDMySDg2Yy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTE2LjIxN2M0NC4xODMgMCA4MC0zNS44MTcgODAtODB2LTU2YzAtMzAuOTI4IDI1LjA3Mi01NiA1Ni01NmE1Ljc4MyA1Ljc4MyAwIDAgMCA1Ljc4My01Ljc4M3YtMzYuNDM0YTUuNzgzIDUuNzgzIDAgMCAwLTUuNzgzLTUuNzgzYy0zMC45MjggMC01Ni0yNS4wNzItNTYtNTZ2LTU2YzAtNDQuMTgzLTM1LjgxNy04MC04MC04MEg4NmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNzYgMjQ0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgzODhjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L2c+PGRlZnM+PGNsaXBQYXRoIGlkPSJhIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDUxMnY1MTJIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Aggregate",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1265,
+      "icon": "fa:tags",
+      "name": "@n8n/n8n-nodes-langchain.textClassifier",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.text-classifier/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Classificateur de texte"
+      },
+      "iconData": {
+        "icon": "tags",
+        "type": "icon"
+      },
+      "displayName": "Text Classifier",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 43,
+      "name": "Productivité personnelle"
+    },
+    {
+      "id": 48,
+      "name": "IA RAG"
+    }
+  ],
+  "image": []
+}

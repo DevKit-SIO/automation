@@ -1,0 +1,2192 @@
+{
+  "id": 7383,
+  "name": "Suivi automatisé des tâches et notifications avec Motion et Airtable",
+  "views": 34,
+  "recentViews": 0,
+  "totalViews": 34,
+  "createdAt": "2025-08-14T12:49:34.783Z",
+  "description": "# Suivi automatisé de l'état des projets avec Airtable et Motion\n## À qui cela s'adresse-t-il\nAux chefs de projet, responsables d'équipe et agences qui ont besoin de surveiller automatiquement l'état d'achèvement des projets pour plusieurs clients et d'envoyer des notifications lorsque des jalons spécifiques sont atteints.\n## Ce que cela fait\nCe flux de travail suit automatiquement l'avancement des projets en connectant les bases de données de projets Airtable avec la gestion des tâches Motion. Il surveille des tâches spécifiques au sein de projets actifs et déclenche des notifications par e-mail lorsque des jalons clés sont atteints. Le système est conçu pour gérer plusieurs projets simultanément et peut être personnalisé pour divers déclencheurs de notification.\n## Comment cela fonctionne\nLe flux de travail suit un processus de surveillance structuré :\n\nRécupération des données : Récupère les informations sur les projets depuis Airtable (noms de projets et IDs d'espace de travail Motion)\nIntégration Motion : Se connecte à l'API Motion en utilisant des requêtes HTTP pour récupérer les détails des projets\nFiltrage des projets : Identifie uniquement les projets actifs avec un statut \"À faire\" contenant \"SEO\" dans le nom\nSurveillance des tâches : Vérifie les tâches spécifiques complétées (par exemple, \"Intégrer les articles de blog\")\nNotifications conditionnelles : Envoie des alertes par e-mail uniquement lorsque les tâches cibles sont marquées comme \"Terminées\"\nMises à jour de la base de données : Met à jour Airtable avec les derniers horodatages de notification\n\n## Exigences\n\nCompte Airtable avec base de données de projet\nCompte Motion avec accès API\nCompte Gmail pour les notifications par e-mail\nAuthentification de requête HTTP pour l'API Motion\n\n## Comment configurer\n### Étape 1 : Configurez votre base de données Airtable\nAssurez-vous que votre Airtable contient les champs suivants :\n\nNoms de projets : Noms des projets à surveiller\nID d'espace de travail Motion : Identifiants d'espace de travail pour les appels API Motion\nStatut - Calendrier éditorial : Champ d'état du projet (défini sur \"Actif\" pour les projets actifs)\nDernier envoyé - Calendrier éditorial : Suivi des horodatages pour la fréquence des notifications\nAdresses e-mail : Informations de contact des clients et des membres de l'équipe\n\n### Étape 2 : Configurez les identifiants API\nConfigurez l'authentification suivante dans n8n :\n\nJeton d'accès personnel Airtable : Pour l'accès à la base de données\nAPI Motion : Authentification par en-tête HTTP pour l'intégration Motion\nGmail OAuth2 : Pour l'envoi de notifications par e-mail\n\n### Étape 3 : Configurez l'intégration de l'API Motion\n\nURL de base : Utilise les points de terminaison de l'API Motion v1\nRécupération de projet : Récupère les projets en utilisant le paramètre ID d'espace de travail\nSurveillance des tâches : Recherche des noms de tâches spécifiques et de l'état d'achèvement\nFiltrage personnalisé : Cible les projets avec \"SEO\" dans le nom et un statut \"À faire\"\n\n### Étape 4 : Personnalisez la planification\n\nPlanification par défaut : S'exécute quotidiennement entre le 10 et le 31 de chaque mois à 8h\nExpression Cron : 0 8 10-31 * * (modifiez selon vos besoins)\nOptions de fréquence : Peut être ajustée pour des intervalles hebdomadaires, quotidiens ou personnalisés\n\n### Étape 5 : Configurez les notifications par e-mail\nConfigurez les paramètres Gmail :\n\nDestinataires : Chefs de projet, clients et collaborateurs\nObjet : Formatage dynamique avec le nom du projet et le mois\nModèle de message : E-mail au format HTML avec signature professionnelle\nNom de l'expéditeur : Nom de l'organisation personnalisable\n\n## Comment personnaliser le flux de travail\n### Surveillance d'un projet unique avec plusieurs tâches\nPour adapter la surveillance d'un projet avec plusieurs tâches différentes :\n\nModifiez les conditions de filtrage pour cibler votre projet spécifique\nAjoutez plusieurs requêtes HTTP pour différents noms de tâches\nCréez des branches conditionnelles pour chaque type de tâche\nConfigurez différents modèles de notification par tâche\n\n### Personnalisation multi-projets\n\nChamps de base de données : Ajoutez des champs personnalisés dans Airtable pour différents types de projets\nLogique de filtrage : Modifiez les conditions pour correspondre à votre catégorisation de projet\nEspace de travail Motion : Supporte plusieurs espaces de travail par client\nRègles de notification : Définissez différentes fréquences de notification par projet\n\n### Méthodes de notification alternatives\nRemplacez ou complétez Gmail par :\n\nNotifications Slack : Envoyez des mises à jour aux canaux d'équipe\nIntégration Discord : Alertez les équipes de développement\nNotifications SMS : Alertes urgentes sur les jalons\nIntégrations Webhook : Connectez-vous à des systèmes internes personnalisés\nNotifications Teams : Communication d'entreprise\n\n### Variations de surveillance des tâches\n\nTypes de tâches multiples : Surveillez différents jalons (design, développement, test)\nDépendances de tâches : Vérifiez l'achèvement des tâches préalables\nSuivi des progrès : Surveillez les pourcentages d'avancement des tâches\nSurveillance des délais : Alertez sur les délais approchants\n\n## Fonctionnalités de logique conditionnelle\n### Système de filtrage intelligent\n\nDétection de projet actif : Ne traite que les projets marqués comme \"Actif\"\nFiltrage basé sur la date : Empêche les notifications en double en utilisant la comparaison des horodatages\nVérification de statut : Confirme l'achèvement des tâches avant d'envoyer des notifications\nFiltrage par type de projet : Cible des catégories de projet spécifiques (projets SEO dans cet exemple)\n\n### Contrôle de la fréquence des notifications\n\nNotifications mensuelles : Empêche le spam en suivant les dernières dates d'envoi\nExécution conditionnelle : N'envoie des e-mails que lorsque les tâches sont réellement terminées\nMises à jour de la base de données : Enregistre automatiquement les horodatages de notification\nGestion des boucles : Traite plusieurs projets séquentiellement\n\n## Interprétation des résultats\n### Résultats de la surveillance automatisée\n\nSuivi de l'état des projets : Surveillance en temps réel des projets actifs\nNotifications de jalons : Alertes immédiates lorsque des tâches clés sont terminées\nSynchronisation de la base de données : Mises à jour automatiques des enregistrements de notification\nCoordination d'équipe : Assure que toutes les parties prenantes sont informées des progrès\n\n### Contenu des notifications par e-mail\nChaque notification comprend :\n\nIdentification du projet : Nom et contexte clairs du projet\nConfirmation d'achèvement : Tâche spécifique qui a été complétée\nRéférence au calendrier : Liens vers des calendriers éditoriaux ou des ressources de projet\nFormatage professionnel : Modèle d'e-mail de marque avec signature de l'entreprise\nÉléments d'action : Étapes claires pour les destinataires\n\n## Cas d'utilisation\n### Gestion de projet d'agence\n\nSuivi des livrables clients : Surveillez quand le contenu est prêt pour révision par le client\nNotifications de jalons : Alertez les équipes lorsque les phases sont terminées\nAssurance qualité : Assurez-vous que tous les livrables répondent aux critères d'achèvement\nCommunication client : Mises à jour automatisées sur l'avancement du projet\n\n### Gestion du flux de travail éditorial\n\nPublication de contenu : Suivez quand les articles sont intégrés dans les sites web\nCalendrier éditorial : Surveillez la création et les horaires de publication de contenu\nCoordination d'équipe : Notifiez les rédacteurs, éditeurs et éditeurs des changements de statut\nApprobation client : Alertez les clients lorsque le contenu est prêt pour révision\n\n### Suivi de projet de développement\n\nAchèvement de fonctionnalités : Surveillez quand les jalons de développement sont atteints\nPhases de test : Suivez l'achèvement de l'assurance qualité et la préparation au déploiement\nLivraison client : Automatisez les notifications pour les phases UAT et de lancement\nSynchronisation d'équipe : Tenez toutes les parties prenantes informées des progrès\n\n## Limitations du flux de travail\n\nDépendance à l'API Motion : Nécessite un accès stable à l'API Motion et une authentification appropriée\nSurveillance d'une seule tâche : Actuellement, suit un type de tâche spécifique par exécution\nNotifications uniquement par e-mail : La configuration par défaut utilise Gmail (facilement extensible)\nFréquence mensuelle : Conçu pour des notifications mensuelles (personnalisable)\nDépendance au nom du projet : Filtre basé sur des conventions de nommage spécifiques\nConfiguration manuelle : Nécessite une configuration pour chaque nouveau type de projet ou espace de travail",
+  "workflow": {
+    "meta": {
+      "instanceId": "393ca9e36a1f81b0f643c72792946a5fe5e49eb4864181ba4032e5a408278263"
+    },
+    "nodes": [
+      {
+        "id": "404dea4e-a4da-43f1-b9cd-ab6bbfbe4266",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -608,
+          -80
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 8 10-31 * *"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "cb0b775e-7871-4a65-a8e6-cf33596b323b",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          1232,
+          -96
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "c78fbb0b-4a5a-4528-bb85-acf5372111bf",
+        "name": "Todo",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          2512,
+          -96
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "7f5baee8-dc14-4f12-a9fe-1cdfaaf88792",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.status.name }}",
+                "rightValue": "Todo"
+              },
+              {
+                "id": "9e4044d3-039a-48d7-b5d2-fc60084fbff9",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                },
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "SEO"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "a33da383-729d-4d77-b188-b0617c4a86fd",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -704,
+          -208
+        ],
+        "parameters": {
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 1: Scheduled Trigger Activation"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "45f0a7ca-ac85-4714-b2b6-e3f03376aa43",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -704,
+          128
+        ],
+        "parameters": {
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nActivates automatically on the 10th through 31st of each month at 8:00 AM\nUses cron scheduling to ensure consistent timing\nInitiates the workflow without any manual intervention\nTriggers monthly processing for editorial calendar notifications\n\n### Result:\n✅ Automated monthly execution without manual oversight\n✅ Consistent timing ensures reliable delivery\n✅ No missed notifications due to human error\n✅ Scalable scheduling for multiple clients\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ce565c31-4f8f-45a0-b5e5-bbb8da40ac0a",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -128,
+          -208
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 2: Client Data Retrieval"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "53978d52-5f0a-4934-bb96-cebf925f2c03",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -128,
+          128
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nConnects to Airtable database containing client project information\nRetrieves all project records from the \"Projets\" table\nPulls comprehensive client data including contact information, project managers, and settings\nPrepares data for filtering and processing in subsequent phases\n\n### Result:\n✅ Complete client database synchronized\n✅ All project information available for processing\n✅ Contact details and preferences retrieved\n✅ Foundation established for targeted notifications\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f3494327-f00d-4890-8e68-34fa6052f0d0",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          448,
+          -208
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 3: Active Project Filtering"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "65f02621-fe1b-4ac7-aad6-997005841259",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          448,
+          128
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nFilters projects based on editorial calendar status being \"Active\"\nChecks last notification date to ensure it was before the current month\nApplies date validation to prevent duplicate notifications\nCreates filtered dataset of eligible projects for processing\n\n### Result:\n✅ Only active editorial calendar clients processed\n✅ Duplicate notifications prevented\n✅ Efficient resource utilization\n✅ Targeted communication to relevant clients only\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8308ac98-fffb-4596-ada2-30233d9ff076",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1024,
+          -208
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 4: Sequential Project Processing"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "59e1601e-4444-45f8-8022-92b3a9239c1b",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1024,
+          128
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nProcesses each eligible project one at a time in batches\nMaintains data integrity during iteration\nPrepares individual project context for Motion API integration\nEnsures systematic handling of all qualifying projects\n\n### Result:\n✅ Reliable processing of all eligible projects\n✅ Data consistency maintained throughout workflow\n✅ Scalable handling of multiple clients\n✅ Sequential processing prevents API rate limits\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5bfce761-dd9a-463c-9937-2685465d807b",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1600,
+          -208
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 5: Motion Project Status Verification"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2ff7b6c5-3cc0-42d6-b14e-80c80c69b86c",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1600,
+          128
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nQueries Motion API for projects within each client's workspace\nRetrieves project status information using workspace-specific credentials\nFilters Motion projects to find SEO-related initiatives (you can personalize the query)\nPrepares project data for task completion verification\n\n### Result:\n✅ Real-time project status from Motion platform\n✅ Project identification completed\n✅ Workspace-specific data retrieved accurately\n✅ Integration between Airtable and Motion established\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d1388b13-79da-4654-b13b-27495016296b",
+        "name": "Sticky Note10",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2176,
+          -208
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 6: Project Data Processing and Filtering"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "629fada7-074f-44d0-b8bb-79e06c427cce",
+        "name": "Sticky Note11",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2176,
+          128
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nTransforms Motion API response into structured project data\nFilters projects to show only \"Todo\" status items containing \"SEO\" (you can personalize the query)\nOrganizes project information for task verification\nCreates clean dataset for blog integration task checking\n\n### Result:\n✅ Structured project data ready for analysis\n✅ Only relevant projects identified\n✅ Todo status projects isolated for checking\n✅ Data formatted for subsequent processing steps\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1b0298d6-f809-44ab-9bd1-757694f43eed",
+        "name": "Sticky Note12",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2752,
+          -208
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 7: Task Verification"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e70723d3-4ea1-422e-8837-f33bd34ae568",
+        "name": "Sticky Note13",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2752,
+          128
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nSearches for specific task named \"Intégrer les articles de blog\" (you can personalize the query)\nChecks task completion status within identified SEO projects (you can personalize the query)\nQueries Motion API for task status verification\nDetermines readiness for client notification\n\n### Result:\n✅ Blog integration task status verified\n✅ Completion confirmation obtained from Motion\n✅ Accurate task tracking established\n✅ Notification trigger criteria validated\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2b7d734d-fe32-4d61-bf7c-001ceb1c2ad7",
+        "name": "Sticky Note14",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3328,
+          -208
+        ],
+        "parameters": {
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 8: Task Completion Validation"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "543c3795-e77b-4f18-b478-9b5d2c16edcf",
+        "name": "Sticky Note15",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3328,
+          128
+        ],
+        "parameters": {
+          "width": 528,
+          "height": 304,
+          "content": "### What the system does:\n\nEvaluates task completion status from Motion response\nConfirms tasks marked as \"Completed\" in the system\nValidates notification eligibility based on completion status\nProceeds only when integration tasks are finished\n\n### Result:\n✅ Only completed blog integrations trigger notifications\n✅ Quality assurance for client communications\n✅ Accurate completion status verification\n✅ Prevention of premature notifications"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ade0ce67-185e-4d16-bc15-09811573e22f",
+        "name": "Sticky Note16",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3904,
+          -208
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 528,
+          "height": 304,
+          "content": "# Phase 9: Client Notification Delivery"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9ceb0fc9-ef3d-4a7f-a731-a995dcc81128",
+        "name": "Sticky Note17",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3904,
+          128
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 528,
+          "height": 432,
+          "content": "### What you do:\n\nReview the automated email content that will be sent to clients\nVerify recipient list includes project managers and collaborators\nConfirm email formatting and professional presentation\n\n### What the system does:\n\nComposes personalized email for each client with completed blog articles\nIncludes dynamic content such as client name, project details, and current month\nSends notification via Gmail to project managers and team members\nUses professional email template with company branding and signature\nReferences editorial calendar links for client access\n\nResult:\n✅ Professional client notifications delivered automatically\n✅ Personalized content for each project\n✅ Multiple stakeholders informed simultaneously\n✅ Direct links to editorial calendars provided"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "79a4bd70-fe9b-4ead-91aa-b22d8f620b4e",
+        "name": "Get airtable data",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          80,
+          -80
+        ],
+        "parameters": {
+          "base": {
+            "__rl": true,
+            "mode": "list",
+            "value": "appk6h4dLarLUXKpR",
+            "cachedResultUrl": "https://airtable.com/appk6h4dLarLUXKpR",
+            "cachedResultName": "Base clients"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "list",
+            "value": "tblTrvdyaIcsSgOWR",
+            "cachedResultUrl": "https://airtable.com/appk6h4dLarLUXKpR/tblTrvdyaIcsSgOWR",
+            "cachedResultName": "Projets"
+          },
+          "options": {},
+          "operation": "search"
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "9mTR7mhD0VA7GbZP",
+            "name": "Airtable Personal Access Token account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "ed68d3fa-5835-4499-9550-f07bf1d3deec",
+        "name": "Active ?",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          672,
+          -80
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "f1a41893-c6cd-4824-8b74-c0d52b2ac842",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json['Status - Calendrier éditorial'] }}",
+                "rightValue": "Actif"
+              },
+              {
+                "id": "79f0320a-0d4e-4fa0-9adc-f9f11ace8efb",
+                "operator": {
+                  "type": "dateTime",
+                  "operation": "before"
+                },
+                "leftValue": "={{ $json['Last sent - Calendrier éditorial'] }}",
+                "rightValue": "={{ (function() { const now = new Date(); const year = now.getFullYear(); const month = String(now.getMonth() + 1).padStart(2, '0'); return `${year}-${month}-01`; })() }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "d23bc2b5-3479-49a4-9910-6a86e202997a",
+        "name": "Get Motion projects",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          1824,
+          -112
+        ],
+        "parameters": {
+          "url": "https://api.usemotion.com/v1/projects",
+          "options": {},
+          "sendQuery": true,
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "workspaceId",
+                "value": "={{ $json['Motion Workspace ID'] }}"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "binrCBMqjqNEJXmX",
+            "name": "Motion"
+          }
+        },
+        "executeOnce": true,
+        "typeVersion": 4.2
+      },
+      {
+        "id": "76113108-e532-4309-a48d-2b3032bde4cf",
+        "name": "Sort projects",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          2288,
+          -96
+        ],
+        "parameters": {
+          "jsCode": "// On récupère le tableau de projets depuis la réponse de la requête HTTP\nconst responseData = items[0].json;\n\n// Vérifie si la structure attendue existe\nif (!responseData || !responseData.projects || !Array.isArray(responseData.projects)) {\n  // Retourne un tableau vide si la structure n'est pas celle attendue\n  return [];\n}\n\n// Crée un nouvel élément pour chaque projet\nconst newItems = responseData.projects.map(project => {\n  return {\n    json: {\n      // On copie toutes les propriétés du projet\n      ...project,\n      // Ajout optionnel de métadonnées de la réponse originale si nécessaire\n      _meta: responseData.meta\n    }\n  };\n});\n\n// Retourne le tableau des nouveaux éléments\nreturn newItems;\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "e11fedb7-b55d-4549-9e3f-9d84790b9d31",
+        "name": "Is task completed ?",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          2976,
+          -96
+        ],
+        "parameters": {
+          "url": "https://api.usemotion.com/v1/tasks",
+          "options": {},
+          "sendQuery": true,
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "projectId",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "name",
+                "value": "Intégrer les articles de blog"
+              },
+              {
+                "name": "status",
+                "value": "completed"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "binrCBMqjqNEJXmX",
+            "name": "Motion"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "47bd408f-272b-4837-9682-1e2b0e474aac",
+        "name": "Completed ? ",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          3520,
+          -96
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "f53cacf4-8628-4203-8ea6-c7272ee891a4",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.tasks[0].status.name }}",
+                "rightValue": "Completed"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "fc9bd435-5ead-4940-a388-5636c7585b26",
+        "name": "Send mail to customer",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          4000,
+          -96
+        ],
+        "webhookId": "8ee7592a-0b31-4661-901d-dd50a7e59723",
+        "parameters": {
+          "sendTo": "={{ $('Loop Over Items').item.json['Chef de projet'].email }}, {{ $('Loop Over Items').item.json.Mails }}, {{ $('Loop Over Items').item.json['Mails collaborateurs'] }}",
+          "message": "=The email you want to send ",
+          "options": {
+            "senderName": "Cool sender"
+          },
+          "subject": "={{ $('Loop Over Items').item.json.Projets }} - 📝 New article - {{ [\"Janvier\", \"Février\", \"Mars\", \"Avril\", \"Mai\", \"Juin\", \"Juillet\", \"Août\", \"Septembre\", \"Octobre\", \"Novembre\", \"Décembre\"][new Date().getMonth() === 0 ? 11 : new Date().getMonth() ] }}"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "F6YsSmraPe7v98FF",
+            "name": "Gmail account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "56165205-4be8-41c6-b718-877e765ea374",
+        "name": "Update Airtable database",
+        "type": "n8n-nodes-base.airtable",
+        "position": [
+          4272,
+          -96
+        ],
+        "parameters": {
+          "base": {
+            "__rl": true,
+            "mode": "list",
+            "value": "appk6h4dLarLUXKpR",
+            "cachedResultUrl": "https://airtable.com/appk6h4dLarLUXKpR",
+            "cachedResultName": "Base clients"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "list",
+            "value": "tblTrvdyaIcsSgOWR",
+            "cachedResultUrl": "https://airtable.com/appk6h4dLarLUXKpR/tblTrvdyaIcsSgOWR",
+            "cachedResultName": "Projets"
+          },
+          "columns": {
+            "value": {
+              "id": "={{ $('Loop Over Items').item.json.id }}",
+              "Budget - Accès": 0,
+              "Last sent - Calendrier éditorial": "={{ $now.format(\"M/d/yyyy\") }}"
+            },
+            "schema": [
+              {
+                "id": "id",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "id",
+                "defaultMatch": true
+              },
+              {
+                "id": "Projets",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Projets",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Chef de projet",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Chef de projet",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Collaborateurs",
+                "type": "array",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Collaborateurs",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Contacts",
+                "type": "array",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Contacts",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mails",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "Mails",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Prénom",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "Prénom",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Date de création",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "Date de création",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Optimiseur de contenu",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Optimiseur de contenu",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Rédacteur d'articles",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Rédacteur d'articles",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "CMS",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "CMS",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Plan d'optimisation",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Plan d'optimisation",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Backlinks tracking",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Backlinks tracking",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Looker",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Looker",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Calendrier éditorial",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Calendrier éditorial",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Rapports",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Rapports",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status - Rapport mensuel",
+                "type": "options",
+                "display": true,
+                "options": [
+                  {
+                    "name": "Inactif",
+                    "value": "Inactif"
+                  },
+                  {
+                    "name": "Actif",
+                    "value": "Actif"
+                  }
+                ],
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Status - Rapport mensuel",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status - Backlinks tracking",
+                "type": "options",
+                "display": true,
+                "options": [
+                  {
+                    "name": "Inactif",
+                    "value": "Inactif"
+                  },
+                  {
+                    "name": "Actif",
+                    "value": "Actif"
+                  }
+                ],
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Status - Backlinks tracking",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status - Optimisation de contenu",
+                "type": "options",
+                "display": true,
+                "options": [
+                  {
+                    "name": "Inactif",
+                    "value": "Inactif"
+                  },
+                  {
+                    "name": "Actif",
+                    "value": "Actif"
+                  }
+                ],
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Status - Optimisation de contenu",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status - Calendrier éditorial",
+                "type": "options",
+                "display": true,
+                "options": [
+                  {
+                    "name": "Actif",
+                    "value": "Actif"
+                  },
+                  {
+                    "name": "Inactif",
+                    "value": "Inactif"
+                  }
+                ],
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Status - Calendrier éditorial",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Last sent - Rapport mensuel",
+                "type": "dateTime",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Last sent - Rapport mensuel",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Last sent - Backlinks tracking",
+                "type": "dateTime",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Last sent - Backlinks tracking",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Last sent - Calendrier éditorial",
+                "type": "dateTime",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Last sent - Calendrier éditorial",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Last sent - Optimisation de contenu",
+                "type": "dateTime",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Last sent - Optimisation de contenu",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Dernière modification",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "readOnly": true,
+                "required": false,
+                "displayName": "Dernière modification",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Accès - URL",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Accès - URL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Accès - Login",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Accès - Login",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Accès - Password",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Accès - Password",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Budget - Accès",
+                "type": "number",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Budget - Accès",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Accès - Consultant",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Accès - Consultant",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Prévisionnel budgétaire",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Prévisionnel budgétaire",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Date mail rdv",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Date mail rdv",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Calendly",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Calendly",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Last sent - RDV consultant",
+                "type": "dateTime",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Last sent - RDV consultant",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Motion Workspace ID",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Motion Workspace ID",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Missions",
+                "type": "array",
+                "display": true,
+                "options": [
+                  {
+                    "name": "SEO",
+                    "value": "SEO"
+                  },
+                  {
+                    "name": "SEA",
+                    "value": "SEA"
+                  },
+                  {
+                    "name": "SMA",
+                    "value": "SMA"
+                  }
+                ],
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Missions",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Adresse mail 1",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Adresse mail 1",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Adresse mail 2",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Adresse mail 2",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Adresse mail 3",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Adresse mail 3",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Adresse mail 4",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Adresse mail 4",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Statut",
+                "type": "options",
+                "display": true,
+                "options": [
+                  {
+                    "name": "Actif",
+                    "value": "Actif"
+                  },
+                  {
+                    "name": "Inactif",
+                    "value": "Inactif"
+                  }
+                ],
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Statut",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mail collaborateur 1",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Mail collaborateur 1",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mail collaborateur 2",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Mail collaborateur 2",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mail collaborateur 3",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Mail collaborateur 3",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mail collaborateur 4",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Mail collaborateur 4",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Make SEO rapport",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Make SEO rapport",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Make SEA rapport",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": false,
+                "required": false,
+                "displayName": "Make SEA rapport",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update"
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "9mTR7mhD0VA7GbZP",
+            "name": "Airtable Personal Access Token account"
+          }
+        },
+        "typeVersion": 2.1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Todo": {
+        "main": [
+          [
+            {
+              "node": "Is task completed ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Active ?": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Completed ? ": {
+        "main": [
+          [
+            {
+              "node": "Send mail to customer",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sort projects": {
+        "main": [
+          [
+            {
+              "node": "Todo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get Motion projects",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get airtable data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get airtable data": {
+        "main": [
+          [
+            {
+              "node": "Active ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Motion projects": {
+        "main": [
+          [
+            {
+              "node": "Sort projects",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is task completed ?": {
+        "main": [
+          [
+            {
+              "node": "Completed ? ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send mail to customer": {
+        "main": [
+          [
+            {
+              "node": "Update Airtable database",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Airtable database": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 29,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 2
+      },
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.airtable": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 18
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Growth AI",
+    "username": "growthai",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.agence-n8n.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/e93e43e1e71be1aee89eb849a5396be04c95604624b155a29298b9209e2534c3?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 2,
+      "icon": "file:airtable.svg",
+      "name": "n8n-nodes-base.airtable",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-goals-level-up-your-vocabulary-with-vonage-and-n8n/",
+                "icon": "🎯",
+                "label": "2021 Goals: Level Up Your Vocabulary With Vonage and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-sms-the-low-code-way-with-airtable-twilio-programmable-sms-and-n8n/",
+                "icon": "📱",
+                "label": "Sending SMS the Low-Code Way with Airtable, Twilio Programmable SMS, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automating-conference-organization-processes-with-n8n/",
+                "icon": "🙋‍♀️",
+                "label": "Automating Conference Organization Processes with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.airtable/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/airtable/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Airtable"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTcwIj48cGF0aCBmaWxsPSIjZmNiNDAwIiBkPSJNODkgNC44IDE2LjIgMzQuOWMtNC4xIDEuNy00IDcuNC4xIDkuMWw3My4yIDI5YzYuNCAyLjYgMTMuNiAyLjYgMjAgMGw3My4yLTI5YzQuMS0xLjYgNC4xLTcuNC4xLTkuMWwtNzMtMzAuMUMxMDMuMiAyIDk1LjcgMiA4OSA0LjgiLz48cGF0aCBmaWxsPSIjMThiZmZmIiBkPSJNMTA1LjkgODguOXY3Mi41YzAgMy40IDMuNSA1LjggNi43IDQuNWw4MS42LTMxLjdjMS45LS43IDMuMS0yLjUgMy4xLTQuNVY1Ny4yYzAtMy40LTMuNS01LjgtNi43LTQuNUwxMDkgODQuM2MtMS45LjgtMy4xIDIuNi0zLjEgNC42Ii8+PHBhdGggZmlsbD0iI2Y4MmI2MCIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctMi41IDEuMkw5LjEgMTMwYy0zLjIgMS42LTcuNC0uOC03LjQtNC40VjU3LjVjMC0xLjMuNy0yLjQgMS42LTMuM3EuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNSA0LjMgNy4xLjUgOC45Ii8+PHBhdGggZmlsbD0iI2JhMWU0NSIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctNTkuNC01MHEuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNCA0LjMgNyAuNSA4LjgiLz48L3N2Zz4="
+      },
+      "displayName": "Airtable",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filtrer",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 46,
+      "name": "Gestion de projet"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}
