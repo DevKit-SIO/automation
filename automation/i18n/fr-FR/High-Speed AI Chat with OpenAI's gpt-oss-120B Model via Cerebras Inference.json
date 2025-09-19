@@ -1,0 +1,636 @@
+{
+  "id": 7651,
+  "name": "Chat AI à haute vitesse avec le modèle gpt-oss-120B d'OpenAI via l'inférence de Cerebras",
+  "views": 40,
+  "recentViews": 1,
+  "totalViews": 40,
+  "createdAt": "2025-08-20T15:27:06.353Z",
+  "description": "## Aperçu\n\nCe workflow n8n offre une intégration transparente avec la plateforme d'inférence haute performance de Cerebras pour tirer parti du modèle GPT-OSS-120B open-source d'OpenAI. Avec des vitesses de pointe de milliers de tokens par seconde et une latence ultra-faible inférieure à 0,5 seconde, ce modèle permet aux développeurs et aux entreprises de créer des applications AI réactives sans la complexité de la gestion de l'infrastructure ou de faire face à des temps de réponse lents qui affligent les intégrations AI traditionnelles.\n\n## Comment ça fonctionne\n\nCe workflow simplifié établit une connexion directe à l'API d'inférence de Cerebras à travers quatre nœuds simples. Lorsqu'un message de chat est reçu, le workflow le traite via la clé API configurée, l'envoie au point de terminaison de Cerebras avec vos paramètres spécifiés (température, tokens de complétion, top P, effort de raisonnement) et renvoie la réponse générée par l'IA.\n\n## Explication détaillée du workflow\n\n**1. Lorsqu'un message de chat est reçu** : Ce nœud de déclenchement initie le workflow chaque fois qu'un nouveau message de chat est détecté. Il capture l'entrée de l'utilisateur et la transmet au nœud suivant de la chaîne, prenant en charge divers formats d'entrée et sources de messages.\n\n**2. Définir la clé API** : Un nœud de configuration manuelle où vous stockez en toute sécurité votre clé API de Cerebras. Ce nœud gère l'authentification et garantit que vos demandes sont correctement autorisées lors de la communication avec l'API d'inférence de Cerebras.\n\n**3. Point de terminaison de Cerebras** : Le nœud de requête HTTP principal qui communique avec l'API de complétion de chat de Cerebras. Ce nœud est préconfiguré pour fonctionner avec le modèle GPT-OSS-120B et inclut des paramètres pour la température, les tokens de complétion, le top P et l'effort de raisonnement qui peuvent être personnalisés en fonction de vos besoins spécifiques.\n\n**4. Retourner la sortie** : Le dernier nœud qui traite et formate la réponse de l'IA, livrant le texte généré à votre application ou interface utilisateur dans un format propre et utilisable.\n\n## Pour qui est-ce\n\n**Développeurs** construisant des applications de chat en temps réel, des systèmes d'IA conversationnelle ou des applications web interactives qui ont besoin de temps de réponse constants en moins d'une seconde sans gérer une infrastructure AI complexe.\n\n**Créateurs de contenu** et équipes marketing qui nécessitent une génération rapide de texte pour des blogs, du contenu sur les réseaux sociaux, des descriptions de produits ou des textes marketing, permettant des cycles de production de contenu plus rapides et une productivité améliorée.\n\n**Entreprises** mettant en œuvre l'automatisation du service client, des systèmes de qualification de leads ou des solutions FAQ interactives où la latence de réponse impacte directement l'expérience utilisateur et les taux de conversion.\n\n**Entreprises SaaS** cherchant à intégrer des fonctionnalités AI dans des produits existants sans le surcoût de la formation de modèles ou de la gestion de serveurs d'inférence, leur permettant de se concentrer sur la logique commerciale de base.\n\n**Chercheurs et data scientists** expérimentant avec des modèles de langage haute performance pour le prototypage, les tests A/B de différentes stratégies de demande, ou la réalisation de benchmarks de performance par rapport à d'autres fournisseurs d'IA.\n\n**Startups et petites équipes** recherchant des capacités AI de niveau entreprise sans les coûts d'infrastructure ou la complexité technique généralement associée au déploiement de grands modèles de langage.\n\n## Instructions de configuration complètes\n\n**1. Configuration du compte Cerebras**\n- Visitez Cerebras et créez un nouveau compte\n- Complétez la vérification par e-mail et la configuration du profil\n- Accédez à la section des clés API dans votre tableau de bord\n- Générez une nouvelle clé API et stockez-la en toute sécurité\n- Consultez les limites de taux pour les comptes de niveau gratuit et mettez à niveau si nécessaire\n\n**2. Configuration du workflow N8N**\n- Importez le modèle dans votre instance n8n\n- Cliquez sur le nœud \"Définir la clé API\" et entrez votre clé API de Cerebras\n- Configurez le nœud de déclenchement en fonction de votre source d'entrée (webhook, manuel, programmé)\n- Testez le workflow en utilisant la fonction d'exécution intégrée\n\n**3. Personnalisation des paramètres**\n- Ouvrez le nœud \"Point de terminaison de Cerebras\" pour accéder à la configuration des paramètres\n- Ajustez la température, les tokens de complétion, le top P et l'effort de raisonnement en fonction de votre cas d'utilisation\n- Enregistrez et testez le workflow pour garantir un bon fonctionnement\n\n## Guide de personnalisation et de configuration\n\n**Paramètres du modèle dans le nœud de point de terminaison de Cerebras** :\n- **Température** (0.0-2.0) : Valeurs plus basses (0.1-0.3) pour des réponses factuelles et cohérentes ; valeurs plus élevées (0.7-1.5) pour un contenu créatif et varié\n- **Tokens de complétion** : À définir en fonction de la longueur de réponse attendue - 150 pour des réponses courtes, 500+ pour des explications détaillées, 1000+ pour du contenu long\n- **Top P** (0.1-1.0) : Contrôle la diversité des réponses ; 0.9 fonctionne bien pour la plupart des applications, des valeurs plus basses pour des réponses plus ciblées\n- **Effort de raisonnement** : Ajuste l'effort computationnel du modèle pour des tâches de raisonnement complexes ; des valeurs plus élevées pour des requêtes analytiques ou de résolution de problèmes\n\n**Configurations spécifiques aux cas d'utilisation** :\n- **Support client** : Température 0.2, tokens de complétion modérés, réponses utiles et cohérentes\n- **Écriture créative** : Température 1.0-1.2, tokens de complétion plus élevés pour un contenu diversifié et imaginatif\n- **Documentation technique** : Température 0.3, sortie structurée avec exemples et extraits de code\n- **Conversation informelle** : Température 0.7, créativité et cohérence équilibrées\n\n**Scénarios d'intégration** :\n- Connectez le déclencheur aux webhooks pour l'intégration d'applications externes\n- Modifiez le nœud de sortie pour formater les réponses pour des plateformes spécifiques (Slack, Discord, applications web)\n- Ajoutez une logique conditionnelle pour gérer différents types de requêtes utilisateur\n- Implémentez la validation et la désinfection des entrées pour les environnements de production\n\n## Améliorations possibles\n\n**Support multi-modèles** : Étendre le workflow pour passer entre différents modèles de Cerebras en fonction de la complexité de la requête ou des exigences spécifiques.\n\n**Mise en cache des réponses** : Ajouter des mécanismes de mise en cache pour stocker les réponses fréquemment demandées, réduisant les appels API et améliorant les performances.\n\n**Gestion avancée des erreurs** : Implémenter une logique de réessai et des mécanismes de secours pour une fiabilité améliorée dans les environnements de production.\n\n**Filtrage de contenu** : Intégrer des capacités de modération pour garantir des réponses appropriées dans les applications destinées aux clients.\n\n**Intégration d'analytique** : Connecter des outils de surveillance pour suivre les modèles d'utilisation, la qualité des réponses et les métriques de performance.\n\n**Déclencheurs multi-canaux** : Configurer des réponses automatisées pour diverses plateformes comme Slack, Discord ou des webhooks personnalisés.\n\n**Gestion des modèles** : Créer des modèles de demande réutilisables pour différents scénarios et cas d'utilisation.\n\n**Formatage de sortie** : Ajouter un post-traitement pour des formats de sortie spécifiques (HTML, Markdown, JSON) en fonction des exigences d'intégration.",
+  "workflow": {
+    "id": "fFKIMw0PeIP2TuOx",
+    "meta": {
+      "instanceId": "9219ebc7795bea866f70aa3d977d54417fdf06c41944be95e20cfb60f992db19",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "cerebras with gpt oss 120b",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "dc93a613-c19f-4dd4-b633-a1112970455d",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          208,
+          0
+        ],
+        "webhookId": "6530c15b-038f-4b20-bf38-58d034ac3ea6",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "a941ace5-5a7e-495a-a37d-8dee620f2bb5",
+        "name": "Return Output",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          880,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "409dd10e-b29c-4fac-b471-3204a46034a1",
+                "name": "output",
+                "type": "string",
+                "value": "={{ $json.choices[0].message.content }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "849f0355-d1e5-475c-bc1b-1fdd6c693745",
+        "name": "Set API Key",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          432,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f828da75-ee7e-482b-83e5-123005f9878d",
+                "name": "apiKey",
+                "type": "string",
+                "value": "your-api-key"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "1f1590ef-2682-40cc-9e5f-447a2513dcc0",
+        "name": "Cerebras endpoint",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          656,
+          0
+        ],
+        "parameters": {
+          "url": "https://api.cerebras.ai/v1/chat/completions",
+          "method": "POST",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          },
+          "jsonBody": "={\n  \"model\": \"gpt-oss-120b\",\n  \"stream\": false,\n  \"messages\": [\n    {\n      \"content\": \"{{ $('When chat message received').item.json.chatInput }}\",\n      \"role\": \"user\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_completion_tokens\": -1,\n  \"seed\": 0,\n  \"top_p\": 1\n}",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $json.apiKey }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "9eb60d7e-b40e-4e26-87ce-000e99c45985",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          384,
+          -144
+        ],
+        "parameters": {
+          "width": 192,
+          "height": 304,
+          "content": "## Set API key \n**Create an account and [get your Cerebras key](https://cerebras.ai)**"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4eba1448-d1eb-4ceb-85df-de10a942a91a",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          592,
+          176
+        ],
+        "parameters": {
+          "width": 272,
+          "height": 240,
+          "content": "## Parameters\nSet your endpoint parameters as needed\n- temperature\n- completion tokens\n- top P\n- reasoning effort\n\n[Review the endpoint](https://inference-docs.cerebras.ai/api-reference/chat-completions)"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "4a9e3b9f-4132-4871-b159-6c0663bcb49d",
+    "connections": {
+      "Set API Key": {
+        "main": [
+          [
+            {
+              "node": "Cerebras endpoint",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cerebras endpoint": {
+        "main": [
+          [
+            {
+              "node": "Return Output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Set API Key",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Aitor | 1Node",
+    "username": "aitoralonso",
+    "bio": "Hi, I'm Aitor with 1 Node. We create practical AI solutions for businesses. Nothing fancy, just tools that solve real problems and help you scale. Always happy to have a conversation about how we might be able to help you grow",
+    "verified": true,
+    "links": [
+      "https://1node.ai"
+    ],
+    "avatar": "https://gravatar.com/avatar/2f850f7b4c218087a3e7d9775daf6bd8dad05b5eb5ea82242d4bfd1a97465455?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsqu'un message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 47,
+      "name": "Chatbot AI"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

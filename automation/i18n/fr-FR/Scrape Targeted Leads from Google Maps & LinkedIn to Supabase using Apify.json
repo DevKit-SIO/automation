@@ -1,0 +1,1140 @@
+{
+  "id": 8417,
+  "name": "Collecte de leads ciblés depuis Google Maps et LinkedIn vers Supabase en utilisant Apify",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-09-09T14:02:06.363Z",
+  "description": "![Capture d'écran 20250912 090637.png](fileId:2619)\n\n## À qui cela s'adresse-t-il\nCe modèle est parfait pour les équipes de vente, les professionnels du marketing, les recruteurs et les spécialistes du développement commercial qui ont besoin de collecter efficacement des données de leads ciblés à partir de plusieurs sources. Que vous construisiez des listes de prospects, meniez des recherches de marché ou élargissiez votre base de contacts, cette solution automatisée vous fait gagner des heures de collecte de données manuelle.\n\n## Comment cela fonctionne\nLe flux de travail utilise un formulaire intégré n8n pour collecter les paramètres de recherche, puis extrait automatiquement des leads ciblés depuis Google Maps et/ou LinkedIn au sein des acteurs Apify en fonction de vos critères. Toutes les données collectées sont nettoyées, structurées à l'aide de nœuds de champ d'édition, et stockées dans votre base de données Supabase pour un accès et une analyse faciles.\n\n## Caractéristiques clés :\n- Formulaire interactif pour un ciblage facile des leads\n- Extraction de données à double source (Google Maps + LinkedIn), vous choisissez l'un ou les deux.\n- Collecte et nettoyage automatiques des données, et structuration à partir des acteurs Apify.\n- Stockage direct dans la base de données Supabase\n- Limites de résultats flexibles et ciblage géographique.\n\n## Comment configurer\n\n**Étape 1 : Créer un compte Apify**\nCréez un compte sur apify.com\nAccédez à Paramètres &gt; Intégrations &gt; Jetons API\nCréez un nouveau jeton API et copiez-le\nAssurez-vous d'avoir accès à ces acteurs :\n\nScraper de recherche de profil LinkedIn (harvestapi/linkedin-profile-search)\nScraper Google Maps (compass/crawler-google-places)\n\n**Étape 2 : Configurer la base de données Supabase**\nCréez un nouveau projet sur supabase.com\nAllez dans l'éditeur SQL de votre tableau de bord Supabase\nExécutez les scripts SQL de la section Exigences pour créer des tables\nAccédez à Paramètres &gt; API pour copier :\n\nURL du projet (commence par https://...)\nClé de rôle de service (clé secrète, pas publique anonyme)\n\n**Étape 3 : Importer et configurer le flux de travail**\nTéléchargez le fichier JSON du flux de travail\nDans n8n Cloud, allez dans Flux de travail &gt; Importer depuis un fichier\nSélectionnez le fichier JSON téléchargé\nConfigurez les identifiants en cliquant sur chaque nœud qui affiche un avertissement :\n\n**Pour les nœuds Apify (linkedin_dataset & googlemaps_dataset) :**\nCliquez sur \"Créer un nouvel identifiant\"\nNom : \"Compte Apify\"\nJeton API : [Collez votre jeton Apify de l'étape 1]\nEnregistrer l'identifiant\n\nPour les nœuds Supabase (save_linkedin & save_googlemaps) :\n\nCliquez sur \"Créer un nouvel identifiant\"\nNom : \"Compte Supabase\"\nHôte : [Votre URL de projet Supabase de l'étape 2]\nSecret de rôle de service : [Votre clé de rôle de service de l'étape 2]\nEnregistrer l'identifiant\n\n**Étape 4 : Tester le flux de travail**\nCliquez sur le nœud \"À la soumission du formulaire\"\nCopiez l'URL de production (lien webhook)\nOuvrez cette URL dans un nouvel onglet de navigateur\nRemplissez le formulaire de test :\n\nTitre/Industrie : \"restaurants\"\nEmplacement : \"San Francisco, CA\"\nSource : \"Google Maps\"\nNombre de résultats : \"3\"\n\n\nCliquez sur Soumettre et attendez le traitement\nVérifiez vos tables Supabase pour confirmer que les données ont été enregistrées\n\nÉtape 5 : Vérifier le succès de la configuration\n\nDans Supabase, allez dans l'éditeur de table\nVérifiez la table googlemaps pour de nouvelles entrées\nVérifiez que tous les champs sont correctement remplis\nTestez avec la source LinkedIn pour confirmer que les deux chemins fonctionnent\n\nLe flux de travail est conçu pour être prêt à l'emploi une fois les identifiants configurés. Partagez simplement l'URL du formulaire avec votre équipe ou signalez-la pour des tâches régulières de génération de leads.\nComment personnaliser le flux de travail\n\n**Paramètres de recherche :**\nModifiez les configurations des acteurs Apify dans les nœuds de jeu de données\nAjustez les formats de requête de recherche pour un meilleur ciblage\nChangez les limites de résultats en fonction de vos besoins\n\n**Traitement des données :**\nModifiez les nœuds de définition pour extraire des champs supplémentaires\nAjoutez des étapes de validation des données\nImplémentez une logique de détection des doublons\n\n**Options de stockage :**\nRemplacez Supabase par d'autres bases de données (Airtable, PostgreSQL)\nAjoutez une exportation de données vers CSV/Excel\nImplémentez des notifications en temps réel\n\n**Support :**\nConsultez le [forum communautaire n8n](https://community.n8n.io/) pour obtenir de l'aide\nConsultez la [documentation des acteurs Apify](https://docs.apify.com/platform/actors)\n\nLe flux de travail est conçu pour être prêt à l'emploi une fois les identifiants configurés. Remplissez simplement le formulaire avec vos critères cibles et laissez l'automatisation gérer le reste.\n\n## Exigences\n**Services externes :** Compte Apify avec crédits (pour le web scraping)\nCompte Supabase (pour le stockage des données)\n\nSchémas de table Supabase :\nTable LinkedIn (LinkedIn) :\n```\npublicidentifier (texte)\nlinkedinurl (texte)\nnom (texte)\ntitre (texte)\nà propos (texte)\npremium (booléen)\nverifié (booléen)\nprofilouvert (booléen)\nmeilleurescompétences (texte)\nnombredeconnexions (entier)\nnombredefollowers (entier)\ndernier_experience (texte)\nformation (texte)\n```\nTable Google Maps (googlemaps) :\n```\ntitre (texte)\nnom_de_catégorie (texte)\ndresse (texte)\nquartier (texte)\nruelle (texte)\nville (texte)\ncode_postal (texte)\nétat (texte)\ncode_pays (texte)\nsite_web (texte)\ntéléphone (texte)\ntéléphone_non_formaté (texte)\nlocalisation (texte)\nscore_total (numérique)\n```\n**Exigences des nœuds :**\n\n- Déclencheur de formulaire (intégré), vous pouvez en utiliser d'autres, ou un webhook.\n- Interrupteur (intégré)\n- Définir (intégré)\n- Supabase (intégré)\n- Apify (nœud communautaire), vous devrez d'abord l'installer.\n\n## Comment personnaliser le flux de travail\n**Personnalisation du formulaire :**\n- Modifiez les champs du formulaire dans le nœud \"À la soumission du formulaire\" pour ajouter des critères de recherche supplémentaires si vous le souhaitez.\n- Vous pouvez ajuster les options déroulantes pour différentes sources de leads.\n- Ajoutez des règles de validation pour une meilleure qualité des données\n\n**Paramètres de recherche :**\n- Personnalisez les configurations des acteurs Apify pour différents comportements de scraping.\n- Modifiez le nombre de résultats par recherche.\n- Ajoutez des options de ciblage géographique supplémentaires\n\n**Traitement des données :**\n- Améliorez les nœuds de définition pour extraire des données de profil LinkedIn supplémentaires\n- Ajoutez des étapes de validation et de nettoyage des données\n- Implémentez une logique de détection des doublons\n\n**Options de stockage :**\n- Vous pouvez remplacer Supabase par d'autres bases de données (Airtable, Google Sheets, etc.)\n- Ajoutez des étapes d'enrichissement des données avant le stockage\n- Implémentez une fonctionnalité d'exportation des données\n\n**Fonctionnalités avancées :**\n- Ajoutez des notifications par e-mail lorsque le scraping est terminé\n- Implémentez une gestion des erreurs et une logique de réessai\n- Créez des mécanismes de scoring de qualité des données\n\nConnectons-nous : [TUMUSIME David](https://www.linkedin.com/in/tumusime-david/)",
+  "workflow": {
+    "meta": {
+      "instanceId": "bcbbbb7684ab0f62f46801d17f34302f40112ca7f6f371763579ad26e60d4c31",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "a4c1e9f4-bd7b-49f7-b9a0-c55d13c415c7",
+        "name": "save_linkedin",
+        "type": "n8n-nodes-base.supabase",
+        "position": [
+          80,
+          -48
+        ],
+        "parameters": {
+          "tableId": "linkedin",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "publicidentifier",
+                "fieldValue": "={{ $json.publicIdentifier }}"
+              },
+              {
+                "fieldId": "linkedinurl",
+                "fieldValue": "={{ $json.linkedinUrl }}"
+              },
+              {
+                "fieldId": "name",
+                "fieldValue": "={{ $json.name }}"
+              },
+              {
+                "fieldId": "headline",
+                "fieldValue": "={{ $json.headline }}"
+              },
+              {
+                "fieldId": "about",
+                "fieldValue": "={{ $json.about }}"
+              },
+              {
+                "fieldId": "premium",
+                "fieldValue": "={{ $json.premium }}"
+              },
+              {
+                "fieldId": "verified",
+                "fieldValue": "={{ $json.verified }}"
+              },
+              {
+                "fieldId": "openprofile",
+                "fieldValue": "={{ $json.openProfile }}"
+              },
+              {
+                "fieldId": "topskills",
+                "fieldValue": "={{ $json.topSkills }}"
+              },
+              {
+                "fieldId": "connectionscount",
+                "fieldValue": "={{ $json.connectionsCount }}"
+              },
+              {
+                "fieldId": "followercount",
+                "fieldValue": "={{ $json.followerCount }}"
+              },
+              {
+                "fieldId": "latest_experience",
+                "fieldValue": "={{ $json.latest_experience }}"
+              },
+              {
+                "fieldId": "education",
+                "fieldValue": "={{ $json.education }}"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "supabaseApi": {
+            "id": "jPsUuYNXGEPsRcH1",
+            "name": "Supabase account 2"
+          }
+        },
+        "executeOnce": false,
+        "retryOnFail": false,
+        "typeVersion": 1
+      },
+      {
+        "id": "23282df3-60fd-4ebd-9965-5a9b6475a0db",
+        "name": "save_googlemaps",
+        "type": "n8n-nodes-base.supabase",
+        "position": [
+          80,
+          -240
+        ],
+        "parameters": {
+          "tableId": "googlemaps",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "title",
+                "fieldValue": "={{ $json.title }}"
+              },
+              {
+                "fieldId": "category_name",
+                "fieldValue": "={{ $json.categoryName }}"
+              },
+              {
+                "fieldId": "address",
+                "fieldValue": "={{ $json.address }}"
+              },
+              {
+                "fieldId": "neighborhood",
+                "fieldValue": "={{ $json.neighborhood }}"
+              },
+              {
+                "fieldId": "street",
+                "fieldValue": "={{ $json.street }}"
+              },
+              {
+                "fieldId": "city",
+                "fieldValue": "={{ $json.city }}"
+              },
+              {
+                "fieldId": "postal_code",
+                "fieldValue": "={{ $json.postalCode }}"
+              },
+              {
+                "fieldId": "state",
+                "fieldValue": "={{ $json.state }}"
+              },
+              {
+                "fieldId": "country_code",
+                "fieldValue": "={{ $json.countryCode }}"
+              },
+              {
+                "fieldId": "website",
+                "fieldValue": "={{ $json.website }}"
+              },
+              {
+                "fieldId": "phone",
+                "fieldValue": "={{ $json.phone }}"
+              },
+              {
+                "fieldId": "phone_unformatted",
+                "fieldValue": "={{ $json.phoneUnformatted }}"
+              },
+              {
+                "fieldId": "location",
+                "fieldValue": "={{ $json.location }}"
+              },
+              {
+                "fieldId": "total_score",
+                "fieldValue": "={{ $json.totalScore }}"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "supabaseApi": {
+            "id": "jPsUuYNXGEPsRcH1",
+            "name": "Supabase account 2"
+          }
+        },
+        "executeOnce": false,
+        "retryOnFail": false,
+        "typeVersion": 1
+      },
+      {
+        "id": "6d0fa79a-4121-473f-8441-125a0356fcb9",
+        "name": "get_linkedin",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -144,
+          -48
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "324600d2-fd7a-4236-a00b-d1510e13bf1a",
+                "name": "publicIdentifier",
+                "type": "string",
+                "value": "={{ $json.publicIdentifier }}"
+              },
+              {
+                "id": "544ef597-b06a-4b42-b4aa-c07e1e16a928",
+                "name": "linkedinUrl",
+                "type": "string",
+                "value": "={{ $json.linkedinUrl }}"
+              },
+              {
+                "id": "2ceec80c-11a2-41a2-848c-c7103395024f",
+                "name": "name",
+                "type": "string",
+                "value": "={{ $json.firstName }} {{ $json.lastName }}"
+              },
+              {
+                "id": "36f610a3-4146-413d-8101-e3699e1083f1",
+                "name": "headline",
+                "type": "string",
+                "value": "={{ $json.headline }}"
+              },
+              {
+                "id": "d43208d3-fc30-4596-845e-72f8f95cc0c2",
+                "name": "about",
+                "type": "string",
+                "value": "={{ $json.about }}"
+              },
+              {
+                "id": "ea19b2d9-4d60-4e32-92a0-9fb5a9fb087f",
+                "name": "premium",
+                "type": "boolean",
+                "value": "={{ $json.premium }}"
+              },
+              {
+                "id": "51a8c2d6-de2c-47cf-82ab-616121b48239",
+                "name": "verified",
+                "type": "boolean",
+                "value": "={{ $json.verified }}"
+              },
+              {
+                "id": "3e0e0887-2ef4-4e16-9618-27bb8e965d93",
+                "name": "topSkills",
+                "type": "string",
+                "value": "={{ $json.topSkills }}"
+              },
+              {
+                "id": "5a64154e-93e0-4b5e-a03a-961b84c17654",
+                "name": "connectionsCount",
+                "type": "number",
+                "value": "={{ $json.connectionsCount }}"
+              },
+              {
+                "id": "1b15c679-9cd0-4cf6-9295-771caddbd5ad",
+                "name": "followerCount",
+                "type": "number",
+                "value": "={{ $json.followerCount }}"
+              },
+              {
+                "id": "6cc42ac9-b1fc-4834-850f-95994fc555fa",
+                "name": "latest_experience",
+                "type": "string",
+                "value": "={{ $json.experience.last().companyLinkedinUrl }}\n{{ $json.experience.last().companyName }}\n{{ $json.experience.last().duration }}"
+              },
+              {
+                "id": "5b062d0c-3d2d-4fe9-93a2-7f8a263da885",
+                "name": "education",
+                "type": "string",
+                "value": "={{ $json.education.last().schoolName }}"
+              },
+              {
+                "id": "1005d779-fc36-412a-abc4-f02287a93f0f",
+                "name": "openProfile",
+                "type": "boolean",
+                "value": "={{ $json.openProfile }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "9b145117-9ada-43bd-a3e8-e276a0fa33c3",
+        "name": "set_google_maps_column",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -144,
+          -240
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ad340224-6836-4ff6-a457-77f476bb9f2a",
+                "name": "title",
+                "type": "string",
+                "value": "={{ $json.title }}"
+              },
+              {
+                "id": "27b479f4-f990-45a1-8575-b82eb9506c00",
+                "name": "categoryName",
+                "type": "string",
+                "value": "={{ $json.categoryName }}"
+              },
+              {
+                "id": "d7fe3a00-ffbb-4dae-9ef8-df92ac9f9881",
+                "name": "address",
+                "type": "string",
+                "value": "={{ $json.address }}"
+              },
+              {
+                "id": "2c055b54-79d9-4143-b89c-9dde69816f2a",
+                "name": "neighborhood",
+                "type": "string",
+                "value": "={{ $json.neighborhood }}"
+              },
+              {
+                "id": "9310a5a7-ab34-49bc-8373-c05b3dc10d24",
+                "name": "street",
+                "type": "string",
+                "value": "={{ $json.street }}"
+              },
+              {
+                "id": "abd0544f-f111-47c5-9f8b-4de6ef0a26e1",
+                "name": "city",
+                "type": "string",
+                "value": "={{ $json.city }}"
+              },
+              {
+                "id": "7c112e7e-4292-49f7-b198-5f4245960bc9",
+                "name": "postalCode",
+                "type": "string",
+                "value": "={{ $json.postalCode }}"
+              },
+              {
+                "id": "507ca314-936a-46d8-91b8-d9b0ed8d04c5",
+                "name": "state",
+                "type": "string",
+                "value": "={{ $json.state }}"
+              },
+              {
+                "id": "f6286dc0-5206-4ba7-a676-b2813665337d",
+                "name": "countryCode",
+                "type": "string",
+                "value": "={{ $json.countryCode }}"
+              },
+              {
+                "id": "056fdf31-e37c-477c-874a-c624be91511b",
+                "name": "website",
+                "type": "string",
+                "value": "={{ $json.website }}"
+              },
+              {
+                "id": "b5cb185b-1a1a-44e2-bc82-6919e1c78640",
+                "name": "phone",
+                "type": "string",
+                "value": "={{ $json.phone }}"
+              },
+              {
+                "id": "dcfbdf36-7421-4d3f-a10a-a1e1e7750545",
+                "name": "phoneUnformatted",
+                "type": "string",
+                "value": "={{ $json.phoneUnformatted }}"
+              },
+              {
+                "id": "154c4a8b-dd15-46eb-89e0-41c0727893a1",
+                "name": "location",
+                "type": "string",
+                "value": "=\"lat\":{{ $json.location.lat }}, \"lng\":{{ $json.location.lng }}"
+              },
+              {
+                "id": "ad9ae4ce-4c07-4d1e-82be-91c7a6ac75fc",
+                "name": "totalScore",
+                "type": "number",
+                "value": "={{ $json.totalScore }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "36dae761-f7ad-4c2b-98c3-5ffc9201a293",
+        "name": "linkedin_dataset",
+        "type": "@apify/n8n-nodes-apify.apify",
+        "position": [
+          -368,
+          -48
+        ],
+        "parameters": {
+          "memory": 2048,
+          "actorId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "M2FMdjRVeF1HPGFcc",
+            "cachedResultUrl": "https://console.apify.com/actors/M2FMdjRVeF1HPGFcc/input",
+            "cachedResultName": "LinkedIn Profile Search Scraper No Cookies ✅ Find all people 📧 (harvestapi/linkedin-profile-search)"
+          },
+          "timeout": {},
+          "operation": "Run actor and get dataset",
+          "customBody": "={\n    \"locations\": [\n        \"{{ $json.Location }}\"\n    ],\n    \"maxItems\": {{ $json['Number of results'] }},\n    \"profileScraperMode\": \"Full\",\n    \"searchQuery\": \"{{ $json['Title/Industry'] }}\"\n} ",
+          "authentication": "apifyOAuth2Api"
+        },
+        "credentials": {
+          "apifyOAuth2Api": {
+            "id": "QRZXuhW5GhmfqHZm",
+            "name": "Apify account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4c194976-3d85-4f8f-97e8-6cfe677b9d43",
+        "name": "googlemaps_dataset",
+        "type": "@apify/n8n-nodes-apify.apify",
+        "position": [
+          -368,
+          -240
+        ],
+        "parameters": {
+          "actorId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "nwua9Gu5YrADL7ZDj",
+            "cachedResultUrl": "https://console.apify.com/actors/nwua9Gu5YrADL7ZDj/input",
+            "cachedResultName": "Google Maps Scraper (compass/crawler-google-places)"
+          },
+          "timeout": {},
+          "operation": "Run actor and get dataset",
+          "customBody": "={\n    \"includeWebResults\": false,\n    \"language\": \"en\",\n    \"locationQuery\": \"{{ $json.Location }}\",\n    \"maxCrawledPlacesPerSearch\":{{ $json['Number of results'] }} ,\n    \"maxImages\": 0,\n    \"maximumLeadsEnrichmentRecords\": 0,\n    \"scrapeContacts\": false,\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapePlaceDetailPage\": false,\n    \"scrapeReviewsPersonalData\": true,\n    \"scrapeTableReservationProvider\": false,\n    \"searchStringsArray\": [\n        \"{{ $json['Title/Industry'] }}\"\n    ],\n    \"skipClosedPlaces\": false\n}",
+          "authentication": "apifyOAuth2Api"
+        },
+        "credentials": {
+          "apifyOAuth2Api": {
+            "id": "QRZXuhW5GhmfqHZm",
+            "name": "Apify account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c1f87a4e-f3b8-4f00-8c28-9d6262c11452",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -864,
+          -560
+        ],
+        "parameters": {
+          "width": 368,
+          "height": 368,
+          "content": "## Main Workflow Overview\nThis workflow automatically scrapes targeted leads from Google Maps and LinkedIn based on your search criteria.\n\nSimply fill out the form with your target industry/title and location, choose your data source, and the workflow will collect and store all lead information in your Supabase database.\n\n**How it works**:\n- Submit form with search criteria\n- Switch routes to appropriate scraper(s)\n- Data gets cleaned and formatted\n- Results saved to database tables\n\n**Perfect for**: Sales teams, recruiters, marketers building prospect lists"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e2cd5ed7-f208-4835-9ae9-ec99953275b4",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          288,
+          -304
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 304,
+          "height": 400,
+          "content": "##  Data Processing & Storage\nAfter scraping, the workflow cleans and structures the data:\n\n**Google Maps Path**:\n- Formats business information (name, address, phone, website)\n- Extracts location coordinates\n- Saves to googlemaps table\n\n**LinkedIn Path**:\n- Combines first/last names\n- Processes experience and education data\n- Extracts connection counts and skills\n- Saves to linkedin table"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "43ac230a-ad0c-4b49-8892-cc2919aa5aeb",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -864,
+          16
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 304,
+          "height": 320,
+          "content": "## Form Input\nThe form collects 4 key pieces of information:\n\n- Title/Industry: What type of leads you want (e.g., \"CEOs\", \"Marketing Directors\", \"Restaurants\")\n- Location: Geographic area to target (e.g., \"New York\", \"London\", \"California\")\n- Source: Choose Google Maps, LinkedIn, or Both\n- Number of results: How many leads you want to collect (optional)\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "918bb23b-2926-4834-aeb0-d32f2659dc3f",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          400,
+          144
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 150,
+          "height": 80,
+          "content": "## [LinkedIn](https://www.linkedin.com/in/tumusime-david/)"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f6e07253-8d82-4638-aafe-9cf071f3f2bb",
+        "name": "Route source",
+        "type": "n8n-nodes-base.switch",
+        "position": [
+          -592,
+          -160
+        ],
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "outputKey": "GoogleMaps",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "4c5b4ac5-a380-4197-9a44-5f8723f44dfd",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.Source }}",
+                      "rightValue": "Google Maps"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "LinkedIn",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "a015bb9d-5688-4ba8-813c-637c473d29ae",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.Source }}",
+                      "rightValue": "LinkedIn"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              },
+              {
+                "outputKey": "Both",
+                "conditions": {
+                  "options": {
+                    "version": 2,
+                    "leftValue": "",
+                    "caseSensitive": true,
+                    "typeValidation": "strict"
+                  },
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "a0e10c8a-6d54-4b75-970d-9ba81430d26c",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "leftValue": "={{ $json.Source }}",
+                      "rightValue": "Both"
+                    }
+                  ]
+                },
+                "renameOutput": true
+              }
+            ]
+          },
+          "options": {}
+        },
+        "typeVersion": 3.2
+      },
+      {
+        "id": "1db7a83b-9721-408c-8ead-5ec2aea3a7b9",
+        "name": "Input desired lead",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -816,
+          -144
+        ],
+        "webhookId": "2f8a54ab-74c8-40b9-8bc2-ddab455ac6e9",
+        "parameters": {
+          "options": {},
+          "formTitle": "Targeted leads",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "Title/Industry",
+                "placeholder": "CEOs or Finance",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "Location",
+                "placeholder": "Enter targeted location",
+                "requiredField": true
+              },
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "Source",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Google Maps"
+                    },
+                    {
+                      "option": "LinkedIn"
+                    },
+                    {
+                      "option": "Both"
+                    }
+                  ]
+                },
+                "requiredField": true
+              },
+              {
+                "fieldType": "number",
+                "fieldLabel": "Number of results",
+                "placeholder": "Enter number desired results"
+              }
+            ]
+          },
+          "formDescription": "This form is intended to get leads from Google Maps and LinkedIn using the Apify actor."
+        },
+        "typeVersion": 2.3
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Route source": {
+        "main": [
+          [
+            {
+              "node": "googlemaps_dataset",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "linkedin_dataset",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "linkedin_dataset",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "googlemaps_dataset",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_linkedin": {
+        "main": [
+          [
+            {
+              "node": "save_linkedin",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "linkedin_dataset": {
+        "main": [
+          [
+            {
+              "node": "get_linkedin",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Input desired lead": {
+        "main": [
+          [
+            {
+              "node": "Route source",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "googlemaps_dataset": {
+        "main": [
+          [
+            {
+              "node": "set_google_maps_column",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "set_google_maps_column": {
+        "main": [
+          [
+            {
+              "node": "save_googlemaps",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 12,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 2
+      },
+      "n8n-nodes-base.switch": {
+        "count": 1
+      },
+      "n8n-nodes-base.supabase": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "@apify/n8n-nodes-apify.apify": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "TUMUSIME David",
+    "username": "tumusime",
+    "bio": "I'm an AI Automation Specialist with experience in building scalable, intelligent workflows. \n\nI focus on integrating AI tools and agents into business processes to streamline operations and deliver smarter automation solutions.",
+    "verified": false,
+    "links": [
+      "https://www.linkedin.com/in/tumusime-david/"
+    ],
+    "avatar": "https://gravatar.com/avatar/acd1ac27003998719843df888922958444ad91cdde11afacc84b724c18d4f4ec?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.switch",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "If",
+            "Path",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Branch",
+            "Case"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.switch/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Interrupteur",
+        "color": "#506000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "Switch",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 545,
+      "icon": "file:supabase.svg",
+      "name": "n8n-nodes-base.supabase",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.supabase/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/supabase/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Supabase"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDkiIGhlaWdodD0iMTEzIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSJ1cmwoI2EpIiBkPSJNNjMuNzA4IDExMC4yODRjLTIuODYgMy42MDEtOC42NTggMS42MjgtOC43MjctMi45N2wtMS4wMDctNjcuMjUxaDQ1LjIyYzguMTkgMCAxMi43NTggOS40NiA3LjY2NSAxNS44NzR6Ii8+PHBhdGggZmlsbD0idXJsKCNiKSIgZmlsbC1vcGFjaXR5PSIuMiIgZD0iTTYzLjcwOCAxMTAuMjg0Yy0yLjg2IDMuNjAxLTguNjU4IDEuNjI4LTguNzI3LTIuOTdsLTEuMDA3LTY3LjI1MWg0NS4yMmM4LjE5IDAgMTIuNzU4IDkuNDYgNy42NjUgMTUuODc0eiIvPjxwYXRoIGZpbGw9IiMzRUNGOEUiIGQ9Ik00NS4zMTcgMi4wNzFjMi44Ni0zLjYwMSA4LjY1Ny0xLjYyOCA4LjcyNiAyLjk3bC40NDIgNjcuMjUxSDkuODNjLTguMTkgMC0xMi43NTktOS40Ni03LjY2NS0xNS44NzV6Ii8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4MT0iNTMuOTc0IiB4Mj0iOTQuMTYzIiB5MT0iNTQuOTc0IiB5Mj0iNzEuODI5IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzI0OTM2MSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNFQ0Y4RSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJiIiB4MT0iMzYuMTU2IiB4Mj0iNTQuNDg0IiB5MT0iMzAuNTc4IiB5Mj0iNjUuMDgxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3AvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Supabase",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de leads"
+    }
+  ],
+  "image": [
+    {
+      "id": 2619,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_09_12_090637_da0dd02b7d.png"
+    }
+  ]
+}

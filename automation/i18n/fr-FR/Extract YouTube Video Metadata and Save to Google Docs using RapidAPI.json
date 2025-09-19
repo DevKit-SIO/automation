@@ -1,0 +1,626 @@
+{
+  "id": 7628,
+  "name": "Extraire les métadonnées des vidéos YouTube et les enregistrer dans Google Docs en utilisant RapidAPI",
+  "views": 1,
+  "recentViews": 1,
+  "totalViews": 1,
+  "createdAt": "2025-08-20T06:29:17.277Z",
+  "description": "## 📺 Flux de travail automatisé d'extraction des métadonnées des vidéos YouTube\n\n**Description :**\nCe flux de travail utilise l'[**API des métadonnées YouTube**](https://rapidapi.com/PrineshPatel/api/youtube-metadata1) pour extraire automatiquement des informations détaillées sur les vidéos à partir de n'importe quelle URL YouTube. Il utilise [**n8n**](https://n8n.io) pour automatiser l'ensemble du processus et stocke les métadonnées dans un document **Google Docs** bien formaté.\n\nParfait pour les créateurs de contenu, les spécialistes du marketing et les chercheurs qui ont besoin d'analyses rapides et organisées des vidéos YouTube à grande échelle.\n\n---\n\n## ⚙️ Explication nœud par nœud\n\n### 1. ✅ À la soumission du formulaire\n\nCe nœud agit comme le **déclencheur**. Lorsqu'un utilisateur soumet un formulaire contenant une URL de vidéo YouTube, le flux de travail est activé.\n\n* Entrée : URL de la vidéo YouTube\n* Plateforme : `Webhook` ou `Déclencheur de formulaire n8n`\n\n---\n\n### 2. 🌐 API des métadonnées YouTube (requête HTTP)\n\nCe nœud envoie l'URL de la vidéo à l'[**API des métadonnées YouTube**](https://rapidapi.com/PrineshPatel/api/youtube-metadata1) via une requête HTTP.\n\n* Action : requête `GET`\n\n* En-têtes :\n\n  ```bash\n  -H \"X-RapidAPI-Key: VOTRE_CLE_API\"\n  -H \"X-RapidAPI-Host: youtube-metadata1.p.rapidapi.com\"\n  ```\n\n* Exemple de point de terminaison :\n\n  ```\n  https://youtube-metadata1.p.rapidapi.com/video?url=YOUTUBE_VIDEO_URL\n  ```\n\n* Sortie : JSON avec des métadonnées telles que :\n\n  * Titre\n  * Description\n  * Vues, J'aime, Commentaires\n  * Durée\n  * Date de téléchargement\n  * Informations sur la chaîne\n  * Miniatures\n\n---\n\n### 3. 🧠 Reformater les métadonnées (nœud de code)\n\nCe nœud reformate les métadonnées brutes en un bloc de texte propre et lisible par l'homme.\n\n* Exemple de format de sortie :\n\n  ```\n  🎬 **Titre :** Comment créer des flux de travail avec n8n  \n  🧾 **Description :** Ce tutoriel explique comment construire...  \n  👤 **Chaîne :** Tutoriels n8n  \n  📅 **Publié le :** 2023-05-10  \n  ⏱️ **Durée :** 10 minutes, 30 secondes  \n  👁️ **Vues :** 45,678  \n  👍 **J'aime :** 1,234  \n  💬 **Commentaires :** 210  \n  🔗 **URL :** https://youtube.com/watch?v=abc123\n  ```\n\n---\n\n### 4. 📝 Ajouter à Google Docs\n\nCe nœud se connecte à vos Google Docs et ajoute les métadonnées formatées dans un document sélectionné.\n\n* **Exemple de format de document :**\n\n  ```markdown\n  ## 📌 Entrée vidéo – [Date]\n\n  🎬 **Titre :**  \n  🧾 **Description :**  \n  👤 **Chaîne :**  \n  📅 **Publié le :**  \n  ⏱️ **Durée :**  \n  👁️ **Vues :**  \n  👍 **J'aime :**  \n  💬 **Commentaires :**  \n  🔗 **URL :**\n\n  ---\n  ```\n\n---\n\n## 📄 Cas d'utilisation\n\n* **Créateurs de contenu** : Analyser rapidement le contenu des concurrents ou les inspirations.\n* **Marketers** : Collecter des données sur la performance des vidéos de campagne.\n* **Chercheurs** : Compiler des métadonnées structurées à travers les vidéos.\n* **Gestionnaires de médias sociaux** : Créer des briefs de contenu sans effort.\n\n---\n\n## ✅ Avantages\n\n* 🚀 **Gain de temps** : Automatise l'extraction manuelle des données vidéo\n* 📊 **Précis** : Utilise une API YouTube fiable et à jour\n* 📁 **Organisé** : Formate et stocke les données dans Google Docs\n* 🔁 **Évolutif** : Gère un nombre illimité d'URLs YouTube\n* 🎯 **Convivial** : Configuration simple et sortie propre\n\n---\n\n## 🔑 Comment obtenir votre clé API pour l'API des métadonnées YouTube\n\n1. Allez sur l'[**API des métadonnées YouTube sur RapidAPI**](https://rapidapi.com/PrineshPatel/api/youtube-metadata1).\n2. Inscrivez-vous ou connectez-vous à votre compte RapidAPI.\n3. Cliquez sur **S'abonner pour tester** et choisissez un plan tarifaire (gratuit ou payant).\n4. Copiez votre **clé API** affichée dans la section **\"X-RapidAPI-Key\"**.\n5. Utilisez-la dans vos en-têtes de requête HTTP.\n\n---\n\n## 🧰 Intégration Google Docs – Instructions complètes de configuration\n\n### 🔐 Étape 1 : Activer l'API Google Docs\n\n1. Allez sur le [Google Cloud Console](https://console.cloud.google.com/).\n2. Créez un nouveau projet ou sélectionnez-en un existant.\n3. Accédez à **APIs & Services &gt; Bibliothèque**.\n4. Recherchez **API Google Docs** et cliquez sur **Activer**.\n5. Activez également **API Google Drive** (pour l'accès aux documents).\n\n---\n\n### 🛠 Étape 2 : Créer des identifiants OAuth\n\n1. Allez sur **APIs & Services &gt; Identifiants**.\n2. Cliquez sur **Créer des identifiants &gt; ID client OAuth**.\n3. Sélectionnez **Application Web** ou **Application de bureau**.\n4. Ajoutez des URI de redirection autorisés si nécessaire (par exemple, pour OAuth n8n).\n5. Enregistrez votre **ID client** et **Secret client**.\n\n---\n\n### 🔗 Étape 3 : Connecter n8n à Google Docs\n\n1. Dans n8n, allez sur **Identifiants &gt; API Google Docs**.\n2. Ajoutez de nouveaux identifiants en utilisant l'ID client et le secret ci-dessus.\n3. Authentifiez-vous avec votre compte Google et autorisez l'accès.\n\n---\n\n### 📘 Étape 4 : Créer et formater votre document Google\n\n1. Allez sur Google Docs et créez un nouveau document.\n2. Nommez-le (par exemple, `Rapport de métadonnées YouTube`).\n3. Optionnellement, ajoutez un titre ou une table des matières.\n4. Copiez l'**ID du document** à partir de l'URL :\n\n   ```\n   https://docs.google.com/document/d/DOCUMENT_ID/edit\n   ```\n\n---\n\n### 🔄 Étape 5 : Utiliser le nœud `Ajouter du contenu au document` dans n8n\n\n* Utilisez le nœud `Google Docs` dans n8n avec :\n\n  * Opération : `Ajouter du contenu`\n  * ID du document : Votre ID de document Google copié\n  * Contenu : La chaîne de résumé vidéo formatée\n\n---\n\n## 🎨 Options de personnalisation\n\n* 💡 **Ajouter des tags** : Insérez des hashtags ou des catégories en fonction des sujets des vidéos.\n* 📆 **Organiser par date** : Créez des en-têtes pour chaque jour ou les entrées de la semaine.\n* 📸 **Intégrer des miniatures** : Utilisez `thumbnail_url` pour intégrer des images d'aperçu.\n* 📊 **Exportation vers une feuille de calcul** : Utilisez Google Sheets au lieu de Docs si vous le souhaitez.\n\n---\n\n## 🛠 Conseils de dépannage\n\n| Problème                          | Solution                                                            |\n| --------------------------------- | ------------------------------------------------------------------- |\n| ❌ **Erreur d'authentification (Google Docs)** | Assurez-vous que l'URI de redirection OAuth et les autorisations sont correctes.                  |\n| ❌ **Échec de la requête API**        | Vérifiez la clé API et la structure de la requête ; testez sur le terrain de jeu de RapidAPI. |\n| 📄 **Document non mis à jour**        | Vérifiez l'ID du document et les autorisations de partage.                         |\n| 🧾 **Mauvais formatage**          | Déboguez la sortie du nœud de code en utilisant des journaux ou la console dans n8n.         |\n| 🌐 **Délai d'attente n8n**             | Envisagez d'utiliser `Attendre` ou `Diviser en lots` pour de grandes soumissions.  |\n\n---\n\n## 🚀 Prêt à lancer ?\n\nVous pouvez déployer ce flux de travail en quelques minutes en utilisant **n8n**.\n\n👉 [Commencez à automatiser avec n8n](https://n8n.partnerlinks.io/7fuarh1e6dz5)\n\n---",
+  "workflow": {
+    "meta": {
+      "instanceId": "60c025075753afcab9f803964b4caaca9402f435deb4efafbb8e3b93b54d8752"
+    },
+    "nodes": [
+      {
+        "id": "2d304223-ef2d-4e03-814d-cac411106f6b",
+        "name": "On form submission",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -160,
+          220
+        ],
+        "webhookId": "2edc6cbb-9fb2-47c9-8387-8ff412c7838a",
+        "parameters": {
+          "options": {},
+          "formTitle": "YouTube Metadata ",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "url",
+                "requiredField": true
+              }
+            ]
+          },
+          "formDescription": "YouTube Metadata"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "3ddda565-879e-4685-bde6-e3f1dc62df2e",
+        "name": "YouTube Metadata",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          60,
+          220
+        ],
+        "parameters": {
+          "url": "https://youtube-metadata1.p.rapidapi.com/video_metadata.php",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "url",
+                "value": "={{ $json.url }}"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "x-rapidapi-host",
+                "value": "youtube-metadata1.p.rapidapi.com"
+              },
+              {
+                "name": "x-rapidapi-key",
+                "value": "your key"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "9ddd4dd3-3c23-471a-aac9-9222deb584a5",
+        "name": "Reformat",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          300,
+          220
+        ],
+        "parameters": {
+          "jsCode": "const itemsArray = $input.first().json.items;\n\n// Safely access the first video item\nconst video = itemsArray[0];\nconst {\n  id: videoId,\n  snippet,\n  contentDetails,\n  statistics,\n} = video;\n\n// Format tags as a comma-separated string\nconst tags = snippet.tags && snippet.tags.length > 0\n  ? snippet.tags.join(', ')\n  : 'No tags available';\n\n// Format published date\nconst publishedDate = new Date(snippet.publishedAt).toLocaleDateString();\n\n// Format duration (optional: still in ISO 8601 like PT4M16S)\nconst duration = contentDetails.duration;\n\n// Prepare formatted content\nconst formatted = `\n🎬 **${snippet.title}**\n\n🧾 **Description:**\n${snippet.description}\n\n📺 **Channel:** ${snippet.channelTitle}\n📅 **Published At:** ${publishedDate}\n\n📊 **Stats:**\n- Views: ${statistics.viewCount}\n- Likes: ${statistics.likeCount}\n- Comments: ${statistics.commentCount}\n\n🕒 **Duration:** ${duration}\n\n🏷️ **Tags:** ${tags}\n\n🔗 **Video URL:** https://www.youtube.com/watch?v=${videoId}\n🖼️ **Thumbnail:** ${snippet.thumbnails.high.url}\n`;\n\n// Return formatted string for use in Google Docs\nreturn [\n  {\n    json: {\n      docContent: formatted.trim()\n    }\n  }\n];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "0589461b-0419-4798-9f69-851d7d9fffb3",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -880,
+          -40
+        ],
+        "parameters": {
+          "width": 520,
+          "height": 500,
+          "content": " \nAutomated YouTube Video Metadata Extraction and Documentation Workflow\n\n**Description:**  \nEasily extract detailed YouTube video metadata from any URL and automatically format and save it to Google Docs for streamlined documentation and analysis.\n\n- **On form submission:**  \n  Triggers the workflow when a user submits a YouTube URL via the form.\n\n- **YouTube Metadata (HTTP Request):**  \n  Sends the submitted URL to the RapidAPI YouTube Metadata service to fetch detailed video data.\n\n- **Reformat (Code):**  \n  Extracts and formats key video details like title, description, stats, and thumbnails into a clean, readable string.\n\n- **Append Data in Google Docs:**  \n  Inserts the formatted video metadata into a specified Google Docs document for storage or further use.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6d94b502-69ea-41a5-a4df-22fe20ee812b",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -260,
+          120
+        ],
+        "parameters": {
+          "height": 240,
+          "content": "**On form submission:**  \n  Triggers the workflow when a user submits a YouTube URL via the form."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "656ff1b1-f872-48d8-80c8-dd8df82d1ebc",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          120
+        ],
+        "parameters": {
+          "height": 240,
+          "content": " **YouTube Metadata (HTTP Request):**  \n  Sends the submitted URL to the RapidAPI YouTube Metadata service to fetch detailed video data.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "73b16e7c-f9ac-46e7-83dc-902ebbd74158",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          260,
+          120
+        ],
+        "parameters": {
+          "height": 240,
+          "content": "**Reformat (Code):**  \n  Extracts and formats key video details like title, description, stats, and thumbnails into a clean, readable string.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bccb9237-7414-4976-9b60-5504c4d3cc7d",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          520,
+          120
+        ],
+        "parameters": {
+          "height": 240,
+          "content": "**Append Data In Google Sheet:**  \n  Append Data in Google sheet for the future usages.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ee750cf2-1839-469d-8a84-dff68f280535",
+        "name": "Append Data in Google Docs",
+        "type": "n8n-nodes-base.googleDocs",
+        "position": [
+          560,
+          220
+        ],
+        "parameters": {
+          "actionsUi": {
+            "actionFields": [
+              {
+                "text": "={{ $json.docContent }}",
+                "action": "insert"
+              }
+            ]
+          },
+          "operation": "update",
+          "authentication": "serviceAccount"
+        },
+        "credentials": {
+          "googleApi": {
+            "id": "Rt0RWApx8PL9t0RF",
+            "name": "Google Docs account"
+          }
+        },
+        "typeVersion": 2
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Reformat": {
+        "main": [
+          [
+            {
+              "node": "Append Data in Google Docs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "YouTube Metadata": {
+        "main": [
+          [
+            {
+              "node": "Reformat",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "On form submission": {
+        "main": [
+          [
+            {
+              "node": "YouTube Metadata",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 9,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleDocs": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 5
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Evoort Solutions",
+    "username": "evoortsolutions",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/d55712e8cb5fceec583c663f52fef1733aafd49367469fea940a52daa8d4fe96?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 495,
+      "icon": "file:googleDocs.svg",
+      "name": "n8n-nodes-base.googleDocs",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledocs/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Miscellaneous"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Docs"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSItMTggMCA5MCA4MCI+PHVzZSB4bGluazpocmVmPSIjYSIgeD0iLjUiIHk9Ii41Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzU0OGRmNiIgZD0ibTM2IDAgMjIgMjJ2NTNhNC45OSA0Ljk5IDAgMCAxLTUgNUg1YTQuOTkgNC45OSAwIDAgMS01LTVWNWE0Ljk5IDQuOTkgMCAwIDEgNS01eiIvPjxwYXRoIGQ9Ik0xNCA0MGgzMHYzSDE0em0wIDdoMzB2M0gxNHptMCA4aDMwdjNIMTR6bTAgN2gyMXYzSDE0eiIvPjxwYXRoIGZpbGw9IiNhYmQwZmIiIGQ9Im0zNiAwIDIyIDIySDQxYy0yLjc3IDAtNS0yLjQ4LTUtNS4yNXoiLz48cGF0aCBmaWxsPSIjM2U1YmI5IiBkPSJNNDAuNzUgMjIgNTggMjkuMTI1VjIyeiIvPjwvZz48L3N5bWJvbD48L3N2Zz4="
+      },
+      "displayName": "Google Docs",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 11,
+          "name": "Miscellaneous"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    }
+  ],
+  "image": []
+}

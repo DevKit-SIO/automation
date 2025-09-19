@@ -1,0 +1,764 @@
+{
+  "id": 3559,
+  "name": "Système de sauvegarde automatisé des workflows n8n avec Google Drive et archivage",
+  "views": 462,
+  "recentViews": 0,
+  "totalViews": 462,
+  "createdAt": "2025-04-15T09:32:46.476Z",
+  "description": "**[Cliquez ici pour accéder à ce Workflow gratuitement](https://www.bonzai.pro/auth?action=buyPrice%2Cpri_KlOK_5247)**.\n\n---\n\n# Sauvegardez et archivez automatiquement vos workflows\n![image.png](fileId:1736)\n\nCe workflow fournit un système entièrement automatisé pour sauvegarder vos workflows n8n sur Google Drive. Il s'exécute selon un calendrier (que vous pouvez personnaliser) et sauvegarde chaque workflow en tant que fichier `.json`, nommé d'après le workflow lui-même. Tous les workflows actifs sont sauvegardés par défaut et stockés dans un dossier Google Drive spécifié de votre choix.\n\nUne fonctionnalité spéciale de ce workflow est sa capacité à archiver et nettoyer les anciens workflows. Si vous taguez un workflow avec `ARCHIVE` (sensible à la casse), le workflow sera sauvegardé dans un sous-dossier `Archive` désigné à l'intérieur de votre dossier principal Google Drive — puis **automatiquement supprimé de votre instance n8n**. Cela garde votre espace de travail propre et réduit l'encombrement tout en garantissant que tout est stocké en toute sécurité.\n\n### Exigences\n\n- Un compte Google Drive connecté à n8n (via OAuth2 ou méthode préférée)\n- Une instance n8n avec accès à vos workflows\n- Un dossier dans Google Drive pour stocker les sauvegardes\n  - À l'intérieur de ce dossier, créez un sous-dossier nommé `Archive`\n- **Identifiants de dossier pour les dossiers principal et d'archive** (*Trouvez-le dans l'URL du dossier par exemple https://drive.google.com/drive/u/0/folders/**1F7Exr2xkZQFvmHmjdFD43K0jfd***)\n\n### Configuration\n\n1. Dans votre Google Drive, créez un dossier principal pour stocker les sauvegardes.\n2. À l'intérieur, créez un sous-dossier appelé `Archive`.\n3. **Récupérez les identifiants de dossier pour les deux dossiers**\n4. Dans n8n, connectez vos identifiants Google Drive.\n5. Ouvrez le workflow et insérez les identifiants de dossier dans les nœuds appropriés.\n6. En option, modifiez le déclencheur de calendrier pour définir votre fréquence de sauvegarde préférée.\n\n### Utilisation\n\nUne fois configuré, le workflow va :\n- S'exécuter automatiquement selon le calendrier défini\n- Sauvegarder tous les workflows existants dans votre Drive\n- Pour les workflows tagués avec `ARCHIVE` :\n  - Les sauvegarder dans le sous-dossier `Archive`\n  - Les supprimer de votre instance n8n\n\nLe workflow garantit que votre logique d'automatisation est versionnée en toute sécurité, avec un nettoyage optionnel pour les flux obsolètes ou inutilisés.\n\n### Personnalisation\n\nVous pouvez modifier le calendrier pour s'exécuter quotidiennement, hebdomadairement ou à tout intervalle personnalisé en utilisant le nœud Cron intégré.\n\nVous pouvez également changer la structure des dossiers ou les conventions de nommage dans les nœuds Google Drive pour correspondre à vos préférences personnelles ou d'équipe.\n\nLes workflows ne sont archivés que s'ils sont explicitement tagués avec `ARCHIVE` — ce tag est **sensible à la casse**.\n\n---\n### Si vous avez besoin d'aide ou si vous avez des questions, n'hésitez pas à venir en discuter sur **[Telegram](https://www.bonzai.pro/theo_marcadet/lp/7018)** ",
+  "workflow": {
+    "meta": {
+      "instanceId": "ff93c7924b638fb6ca7815d8ed0b9e89bc1a4b863863649bb0ed513cdccf1946",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "bf1cea33-3efe-431b-a6c8-9020c0536be1",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          1460,
+          460
+        ],
+        "parameters": {},
+        "typeVersion": 1.2
+      },
+      {
+        "id": "af03b7b7-88c6-46f8-978f-f68a98a7ebda",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          2560,
+          460
+        ],
+        "parameters": {},
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ed067034-d89b-4092-9012-3b0f5cba98fd",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1360,
+          300
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "49dcc174-3a3e-4330-968a-7e1ba7dcfe6c",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2080,
+          300
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f13d2f9e-a203-4ab8-823d-be460d9d053b",
+        "name": "Create to date folder",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          1840,
+          460
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "e6d9afa6-c9c8-4190-ac08-bc53083deda1",
+        "name": "GET Workflows",
+        "type": "n8n-nodes-base.n8n",
+        "position": [
+          2220,
+          460
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "9f30aaf6-2805-4971-b526-d17deca8510b",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2480,
+          40
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e8a26016-c67e-4053-a303-23703162f02b",
+        "name": "Convert to JSON",
+        "type": "n8n-nodes-base.convertToFile",
+        "position": [
+          2780,
+          580
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "d35a31b3-67d4-4d40-ad61-c4ff7829c265",
+        "name": "Convert to JSON'",
+        "type": "n8n-nodes-base.convertToFile",
+        "position": [
+          2780,
+          340
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "a3810775-cedb-4be3-9638-8db62909849e",
+        "name": "Save 'ARCHIVE' Workflows",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          3100,
+          340
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "2415e60f-a43d-455a-b63f-125a635e0537",
+        "name": "Save all other Workflows",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          3100,
+          580
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "4e74bd48-f91d-45d2-a692-782d0f1bb209",
+        "name": "Delete 'ARCHIVE' Workflows",
+        "type": "n8n-nodes-base.n8n",
+        "position": [
+          3420,
+          340
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b25ffe3e-85d5-454e-8181-1cb8f7f4a615",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1500,
+          -380
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ae2f0355-af85-4397-a7ab-a0a232203c01",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1340,
+          20
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "dc181336-ffad-4563-81e6-69e259598b09",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1380,
+          60
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "adb0cdba-c762-418b-a077-241c65aeec6b",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2980,
+          180
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "dab308c4-3919-420d-9594-f2adb9e093a6",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1700,
+          300
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Convert to JSON'",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Convert to JSON",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GET Workflows": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to JSON": {
+        "main": [
+          [
+            {
+              "node": "Save all other Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to JSON'": {
+        "main": [
+          [
+            {
+              "node": "Save 'ARCHIVE' Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Create to date folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create to date folder": {
+        "main": [
+          [
+            {
+              "node": "GET Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save 'ARCHIVE' Workflows": {
+        "main": [
+          [
+            {
+              "node": "Delete 'ARCHIVE' Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 51,
+  "workflowInfo": {
+    "nodeCount": 17,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.n8n": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 8
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 3
+      },
+      "n8n-nodes-base.convertToFile": {
+        "count": 2
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Theo Marcadet",
+    "username": "theomarcadet",
+    "bio": "Just like every business has its own processes, every business will have its own AI agents — I sell and teach that transition\n\nFrom France 🇫🇷 — Discipline, Humility, Benevolence",
+    "verified": true,
+    "links": [
+      "https://www.bonzai.pro/theo_marcadet"
+    ],
+    "avatar": "https://gravatar.com/avatar/ef5e11b0e9dc8a13c526048edba0ebcf808c84aecefcac94999ef20e5596ac82?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 826,
+      "icon": "file:n8n.svg",
+      "name": "n8n-nodes-base.n8n",
+      "codex": {
+        "data": {
+          "alias": [
+            "Workflow",
+            "Execution"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.n8n/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/api/authentication/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "n8n"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyMzAgMTIwIj48cGF0aCBmaWxsPSIjRUE0QjcxIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMDQgNDhjLTExLjE4MyAwLTIwLjU4LTcuNjQ5LTIzLjI0NC0xOGgtMjcuNTA4YTEyIDEyIDAgMCAwLTExLjgzNiAxMC4wMjdsLS45ODcgNS45MTlBMjMuOTQgMjMuOTQgMCAwIDEgMTMyLjYyNiA2MGEyMy45NCAyMy45NCAwIDAgMSA3Ljc5OSAxNC4wNTRsLjk4NyA1LjkxOUExMiAxMiAwIDAgMCAxNTMuMjQ4IDkwaDMuNTA4QzE1OS40MiA3OS42NDkgMTY4LjgxNyA3MiAxODAgNzJjMTMuMjU1IDAgMjQgMTAuNzQ1IDI0IDI0cy0xMC43NDUgMjQtMjQgMjRjLTExLjE4MyAwLTIwLjU4LTcuNjQ5LTIzLjI0NC0xOGgtMy41MDhjLTExLjczMiAwLTIxLjc0NC04LjQ4Mi0yMy42NzMtMjAuMDU0bC0uOTg3LTUuOTE5QTEyIDEyIDAgMCAwIDExNi43NTIgNjZoLTkuNTA4QzEwNC41OCA3Ni4zNTEgOTUuMTgzIDg0IDg0IDg0cy0yMC41OC03LjY0OS0yMy4yNDQtMThINDcuMjQ0QzQ0LjU4IDc2LjM1MSAzNS4xODMgODQgMjQgODQgMTAuNzQ1IDg0IDAgNzMuMjU1IDAgNjBzMTAuNzQ1LTI0IDI0LTI0YzExLjE4MyAwIDIwLjU4IDcuNjQ5IDIzLjI0NCAxOGgxMy41MTJDNjMuNDIgNDMuNjQ5IDcyLjgxNyAzNiA4NCAzNnMyMC41OCA3LjY0OSAyMy4yNDQgMThoOS41MDhhMTIgMTIgMCAwIDAgMTEuODM2LTEwLjAyN2wuOTg3LTUuOTE5QzEzMS41MDQgMjYuNDgyIDE0MS41MTYgMTggMTUzLjI0OCAxOGgyNy41MDhDMTgzLjQyIDcuNjQ5IDE5Mi44MTcgMCAyMDQgMGMxMy4yNTUgMCAyNCAxMC43NDUgMjQgMjRzLTEwLjc0NSAyNC0yNCAyNG0wLTEyYzYuNjI3IDAgMTItNS4zNzMgMTItMTJzLTUuMzczLTEyLTEyLTEyLTEyIDUuMzczLTEyIDEyIDUuMzczIDEyIDEyIDEyTTI0IDcyYzYuNjI3IDAgMTItNS4zNzMgMTItMTJzLTUuMzczLTEyLTEyLTEyLTEyIDUuMzczLTEyIDEyIDUuMzczIDEyIDEyIDEybTcyLTEyYzAgNi42MjctNS4zNzMgMTItMTIgMTJzLTEyLTUuMzczLTEyLTEyIDUuMzczLTEyIDEyLTEyIDEyIDUuMzczIDEyIDEybTk2IDM2YzAgNi42MjctNS4zNzMgMTItMTIgMTJzLTEyLTUuMzczLTEyLTEyIDUuMzczLTEyIDEyLTEyIDEyIDUuMzczIDEyIDEyIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4="
+      },
+      "displayName": "n8n",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Calendrier",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1234,
+      "icon": "file:convertToFile.svg",
+      "name": "n8n-nodes-base.convertToFile",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "Excel",
+            "xls",
+            "xlsx",
+            "ods",
+            "tabular",
+            "encode",
+            "encoding",
+            "Move Binary Data",
+            "Binary",
+            "File",
+            "JSON",
+            "HTML",
+            "ICS",
+            "iCal",
+            "RTF",
+            "64",
+            "Base64"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.converttofile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Convertir en Fichier"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzLjc2MTkgMkMxMy4yNDM3IDIgMTIuODIzNiAyLjQyMDA5IDEyLjgyMzYgMi45MzgzMVYxNS4yNTI2QzEzLjMxOTkgMTUuNDY0MyAxMy43ODUxIDE1Ljc3MiAxNC4xOTEgMTYuMTc1N0wyMS4yMjgzIDIzLjE3MzlDMjIuMDU0OCAyMy45OTU4IDIyLjUxOTUgMjUuMTEzMiAyMi41MTk1IDI2LjI3ODhDMjIuNTE5NSAyNy40NDQzIDIyLjA1NDggMjguNTYxOCAyMS4yMjgzIDI5LjM4MzdMMTQuMTkxIDM2LjM4MTlDMTMuNzg1IDM2Ljc4NTYgMTMuMzE5OSAzNy4wOTMyIDEyLjgyMzYgMzcuMzA1VjM3LjM1MjdDMTIuODIzNiAzNy44NzA5IDEzLjI0MzcgMzguMjkxIDEzLjc2MTkgMzguMjkxSDM5LjA2MTdDMzkuNTc5OSAzOC4yOTEgNDAgMzcuODcwOSA0MCAzNy4zNTI3TDQwIDE1Ljc5NEgyNy4xNDQzQzI2LjYyNjEgMTUuNzk0IDI2LjIwNiAxNS4zNzM5IDI2LjIwNiAxNC44NTU3VjJIMTMuNzYxOVoiIGZpbGw9IiMzQTQyRTkiLz4KPHBhdGggZD0iTTI4Ljg2NDUgMkMyOC43NzgxIDIgMjguNzA4MSAyLjA3MDAyIDI4LjcwODEgMi4xNTYzOVYxMi44MjI3QzI4LjcwODEgMTMuMDgxOCAyOC45MTgyIDEzLjI5MTkgMjkuMTc3MyAxMy4yOTE5SDM5Ljg0MzZDMzkuOTMgMTMuMjkxOSA0MCAxMy4yMjE5IDQwIDEzLjEzNTVMNDAgMTIuNjI2M0M0MCAxMi4zNzc4IDM5LjkwMTQgMTIuMTM5NSAzOS43MjYgMTEuOTYzNkwzMC4wNjEgMi4yNzU2MUMyOS44ODUgMi4wOTkxNiAyOS42NDYgMiAyOS4zOTY3IDJIMjguODY0NVoiIGZpbGw9IiMzQTQyRTkiLz4KPHBhdGggZD0iTTkuNzcyNjggMzQuNjAwM0M5LjA0MTg2IDMzLjg2NTQgOS4wNDUxNyAzMi42NzcyIDkuNzgwMDcgMzEuOTQ2NEwxMy42MzE1IDI4LjExNjNMMC45MzgzMTEgMjguMTE2M0MwLjQyMDA5NiAyOC4xMTYzIC0yLjI2NTE5ZS0wOCAyNy42OTYyIDAgMjcuMTc4TDguMjAyOTdlLTA4IDI1LjMwMTRDMS4wNDY4MmUtMDcgMjQuNzgzMiAwLjQyMDA5NSAyNC4zNjMxIDAuOTM4MzExIDI0LjM2MzFIMTMuNTUyOUw5Ljc4MDA3IDIwLjYxMTJDOS4wNDUxNyAxOS44ODA0IDkuMDQxODYgMTguNjkyMiA5Ljc3MjY4IDE3Ljk1NzNDMTAuNTAzNSAxNy4yMjI0IDExLjY5MTcgMTcuMjE5MSAxMi40MjY2IDE3Ljk0OTlMMTkuNDYzOSAyNC45NDgxQzE5LjgxODEgMjUuMzAwNCAyMC4wMTczIDI1Ljc3OTMgMjAuMDE3MyAyNi4yNzg4QzIwLjAxNzMgMjYuNzc4MyAxOS44MTgxIDI3LjI1NzIgMTkuNDYzOSAyNy42MDk1TDEyLjQyNjYgMzQuNjA3N0MxMS42OTE3IDM1LjMzODUgMTAuNTAzNSAzNS4zMzUyIDkuNzcyNjggMzQuNjAwM1oiIGZpbGw9IiMzQTQyRTkiLz4KPC9zdmc+Cg=="
+      },
+      "displayName": "Convert to File",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 16,
+      "name": "DevOps"
+    }
+  ],
+  "image": [
+    {
+      "id": 1736,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/image_63cd866a13.png"
+    }
+  ]
+}

@@ -1,0 +1,679 @@
+{
+  "id": 3867,
+  "name": "Stocker les données de chat dans Supabase PostgreSQL pour le chatbot WhatsApp/Slack",
+  "views": 918,
+  "recentViews": 0,
+  "totalViews": 918,
+  "createdAt": "2025-05-05T09:30:12.206Z",
+  "description": "# Modèle n8n : Stocker les données de chat dans Supabase PostgreSQL pour l'intégration WhatsApp/Slack\n\nCe modèle n8n capture les données de chat (comme l'ID utilisateur, le nom ou l'adresse) et les enregistre dans une base de données Supabase PostgreSQL. Il est construit pour des tests maintenant mais conçu pour fonctionner avec WhatsApp, Slack ou des plateformes similaires plus tard, où les entrées de chat ne sont pas prédéfinies.\nUn guide avec des images peut être trouvé sur : https://github.com/JimPresting/Supabase-n8n-Self-Hosted-Integration/\n\n## Étape 1 : Configurer les règles de pare-feu dans votre réseau VPC\n\nPour permettre à votre instance n8n de communiquer avec Supabase, ajoutez une règle de pare-feu dans les paramètres de votre réseau VPC (par exemple, Google Cloud, AWS, etc.).\n\n1. Allez dans les paramètres du **réseau VPC**.\n2. Ajoutez une nouvelle règle de pare-feu :\n   - **Nom** : `allow-postgres-outbound`\n   - **Direction** : Egress (trafic sortant)\n   - **Filtre de destination** : plages IPv4\n   - **Plages IPv4 de destination** : `0.0.0.0/0` (permet tout ; restreindre aux IPs Supabase pour la sécurité)\n   - **Filtre source** : \n     - Choisissez `plages IPv4` et ajoutez la plage IP de la VM n8n, ou\n     - Choisissez `Aucun` si n'importe quelle VM peut se connecter\n   - **Protocoles et ports** :\n     - Protocole : `TCP`\n     - Port : `5432` (port PostgreSQL par défaut)\n\n3. Enregistrez la règle.\n\n## Étape 2 : Obtenez la chaîne de connexion Supabase\n\n1. Connectez-vous à votre **tableau de bord Supabase**.\n2. Allez dans votre projet, cliquez sur le bouton **Connecter** dans l'en-tête.\n3. Copiez la chaîne de connexion PostgreSQL :\n\n   ```\n   postgresql://postgres.fheraruzdahjd:[VOTRE-MOT-DE-PASSE]@aws-0-eu-central-1.pooler.supabase.com:6543/postgres\n   ```\n\n   - Remplacez `[VOTRE-MOT-DE-PASSE]` par le mot de passe de votre compte Supabase (sans crochets) et remplacez la chaîne avant cela par votre identifiant unique réel.\n   - Notez le port (`6543` ou `5432`)—utilisez ce qui est dans la chaîne.\n\n## Étape 3 : Configurez le flux de travail n8n\n\nCe flux de travail prend les données de chat, les mappe à des variables et les stocke dans Supabase. Il est construit pour gérer des entrées de chat désordonnées provenant de plateformes comme WhatsApp ou Slack en production.\n\n\n### Étapes du flux de travail\n\n1. **Nœud de déclenchement** : \"Lors du clic sur 'Tester le flux de travail'\" (déclenchement manuel).\n   - Pour l'instant, c'est manuel. En production, cela sera un déclencheur de message WhatsApp ou Slack, qui n'aura pas de format d'entrée fixe.\n\n2. **Nœud de définition** : \"Définir des variables d'entrée d'exemple (manuel)\".\n   - Ce nœud définit des variables comme `id`, `name`, `address` pour imiter les données de chat.\n   - **Pourquoi ?** Les plateformes de chat envoient des données non structurées (par exemple, un message avec le nom ou l'adresse d'un utilisateur). Nous les mappons à des variables afin de pouvoir les stocker correctement. L'`id` sera quelque chose d'unique comme un numéro de téléphone, un ID de compte ou un numéro de compte.\n\n3. **Nœud d'agent d'exemple** : Utilise un modèle (par exemple, GeminiFlash2.0 mais cela n'a pas d'importance).\n   - C'est un espace réservé pour traiter les données (par exemple, les nettoyer ou les valider) avant de les enregistrer. Vous pouvez le sauter ou le personnaliser.\n\n4. **Nœud PostgreSQL Supabase** : \"Base de données PostgreSQL Supabase\".\n   - Se connecte à Supabase en utilisant la chaîne de connexion de l'étape 2.\n   - Enregistre les variables (`id`, `name`, `address`) dans une table.\n   - **Pourquoi stocker des champs supplémentaires ?** L'`id` (comme un numéro de téléphone ou un ID de compte) est la clé. Des champs supplémentaires comme `name` ou `address` nous permettent de conserver toutes les informations utilisateur en un seul endroit pour une utilisation ultérieure (par exemple, analyses ou réponses).\n\n5. **Nœud de sortie** : \"Mettre à jour des valeurs supplémentaires par exemple, nom, adresse\".\n   - Confirme que les données sont enregistrées. En production, cela pourrait envoyer une réponse à la plateforme de chat.\n\n### Pourquoi ce design ?\n\n- **Gère les données de chat non structurées** : Les messages WhatsApp ou Slack n'ont pas de format fixe. Le nœud \"Définir\" nous permet de mapper n'importe quelles données entrantes (par exemple, `id`, `name`) à nos champs de base de données.\n- **Évolue pour la production** : Utiliser `id` comme clé (numéro de téléphone, ID de compte, etc.) avec des champs supplémentaires comme `name` rend ce flux de travail flexible pour de nombreux cas d'utilisation, comme les profils utilisateurs ou les journaux de support.\n- **Prêt pour l'avenir** : Il est construit pour remplacer le déclencheur manuel par un véritable déclencheur de plateforme de chat sans casser.\n\n## Étape 4 : Configurez le nœud PostgreSQL Supabase\n\n1. Dans le flux de travail n8n, configurez le nœud **PostgreSQL Supabase** :\n   - **Hôte** : `aws-0-eu-central-1.pooler.supabase.com` (de la chaîne de connexion)\n   - **Port** : `6543` (ou ce qui est dans la chaîne de connexion)\n   - **Base de données** : `postgres`\n   - **Utilisateur** : `postgres.fhspudlibstmpgwqmumo` (de la chaîne de connexion)\n   - **Mot de passe** : Votre mot de passe Supabase\n   - **SSL** : Activer (Supabase l'exige généralement)\n\n2. Réglez le nœud sur **Insérer** ou **Mettre à jour** :\n   - Mappez `id` à une colonne unique dans votre table Supabase (par exemple, numéro de téléphone, ID de compte).\n   - Mappez des champs comme `name`, `address` à leurs colonnes.\n\n3. Testez le flux de travail pour confirmer que les données sont enregistrées correctement.\n\n## Conseils de sécurité\n\n- **Limiter les règles de pare-feu** : N'utilisez pas `0.0.0.0/0`. Trouvez les plages IP de Supabase dans leur documentation et utilisez-les.\n- **Cacher les mots de passe** : Stockez votre mot de passe Supabase dans les variables d'environnement de n8n.\n- **Utiliser SSL** : Activez SSL dans le nœud n8n pour un transfert de données sécurisé.\n\n\n\n",
+  "workflow": {
+    "id": "gUx6hY0bOoReluxE",
+    "meta": {
+      "instanceId": "5ce52989094be90be3b3bdd9ed9cee1d7ce1fcecaa598afaec4a50646d32e291",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Supabase Setup Postgres",
+    "tags": [
+      {
+        "id": "fSDcaaN3w5sV5e3S",
+        "name": "Templates",
+        "createdAt": "2025-02-23T15:20:47.262Z",
+        "updatedAt": "2025-02-23T15:20:47.262Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "c2c95cc1-d10e-40c9-9663-625e8a2ab30b",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          340,
+          -80
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "30a4ae0f-c7ae-4b00-b826-a0a2759f2dd5",
+        "name": "Set sample Input Variables",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          600,
+          -80
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ed7bc826-fd48-4c9e-8ba7-11e4e7bb73ac",
+                "name": "session_id",
+                "type": "string",
+                "value": "=491634502879"
+              },
+              {
+                "id": "d381c930-a92f-404f-ac91-ad6437d6b0c9",
+                "name": "name",
+                "type": "string",
+                "value": "=Genn Sverster"
+              },
+              {
+                "id": "4ead1fb5-098b-4cbc-bc78-d65b188ca5b0",
+                "name": "chatInput",
+                "type": "string",
+                "value": "=wie gehts dir?"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "f56b629c-5374-43ce-b55b-efd7f14f1231",
+        "name": "GeminiFlash2.0",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          840,
+          140
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-2.0-flash"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "clmB8ZYJMHaHmnsu",
+            "name": "Stardawn#1"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1da22e93-504e-4616-bac3-dabd9a4b145a",
+        "name": "Supabase Postgres Database",
+        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+        "position": [
+          1100,
+          140
+        ],
+        "parameters": {
+          "tableName": "whatsapp_messages3",
+          "sessionKey": "={{ $json.session_id }}",
+          "sessionIdType": "customKey",
+          "contextWindowLength": 20
+        },
+        "credentials": {
+          "postgres": {
+            "id": "B2m18ScvYBKPNF9s",
+            "name": "Supabase SD - N8N Demo Chatbot"
+          }
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "29a7eb84-2244-41e1-99c0-5daaeb80cf6e",
+        "name": "Update additonal Values e.g. Name, Address ...",
+        "type": "n8n-nodes-base.supabase",
+        "position": [
+          1300,
+          -80
+        ],
+        "parameters": {
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "session_id",
+                "keyValue": "={{ $('Set sample Input Variables').item.json.session_id }}",
+                "condition": "eq"
+              },
+              {
+                "keyName": "name",
+                "keyValue": "NULL",
+                "condition": "is"
+              }
+            ]
+          },
+          "tableId": "whatsapp_messages3",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "name",
+                "fieldValue": "={{ $('Set sample Input Variables').item.json.name }}"
+              }
+            ]
+          },
+          "matchType": "allFilters",
+          "operation": "update"
+        },
+        "credentials": {
+          "supabaseApi": {
+            "id": "GHuUG6pmPATBHgob",
+            "name": "N8N Chatbot"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8094fdd7-f238-47dc-94f9-5e962d5f0c2f",
+        "name": "Sample Agent ",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          960,
+          -80
+        ],
+        "parameters": {
+          "text": "={{ $json.chatInput }}",
+          "options": {
+            "systemMessage": "You are a helpful assistant"
+          },
+          "promptType": "define"
+        },
+        "typeVersion": 1.7
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "49fd22da-2875-49be-a3c0-6c0fcf378a8e",
+    "connections": {
+      "Sample Agent ": {
+        "main": [
+          [
+            {
+              "node": "Update additonal Values e.g. Name, Address ...",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GeminiFlash2.0": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Sample Agent ",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set sample Input Variables": {
+        "main": [
+          [
+            {
+              "node": "Sample Agent ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase Postgres Database": {
+        "ai_memory": [
+          [
+            {
+              "node": "Sample Agent ",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Set sample Input Variables",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.supabase": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryPostgresChat": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "JPres",
+    "username": "stardawnai",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://github.com/JPresting/"
+    ],
+    "avatar": "https://gravatar.com/avatar/c1767436a4c7e4856114365bcac5df2f32cfb367c6dc607106edffd6d3df4b2e?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 545,
+      "icon": "file:supabase.svg",
+      "name": "n8n-nodes-base.supabase",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.supabase/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/supabase/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Supabase"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDkiIGhlaWdodD0iMTEzIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSJ1cmwoI2EpIiBkPSJNNjMuNzA4IDExMC4yODRjLTIuODYgMy42MDEtOC42NTggMS42MjgtOC43MjctMi45N2wtMS4wMDctNjcuMjUxaDQ1LjIyYzguMTkgMCAxMi43NTggOS40NiA3LjY2NSAxNS44NzR6Ii8+PHBhdGggZmlsbD0idXJsKCNiKSIgZmlsbC1vcGFjaXR5PSIuMiIgZD0iTTYzLjcwOCAxMTAuMjg0Yy0yLjg2IDMuNjAxLTguNjU4IDEuNjI4LTguNzI3LTIuOTdsLTEuMDA3LTY3LjI1MWg0NS4yMmM4LjE5IDAgMTIuNzU4IDkuNDYgNy42NjUgMTUuODc0eiIvPjxwYXRoIGZpbGw9IiMzRUNGOEUiIGQ9Ik00NS4zMTcgMi4wNzFjMi44Ni0zLjYwMSA4LjY1Ny0xLjYyOCA4LjcyNiAyLjk3bC40NDIgNjcuMjUxSDkuODNjLTguMTkgMC0xMi43NTktOS40Ni03LjY2NS0xNS44NzV6Ii8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4MT0iNTMuOTc0IiB4Mj0iOTQuMTYzIiB5MT0iNTQuOTc0IiB5Mj0iNzEuODI5IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzI0OTM2MSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNFQ0Y4RSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJiIiB4MT0iMzYuMTU2IiB4Mj0iNTQuNDg0IiB5MT0iMzAuNTc4IiB5Mj0iNjUuMDgxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3AvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Supabase",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lors du clic sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1267,
+      "icon": "file:postgres.svg",
+      "name": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorypostgreschat/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "Other memories"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire de chat Postgres"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNzkgODEiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTc3LjM5MSA0Ny45MjJjLS40NjYtMS40MTItMS42ODgtMi4zOTYtMy4yNjgtMi42MzItLjc0NS0uMTExLTEuNTk4LS4wNjQtMi42MDguMTQ0LTEuNzYuMzYzLTMuMDY1LjUwMS00LjAxOC41MjggMy41OTYtNi4wNzIgNi41MjEtMTIuOTk3IDguMjA0LTE5LjUxNSAyLjcyMi0xMC41NCAxLjI2OC0xNS4zNDEtLjQzMi0xNy41MTNDNzAuNzcgMy4xODUgNjQuMjA2LjA5NyA1Ni4yODcuMDAyYy00LjIyNC0uMDUyLTcuOTMzLjc4Mi05Ljg2NyAxLjM4MmEzNyAzNyAwIDAgMC01Ljc3LS41MjhjLTMuODA5LS4wNjEtNy4xNzQuNzctMTAuMDUgMi40NzZhNDYgNDYgMCAwIDAtNy4wOTgtMS43ODJDMTYuNTYxLjQxMSAxMC45NjggMS4yOTkgNi44NzYgNC4xOSAxLjkyMiA3LjY4OS0uMzc1IDEzLjc3LjA1IDIyLjI2MmMuMTM1IDIuNjk2IDEuNjQzIDEwLjkgNC4wMTggMTguNjggMS4zNjUgNC40NzIgMi44MiA4LjE4NSA0LjMyNiAxMS4wMzggMi4xMzUgNC4wNDYgNC40MTkgNi40MjggNi45ODQgNy4yODQgMS40MzguNDc5IDQuMDQ5LjgxNCA2Ljc5Ny0xLjQ3M2E2IDYgMCAwIDAgMS40MjkgMS4yM2MuNzgzLjQ5NCAxLjc0Ljg5NyAyLjY5NiAxLjEzNiAzLjQ0Ni44NjIgNi42NzQuNjQ2IDkuNDI3LS41NjFsLjA0MSAxLjM2Mi4wNiAxLjg5OWMuMTYzIDQuMDY0LjQ0IDcuMjIzIDEuMjU5IDkuNDM0LjA0NS4xMjIuMTA1LjMwNy4xNjkuNTAzLjQwOSAxLjI1MSAxLjA5MiAzLjM0NiAyLjgzIDQuOTg3IDEuOCAxLjY5OSAzLjk3OCAyLjIyIDUuOTcyIDIuMjIgMSAwIDEuOTU1LS4xMzEgMi43OTItLjMxMSAyLjk4NC0uNjM5IDYuMzczLTEuNjE0IDguODI0LTUuMTA0IDIuMzE4LTMuMyAzLjQ0NC04LjI3IDMuNjQ4LTE2LjEwMWwuMDc0LS42MzQuMDQ4LS40MTQuNTQ2LjA0OC4xNDEuMDFjMy4wMzkuMTM4IDYuNzU1LS41MDYgOS4wMzctMS41NjYgMS44MDMtLjgzNyA3LjU4Mi0zLjg4OCA2LjIyMS04LjAwNyIvPjxwYXRoIGZpbGw9IiMzMzY3OTEiIGQ9Ik03Mi4xOTUgNDguNzIzYy05LjAzNiAxLjg2NC05LjY1Ny0xLjE5NS05LjY1Ny0xLjE5NSA5LjU0MS0xNC4xNTcgMTMuNTI5LTMyLjEyNyAxMC4wODctMzYuNTI1QzYzLjIzNS0uOTk0IDQ2Ljk4MSA0LjY4IDQ2LjcxIDQuODI3bC0uMDg3LjAxNmMtMS43ODUtLjM3MS0zLjc4My0uNTkxLTYuMDI5LS42MjgtNC4wODktLjA2Ny03LjE5IDEuMDcyLTkuNTQ0IDIuODU3IDAgMC0yOC45OTUtMTEuOTQ1LTI3LjY0NyAxNS4wMjMuMjg3IDUuNzM3IDguMjIzIDQzLjQxIDE3LjY4OSAzMi4wMzEgMy40Ni00LjE2MSA2LjgwMy03LjY3OSA2LjgwMy03LjY3OSAxLjY2IDEuMTAzIDMuNjQ4IDEuNjY2IDUuNzMyIDEuNDYzbC4xNjItLjEzN2E2LjMgNi4zIDAgMCAwIC4wNjUgMS42MmMtMi40MzkgMi43MjUtMS43MjIgMy4yMDMtNi41OTcgNC4yMDYtNC45MzMgMS4wMTctMi4wMzUgMi44MjYtLjE0MyAzLjI5OSAyLjI5NC41NzQgNy42IDEuMzg2IDExLjE4NS0zLjYzM2wtLjE0My41NzNjLjk1Ni43NjUgMS42MjYgNC45NzggMS41MTQgOC43OTdzLS4xODggNi40NDEuNTY1IDguNDg5IDEuNTAzIDYuNjU2IDcuOTEyIDUuMjgyYzUuMzU1LTEuMTQ4IDguMTMtNC4xMjEgOC41MTYtOS4wODEuMjc0LTMuNTI2Ljg5NC0zLjAwNS45MzMtNi4xNThsLjQ5Ny0xLjQ5M2MuNTczLTQuNzguMDkxLTYuMzIyIDMuMzktNS42MDVsLjgwMi4wN2MyLjQyOC4xMSA1LjYwNi0uMzkxIDcuNDcxLTEuMjU3IDQuMDE2LTEuODY0IDYuMzk4LTQuOTc2IDIuNDM4LTQuMTU4Ii8+PHBhdGggZD0iTTMyLjc0NyAyNC42NmMtLjgxNC0uMTEzLTEuNTUyLS4wMDgtMS45MjUuMjc0YS43LjcgMCAwIDAtLjI5Mi40N2MtLjA0Ny4zMzYuMTg4LjcwNy4zMzMuODk4LjQwOS41NDIgMS4wMDYuOTE1IDEuNTk4Ljk5N2EyIDIgMCAwIDAgLjI1Ni4wMThjLjk4NiAwIDEuODgzLS43NjggMS45NjItMS4zMzUuMDk5LS43MS0uOTMyLTEuMTgzLTEuOTMxLTEuMzIybTI2Ljk3NS4wMjJjLS4wNzgtLjU1Ni0xLjA2OC0uNzE1LTIuMDA3LS41ODRzLTEuODQ4LjU1NC0xLjc3MiAxLjExMmMuMDYxLjQzNC44NDQgMS4xNzQgMS43NzEgMS4xNzRxLjExNyAwIC4yMzctLjAxNmMuNjE5LS4wODYgMS4wNzMtLjQ3OSAxLjI4OC0uNzA1LjMyOS0uMzQ1LjUxOC0uNzMuNDg0LS45OG0xNS40NzcgMjMuODI4Yy0uMzQ1LTEuMDQyLTEuNDUzLTEuMzc3LTMuMjk2LS45OTctNS40NzEgMS4xMjktNy40My4zNDctOC4wNzMtLjEyNyA0LjI1Mi02LjQ3OCA3Ljc1LTE0LjMwOCA5LjYzNy0yMS42MTQuODk0LTMuNDYxIDEuMzg4LTYuNjc1IDEuNDI4LTkuMjk0LjA0NS0yLjg3Ni0uNDQ1LTQuOTg4LTEuNDU1LTYuMjc5LTQuMDcyLTUuMjAzLTEwLjA0OC03Ljk5NC0xNy4yODMtOC4wNy00Ljk3My0uMDU2LTkuMTc1IDEuMjE3LTkuOTkgMS41NzVhMjUgMjUgMCAwIDAtNS42MjItLjcyMmMtMy43MzQtLjA2LTYuOTYxLjgzNC05LjYzMyAyLjY1NWE0MyA0MyAwIDAgMC03LjgyOC0yLjA1MmMtNi4zNDItMS4wMjEtMTEuMzgxLS4yNDgtMTQuOTc4IDIuMy00LjI5MSAzLjA0LTYuMjcyIDguNDc1LTUuODg4IDE2LjE1Mi4xMjkgMi41ODMgMS42MDEgMTAuNTI5IDMuOTIzIDE4LjEzOSAzLjA1NyAxMC4wMTYgNi4zOCAxNS42ODYgOS44NzcgMTYuODUyYTQuNCA0LjQgMCAwIDAgMS40MDIuMjMyYzEuMjc2IDAgMi44MzktLjU3NSA0LjQ2Ni0yLjUzMWExNjEgMTYxIDAgMCAxIDYuMTU2LTYuOTY2IDkuOSA5LjkgMCAwIDAgNC40MjkgMS4xOTFsLjAxLjEyMWMtLjMxLjM2OC0uNTY0LjY5LS43ODEuOTY1LTEuMDcgMS4zNTgtMS4yOTMgMS42NDEtNC43MzggMi4zNTEtLjk4LjIwMi0zLjU4Mi43MzgtMy42MiAyLjU2My0uMDQxIDEuOTkzIDMuMDc2IDIuODMgMy40MzEgMi45MTkgMS4yMzguMzEgMi40My40NjMgMy41NjguNDYzIDIuNzY2IDAgNS4yLS45MDkgNy4xNDUtMi42NjgtLjA2IDcuMTA2LjIzNiAxNC4xMDcgMS4wODkgMTYuMjQxLjY5OSAxLjc0NiAyLjQwNiA2LjAxNCA3Ljc5OCA2LjAxNC43OTEgMCAxLjY2Mi0uMDkyIDIuNjItLjI5NyA1LjYyNy0xLjIwNyA4LjA3MS0zLjY5NCA5LjAxNi05LjE3Ny41MDYtMi45MyAxLjM3NC05LjkyOCAxLjc4Mi0xMy42ODIuODYyLjI2OSAxLjk3MS4zOTIgMy4xNy4zOTIgMi41MDEgMCA1LjM4Ny0uNTMxIDcuMTk3LTEuMzcyIDIuMDMzLS45NDQgNS43MDItMy4yNjEgNS4wMzctNS4yNzR6TTYxLjggMjMuMTQ3Yy0uMDE5IDEuMTA4LS4xNzEgMi4xMTQtLjMzMyAzLjE2NC0uMTc0IDEuMTI5LS4zNTQgMi4yOTctLjM5OSAzLjcxNS0uMDQ1IDEuMzc5LjEyOCAyLjgxNC4yOTQgNC4yLjMzNyAyLjgwMS42ODIgNS42ODUtLjY1NSA4LjUzMWExMSAxMSAwIDAgMS0uNTkyLTEuMjE4Yy0uMTY2LS40MDMtLjUyNy0xLjA1LTEuMDI3LTEuOTQ2LTEuOTQ0LTMuNDg3LTYuNDk3LTExLjY1Mi00LjE2Ny0xNC45ODQuNjk0LS45OTIgMi40NTYtMi4wMTEgNi44NzktMS40NjN6TTU2LjQzOSA0LjM3NGM2LjQ4Mi4xNDMgMTEuNjA5IDIuNTY4IDE1LjI0IDcuMjA3IDIuNzg0IDMuNTU4LS4yODIgMTkuNzQ5LTkuMTU4IDMzLjcxNmwtLjI2OS0uMzM5LS4xMTItLjE0YzIuMjk0LTMuNzg4IDEuODQ1LTcuNTM2IDEuNDQ2LTEwLjg1OS0uMTY0LTEuMzY0LS4zMTktMi42NTItLjI4LTMuODYxLjA0MS0xLjI4My4yMS0yLjM4Mi4zNzQtMy40NDYuMjAyLTEuMzExLjQwNy0yLjY2Ny4zNS00LjI2NWExLjggMS44IDAgMCAwIC4wMzctLjYwMWMtLjE0NC0xLjUzMy0xLjg5NC02LjEyLTUuNDYyLTEwLjI3My0xLjk1MS0yLjI3MS00Ljc5Ny00LjgxMy04LjY4Mi02LjUyN2EyOS4zIDI5LjMgMCAwIDEgNi41MTUtLjYxMnpNMjAuMTY3IDUzLjI5OGMtMS43OTMgMi4xNTUtMy4wMzEgMS43NDItMy40MzggMS42MDctMi42NTMtLjg4NS01LjczLTYuNDkxLTguNDQ0LTE1LjM4Mi0yLjM0OC03LjY5My0zLjcyLTE1LjQyOC0zLjgyOS0xNy41OTctLjM0My02Ljg2IDEuMzItMTEuNjQxIDQuOTQzLTE0LjIxIDUuODk2LTQuMTgxIDE1LjU4OS0xLjY3OSAxOS40ODQtLjQwOWwtLjE3LjE2M2MtNi4zOTEgNi40NTUtNi4yNCAxNy40ODMtNi4yMjQgMTguMTU3YTIyIDIyIDAgMCAwIC4wNTEgMS4xMzVjLjExIDEuODU1LjMxNSA1LjMwNy0uMjMyIDkuMjE3LS41MDggMy42MzMuNjEyIDcuMTg5IDMuMDcyIDkuNzU2cS4zODMuMzk4Ljc5NS43NWExNjQgMTY0IDAgMCAwLTYuMDA4IDYuODE0em02LjgzLTkuMTEzYy0xLjk4My0yLjA2OS0yLjg4NC00Ljk0Ny0yLjQ3MS03Ljg5Ni41NzctNC4xMy4zNjQtNy43MjcuMjUtOS42NTlsLS4wMzktLjY5NGMuOTM0LS44MjggNS4yNjEtMy4xNDYgOC4zNDYtMi40MzkgMS40MDguMzIzIDIuMjY2IDEuMjgxIDIuNjIzIDIuOTMxIDEuODQ2IDguNTM5LjI0NCAxMi4wOTgtMS4wNDMgMTQuOTU3LS4yNjUuNTg5LS41MTYgMS4xNDYtLjczIDEuNzIybC0uMTY2LjQ0NWMtLjQyIDEuMTI2LS44MTEgMi4xNzMtMS4wNTMgMy4xNjctMi4xMDgtLjAwNi00LjE1OS0uOTA3LTUuNzE4LTIuNTM0em0uMzI0IDExLjUxNmE1IDUgMCAwIDEtMS40OTQtLjY0MmMuMjcxLS4xMjguNzU0LS4zMDEgMS41OTEtLjQ3NCA0LjA1Mi0uODM0IDQuNjc4LTEuNDIzIDYuMDQ1LTMuMTU4LjMxMy0uMzk4LjY2OS0uODQ5IDEuMTYtMS4zOTguNzMzLS44MjEgMS4wNjgtLjY4MiAxLjY3Ni0uNDMuNDkzLjIwNC45NzIuODIxIDEuMTY3IDEuNTAxLjA5Mi4zMjEuMTk1LjkzLS4xNDMgMS40MDQtMi44NTUgMy45OTctNy4wMTUgMy45NDYtMTAuMDAzIDMuMTk4em0yMS4yMDcgMTkuNzM1Yy00Ljk1NyAxLjA2Mi02LjcxMy0xLjQ2Ny03Ljg2OS00LjM1OS0uNzQ3LTEuODY3LTEuMTEzLTEwLjI4NS0uODUzLTE5LjU4MmExLjEgMS4xIDAgMCAwLS4wNDgtLjM1NiA1IDUgMCAwIDAtLjEzOS0uNjU3Yy0uMzg3LTEuMzUzLTEuMzMxLTIuNDg0LTIuNDYyLTIuOTUzLS40NS0uMTg2LTEuMjc1LS41MjgtMi4yNjctLjI3NC4yMTItLjg3MS41NzgtMS44NTUuOTc2LTIuOTIxbC4xNjctLjQ0OGMuMTg4LS41MDUuNDIzLTEuMDI5LjY3My0xLjU4MyAxLjM0Ny0yLjk5MiAzLjE5Mi03LjA5MSAxLjE5LTE2LjM1LS43NS0zLjQ2OC0zLjI1NC01LjE2MS03LjA1LTQuNzY4LTIuMjc2LjIzNS00LjM1OCAxLjE1NC01LjM5NiAxLjY4cS0uMzM0LjE2OS0uNjE4LjMyOWMuMjktMy40OTQgMS4zODUtMTAuMDI0IDUuNDgxLTE0LjE1NiAyLjU3OS0yLjYwMSA2LjAxNC0zLjg4NiAxMC4xOTktMy44MTcgOC4yNDYuMTM1IDEzLjUzNCA0LjM2NyAxNi41MTggNy44OTMgMi41NzEgMy4wMzkgMy45NjQgNi4xIDQuNTIgNy43NTEtNC4xNzktLjQyNS03LjAyMi40LTguNDYzIDIuNDYtMy4xMzUgNC40ODEgMS43MTUgMTMuMTc4IDQuMDQ2IDE3LjM1OC40MjcuNzY2Ljc5NiAxLjQyOC45MTIgMS43MDkuNzU5IDEuODM5IDEuNzQyIDMuMDY3IDIuNDU5IDMuOTY0LjIyLjI3NS40MzMuNTQxLjU5Ni43NzQtMS4yNjYuMzY1LTMuNTM5IDEuMjA4LTMuMzMyIDUuNDIyLS4xNjcgMi4xMTUtMS4zNTYgMTIuMDE2LTEuOTU5IDE1LjUxNC0uNzk3IDQuNjIxLTIuNDk3IDYuMzQzLTcuMjc5IDcuMzY4em0yMC42OTMtMjMuNjhjLTEuMjk0LjYwMS0zLjQ2IDEuMDUyLTUuNTE4IDEuMTQ4LTIuMjczLjEwNy0zLjQzLS4yNTUtMy43MDItLjQ3Ny0uMTI4LTIuNjI2Ljg1LTIuOTAxIDEuODg0LTMuMTkxLjE2My0uMDQ2LjMyMS0uMDkuNDc0LS4xNDRhNCA0IDAgMCAwIC4zMTMuMjNjMS44MjcgMS4yMDYgNS4wODUgMS4zMzYgOS42ODUuMzg2bC4wNS0uMDFjLS42Mi41OC0xLjY4MiAxLjM1OS0zLjE4NyAyLjA1OHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Postgres Chat Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 40,
+      "name": "Chatbot de support"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}

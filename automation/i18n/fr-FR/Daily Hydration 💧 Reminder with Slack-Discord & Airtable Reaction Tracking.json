@@ -1,0 +1,881 @@
+{
+  "id": 7986,
+  "name": "Rappel de 💧 Hydratation Quotidienne avec Suivi des Réactions Slack/Discord & Airtable",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-08-28T10:18:34.226Z",
+  "description": "##  💧 Rappel d'Hydratation Quotidienne avec Suivi des Réactions Slack/Discord & Airtable\n\nAutomatisez l'engagement en matière de bien-être dans votre communauté avec un **rappel d'hydratation deux fois par jour** envoyé à **Slack ou Discord**, et suivez automatiquement **les réactions des membres dans Airtable**. Ce flux de travail sans code favorise la culture de l'auto-soin tout en capturant des données d'engagement—aucun effort manuel requis.\n\nParfait pour les coachs, les gestionnaires de communauté et les solopreneurs qui souhaitent encourager des habitudes conscientes et reconnaître les membres actifs.\n\n---\n\n## 🛠️ Instructions de Configuration Étape par Étape\n\nSuivez ces étapes pour déployer le flux de travail dans **Make.com** (compatible avec n8n) :\n\n### 1. **Importer le Flux de Travail**\n- Dans Make.com ou n8n, allez à **Scénarios &gt; Importer depuis un Fichier**\n- Téléchargez le modèle JSON fourni\n\n### 2. **Configurer la Planification**\n- Localisez le nœud **Déclencheur de Planification**\n- Confirmez que les heures sont réglées sur :\n  - `10:00 AM`\n  - `3:00 PM`\n- Ajustez le **fuseau horaire** dans les paramètres de Make/n8n pour correspondre à votre audience\n\n### 3. **Configurer la Bibliothèque de GIFs**\n- Ouvrez le nœud **\"Choisir un GIF au Hasard\"**\n- Remplacez les URL de remplacement par les vôtres :\n  - Hébergé sur Giphy, Imgur, ou un CDN public\n  - Doit se terminer par `.gif` et autoriser le hotlinking\n- Exemple :\n  ```text\n  https://media.giphy.com/media/abc123/giphy.gif\n  ```\n\n### 4. **Connecter la Plateforme de Messagerie**\nChoisissez **Slack** ou **Discord** :\n\n#### Pour Slack :\n- Allez au nœud **Envoyer à Slack**\n- Remplacez `{{SLACK_WEBHOOK_URL}}` par votre webhook entrant\n- Assurez-vous que le canal autorise les messages de bot\n\n#### Pour Discord :\n- Allez au nœud **Envoyer à Discord**\n- Remplacez `{{DISCORD_WEBHOOK_URL}}` par votre webhook de serveur\n- Activez les permissions d'intégration\n\n&gt; 🔗 Guide des Webhooks :\n&gt; - [Webhooks Slack](https://api.slack.com/messaging/webhooks)\n&gt; - [Webhooks Discord](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)\n\n### 5. **Activer le Suivi des Réactions (Slack)**\n- Dans **Obtenir les Réactions Slack**, ajoutez :\n  - `{{SLACK_BOT_TOKEN}}` avec les portées :\n    - `reactions:read`\n    - `channels:history`\n  - `{{SLACK_CHANNEL_ID}}` (par exemple, `C012AB3CD`)\n- Le flux de travail utilise l'horodatage du message pour récupérer les réactions après 24 heures\n\n&gt; ⚠️ Remarque Discord : Le suivi natif des réactions nécessite un **bot Discord**. Cette version prend en charge Slack ; le support Discord peut être étendu en utilisant l'API Discord.\n\n### 6. **Configurer la Journalisation Airtable**\n- Dans le nœud **Journaliser dans Airtable** :\n  - Entrez votre **ID de Base Airtable**\n  - Assurez-vous que la table `Réactions d'Hydratation` existe (voir structure ci-dessous)\n  - Mappez les champs correctement (Date, Nom d'utilisateur, Compte de Réaction, etc.)\n- Connectez vos **identifiants API Airtable**\n\n---\n\n## 🗃️ Structure de la Base Airtable\n\nCe flux de travail enregistre chaque ✅ réaction dans Airtable pour un suivi à long terme.\n\n### Base : `Suivi du Bien-Être Communautaire`\n\n#### Table : `Réactions d'Hydratation`\n\n| Champ | Type | Description |\n|------|------|-------------|\n| `Date` | Date | Date du rappel (rempli automatiquement) |\n| `Plage Horaire` | Sélection Unique | `10:00 AM` ou `3:00 PM` |\n| `ID Utilisateur` | Texte | ID utilisateur Slack/Discord |\n| `Nom d'utilisateur` | Texte | Nom d'affichage (par exemple, `@alex`) |\n| `Plateforme` | Sélection Unique | `Slack` ou `Discord` |\n| `Compte de Réaction` | Nombre | Toujours `1` par réaction |\n| `Horodatage du Message` | Texte | ID du message pour référence |\n| `Traité` | Case à cocher | Marqué `faux` initialement |\n\n&gt; 🏆 Utilisez une **Vue Groupée** dans Airtable pour créer un tableau de classement mensuel :\n&gt; - Groupez par `Nom d'utilisateur`\n&gt; - Rollup : `SOMME(Compte de Réaction)`\n\n---\n\n## 🔄 Explication du Flux de Travail\n\nL'automatisation fonctionne sur un **cycle quotidien** avec suivi des retours :\n\n1. **Déclencheur** : Se déclenche à 10h et 15h via le **nœud de Planification**\n2. **Sélection de GIF** : Choisit au hasard un GIF d'hydratation apaisant\n3. **Livraison du Message** : Envoie un message formaté à Slack ou Discord\n4. **Attendre** : Fait une pause de 24 heures pour permettre les réactions\n5. **Vérification des Réactions** : Utilise l'API Slack pour récupérer les ✅ réactions\n6. **Filtrer** : Ne continue que si au moins une ✅ est trouvée\n7. **Journaliser** : Crée un enregistrement dans Airtable pour chaque utilisateur réagissant\n\n🔁 Cela crée une **boucle de bien-être auto-entretenue**—encourageant le soin et capturant l'engagement.\n\n---\n\n## 📦 Pré-Conditions & Exigences\n\nAvant utilisation, assurez-vous :\n\n- ✅ **Compte Make.com ou n8n** (Niveau gratuit pris en charge)\n- ✅ **Espace de travail Slack** avec webhook et token de bot **ou** **Serveur Discord** avec webhook\n- ✅ **Compte Airtable** avec base et clé API\n- ✅ Bibliothèque de GIFs accessible publiquement\n- ✅ Accès Internet et parsing JSON activé\n\n&gt; ❗ Permissions Requises :\n&gt; - Slack : `reactions:read`, `channels:history`\n&gt; - Airtable : accès `create`, `read` à la table\n\n---\n\n## 🎨 Conseils de Personnalisation\n\nÉtendez le flux de travail pour l'adapter à vos besoins :\n\n### 🕒 Changer l'Heure\n- Modifiez le **nœud de Planification** pour envoyer à 9h et 13h, ou seulement une fois par jour.\n\n### 🖼️ Ajouter des GIFs Saisonniers\n- Faites tourner les GIFs par saison (par exemple, thèmes d'hiver en décembre).\n\n### 🧩 Suivre Plusieurs Émojis\n- Ajoutez des commutateurs pour 💧, 🫶, ou ❤️ pour mesurer différents types d'engagement.\n\n### 📈 Générer Automatiquement des Rapports Mensuels\n- Utilisez les **Automatisations Airtable** pour :\n  - Envoyer un e-mail aux 5 meilleurs membres\n  - Exporter CSV pour l'exécution des récompenses\n  - Publier le tableau de classement dans votre communauté\n\n### 🎁 Intégration de Récompenses\n- Connectez **Shopify**, **Gmail**, ou **Printful** pour envoyer automatiquement des autocollants ou des codes de réduction.\n\n### 🔕 Option de Désinscription\n- Permettez aux utilisateurs de réagir avec ❌ pour être exclus du suivi futur.\n- Ajoutez un filtre pour ignorer les utilisateurs dans une table Airtable “Ne Pas Déranger”.\n\n---\n\n## 🌐 Pour Qui C'est\n\n- **Coachs & Facilitateurs** animant des groupes de réflexion ou de responsabilité\n- **Vendeurs Etsy** avec des communautés de clients privées\n- **Équipes à Distance** soutenant le bien-être\n- **Créateurs de Bien-Être** promouvant des habitudes conscientes\n\n\n**Déployez une fois. Nourrissez votre communauté pour toujours.**  \nAvec le **Rappel d'Hydratation Quotidienne**, la constance rencontre la compassion—automatiquement. 💧💙\n\n",
+  "workflow": {
+    "meta": {
+      "instanceId": "__PLACEHOLDER_INSTANCE_ID__"
+    },
+    "name": "Daily Hydration Hug 💧",
+    "nodes": [
+      {
+        "id": "trigger-schedule",
+        "name": "Every Day at 10 AM & 3 PM",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "notes": "🕒 Schedule: Daily Wellness Nudges\n\nTriggers the workflow twice daily:\n- 10:00 AM\n- 3:00 PM\n\n🔹 Set timezone in Make settings to match your community.\n\nThis is the heartbeat of the hydration reminder system.",
+        "position": [
+          250,
+          300
+        ],
+        "parameters": {},
+        "typeVersion": 1,
+        "notesAlignment": "top"
+      },
+      {
+        "id": "random-gif-picker",
+        "name": "Pick Random GIF",
+        "type": "n8n-nodes-base.set",
+        "notes": "🖼️ Random GIF Selector\n\nRotates through a curated list of calming hydration-themed GIFs.\n\n💡 Hosted on Giphy, Imgur, or CDN.\n\nExample URLs:\n- https://media.giphy.com/.../water.gif\n- https://example.com/hug.gif\n\nYou can expand the list for seasonal variety.",
+        "position": [
+          500,
+          300
+        ],
+        "inputNames": [
+          "GIFs"
+        ],
+        "parameters": {},
+        "outputNames": [
+          "With GIF"
+        ],
+        "notesAlignment": "top"
+      },
+      {
+        "id": "send-slack-message",
+        "name": "Send to Slack",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📤 Send Message to Slack\n\nPosts a friendly hydration reminder with:\n- Soothing text\n- Random GIF (accessory)\n\n✅ Uses Slack's Block Kit for rich formatting.\n\n🔧 Replace URL with Discord webhook if needed.",
+        "position": [
+          750,
+          250
+        ],
+        "parameters": {},
+        "notesAlignment": "top"
+      },
+      {
+        "id": "send-discord-message",
+        "name": "Send to Discord",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "📤 Send Message to Discord\n\nSends a clean, embed-based message with hydration GIF.\n\n🎨 Color: Soft blue (#2C7873 → 2899551)\n\n💡 Use only one send node (Slack OR Discord) unless routing dynamically.",
+        "position": [
+          750,
+          350
+        ],
+        "parameters": {},
+        "notesAlignment": "top"
+      },
+      {
+        "id": "wait-24-hours",
+        "name": "Wait 24 Hours",
+        "type": "n8n-nodes-base.wait",
+        "notes": "⏸️ Wait for Reactions\n\nPauses 24 hours to allow members to react with ✅.\n\n🔹 You can reduce to 12h for faster cycles.\n\n⚠️ Do not skip: needed to capture engagement.",
+        "position": [
+          1000,
+          300
+        ],
+        "parameters": {},
+        "notesAlignment": "top"
+      },
+      {
+        "id": "fetch-reactions-slack",
+        "name": "Get Slack Reactions",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "🔍 Fetch Slack Reactions\n\nUses Slack API to check if ✅ was added.\n\n🔐 Requires Bot Token with:\n- reactions:read\n- channels:read\n\n💡 Store message timestamp from initial post.",
+        "position": [
+          1250,
+          250
+        ],
+        "parameters": {},
+        "notesAlignment": "top"
+      },
+      {
+        "id": "filter-yes-reactions",
+        "name": "Filter ✅ Reactions",
+        "type": "n8n-nodes-base.switch",
+        "notes": "✅ Filter for Checkmark Reactions\n\nOnly continues if at least one ✅ (white_check_mark) was added.\n\n🔧 You can add more emoji filters (e.g., 💧, 🫶) for expanded tracking.",
+        "position": [
+          1500,
+          300
+        ],
+        "parameters": {},
+        "notesAlignment": "top"
+      },
+      {
+        "id": "airtable-log-reaction",
+        "name": "Log in Airtable",
+        "type": "n8n-nodes-base.airtable",
+        "notes": "📊 Log Reaction in Airtable\n\nSaves each ✅ reaction as a new record.\n\n🔁 Used later to generate monthly 'Hydration Heroes' leaderboard.\n\n💡 Link to user profiles or add tags for segmentation.",
+        "position": [
+          1750,
+          300
+        ],
+        "parameters": {},
+        "notesAlignment": "top"
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "callerPolicy": "none",
+      "saveDataError": "all",
+      "executionOrder": "parallel",
+      "saveDataSuccess": "all"
+    },
+    "connections": {
+      "Send to Slack": {
+        "main": [
+          [
+            {
+              "node": "Wait 24 Hours",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 24 Hours": {
+        "main": [
+          [
+            {
+              "node": "Get Slack Reactions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pick Random GIF": {
+        "main": [
+          [
+            {
+              "node": "Send to Slack",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Send to Discord",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send to Discord": {
+        "main": [
+          [
+            {
+              "node": "Wait 24 Hours",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Slack Reactions": {
+        "main": [
+          [
+            {
+              "node": "Filter ✅ Reactions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter ✅ Reactions": {
+        "main": [
+          [
+            {
+              "node": "Log in Airtable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Every Day at 10 AM & 3 PM": {
+        "main": [
+          [
+            {
+              "node": "Pick Random GIF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 51,
+  "workflowInfo": {
+    "nodeCount": 8,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.switch": {
+        "count": 1
+      },
+      "n8n-nodes-base.airtable": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 3
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Shelly-Ann Davy",
+    "username": "SheCodesFlow",
+    "bio": "Founder of The Workflow Muse & @SheCodesFlow.\n\nI craft elegant, task-focused automations for creators, founders, and soft-tech enthusiasts.\n\n“Automate with grace. Scale with power.”",
+    "verified": true,
+    "links": [
+      "http://tiny.cc/theworkflowmuse"
+    ],
+    "avatar": "https://gravatar.com/avatar/10e840c97c344b18a1b76ce8a870056c68568e2af9c961a6237d572c2f373afb?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 2,
+      "icon": "file:airtable.svg",
+      "name": "n8n-nodes-base.airtable",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-goals-level-up-your-vocabulary-with-vonage-and-n8n/",
+                "icon": "🎯",
+                "label": "2021 Goals: Level Up Your Vocabulary With Vonage and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-sms-the-low-code-way-with-airtable-twilio-programmable-sms-and-n8n/",
+                "icon": "📱",
+                "label": "Sending SMS the Low-Code Way with Airtable, Twilio Programmable SMS, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automating-conference-organization-processes-with-n8n/",
+                "icon": "🙋‍♀️",
+                "label": "Automating Conference Organization Processes with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.airtable/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/airtable/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Airtable"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTcwIj48cGF0aCBmaWxsPSIjZmNiNDAwIiBkPSJNODkgNC44IDE2LjIgMzQuOWMtNC4xIDEuNy00IDcuNC4xIDkuMWw3My4yIDI5YzYuNCAyLjYgMTMuNiAyLjYgMjAgMGw3My4yLTI5YzQuMS0xLjYgNC4xLTcuNC4xLTkuMWwtNzMtMzAuMUMxMDMuMiAyIDk1LjcgMiA4OSA0LjgiLz48cGF0aCBmaWxsPSIjMThiZmZmIiBkPSJNMTA1LjkgODguOXY3Mi41YzAgMy40IDMuNSA1LjggNi43IDQuNWw4MS42LTMxLjdjMS45LS43IDMuMS0yLjUgMy4xLTQuNVY1Ny4yYzAtMy40LTMuNS01LjgtNi43LTQuNUwxMDkgODQuM2MtMS45LjgtMy4xIDIuNi0zLjEgNC42Ii8+PHBhdGggZmlsbD0iI2Y4MmI2MCIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctMi41IDEuMkw5LjEgMTMwYy0zLjIgMS42LTcuNC0uOC03LjQtNC40VjU3LjVjMC0xLjMuNy0yLjQgMS42LTMuM3EuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNSA0LjMgNy4xLjUgOC45Ii8+PHBhdGggZmlsbD0iI2JhMWU0NSIgZD0ibTg2LjkgOTIuNi0yNC4yIDExLjctNTkuNC01MHEuNi0uNiAxLjItLjljMS4yLS43IDMtLjkgNC40LS4zbDc3LjUgMzAuN2M0IDEuNCA0LjMgNyAuNSA4LjgiLz48L3N2Zz4="
+      },
+      "displayName": "Airtable",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les Champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.switch",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "If",
+            "Path",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Branch",
+            "Case"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.switch/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Interrupteur",
+        "color": "#506000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "Switch",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 43,
+      "name": "Productivité Personnelle"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": []
+}

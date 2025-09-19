@@ -1,0 +1,664 @@
+{
+  "id": 7699,
+  "name": "Résumé quotidien des candidats par rôle avec extraction AI Gemini pour les responsables du recrutement",
+  "views": 49,
+  "recentViews": 1,
+  "totalViews": 49,
+  "createdAt": "2025-08-21T10:35:46.538Z",
+  "description": "# Envoyer un résumé quotidien des candidats par rôle depuis Gmail aux responsables du recrutement avec Google Gemini\n\nCe flux de travail collecte automatiquement tous les nouveaux e-mails de candidature d'emploi de votre Gmail étiquetés comme **candidats** au cours des dernières 24 heures. Chaque jour à 18h00 (Asia/Kolkata), il extrait des détails structurés (nom, e-mail, téléphone, rôle, expérience, compétences, localisation, préavis, résumé) de chaque candidat (en utilisant Gemini AI ou OpenAI). Il regroupe ensuite les candidats par rôle et par responsable, compile un résumé sous forme de tableau HTML soigné pour chaque responsable et leur envoie un résumé unique — afin que les responsables du recrutement obtiennent tout ce dont ils ont besoin, d'un coup d'œil, au même endroit.\n\n## Pour qui est-ce\n\n- Recruteurs et responsables du recrutement fatigués de fouiller dans plusieurs fils de candidature.\n- Petites équipes RH / agences n'étant pas encore sur un système complet de suivi des candidatures.\n- Quiconque souhaitant une mise à jour consolidée et ciblée par rôle des candidats chaque jour.\n- Équipes souhaitant automatiser le tri des candidats en utilisant Google Workspace et l'IA.\n\n## Comment ça fonctionne\n\n1. **Déclencheur de planification (18h IST) :** S'exécute automatiquement à 18h00, heure de l'Inde.\n2. **Récupérer les e-mails des candidats :** Lit Gmail pour les e-mails étiquetés 'candidats' des 24 dernières heures.\n3. **Préparer le texte de l'e-mail :** Convertit le contenu de l'e-mail en texte brut pour une extraction AI fiable.\n4. **Extraire les détails des candidats :** Gemini/OpenAI extrait les informations du candidat en JSON structuré.\n5. **Assigner les e-mails des responsables :** Achemine chaque candidat vers le bon responsable via un mappage rôle→e-mail ou un secours.\n6. **Grouper et construire des tableaux HTML :** Organise les candidats par responsable et par rôle, construit des tableaux récapitulatifs.\n7. **Envoyer le résumé aux responsables :** Envoie à chaque responsable un e-mail de résumé HTML pour leurs nouveaux candidats.\n\n## Comment configurer\n\n1. **Créer/vérifier l'étiquette Gmail** `candidats` et configurer des filtres pour acheminer les e-mails d'emploi là-bas.\n2. **Importer le flux de travail :** Utilisez vos comptes Google/Gmail et Gemini/OpenAI comme identifiants.\n3. **Configurer les connexions :**\n\t- Gmail avec OAuth2 (IMAP non requis, utilise l'API Gmail)\n\t- Clé API Gemini ou OpenAI pour l'extraction\n4. **Définir le mappage rôle→responsable** dans le nœud “Assigner les e-mails des responsables” (il suffit d'éditer la carte !).\n5. **Ajuster le temps / les valeurs par défaut :** Éditez le calendrier et l'e-mail de secours si vous le souhaitez.\n6. **Testez-le :** Envoyez-vous une candidature test, étiquetez-la, vérifiez les journaux du flux de travail.\n\n## Exigences\t\n\n- Compte Gmail (avec OAuth2 activé et étiquette 'candidats' configurée)\n- Clé API Gemini ou OpenAI pour l'extraction AI structurée\n- Instance n8n (auto-hébergée ou cloud)\n- Identifiants SMTP (si vous utilisez un e-mail direct au lieu du nœud Gmail)\n- Au moins un e-mail valide de responsable du recrutement mappé à un rôle\n\n## Comment personnaliser le flux de travail\n\n- Centralisez la configuration avec un **nœud Set** (nom de l'étiquette, e-mail de secours/responsable, nom du modèle, calendrier).\n- Ajoutez la conversion de texte en pièce jointe pour les candidatures avec des pièces jointes de CV.\n- Normalisez les noms de rôle dans le code de mappage pour un routage plus robuste.\n- Activez des livraisons supplémentaires : Slack, Teams, journal Google Sheets, Cron supplémentaire pour les urgences de milieu de journée.\n- Affinez l'invite d'extraction AI pour des champs spécifiques (ajoutez l'URL du portfolio, etc.).\n- Changez le calendrier pour un timing quotidien, hebdomadaire ou par rôle.\n\n## Add-ons / Extensions\n\n- **Extraction de texte de CV :** Ajoutez PDF/DOCX à l'analyse de texte pour les candidatures uniquement avec pièces jointes.\n- **ChatOps :** Envoyez le résumé aux canaux Slack ou Teams en plus ou à la place de l'e-mail.\n- **Journalisation des candidats :** Journalisez automatiquement chaque candidat/action dans Google Sheets, Notion ou Airtable.\n- **Multi-fuseau horaire :** Dupliquez/modifiez le déclencheur Cron pour différentes régions de responsables ou niveaux d'urgence.\n\n## Exemples de cas d'utilisation\n\n- **Recrutement Tech :** Les candidats Java, Python, Frontend sont automatiquement acheminés vers leurs responsables respectifs.\n- **Petite Agence :** Toutes les candidatures résumées pour les examinateurs, avec des décompositions par rôle.\n- **Opérations RH :** Résumés quotidiens envoyés avant la synchronisation de recrutement, facilitant une prise de décision rapide.\n\n## Dépannage courant\n\n| Problème | Cause possible | Solution |\n|-----------------------------------------|----------------------------------------------------------|-------------------------------------------------------------|\n| Aucun e-mail traité | Pas d'étiquette 'candidats' ou mauvaise fenêtre horaire | Vérifiez les filtres Gmail et ajustez la requête de recherche dans le nœud de récupération |\n| Tous les résumés vont au responsable de secours | Mappage rôle → responsable incorrect ou manquant | Normalisez le texte de rôle dans le nœud d'assignation, élargissez la carte |\n| L'extraction AI renvoie un JSON incorrect/manquant | Invite incorrecte, température élevée ou noms de champs manquants | Resserrez l'invite, baissez la température, vérifiez la réponse d'exemple |\n| Des e-mails en double/anciens apparaissent | Filtre de date incorrect | Utilisez 'newer_than:1d' et gardez 'marquer comme lu' dans le nœud e-mail |\n| Erreurs d'envoi SMTP/Gmail | Problème d'authentification, quota ou mot de passe d'application manquant | Utilisez OAuth2, vérifiez les limites d'envoi quotidiennes et les paramètres de mot de passe d'application |\n| Tableau de résumé vide ou partiellement rempli | AI incapable d'analyser un e-mail mal formaté/vide | Améliorez la cohérence de l'e-mail de l'expéditeur, ajoutez un traitement de secours |\n| Pièces jointes non traitées | Pas de nœud d'extraction de pièces jointes | Ajoutez l'analyse de texte des pièces jointes avant le nœud AI |\n\n## Besoin d'aide ?\n\nSi vous êtes bloqué, avez besoin d'aide pour personnaliser un mappage ou ajouter des nœuds ou souhaitez intégrer des étapes supplémentaires (par exemple, texte de CV, Slack), demandez simplement !\n\nNous sommes heureux de vous guider étape par étape, de revoir votre flux de travail ou de vous aider à résoudre des erreurs.\n\n**Contactez WeblineIndia — Votre partenaire d'automatisation n8n !**",
+  "workflow": {
+    "id": "MGgeJBbeovHVQAbq",
+    "meta": {
+      "instanceId": "14e4c77104722ab186539dfea5182e419aecc83d85963fe13f6de862c875ebfa",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Daily-Applicant-Digest",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "75fe46c9-d9eb-455e-8f9d-7384c4a1d172",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -340,
+          -80
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 6
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ba41cb19-9463-4c8a-a94d-a7d579346b1e",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          120,
+          120
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-1.5-flash"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "VbpO5dd6r2AhD52y",
+            "name": "Google Gemini(PaLM) Api account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9e2ef974-5183-4e7d-9cd2-8f3872bd0a66",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -520,
+          -360
+        ],
+        "parameters": {
+          "width": 1720,
+          "height": 680,
+          "content": "## Send daily applicant digest by role from Gmail to hiring managers with Google Gemini"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4648ef51-49af-40f8-9c82-490c5965e5be",
+        "name": "fetch_applicant_emails",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          -120,
+          -80
+        ],
+        "webhookId": "342f1447-19e1-4639-ae6e-a39fc1131b7c",
+        "parameters": {
+          "filters": {
+            "q": "label: applicant newer_than:1d is:unread"
+          },
+          "operation": "getAll"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "Kb30iigFce7pjkMZ",
+            "name": "Gmail account 5"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "f479ae8a-490b-4b08-9fe3-dbe6a26b2320",
+        "name": "readAll_applicant_emails",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          120,
+          -280
+        ],
+        "webhookId": "801858f2-9076-47a1-88eb-c8c1c930102d",
+        "parameters": {
+          "messageId": "={{ $json.id }}",
+          "operation": "markAsRead"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "Kb30iigFce7pjkMZ",
+            "name": "Gmail account 5"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "2a8e9656-df75-439f-ac16-ba608b29c87d",
+        "name": "Extract Applicant Details",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          100,
+          -80
+        ],
+        "parameters": {
+          "text": "=You are an assistant that extracts job applicant information from emails.\n\nExtract the following fields and return ONLY valid JSON with these keys:\n- name\n- email\n- phone\n- role\n- years_of_experience\n- top_skills\n- location\n- notice_period\n- summary\n\nApplicant email:\n\"\"\"\n{{$json.snippet }}\n\"\"\"\n",
+          "batching": {},
+          "promptType": "define"
+        },
+        "typeVersion": 1.7
+      },
+      {
+        "id": "3937cc5c-ea58-4b5d-b22d-591f8097481f",
+        "name": "Assign Manager Emails",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          480,
+          -80
+        ],
+        "parameters": {
+          "jsCode": "function stripMarkdownJson(input) {\n  let str = (input || '').trim();\n\n  // Remove the ```json at the start and ```\n  // This regex removes triple backticks and the 'json' keyword at the start\n  str = str.replace(/^```json\\s*/, '');  // Remove starting ```\n  str = str.replace(/```$/, '');          // Remove ending ```\n  \n  return str.trim();\n}\n\nfunction normalizeRole(role) {\n  return (role || '').trim().toLowerCase();\n}\n\nconst roleToManagerEmail = {\n  'java team lead': 'javatl@mailinator.com',\n  'python developer': 'pythontl@mailinator.com',\n  'frontend developer': 'frontendtl@mailinator.com',\n  // add other roles as needed\n};\n\nconst fallbackManagerEmail = 'fallback@mailinator.com';\n\nreturn items.map(item => {\n  const raw = item.json.text || '';\n  const jsonStr = stripMarkdownJson(raw);\n\n  let parsed;\n  try {\n    parsed = JSON.parse(jsonStr);\n  } catch (e) {\n    item.json.error = `JSON parse failed: ${e.message}`;\n    return item;\n  }\n\n  // Merge the parsed JSON fields into the current item\n  Object.assign(item.json, parsed);\n\n  // Normalize role and assign manager email\n  const normalizedRole = normalizeRole(item.json.role);\n  const managerEmail = Object.prototype.hasOwnProperty.call(roleToManagerEmail, normalizedRole)\n    ? roleToManagerEmail[normalizedRole]\n    : fallbackManagerEmail;\n\n  item.json.managerEmail = managerEmail;\n\n  return item;\n});\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "5943f68f-a39f-4532-a437-732d98d53079",
+        "name": "Group & Build HTML Tables",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          700,
+          -80
+        ],
+        "parameters": {
+          "jsCode": "function escapeHtml(text) {\n  if (!text) return '';\n  return text\n    .replace(/&/g, \"&amp;\")\n    .replace(/</g, \"&lt;\")\n    .replace(/>/g, \"&gt;\")\n    .replace(/\"/g, \"&quot;\")\n    .replace(/'/g, \"&#039;\");\n}\n\n// Group applicants by managerEmail, then by role\nconst groupedByManager = {};\n\n// Step 1: Group items\nitems.forEach(item => {\n  const applicant = item.json;\n  const managerEmail = applicant.managerEmail || 'unknown@fallback.com';\n  const role = applicant.role || 'Unknown Role';\n\n  if (!groupedByManager[managerEmail]) {\n    groupedByManager[managerEmail] = {};\n  }\n  if (!groupedByManager[managerEmail][role]) {\n    groupedByManager[managerEmail][role] = [];\n  }\n  \n  groupedByManager[managerEmail][role].push(applicant);\n});\n\n// Step 2: Build HTML per manager with tables per role\nconst output = [];\n\nfor (const [managerEmail, roles] of Object.entries(groupedByManager)) {\n\n  let emailHtml = `<h2>Today's New Applicants</h2>`;\n\n  for (const [role, applicants] of Object.entries(roles)) {\n    emailHtml += `<h3>Role: ${escapeHtml(role)}</h3>`;\n    \n    // Build table header\n    emailHtml += `\n    <table border=\"1\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse; width: 100%;\">\n      <thead style=\"background-color:#f0f0f0;\">\n        <tr>\n          <th>Name</th>\n          <th>Email</th>\n          <th>Phone</th>\n          <th>Years of Experience</th>\n          <th>Top Skills</th>\n          <th>Location</th>\n          <th>Notice Period</th>\n          <th>Summary</th>\n        </tr>\n      </thead>\n      <tbody>\n    `;\n\n    // Add each applicant as a row\n    applicants.forEach(app => {\n      emailHtml += `\n        <tr>\n          <td>${escapeHtml(app.name)}</td>\n          <td><a href=\"mailto:${escapeHtml(app.email)}\">${escapeHtml(app.email)}</a></td>\n          <td>${escapeHtml(app.phone)}</td>\n          <td>${escapeHtml(app.years_of_experience?.toString())}</td>\n          <td>${Array.isArray(app.top_skills) ? escapeHtml(app.top_skills.join(', ')) : escapeHtml(app.top_skills)}</td>\n          <td>${escapeHtml(app.location)}</td>\n          <td>${escapeHtml(app.notice_period)}</td>\n          <td>${escapeHtml(app.summary)}</td>\n        </tr>\n      `;\n    });\n\n    emailHtml += `</tbody></table><br/>`;\n  }\n\n  // Push one item per manager, as output for the next step (email sending)\n  output.push({\n    json: {\n      managerEmail,\n      html: emailHtml\n    }\n  });\n}\n\nreturn output;\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "9509d5c2-f66f-4294-9432-0b2587283b7a",
+        "name": "Send Digest to Managers",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          900,
+          -80
+        ],
+        "webhookId": "7fe812db-f512-4e0d-b4e5-f577fad2511c",
+        "parameters": {
+          "sendTo": "={{ $json.managerEmail }}",
+          "message": "={{ $json.html }}",
+          "options": {},
+          "subject": "=Today's Applicants Digest – {{ $now.format('MM-DD') }}"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "Kb30iigFce7pjkMZ",
+            "name": "Gmail account 5"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "17486203-2374-43f0-88eb-80500108d770",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -520,
+          360
+        ],
+        "parameters": {
+          "width": 1720,
+          "height": 780,
+          "content": "## Workflow Overview: Send daily applicant digest by role from Gmail to hiring managers with Google Gemini\n\n**Purpose:**\nAutomatically fetches new job application emails labeled applicants, extracts structured applicant details using OpenAI, groups candidates by role and manager, then sends a daily HTML summary email to each hiring manager.\n\nDaily Applicant Digest Workflow – Node Overview\n\n**1. Daily Trigger (6PM IST)**\n\nStarts the workflow every day at 18:00 (Asia/Kolkata timezone).\n\n**2. Fetch Applicant Emails**\n\nRetrieves all new application emails labeled applicants from the last 24 hours.\n\n**3. Read All Emails**\n\nRead each email’s labeled applicants which we retrieves\n\n**4. Extract Applicant Details**\n\nUses OpenAI to extract and structure applicant info (name, email, role, skills, etc.) in JSON format.\n\n**5. Assign Manager Emails**\n\nMaps each applicant’s role to a hiring manager’s email address.\n\nUses a fallback email if the role does not match any manager.\n\n**6. Group & Build HTML Tables**\n\nGroups applicants by manager and role.\n\nBuilds a clear, formatted HTML table for each group, summarizing all applicants.\n\n**7. Send Digest to Managers**\n\nSends one HTML summary email per manager, listing all relevant new applicants for the day.\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "67d27489-333a-4e73-8d9c-1af780d66304",
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "fetch_applicant_emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Assign Manager Emails": {
+        "main": [
+          [
+            {
+              "node": "Group & Build HTML Tables",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "fetch_applicant_emails": {
+        "main": [
+          [
+            {
+              "node": "Extract Applicant Details",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "readAll_applicant_emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Extract Applicant Details",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Applicant Details": {
+        "main": [
+          [
+            {
+              "node": "Assign Manager Emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Group & Build HTML Tables": {
+        "main": [
+          [
+            {
+              "node": "Send Digest to Managers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 10,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 2
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 3
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "WeblineIndia",
+    "username": "weblineindia",
+    "bio": "A Leading Software Engineering, Consulting & Outsourcing Services Company in USA & India serving Clients Globally since 1999.",
+    "verified": true,
+    "links": [
+      "https://www.weblineindia.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/a229d43aefca4588581583c58bb37b4773aebbdf4c1fef86a08bb1d38eae91fa?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chaîne LLM de base",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

@@ -1,0 +1,1042 @@
+{
+  "id": 8091,
+  "name": "Extraire les tendances de mots-clés YouTube à fort engagement pour la stratégie de contenu",
+  "views": 114,
+  "recentViews": 5,
+  "totalViews": 114,
+  "createdAt": "2025-08-31T20:31:43.478Z",
+  "description": "# 📊 Flux de travail des tendances YouTube dans n8n\n\n## 🎯 Objectif du flux de travail\nCe flux de travail récupère les **vidéos YouTube les plus populaires en Allemagne** et les transforme en une **liste propre de hashtags/mots-clés tendance**.  \nCe n'est pas juste des données brutes – cela met en évidence des **insights qualitatifs** sur les sujets et mots-clés qui génèrent un véritable engagement.\n\nUtile pour :\n- **Créateurs de contenu & marketeurs** → inspiration rapide pour des sujets viraux  \n- **Recherche SEO/hashtags** → découvrir des mots-clés performants  \n- **Équipes de médias sociaux** → reporting automatisé des tendances  \n\n---\n\n## ⚙️ Comment ça fonctionne – Étape par étape\n\n### 1. **Déclencheur**\n- **Nœud :** `Déclencheur manuel`  \n- Point d'entrée du flux de travail.  \n  → Peut être remplacé plus tard par un déclencheur Cron ou Webhook pour s'exécuter automatiquement.\n\n---\n\n### 2. **Appel API – YouTube**\n- **Nœud :** `Requête HTTP`  \n- Appelle l'**API de données YouTube v3** avec :\n  - `chart=mostPopular`\n  - `regionCode=DE`\n  - `maxResults=50`  \n- Renvoie une liste de vidéos tendance en Allemagne, y compris le titre, la chaîne, les vues, les likes, les commentaires et les tags.\n\n---\n\n### 3. **Diviser les éléments**\n- **Nœud :** `Diviser`  \n- Divise la réponse de l'API (`items[]`) en **éléments individuels**, de sorte que chaque vidéo soit traitée séparément.\n\n---\n\n### 4. **Contexte & KPI**\n- **Nœud :** `Définir`  \n- Extrait les champs clés :\n  - `title`, `channel`, `publishedAt`  \n  - `views`, `likes`, `comments`  \n- Calcule :\n  - `engagementRate = (likes + comments) / (views + 1)`  \n\n**Pourquoi ?**  \nRegarder uniquement les vues est trompeur. Le taux d'engagement révèle quelles vidéos **résonnent vraiment avec le public**.\n\n---\n\n### 5. **Classement & Limite**\n- **Nœud :** `Listes d'éléments`  \n- Trie les vidéos par **taux d'engagement le plus élevé** (décroissant).  \n- Limite les résultats aux **20 meilleures vidéos**.  \n\n**Pourquoi ?**  \nCela réduit le bruit et se concentre uniquement sur les **tendances les plus pertinentes**.\n\n---\n\n### 6. **Collecter les tags**\n- **Nœud :** `Agrégat`  \n- Collecte tous les `snippet.tags` des vidéos les plus populaires.  \n- Les fusionne en une **liste de mots-clés unique**.  \n\n---\n\n### 7. **Résumé des mots-clés**\n- **Nœud :** `Résumer`  \n- Concatène tous les tags collectés en une seule chaîne.  \n\n**Résultat :**  \nUne **liste compacte de hashtags/mots-clés** → prête à être utilisée pour :\n- Idées de contenu  \n- Stratégies SEO/hashtags  \n- Planification des médias sociaux  \n\n---\n\n## 📈 Pourquoi ce flux de travail est utile\n- **Analyse des tendances automatisée** : pas besoin de parcourir manuellement YouTube.  \n- **Concentration sur la qualité** : utilise le taux d'engagement, pas seulement les vues.  \n- **Réutilisable** : les résultats peuvent être :\n  - stockés dans Google Sheets ou Airtable,  \n  - envoyés à Slack/Telegram,  \n  - ou utilisés dans un tableau de bord.  \n\n---\n\n## 🚀 Extensions possibles\n- **Déclencheur Cron** → exécuter quotidiennement pour des rapports automatisés.  \n- **Notifier** → envoyer les résultats directement à Slack, Discord ou Telegram.  \n- **Stockage** → enregistrer les tendances dans une base de données pour une analyse historique.  \n- **Nœud AI** → utiliser GPT pour résumer les tendances en “3 insights clés du jour.”  \n\n---\n\n## ✅ Conclusion\nAvec quelques nœuds intelligemment combinés, ce flux de travail :  \n- récupère des données d'API externes (YouTube),  \n- les nettoie et les enrichit,  \n- calcule des KPI qualitatifs,  \n- et fournit des **insights sur les tendances** exploitables.  \n\nParfait comme **vitrine communautaire** ou comme **outil pratique** pour les créateurs et les marketeurs.\n",
+  "workflow": {
+    "meta": {
+      "instanceId": "40f29e455b10b3ef07629363459d0fa6954887d44ddad18e74a5539a487f2eee",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "d034896a-23db-471c-9da7-804372882b2e",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -336,
+          -128
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "449082db-9d84-485d-aa45-c210fe852849",
+        "name": "Sticky: Workflow Start",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -560,
+          -240
+        ],
+        "parameters": {
+          "width": 464,
+          "height": 400,
+          "content": "# Workflow Start\nThis is the entry point. Run via **Execute Workflow**.\nLater you can replace this with a Cron or Webhook trigger."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c372670f-1ccf-4016-955c-514f644c6a9b",
+        "name": "HTTP Request – YouTube Most Popular",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -16,
+          32
+        ],
+        "parameters": {
+          "url": "https://www.googleapis.com/youtube/v3/videos",
+          "options": {},
+          "sendQuery": true,
+          "sendHeaders": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "part",
+                "value": "statistics,snippet"
+              },
+              {
+                "name": "chart",
+                "value": "mostPopular"
+              },
+              {
+                "name": "regionCode",
+                "value": "DE"
+              },
+              {
+                "name": "maxResults",
+                "value": "50"
+              },
+              {
+                "name": "key",
+                "value": "APIKEY"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "User-Agent",
+                "value": "Mozilla/5.0"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "3b7ada69-c057-4932-a071-a2127a246575",
+        "name": "Sticky: API Call",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -80,
+          -208
+        ],
+        "parameters": {
+          "width": 432,
+          "height": 480,
+          "content": "## API Call – YouTube\nFetches the **most popular videos** in Germany via YouTube Data API v3.\n\nIncludes: `statistics` (views, likes, comments) and `snippet` (title, tags, channel)."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b2dc68e0-9417-496e-925a-8fb1139949f8",
+        "name": "Split Out – Items",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          544,
+          208
+        ],
+        "parameters": {
+          "options": {},
+          "fieldToSplitOut": "items"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7ed5593d-a15d-42ae-be96-3bbfdaa2f435",
+        "name": "Sticky: Split Items",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          400,
+          0
+        ],
+        "parameters": {
+          "width": 288,
+          "height": 496,
+          "content": "## Split Items\nSplits the API response array (`items[]`) so that each video becomes an **individual item** for further processing."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6a304148-78a0-4a14-a8e6-9b2f4571347f",
+        "name": "Set – Derive Context",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          768,
+          208
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3.2
+      },
+      {
+        "id": "728035b5-e319-4061-a167-afe660b8fe75",
+        "name": "Sticky: Context & KPIs",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          704,
+          0
+        ],
+        "parameters": {
+          "width": 304,
+          "height": 496,
+          "content": "## Context & KPIs\nExtracts key fields (title, channel, publishedAt) and numbers (views, likes, comments).\n\nCalculates: `engagementRate = (likes + comments) / (views + 1)` to capture **interaction quality** instead of raw views only."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "99d3187e-876d-4b1d-b16e-1308f87c779c",
+        "name": "Item Lists – Top by Engagement",
+        "type": "n8n-nodes-base.itemLists",
+        "position": [
+          1072,
+          192
+        ],
+        "parameters": {
+          "options": {},
+          "operation": "sort"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "85d1e8bc-5504-48e1-843f-0c1b260a4ebe",
+        "name": "Sticky: Ranking & Limit",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1024,
+          0
+        ],
+        "parameters": {
+          "height": 496,
+          "content": "## Ranking & Limit\nSorts by `engagementRate` (descending) and keeps only the **Top 20**.\n\nReduces noise and makes the tag analysis more meaningful."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fe93a1f7-ce55-46d5-aeef-20bcb7518149",
+        "name": "Aggregate – Collect Tags",
+        "type": "n8n-nodes-base.aggregate",
+        "position": [
+          1360,
+          208
+        ],
+        "parameters": {
+          "options": {
+            "mergeLists": true
+          },
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "tags"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "667b507a-2a82-4ade-8a7d-378ebd73c6ec",
+        "name": "Sticky: Collect Tags",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1280,
+          0
+        ],
+        "parameters": {
+          "height": 496,
+          "content": "## Collect Tags\nAggregates all `snippet.tags` from the Top 20 and merges them into a single array."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4d1e33a4-12b4-494a-ba01-914c1bd7a313",
+        "name": "Summarize – Tag Summary",
+        "type": "n8n-nodes-base.summarize",
+        "position": [
+          1600,
+          224
+        ],
+        "parameters": {
+          "options": {},
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "field": "tags",
+                "aggregation": "concatenate"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "37c333b9-f7d5-4730-841b-4b043a278a17",
+        "name": "Sticky: Keyword Summary",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1552,
+          0
+        ],
+        "parameters": {
+          "height": 496,
+          "content": "## Keyword Summary\nConcatenates all collected tags into one string – a **clean list of trending hashtags/keywords** from the most engaging videos."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Split Out – Items": {
+        "main": [
+          [
+            {
+              "node": "Set – Derive Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set – Derive Context": {
+        "main": [
+          [
+            {
+              "node": "Item Lists – Top by Engagement",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate – Collect Tags": {
+        "main": [
+          [
+            {
+              "node": "Summarize – Tag Summary",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Item Lists – Top by Engagement": {
+        "main": [
+          [
+            {
+              "node": "Aggregate – Collect Tags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request – YouTube Most Popular",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request – YouTube Most Popular": {
+        "main": [
+          [
+            {
+              "node": "Split Out – Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 14,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.aggregate": {
+        "count": 1
+      },
+      "n8n-nodes-base.itemLists": {
+        "count": 1
+      },
+      "n8n-nodes-base.summarize": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 7
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Sulieman Said",
+    "username": "sulieman-said",
+    "bio": "👋 Hi, I’m Sulieman – Founder of aufCopilot.de\n.\nI build custom n8n workflows, automations & AI integrations to help businesses save time and scale smarter.\n\nI share templates, answer questions and love exploring creative use cases – from lead generation to data workflows and AI-powered automations. 🚀\n\nAlways happy to connect, learn and contribute to the community.\n\nAlthough my profile is in English, I am a native German speaker and happy to work in both German and English projects.",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/suliemansaid/"
+    ],
+    "avatar": "https://gravatar.com/avatar/dde03d1a10c06ba5c3a1abb7b6f0fe8982f2b8e44e9875faef1b885611295b4f?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 516,
+      "icon": "file:itemLists.svg",
+      "name": "n8n-nodes-base.itemLists",
+      "codex": {
+        "data": {
+          "alias": [
+            "Aggregate",
+            "Dedupe",
+            "Deduplicate",
+            "Duplicates",
+            "Limit",
+            "Remove",
+            "Slice",
+            "Sort",
+            "Split",
+            "Unique",
+            "JSON",
+            "Transform",
+            "Array",
+            "List",
+            "Object",
+            "Item",
+            "Map",
+            "Format",
+            "Nested",
+            "Iterate",
+            "Summarise",
+            "Summarize",
+            "Group",
+            "Pivot",
+            "Sum",
+            "Count",
+            "Min",
+            "Max"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.itemlists/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Listes d'éléments"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDIxMCAyMTAiPjxwYXRoIGQ9Ik0xOC44IDE4LjhDOC40IDE4LjggMCAyNy4xIDAgMzcuNXM4LjQgMTguOCAxOC44IDE4LjggMTguOC04LjQgMTguOC0xOC44LTguNS0xOC43LTE4LjgtMTguN20wIDYyLjRDOC40IDgxLjIgMCA4OS42IDAgMTAwczguNCAxOC44IDE4LjggMTguOCAxOC44LTguNCAxOC44LTE4LjgtOC41LTE4LjgtMTguOC0xOC44bTAgNjIuNkM4LjQgMTQzLjggMCAxNTIuMSAwIDE2Mi41czguNCAxOC44IDE4LjggMTguOCAxOC44LTguNCAxOC44LTE4LjgtOC41LTE4LjctMTguOC0xOC43bTE3NSA2LjJoLTEyNWMtMy41IDAtNi4yIDIuOC02LjIgNi4ydjEyLjVjMCAzLjUgMi44IDYuMiA2LjIgNi4yaDEyNWMzLjUgMCA2LjItMi44IDYuMi02LjJ2LTEyLjVjMC0zLjQtMi44LTYuMi02LjItNi4ybTAtMTI1aC0xMjVjLTMuNSAwLTYuMiAyLjgtNi4yIDYuMnYxMi41YzAgMy41IDIuOCA2LjIgNi4yIDYuMmgxMjVjMy41IDAgNi4yLTIuOCA2LjItNi4yVjMxLjJjMC0zLjQtMi44LTYuMi02LjItNi4ybTAgNjIuNWgtMTI1Yy0zLjUgMC02LjIgMi44LTYuMiA2LjJ2MTIuNWMwIDMuNSAyLjggNi4yIDYuMiA2LjJoMTI1YzMuNSAwIDYuMi0yLjggNi4yLTYuMlY5My44YzAtMy41LTIuOC02LjMtNi4yLTYuMyIgc3R5bGU9ImZpbGw6I2ZmNmQ1YSIvPjwvc3ZnPg=="
+      },
+      "displayName": "Item Lists",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1236,
+      "icon": "file:aggregate.svg",
+      "name": "n8n-nodes-base.aggregate",
+      "codex": {
+        "data": {
+          "alias": [
+            "Aggregate",
+            "Combine",
+            "Flatten",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.aggregate/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agrégat"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjRkY2RDVBIiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMyIDE0OGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDE0NmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJINDRjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6bTAgOTZjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxNDZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYyNGMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDQ0Yy02LjYyNyAwLTEyLTUuMzczLTEyLTEyem0wIDk2YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTQ2YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkg0NGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik03NCA3NmMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDExNi4yMTdjMTcuNjczIDAgMzIgMTQuMzI3IDMyIDMydjU2YzAgMjYuOTc4IDEwLjI3MiA1MS41NTcgMjcuMTE5IDcwLjAzOSA1LjA1NSA1LjU0NSA1LjA1NSAxNC4zNzcgMCAxOS45MjItMTYuODQ3IDE4LjQ4Mi0yNy4xMTkgNDMuMDYxLTI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMtMTQuMzI3IDMyLTMyIDMySDg2Yy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTE2LjIxN2M0NC4xODMgMCA4MC0zNS44MTcgODAtODB2LTU2YzAtMzAuOTI4IDI1LjA3Mi01NiA1Ni01NmE1Ljc4MyA1Ljc4MyAwIDAgMCA1Ljc4My01Ljc4M3YtMzYuNDM0YTUuNzgzIDUuNzgzIDAgMCAwLTUuNzgzLTUuNzgzYy0zMC45MjggMC01Ni0yNS4wNzItNTYtNTZ2LTU2YzAtNDQuMTgzLTM1LjgxNy04MC04MC04MEg4NmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNzYgMjQ0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgzODhjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L2c+PGRlZnM+PGNsaXBQYXRoIGlkPSJhIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDUxMnY1MTJIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Aggregate",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Diviser"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1241,
+      "icon": "file:summarize.svg",
+      "name": "n8n-nodes-base.summarize",
+      "codex": {
+        "data": {
+          "alias": [
+            "Append",
+            "Array",
+            "Average",
+            "Concatenate",
+            "Count",
+            "Group",
+            "Item",
+            "List",
+            "Max",
+            "Min",
+            "Pivot",
+            "Sum",
+            "Summarise",
+            "Summarize",
+            "Transform",
+            "Unique"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.summarize/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Résumer"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSIjRjkyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzIgOTFjLTE1LjQ2NCAwLTI4IDEyLjUzNi0yOCAyOHYzMTdjMCAxNS40NjQgMTIuNTM2IDI4IDI4IDI4aDI0OGMxNS40NjQgMCAyOC0xMi41MzYgMjgtMjhWMTE5YzAtMTUuNDY0LTEyLjUzNi0yOC0yOC0yOGgtNmE2IDYgMCAwIDEtNi02VjQ5YTYgNiAwIDAgMSA2LTZoNmM0MS45NzQgMCA3NiAzNC4wMjYgNzYgNzZ2MzE3YzAgNDEuOTc0LTM0LjAyNiA3Ni03NiA3NkgxMzJjLTQxLjk3NCAwLTc2LTM0LjAyNi03Ni03NlYxMTljMC00MS45NzQgMzQuMDI2LTc2IDc2LTc2aDZhNiA2IDAgMCAxIDYgNnYzNmE2IDYgMCAwIDEtNiA2eiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iI0Y5MiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMjU2IDBjLTI3LjIzMiAwLTUwLjIyNyAxOC4xNDItNTcuNTU4IDQzSDE4MmE2IDYgMCAwIDAtNiA2djcwYTYgNiAwIDAgMCA2IDZoMTQ4YTYgNiAwIDAgMCA2LTZWNDlhNiA2IDAgMCAwLTYtNmgtMTYuNDQyQzMwNi4yMjcgMTguMTQyIDI4My4yMzIgMCAyNTYgMG0wIDQwYTE5LjkgMTkuOSAwIDAgMC0xMC41NDEgM0MyMzkuNzgxIDQ2LjUyOCAyMzYgNTIuODIzIDIzNiA2MGMwIDExLjA0NiA4Ljk1NCAyMCAyMCAyMHMyMC04Ljk1NCAyMC0yMGMwLTcuMTc3LTMuNzgxLTEzLjQ3Mi05LjQ1OS0xN0ExOS45IDE5LjkgMCAwIDAgMjU2IDQwbTEwMSAxNzljMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgyMzNjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ2LTI0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBmaWxsPSIjRjkyIiBkPSJNMTk3IDIwN2MwIDEzLjI1NS0xMC43NDUgMjQtMjQgMjRzLTI0LTEwLjc0NS0yNC0yNCAxMC43NDUtMjQgMjQtMjQgMjQgMTAuNzQ1IDI0IDI0Ii8+PHBhdGggZmlsbD0iI0Y5MiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzU3IDM5NWMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDIzM2MtNi42MjcgMC0xMi01LjM3My0xMi0xMnYtMjRjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxMTJjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGZpbGw9IiNGOTIiIGQ9Ik0xOTcgMzgzYzAgMTMuMjU1LTEwLjc0NSAyNC0yNCAyNHMtMjQtMTAuNzQ1LTI0LTI0IDEwLjc0NS0yNCAyNC0yNCAyNCAxMC43NDUgMjQgMjQiLz48cGF0aCBmaWxsPSIjRjkyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNTcgMzA3YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMjMzYy02LjYyNyAwLTEyLTUuMzczLTEyLTEydi0yNGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDExMmM2LjYyNyAwIDEyIDUuMzczIDEyIDEyeiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iI0Y5MiIgZD0iTTE5NyAyOTVjMCAxMy4yNTUtMTAuNzQ1IDI0LTI0IDI0cy0yNC0xMC43NDUtMjQtMjQgMTAuNzQ1LTI0IDI0LTI0IDI0IDEwLjc0NSAyNCAyNCIvPjwvc3ZnPg=="
+      },
+      "displayName": "Summarize",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

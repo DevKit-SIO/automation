@@ -1,0 +1,619 @@
+{
+  "id": 7840,
+  "name": "Création de factures automatisée : Google Sheets vers QuickBooks Online",
+  "views": 148,
+  "recentViews": 3,
+  "totalViews": 148,
+  "createdAt": "2025-08-25T13:02:33.936Z",
+  "description": "## À qui cela s'adresse-t-il\nÉquipes qui facturent à partir de feuilles de calcul et souhaitent un transfert fiable et répétable vers QuickBooks Online sans saisie manuelle. Utile pour les abonnements, les petits lots et les démonstrations opérationnelles.\n\n## Comment cela fonctionne / Ce que cela fait\n- Commence par un exécution manuelle pour des tests en toute sécurité.\n- Lit les lignes d'une feuille Google et mappe les champs aux entrées de factures.\n- Crée une facture QuickBooks Online par ligne en utilisant vos paramètres d'articles.\n- Rapporte les succès ou erreurs de base afin que vous puissiez ajuster les données rapidement.\n\n## Comment configurer\n1. Connectez les identifiants Google Sheets et QuickBooks dans n8n.  \n2. Dans le nœud de configuration, définissez `sheets_url` sur votre feuille (le lien d'exemple peut être utilisé pour des tests).  \n3. Assurez-vous que votre feuille contient `CustomerId`, `Amount` et `Description`.  \n4. Dans le nœud QBO, définissez un `itemId` valide et une quantité par défaut si nécessaire.\n\n**Exemple de feuille (lecture seule) :**  \n[Ouvrir la feuille de calcul d'exemple](https://docs.google.com/spreadsheets/d/17RyZVropXUeUXX1qJqHss5fNsHSuGsbPioY7Q0BwP00/edit?gid=2132365041)\n\n## Exigences\n- Environnement n8n  \n- QuickBooks Online avec OAuth2  \n- Accès à Google Sheets pour la feuille de calcul source\n\n## Comment personnaliser le flux de travail\n- Remplacez Google Sheets par Airtable, importation CSV, requête DB ou votre API tout en conservant les mêmes noms de champs.\n- Ajoutez des taxes, des conditions ou des lignes d'articles à partir de colonnes supplémentaires.\n- Planifiez des exécutions ou ajoutez des étapes d'approbation avant la création de la facture.",
+  "workflow": {
+    "meta": {
+      "instanceId": "c8c9ba5d3eb26ae47a06d24ff164a01c0d73ed4753a74903c2bb609d434a0f6b",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "110fb731-d1e5-4559-9927-d39c6ece9ae4",
+        "name": "Manual Test Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -160,
+          0
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "6ea70fc0-4e62-46e3-8450-3f6d7324d978",
+        "name": "Read Rows from Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          288,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "url",
+            "value": "={{ $json.sheets_url }}"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "={{ $json.sheets_url }}"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "gbEbCNKqCMSRZPql",
+            "name": "Google Sheets account 3"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "03f4308a-e6db-48c5-a502-329b915b7386",
+        "name": "Create Invoice in QuickBooks",
+        "type": "n8n-nodes-base.quickbooks",
+        "position": [
+          512,
+          0
+        ],
+        "parameters": {
+          "Line": [
+            {
+              "Qty": 1,
+              "Amount": "={{ $json.Amount }}",
+              "itemId": "4",
+              "DetailType": "SalesItemLineDetail",
+              "Description": "={{ $json.Description }}"
+            }
+          ],
+          "resource": "invoice",
+          "operation": "create",
+          "CustomerRef": "={{ $json.CustomerId }}",
+          "additionalFields": {}
+        },
+        "credentials": {
+          "quickBooksOAuth2Api": {
+            "id": "swiF4vinAA4Z04DX",
+            "name": "QuickBooks Online account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9749bc6e-a5ca-48af-8bde-5aa8b58bfbe3",
+        "name": "Config - Sheet URL",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          64,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a869e559-b784-44e4-bc9d-96fb0e8445a4",
+                "name": "sheets_url",
+                "type": "string",
+                "value": "https://docs.google.com/spreadsheets/d/17RyZVropXUeUXX1qJqHss5fNsHSuGsbPioY7Q0BwP00/edit?gid=2132365041#gid=2132365041"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "c7d6b2a7-3d4f-4e8f-9f55-6e7a9a99a4a1",
+        "name": "Workflow description",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -460,
+          -300
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 272,
+          "height": 912,
+          "content": "# Workflow description\n\nClick run, read rows, create invoices. Simple.\n\n**Example sheet (read-only):**\nhttps://docs.google.com/spreadsheets/d/17RyZVropXUeUXX1qJqHss5fNsHSuGsbPioY7Q0BwP00/edit?gid=2132365041#gid=2132365041\n\n## Steps\n1) **Manual Test Trigger** - you press Execute.\n2) **Config - Sheet URL** - holds the Google Sheets URL (as `sheets_url`). Defaults to the example above.\n3) **Read Rows from Google Sheets** - loads rows; expects `CustomerId`, `Amount`, `Description`.\n4) **Create Invoice in QuickBooks** - makes one invoice per row. Uses itemId=4, Qty=1.\n\n## Setup\n- Connect **QuickBooks** and **Google Sheets** credentials.\n- Keep the example link for demo or replace with your own sheet.\n- Change `itemId` in the invoice node to your real item.\n\n## Replace Sheets\nSwap the reader with Airtable, CSV, DB query, or your API. Keep the same field names.\n\nDone. If something fails, open the execution and check the red node."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Config - Sheet URL": {
+        "main": [
+          [
+            {
+              "node": "Read Rows from Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Manual Test Trigger": {
+        "main": [
+          [
+            {
+              "node": "Config - Sheet URL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Rows from Google Sheets": {
+        "main": [
+          [
+            {
+              "node": "Create Invoice in QuickBooks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 51,
+  "workflowInfo": {
+    "nodeCount": 5,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.quickbooks": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Milan Vasarhelyi - SmoothWork",
+    "username": "vasarmilan",
+    "bio": "We help you eliminate the busywork by building compact business tools tailored to your processes.\n\n📞: https://smoothwork.ai/book-a-call\n▶️: https://www.youtube.com/@vasarmilan",
+    "verified": true,
+    "links": [
+      "https://smoothwork.ai"
+    ],
+    "avatar": "https://gravatar.com/avatar/95700d17ba300a9f14c1b8cacf933df7720027b3adda9cbe6183d89142925422?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 455,
+      "icon": "file:quickbooks.svg",
+      "name": "n8n-nodes-base.quickbooks",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.quickbooks/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/quickbooks/"
+              }
+            ]
+          },
+          "categories": [
+            "Finance & Accounting"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "QuickBooks Online"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAwIDI1MDAiPjxjaXJjbGUgY3g9IjEyNTAiIGN5PSIxMjUwIiByPSIxMjUwIiBmaWxsPSIjMmNhMDFjIi8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTMwMS4zIDEyNDkuNmMuMSAyODIuNiAyMjggNTEyLjQgNTEwLjYgNTE0LjloNzIuM3YtMTg4LjloLTcyLjNjLTE3NS4yIDQ3LjgtMzU1LjktNTUuNS00MDMuNi0yMzAuNy0uNC0xLjQtLjctMi44LTEuMS00LjItNDkuMS0xNzcuNSA1My43LTM2MS40IDIzMC42LTQxMi41aDM2LjFhMzIyIDMyMiAwIDAgMSAxMzcuNSAwSDk4N3YxMDAyLjljLS45IDEwNi4xIDg0LjQgMTkyLjkgMTkwLjUgMTkzLjlWNzI5LjZIODEzYy0yODQuNiAxLjUtNTE0IDIzMy40LTUxMi41IDUxOHYuMXptMTM4Ny41LTUxOS44aC03Mi4zdjE5OC45aDcyLjNjMTc0LjgtNDcuNyAzNTUuMSA1NS4zIDQwMi44IDIzMCAuNCAxLjMuNyAyLjcgMS4xIDQgNDguOCAxNzYuOS01My43IDM2MC4xLTIyOS45IDQxMS4xaC0zNi4xYTMyMiAzMjIgMCAwIDEtMTM3LjUgMGgtMTc1LjZWNTcxYy45LTEwNi4xLTg0LjQtMTkyLjktMTkwLjUtMTkzLjl2MTM5Ny40aDM2NC41YzI4Ny4xLTQuNSA1MTYuMi0yNDAuOCA1MTEuOC01MjcuOS00LjQtMjgwLjgtMjMwLjktNTA3LjQtNTExLjgtNTExLjh6Ii8+PC9zdmc+"
+      },
+      "displayName": "QuickBooks Online",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 8,
+          "name": "Finance & Accounting"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lors de l'exécution de ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 34,
+      "name": "Traitement des factures"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

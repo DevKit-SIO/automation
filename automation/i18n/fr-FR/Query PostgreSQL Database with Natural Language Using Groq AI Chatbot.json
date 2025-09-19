@@ -1,0 +1,509 @@
+{
+  "id": 3680,
+  "name": "Interroger une base de données PostgreSQL avec un langage naturel en utilisant le chatbot Groq AI",
+  "views": 856,
+  "recentViews": 0,
+  "totalViews": 856,
+  "createdAt": "2025-04-23T23:07:27.296Z",
+  "description": "Ce guide vous montre comment déployer un chatbot qui vous permet d'interroger votre base de données **PostgreSQL** en utilisant un langage naturel. Vous construirez un système qui accepte des messages de chat, conserve l'historique des conversations, construit des requêtes SQL dynamiques et renvoie des réponses générées par un modèle d'IA. En suivant ces instructions, vous disposerez d'une solution fonctionnelle qui intègre les capacités de l'Agent IA d'n8n avec **PostgreSQL**.\n\n![AI Chatbot PostgreSQL.png](fileId:1161)\n\n### Prérequis\n\nAvant de commencer, assurez-vous d'avoir les éléments suivants :\n\n* Une instance n8n active (auto-hébergée ou cloud) exécutant la version 1.50.0 ou ultérieure.\n* Des identifiants **PostgreSQL** valides configurés dans n8n.\n* Des identifiants API pour le modèle de chat Groq (ou votre modèle de langage IA préféré).\n* Une familiarité de base avec SQL (en particulier la syntaxe **PostgreSQL**) et des concepts de n8n tels que les déclencheurs de chat et les tampons de mémoire.\n* Accès à la documentation n8n sur les Agents IA pour référence supplémentaire.\n\n### Configuration du Workflow\n\n1.  **Interface de Chat & Déclencheur**\n    * **Lorsque le message de chat est reçu :** Ce nœud écoute les messages de chat entrants via un webhook. Lorsqu'un message arrive, il déclenche immédiatement le workflow.\n\n2.  **Mémoire de Conversation**\n    * **Historique de Chat :** Ce nœud de tampon de mémoire stocke les 10 dernières interactions. Il fournit le contexte de conversation à l'Agent IA, garantissant que les réponses prennent en compte les messages précédents.\n\n3.  **Noyau de l'Agent IA**\n    * **Agent IA (Agent Outils) :** Le nœud Agent IA orchestre la conversation en recevant l'entrée de chat et l'historique de conversation. Il génère dynamiquement des requêtes SQL compatibles avec **PostgreSQL** en fonction de vos demandes et coordonne les appels aux outils externes (tels que les nœuds **PostgreSQL**).\n\n4.  **Interactions avec la Base de Données**\n    * **Nœud PostgreSQL (Exécution de Requête) :** Ce nœud exécute la requête SQL générée par l'Agent IA contre votre base de données **PostgreSQL**. Vous référencez la requête en utilisant une expression (par exemple, `{{$node[\"AI Agent\"].json.sql_query}}`), permettant à la sortie de l'agent de contrôler la récupération des données.\n    * **Nœud PostgreSQL (Récupération de Schéma) :** Ce nœud (ou une étape dédiée utilisant le nœud **PostgreSQL**) récupère une liste de tables pertinentes de votre base de données **PostgreSQL** (par exemple, à partir du schéma `public`, en excluant les schémas système comme `pg_catalog` ou `information_schema`). L'agent utilise ces informations pour comprendre les tables disponibles. Cela implique généralement d'exécuter une requête comme `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';`.\n    * **Nœud PostgreSQL (Récupération de Définition de Table) :** Ce nœud (ou une autre étape dédiée utilisant le nœud **PostgreSQL**) récupère des métadonnées détaillées (telles que les noms de colonnes, les types de données et potentiellement les relations utilisant des clés étrangères) pour une table spécifique. Le nom de la table (et le schéma si nécessaire) est fourni dynamiquement par l'Agent IA. Cela implique souvent de requêter `information_schema.columns`, par exemple, `SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{{dynamic_table_name}}' AND table_schema = 'public';`.\n\n5.  **Traitement du Modèle de Langage**\n    * **Modèle de Chat Groq :** Ce nœud se connecte à l'API de chat Groq pour générer des complétions de texte. Il traite l'entrée combinée (message de chat, contexte et données récupérées de **PostgreSQL**) et produit la réponse finale.\n\n6.  **Orientation & Personnalisation**\n    * **Notes Collantes :** Ces nœuds fournissent des conseils sur :\n        * Changer le modèle de chat si vous souhaitez utiliser un autre fournisseur (par exemple, OpenAI ou Anthropic).\n        * Ajuster le nombre maximum de jetons par interaction.\n        * Personnaliser les requêtes SQL (en garantissant la compatibilité avec **PostgreSQL**) et la taille de la fenêtre de contexte.\n    * Ils vous aident à modifier le workflow pour l'adapter à votre environnement et à vos besoins.\n\n### Connexions du Workflow\n\n* Le **Déclencheur de Chat** transmet le message entrant à l'**Agent IA**.\n* Le nœud **Historique de Chat** fournit le contexte de conversation à l'Agent IA.\n* L'**Agent IA** appelle les nœuds **PostgreSQL** en tant qu'outils externes, générant et envoyant des requêtes SQL dynamiques.\n* Le **Modèle de Chat Groq** traite l'entrée consolidée de l'agent et produit la réponse en langage naturel livrée à l'utilisateur.\n\n### Tester le Workflow\n\n1.  Envoyez un message de chat en utilisant l'interface de chat.\n2.  Observez comment l'Agent IA traite l'entrée et génère une requête SQL **PostgreSQL** correspondante.\n3.  Vérifiez que les nœuds **PostgreSQL** exécutent correctement la requête contre votre base de données et renvoient des données.\n4.  Confirmez que le Modèle de Chat Groq produit une réponse en langage naturel cohérente basée sur les résultats de la requête.\n5.  Consultez les notes collantes pour des conseils si vous devez peaufiner les paramètres de nœud ou les requêtes SQL.\n\n### Prochaines Étapes et Références\n\n* **Personnalisez Votre Modèle IA :** Remplacez le Modèle de Chat Groq par un autre modèle de langage (tel que le Modèle de Chat OpenAI) en mettant à jour les identifiants et la configuration du nœud.\n* **Améliorez les Paramètres de Mémoire :** Ajustez la taille de la fenêtre de contexte du nœud Historique de Chat pour conserver plus ou moins de messages en fonction de vos besoins.\n* **Modifiez les Requêtes SQL :** Mettez à jour les requêtes SQL dans les nœuds **PostgreSQL** ou affinez les invites pour l'Agent IA afin de garantir qu'elles correspondent à votre schéma de base de données spécifique et aux données souhaitées, en respectant la syntaxe **PostgreSQL**.\n* **Lecture Supplémentaire :** Consultez la documentation n8n sur les Agents IA pour des détails et des exemples supplémentaires afin d'élargir les capacités de votre workflow.\n* **Configurer un Chatbot de Site Web :** Copiez & Collez et remplacez les espaces réservés dans le code suivant pour intégrer le chatbot dans votre site web personnel ou d'entreprise : [Voir dans CodePen 🡥](https://codepen.io/olemai/pen/RNwPdVp)\n\nEn suivant ces étapes, vous déploierez un workflow de chatbot IA robuste qui s'intègre à votre base de données **PostgreSQL**, vous permettant d'interroger des données en utilisant un langage naturel.",
+  "workflow": {
+    "id": "ow1aBANn8lQH0TbA",
+    "meta": {
+      "instanceId": "47d295a7329d3547e0e6b56de9e439dc1a0a49c6d827b2320629f54300c47e41",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "My workflow 4",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "3be32b55-6c92-45e3-805f-3c582f6bb237",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          760,
+          320
+        ],
+        "webhookId": "cf1de04f-3e38-426c-89f0-3bdb110a5dcf",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "c0685ca7-91bd-4177-848d-ea7f3a4c160f",
+        "name": "Chat History",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          1100,
+          520
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "b2e6112c-451e-434f-a732-4c469721f364",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          1180,
+          320
+        ],
+        "parameters": {},
+        "typeVersion": 1.7
+      },
+      {
+        "id": "52a55d14-7a46-43fb-9f8c-5fdd099cc4b8",
+        "name": "Groq Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+        "position": [
+          920,
+          520
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "d9ff0f6e-e08d-49bc-bd29-1a6602b1562e",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          880,
+          700
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "56b21c24-9a74-4f61-ad03-2e6c892350d6",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1060,
+          700
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "63a28a91-68e3-45a5-b236-559db54f87b7",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1240,
+          700
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b6dad064-7699-4f07-99c5-cca3a5f3bb82",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          760,
+          100
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "36b9bf75-cb1d-45ed-8e01-99c272580fae",
+        "name": "PostgreSQL Schema",
+        "type": "n8n-nodes-base.postgresTool",
+        "position": [
+          1480,
+          520
+        ],
+        "parameters": {},
+        "typeVersion": 2.5
+      },
+      {
+        "id": "71f57073-6857-4b7f-9ee9-e1dc3ce250c5",
+        "name": "PostgreSQL Definition",
+        "type": "n8n-nodes-base.postgresTool",
+        "position": [
+          1660,
+          520
+        ],
+        "parameters": {},
+        "typeVersion": 2.5
+      },
+      {
+        "id": "95e64a15-03c5-44d9-9a33-4cbd392ab008",
+        "name": "PostgreSQL",
+        "type": "n8n-nodes-base.postgresTool",
+        "position": [
+          1280,
+          520
+        ],
+        "parameters": {},
+        "typeVersion": 2.5
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "59656397-0d25-47f3-94f3-c00beb3bf8d8",
+    "connections": {
+      "PostgreSQL": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat History": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Groq Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PostgreSQL Schema": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PostgreSQL Definition": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.postgresTool": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGroq": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Gegenfeld",
+    "username": "gegenfeld",
+    "bio": "We at Gegenfeld are an EdTech platform dedicated to delivering high-quality on-demand courses and interactive training sessions for professional development at all skill levels. With our commitment to \"Accelerate your future,\" we empower professionals to enhance their expertise through engaging, industry-focused learning experiences. On n8n, we share some of the workflows used in our interactive training to provide deeper insights and practical applications.",
+    "verified": true,
+    "links": [
+      "https://gegenfeld.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/c8a1c789de3e9122a421139cc2d7dc9ab404dfb76ac84a17fa487e8f607ae9ab?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire Simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1263,
+      "icon": "file:groq.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgroq/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat Groq"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgaWQ9IkxheWVyXzIiCiAgIHZpZXdCb3g9IjAgMCA0OTkuOTk5OTkgNDk5Ljk5OTk5IgogICB2ZXJzaW9uPSIxLjEiCiAgIHdpZHRoPSI1MDAiCiAgIGhlaWdodD0iNTAwIgogICB4bWw6c3BhY2U9InByZXNlcnZlIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzCiAgICAgaWQ9ImRlZnM0IiAvPjxnCiAgICAgaWQ9IlBBR0VTIj48Y2lyY2xlCiAgICAgICBzdHlsZT0iZmlsbDojZjU0ZjM1O2ZpbGwtb3BhY2l0eToxO3N0cm9rZS13aWR0aDoxLjEzNjIyIgogICAgICAgaWQ9InBhdGg0IgogICAgICAgY3g9IjI1MCIKICAgICAgIGN5PSIyNTAiCiAgICAgICByPSIyNTAiIC8+PHBhdGgKICAgICAgIGQ9Ik0gMjUwLjUzNjY0LDk3LjEyMjk5NCBDIDE5Mi43MTkzMSw5Ni41ODg2MzggMTQ1LjQ4MjIyLDE0Mi45NzA3NSAxNDQuOTQ3ODYsMjAwLjc4ODA4IGMgLTAuNTM0MzQsNTcuODE3MzMgNDUuODQ3NzcsMTA1LjA1NDQyIDEwMy42NjUxLDEwNS41ODg3NyBoIDM2LjMzNjIxIHYgLTM5LjIyMTc0IGggLTM0LjQxMjUzIGMgLTM2LjEyMjQ4LDAuNDI3NSAtNjUuNzI1OCwtMjguNTM0NjIgLTY2LjE1MzI5LC02NC42NTcwOCAtMC40Mjc0OSwtMzYuMTIyNDggMjguNTM0NjMsLTY1LjcyNTgxIDY0LjY1NzA4LC02Ni4xNTMzIGggMS40OTYyMSBjIDM2LjEyMjQ4LDAgNjUuNDA1MiwyOS4yODI3MiA2NS41MTIwNyw2NS40MDUyIHYgMCA5Ni4zOTc4MyAwIGMgMCwzNS44MDE4NyAtMjkuMTc1ODUsNjQuOTc3NzMgLTY0Ljg3MDgzLDY1LjQwNTIxIC0xNy4wOTk0MSwtMC4xMDY4OCAtMzMuNDUwNzEsLTcuMDUzNTEgLTQ1LjUyNzE3LC0xOS4xMjk5NSBsIC0yNy43ODY1LDI3Ljc4NjUxIGMgMTkuMjM2ODEsMTkuMzQzNyA0NS4zMTMzOSwzMC4zNTE0MyA3Mi41NjU1NiwzMC42NzIwNSBoIDEuMzg5MzMgYyA1Ny4wNjkyNCwtMC44NTQ5NyAxMDIuOTE3LC00Ny4xMzAyMiAxMDMuMjM3NiwtMTA0LjE5OTQ1IFYgMTk5LjI5MTg5IEMgMzUzLjY2NzM5LDE0Mi40MzYzOSAzMDcuMjg1MjcsOTcuMTIyOTk0IDI1MC41MzY2NCw5Ny4xMjI5OTQgWiIKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7c3Ryb2tlLXdpZHRoOjBweCIKICAgICAgIGlkPSJwYXRoMS0zIiAvPjwvZz48L3N2Zz4K"
+      },
+      "displayName": "Groq Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 42,
+      "name": "Wiki Interne"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": [
+    {
+      "id": 1161,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/AI_Chatbot_Postgre_SQL_4a3e8eaf21.png"
+    }
+  ]
+}

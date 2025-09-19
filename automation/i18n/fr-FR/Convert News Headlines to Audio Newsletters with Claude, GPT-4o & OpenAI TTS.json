@@ -1,0 +1,1116 @@
+{
+  "id": 8121,
+  "name": "Convert News Headlines to Audio Newsletters with Claude, GPT-4o & OpenAI TTS",
+  "views": 42,
+  "recentViews": 2,
+  "totalViews": 42,
+  "createdAt": "2025-09-01T13:41:30.709Z",
+  "description": "# Générer des bulletins d'information audio quotidiens à partir des titres d'actualités avec l'IA\n\n## À qui cela s'adresse-t-il\n\nParfait pour **les créateurs de contenu, les podcasteurs, les passionnés d'actualités et les professionnels occupés** qui souhaitent créer du contenu d'actualités audio automatisé ou rester informés grâce à des briefings audio personnalisés. Idéal pour les gestionnaires de médias sociaux, les créateurs de newsletters et quiconque construit des expériences de contenu audio-first.\n\n## Comment cela fonctionne\n\nCe flux de travail crée un pipeline entièrement automatisé de l'actualité à l'audio :\n\n1. **Le déclencheur de planification** récupère les derniers titres d'actualités de NewsAPI quotidiennement\n2. **Le traitement par IA** réécrit chaque article en contenu de style bulletin d'information en utilisant Claude\n3. **L'agrégation de contenu** combine tous les articles traités en une newsletter cohérente\n4. **La génération de script** transforme la newsletter en un script prêt pour l'audio de 2 minutes\n5. **La synthèse vocale** convertit le script en audio de haute qualité en utilisant les modèles vocaux d'OpenAI\n6. **La livraison par e-mail** envoie la newsletter audio en tant que pièce jointe aux abonnés\n\nLe flux de travail s'exécute automatiquement selon votre calendrier choisi, livrant du contenu audio frais sans aucune intervention manuelle.\n\n## Comment configurer\n\n### Exigences\n\n- **Compte NewsAPI** avec clé API (niveau gratuit disponible)\n- **Accès à l'API OpenRouter** pour le modèle Claude\n- **Compte API OpenAI** pour la fonctionnalité de synthèse vocale\n- **Compte Gmail** avec accès OAuth2 pour la livraison par e-mail\n- **Compréhension de base** de la gestion des fichiers audio (optionnel)\n\n### Configuration étape par étape\n**1. Définissez votre déclencheur de planification**\n- Configurez le déclencheur de planification pour votre moment préféré (quotidien à 7h00 recommandé)\n- Tenez compte du fuseau horaire de votre audience et des moments de livraison optimaux\n- Mettez en place un suivi pour garantir une exécution cohérente\n\n**2. Configurez la source d'actualités**\n- Inscrivez-vous sur NewsAPI à newsapi.org (le niveau gratuit inclut 100 requêtes/jour)\n- Remplacez `YOUR_NEWSAPI_KEY` par votre véritable clé API dans le nœud de requête HTTP\n- Personnalisez les paramètres de requête d'actualités (pays, catégorie, sources) pour correspondre aux intérêts de votre audience\n- Testez le point de terminaison de l'API pour vous assurer qu'il renvoie les données attendues\n\n**3. Extraire des articles individuels (Séparer)**\n- Prend le tableau d'articles de la réponse de NewsAPI\n- Crée des éléments séparés pour chaque article d'actualité\n- Permet le traitement individuel de chaque histoire\n- Prépare les données pour la génération de contenu par IA\n\n**4. Configurez les identifiants du modèle IA**\n- Créez un compte OpenRouter pour accéder à Claude\n- Ajoutez vos identifiants API OpenRouter dans n8n\n- Alternativement, remplacez par OpenAI GPT-4 si vous préférez (mettez à jour le nœud de modèle en conséquence)\n- Configurez les limites de taux et le suivi de l'utilisation\n\n**5. Combinez le contenu de la newsletter (Agrégat)**\n- Rassemble les sorties de tous les articles traités\n- Renomme le champ en actualités pour une référence facile\n- Prépare le contenu combiné pour la génération de script\n- Assure qu'aucun article n'est perdu dans le traitement\n\n**6. Génération de script audio**\n - GPT-4 crée un script audio prêt de 2 minutes à partir du contenu de la newsletter.\n - Crée un script avec la persona de présentateur \"Max\"\n###### Caractéristiques du script :\n   - Durée cible de 2 minutes\n   - Texte adapté à l'audio (pas de caractères spéciaux)\n   - Flux de parole naturel et transitions\n   - Introduction et conclusion engageantes\n\n**7. Configurez la synthèse vocale OpenAI**\n- Ajoutez vos identifiants API OpenAI dans n8n\n- Choisissez votre modèle vocal préféré (options : alloy, echo, fable, onyx, nova, shimmer)\n- Définissez les préférences de qualité audio (standard vs HD)\n- Testez la sortie vocale avec un texte d'exemple\n\n**8. Personnalisez la livraison par e-mail**\n- Ajoutez vos identifiants OAuth2 Gmail\n- Remplacez `YOUR_EMAIL@example.com` par votre véritable e-mail de destinataire\n- Mettez à jour le nom de l'expéditeur et les informations commerciales dans le modèle d'e-mail\n- Configurez les paramètres de pièce jointe pour les fichiers audio\n\n**9. Testez l'ensemble du pipeline**\n- Exécutez une exécution manuelle pour tester tous les composants\n- Vérifiez que les données d'actualités sont correctement récupérées et traitées\n- Vérifiez la qualité audio et la durée\n- Confirmez la livraison par e-mail avec la pièce jointe audio\n\n## Comment personnaliser le flux de travail\n\n### Filtrage avancé des actualités\n- **Sources personnalisées** : Remplacez NewsAPI par des flux RSS de publications spécifiques\n- **Filtrage par sujet** : Ajoutez un filtrage par mots-clés pour se concentrer sur des secteurs ou des sujets spécifiques\n- **Support multi-pays** : Récupérez des actualités de plusieurs régions et fusionnez le contenu\n- **Analyse de sentiment** : Filtrez les actualités négatives ou catégorisez par sentiment\n- **Sujets tendance** : Intégrez des API de médias sociaux pour inclure des discussions tendance\n\n### Amélioration du contenu IA\n- **Persona vocale** : Personnalisez l'invite IA pour créer différentes personnalités de présentateur (professionnel, décontracté, expert)\n- **Contrôle de la longueur** : Ajustez la longueur du script pour différents formats (mises à jour d'une minute, plongées de cinq minutes)\n- **Support multilingue** : Générez des newsletters dans différentes langues en fonction des préférences des abonnés\n- **Vérification des faits** : Ajoutez des étapes de vérification pour garantir l'exactitude du contenu généré par l'IA\n- **Attribution des sources** : Incluez des citations appropriées et des liens vers les articles originaux\n\n### Fonctionnalités de production audio\n- **Variété de voix** : Alternez entre différentes voix OpenAI pour un contenu engageant\n- **Musique de fond** : Ajoutez de la musique d'intro/outro en utilisant des API de montage audio\n- **Contrôle de la vitesse** : Ajustez la vitesse de lecture en fonction du type de contenu\n- **Marqueurs de chapitre** : Ajoutez des horodatages pour différents segments d'actualités\n- **Optimisation de la qualité** : Implémentez la normalisation et l'amélioration audio\n\n### Améliorations de distribution\n- **Livraison multi-canal** : Envoyez à Slack, Discord ou des plateformes de communication d'équipe\n- **Publication de podcast** : Téléchargez automatiquement sur des plateformes de podcast via RSS\n- **Médias sociaux** : Publiez des extraits audio sur Twitter, LinkedIn ou Instagram\n- **Intégration de site web** : Intégrez automatiquement un lecteur audio sur votre site web\n- **Notifications push d'application mobile** : Envoyez des notifications aux applications mobiles avec des liens audio\n\n### Gestion des abonnés\n- **Intégration Mailchimp** : Créez et gérez automatiquement des listes d'abonnés\n- **Suivi des préférences** : Permettez aux abonnés de choisir des catégories d'actualités ou la fréquence\n- **Suivi des analyses** : Surveillez les taux d'ouverture, la durée d'écoute et l'engagement\n- **Tests A/B** : Testez différents styles vocaux, longueurs de contenu ou moments de livraison\n- **Segmentation** : Envoyez différentes newsletters à différents segments d'abonnés\n\n### Personnalisation du flux de travail de contenu\n- **Révision éditoriale** : Ajoutez des étapes d'approbation avant la distribution de contenu\n- **Calendrier de contenu** : Intégrez des outils de planification pour des thèmes de contenu programmés\n- **Édition collaborative** : Incluez des processus de révision d'équipe pour la qualité du contenu\n- **Contrôle de version** : Maintenez des archives des newsletters précédentes pour référence\n- **Métriques de performance** : Suivez quels types de contenu fonctionnent le mieux\n\n## Exemples d'intégration Webhook\n\n### Intégration de site web\n```javascript\n// Ajoutez ceci à votre site web pour des demandes manuelles de newsletter\nfetch('/webhook/trigger-newsletter', {\n  method: 'POST',\n  headers: {'Content-Type': 'application/json'},\n  body: JSON.stringify({\n    subscriber_email: 'user@example.com',\n    topics: ['technologie', 'affaires'],\n    urgency: 'normal'\n  })\n});\n```\n\n### Intégration de commande Slack\n- Créez des commandes slash pour déclencher la génération de newsletters à la demande\n- Permettez aux membres de l'équipe de demander des newsletters sur des sujets spécifiques\n- Intégrez avec les flux de travail Slack pour des briefings d'équipe automatisés\n\n### Intégration d'application mobile\n- Utilisez des webhooks pour déclencher des newsletters à partir d'interactions d'application mobile\n- Créez des systèmes de notifications push pour des alertes d'actualités de dernière minute\n- Construisez des lecteurs audio intégrés pour une expérience d'écoute fluide\n\n## Dépannage\n\n### Problèmes courants et solutions\n\n**Quota NewsAPI dépassé :**\n- Surveillez votre utilisation quotidienne de l'API dans le tableau de bord NewsAPI\n- Implémentez un cache pour réduire les requêtes redondantes\n- Envisagez de passer à un plan payant pour des limites plus élevées\n- Ajoutez des flux RSS de secours lorsque les limites de l'API sont atteintes\n\n**Limitation de taux du modèle IA :**\n- Implémentez un retour exponentiel pour les requêtes API\n- Surveillez l'utilisation des jetons à travers les services Claude et OpenAI\n- Ajoutez des systèmes de file d'attente pour le traitement à fort volume\n- Envisagez de passer à différents modèles pendant les périodes de pointe\n\n**Échecs de génération audio :**\n- Vérifiez les quotas et la facturation de la synthèse vocale OpenAI\n- Validez l'entrée de texte pour les caractères spéciaux qui pourraient causer des problèmes\n- Implémentez une logique de réessai pour les échecs de génération audio\n- Ajoutez un retour à des newsletters uniquement textuelles lorsque l'audio échoue\n\n**Problèmes de livraison par e-mail :**\n- Vérifiez les quotas et les limites d'envoi de l'API Gmail\n- Vérifiez les limites de taille des fichiers audio (Gmail a une limite de pièce jointe de 25 Mo)\n- Implémentez une compression pour les fichiers audio volumineux\n- Envisagez des liens de stockage cloud au lieu de pièces jointes directes\n\n**Problèmes de qualité de contenu :**\n- Affinez les invites IA pour une sortie plus cohérente\n- Ajoutez des étapes de validation de contenu pour vérifier l'exactitude\n- Implémentez des directives éditoriales dans les instructions IA\n- Créez des boucles de rétroaction pour améliorer le contenu au fil du temps\n\n### Optimisation des performances\n\n**Efficacité du flux de travail :**\n- Traitez les articles d'actualités en parallèle lorsque cela est possible\n- Implémentez un cache intelligent pour le contenu répété\n- Optimisez les appels API pour réduire la latence\n- Surveillez les temps d'exécution et identifiez les goulets d'étranglement\n\n**Gestion des coûts :**\n- Suivez les coûts API à travers tous les services (NewsAPI, OpenRouter, OpenAI)\n- Implémentez des alertes budgétaires et des arrêts automatiques\n- Optimisez la longueur du contenu pour réduire les coûts de synthèse vocale\n- Envisagez le traitement par lots pendant les heures creuses\n\n**Préparation à l'évolutivité :**\n- Concevez pour le support de plusieurs abonnés\n- Prévoyez une augmentation du volume d'actualités lors d'événements majeurs\n- Préparez des systèmes de secours pour les pannes de service\n- Documentez les processus pour les transferts d'équipe\n\n### Sécurité et conformité\n\n**Protection de la clé API :**\n- Ne jamais exposer les clés API dans les exports de flux de travail\n- Utilisez exclusivement la gestion des identifiants de n8n\n- Implémentez des politiques de rotation des clés\n- Surveillez l'utilisation non autorisée de l'API\n\n**Conformité du contenu :**\n- Examinez le contenu généré par l'IA pour l'exactitude et les biais\n- Implémentez un filtrage de contenu pour le matériel inapproprié\n- Assurez-vous d'une attribution appropriée aux sources d'actualités originales\n- Maintenez des normes éditoriales et des processus de vérification des faits",
+  "workflow": {
+    "meta": {
+      "instanceId": "cbbe3d07d282d90d2165a7ab7800571be416166e6eb660e7a28cfe9b84473f49",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "39081db1-dab2-4453-beac-af3217697b44",
+        "name": "Get Latest News",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          128,
+          -144
+        ],
+        "parameters": {
+          "url": "https://newsapi.org/v2/top-headlines?country=us&apiKey=YOUR_NEWSAPI_KEY",
+          "options": {}
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "8c1ccc13-3ec3-486d-b087-77cb36d74ec9",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          352,
+          -144
+        ],
+        "parameters": {
+          "options": {},
+          "fieldToSplitOut": "articles"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3ec09b1c-bbc6-4508-b96d-7c90f8275e92",
+        "name": "Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "position": [
+          176,
+          192
+        ],
+        "parameters": {
+          "model": "anthropic/claude-3.7-sonnet",
+          "options": {}
+        },
+        "credentials": {
+          "openRouterApi": {
+            "id": "PnhGPHp7RqMOPhZN",
+            "name": "OpenRouter account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e2058424-6d9c-49e4-be50-5d59ec6d1a78",
+        "name": "Aggregate",
+        "type": "n8n-nodes-base.aggregate",
+        "position": [
+          416,
+          112
+        ],
+        "parameters": {
+          "options": {},
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "renameField": true,
+                "outputFieldName": "news",
+                "fieldToAggregate": "output"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a71b5a13-55d3-4b8e-9cee-98366151c66c",
+        "name": "Daily News Extractor",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -112,
+          112
+        ],
+        "parameters": {
+          "text": "=News Details:\nAuthor -  {{ $json.author }}\ntitle - {{ $json.title }}\ndescription - {{ $json.description }}\ncontent - {{ $json.content }}\npublish date - {{ $json.publishedAt }}\n\n",
+          "options": {
+            "systemMessage": "take the details and rewrite a newsletter post\n\ninclude the date, and author too, let it blend in\n"
+          },
+          "promptType": "define"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "aaf4f384-e63e-4eb3-a1a9-a55e0ad90c99",
+        "name": "Newsletter Agent",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "position": [
+          -144,
+          448
+        ],
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini",
+            "cachedResultName": "GPT-4O-MINI"
+          },
+          "options": {},
+          "messages": {
+            "values": [
+              {
+                "content": "={{ $json.news.toJsonString() }}"
+              },
+              {
+                "role": "assistant",
+                "content": "=Rewrite all this newsletter into a 2-minute script that will be transcribe into audio \n\ndont put spcial characters, because a audio will transcribe the text to audio\n\nyou can start with Max here bring you the top new around the world"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "BmIUKpYmW7YRSbaU",
+            "name": "OpenAi account"
+          }
+        },
+        "typeVersion": 1.8
+      },
+      {
+        "id": "414c2613-c7f7-4548-a756-767729a17b23",
+        "name": "Transcribe Newsletter",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "position": [
+          176,
+          448
+        ],
+        "parameters": {
+          "input": "={{ $json.message.content }}",
+          "options": {},
+          "resource": "audio"
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "BmIUKpYmW7YRSbaU",
+            "name": "OpenAi account"
+          }
+        },
+        "typeVersion": 1.8
+      },
+      {
+        "id": "9dcb3abc-bfad-434f-b951-7326ad78c03c",
+        "name": "Notify Subscriber",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          432,
+          448
+        ],
+        "webhookId": "5ce3da89-caad-4f21-a6bf-3acf3b80b4f0",
+        "parameters": {
+          "sendTo": "YOUR_EMAIL@example.com",
+          "message": "=Dear Sir,\n\n\nKindly Find the Latest News for {{ $now.format('yyyy-MM-dd') }}\n\n\nRegards,\nMax,\nYour business name",
+          "options": {
+            "attachmentsUi": {
+              "attachmentsBinary": [
+                {}
+              ]
+            },
+            "appendAttribution": false
+          },
+          "subject": "=Top News Headline for {{ $now.format('yyyy-MM-dd') }}",
+          "emailType": "text"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "VI8hpbWunRMMvR6a",
+            "name": "Gmail account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "958391a6-215a-4c51-9209-82a3d465bbbd",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1024,
+          -256
+        ],
+        "parameters": {
+          "width": 800,
+          "height": 848,
+          "content": "\n# 📰 Automated Daily News to Audio Newsletter.\n\n### 🎯 What This Does\nTransforms daily news headlines into personalized audio newsletters automatically:\n• **Fetches latest news** from NewsAPI on schedule\n• **AI content creation** rewrites articles into newsletter format using Claude\n• **Script generation** creates 2-minute audio-ready scripts with GPT-4\n• **Text-to-speech** converts scripts to high-quality audio using OpenAI\n• **Email delivery** sends audio newsletters as attachments\n\n### ⚡ How It Works\n1. Scheduled trigger runs daily (customizable timing)\n2. Fetches top US headlines from NewsAPI\n3. Claude AI rewrites each article for newsletter format\n4. GPT-4 creates cohesive 2-minute audio script\n5. OpenAI converts text to natural-sounding speech\n6. Audio newsletter emailed to subscribers automatically\n\n### 🛠️ Setup Required\n**Before using this workflow:**\n1. Get NewsAPI key and replace `YOUR_NEWSAPI_KEY`\n2. Configure OpenRouter credentials for Claude access  \n3. Add OpenAI API key for text-to-speech\n4. Update recipient email address\n5. Customize news sources and AI prompts\n6. Test audio quality and email delivery\n\n### 💡 Perfect For\n• Content creators building audio-first content\n• Busy professionals wanting daily news briefings\n• Podcasters creating automated content segments  \n• Teams needing internal news updates\n• Anyone interested in AI-powered media automation"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "def6a9ac-6cfd-48d0-958d-5c98084daf4c",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -96,
+          -144
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "5f453ec6-55dc-4b2b-b0b1-2a31c36fa41d",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -192,
+          -272
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 256,
+          "height": 272,
+          "content": "### Step 1: Daily News Schedule\n\nAutomatically triggers news collection at your chosen time.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8137fa81-242a-4ccf-91bc-9b24b11b5cb7",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          80,
+          -272
+        ],
+        "parameters": {
+          "color": 3,
+          "height": 272,
+          "content": "### Step 2: Fetch News Headlines\n\nRetrieves latest news from NewsAPI."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4c9d24e5-ce3d-41e2-b90a-990abb66a9e0",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          336,
+          -272
+        ],
+        "parameters": {
+          "color": 4,
+          "height": 272,
+          "content": "### Step 3: Data Extraction\n\nExtract Th important details from the API"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "4f750a45-2f6f-4d25-a050-6c3920413dd4",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -192,
+          16
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 512,
+          "height": 272,
+          "content": "### Step 4: AI Content Processing\n\nClaude AI rewrites news articles into newsletter format.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d33eb059-8c5c-4ac9-9796-25198bd8e56c",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          336,
+          16
+        ],
+        "parameters": {
+          "color": 2,
+          "height": 272,
+          "content": "### Step 5: Data Transformation\nMerge all the News into a single list\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "77a05457-303d-425a-a7d7-2ec9d07b437b",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -192,
+          304
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 304,
+          "height": 320,
+          "content": "### Step 6:  Script Generation\n\nGPT-4 creates 2-minute audio-ready script.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a27adfed-7bd7-4321-b955-fcfedede7718",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          128,
+          304
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 192,
+          "height": 320,
+          "content": "### Step 7: Text-to-Speech Conversion.\n\nOpenAI converts script to natural-sounding audio."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "809ec6c2-b8d6-42ac-ad1c-ecb34ee06fe7",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          336,
+          304
+        ],
+        "parameters": {
+          "color": 6,
+          "height": 320,
+          "content": "### Step 8: Email Delivery\n\nSends audio newsletter to subscribers."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Daily News Extractor",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Newsletter Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Daily News Extractor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Latest News": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Newsletter Agent": {
+        "main": [
+          [
+            {
+              "node": "Transcribe Newsletter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Latest News",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Daily News Extractor": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Transcribe Newsletter": {
+        "main": [
+          [
+            {
+              "node": "Notify Subscriber",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 18,
+    "nodeTypes": {
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.aggregate": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 9
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.openAi": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenRouter": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Abideen Bello",
+    "username": "bideen",
+    "bio": "Data/Automation consultant with experience helping Sales & Marketing teams to streamline their processes. Use my link to book an initial consultation for custom n8n work.",
+    "verified": true,
+    "links": [
+      "https://x.com/_Bideen"
+    ],
+    "avatar": "https://gravatar.com/avatar/f6b54513b210a02d8ba42b5151cbbb9b6904586ff08338d47addc0d7d77edda1?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1236,
+      "icon": "file:aggregate.svg",
+      "name": "n8n-nodes-base.aggregate",
+      "codex": {
+        "data": {
+          "alias": [
+            "Aggregate",
+            "Combine",
+            "Flatten",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.aggregate/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agrégat"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjRkY2RDVBIiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMyIDE0OGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDE0NmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJINDRjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6bTAgOTZjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxNDZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYyNGMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDQ0Yy02LjYyNyAwLTEyLTUuMzczLTEyLTEyem0wIDk2YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTQ2YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkg0NGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik03NCA3NmMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDExNi4yMTdjMTcuNjczIDAgMzIgMTQuMzI3IDMyIDMydjU2YzAgMjYuOTc4IDEwLjI3MiA1MS41NTcgMjcuMTE5IDcwLjAzOSA1LjA1NSA1LjU0NSA1LjA1NSAxNC4zNzcgMCAxOS45MjItMTYuODQ3IDE4LjQ4Mi0yNy4xMTkgNDMuMDYxLTI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMtMTQuMzI3IDMyLTMyIDMySDg2Yy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTE2LjIxN2M0NC4xODMgMCA4MC0zNS44MTcgODAtODB2LTU2YzAtMzAuOTI4IDI1LjA3Mi01NiA1Ni01NmE1Ljc4MyA1Ljc4MyAwIDAgMCA1Ljc4My01Ljc4M3YtMzYuNDM0YTUuNzgzIDUuNzgzIDAgMCAwLTUuNzgzLTUuNzgzYy0zMC45MjggMC01Ni0yNS4wNzItNTYtNTZ2LTU2YzAtNDQuMTgzLTM1LjgxNy04MC04MC04MEg4NmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNzYgMjQ0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgzODhjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L2c+PGRlZnM+PGNsaXBQYXRoIGlkPSJhIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDUxMnY1MTJIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Aggregate",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Séparer"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1250,
+      "icon": "file:openAi.svg",
+      "name": "@n8n/n8n-nodes-langchain.openAi",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "ChatGPT",
+            "DallE",
+            "whisper",
+            "audio",
+            "transcribe",
+            "tts",
+            "assistant"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Miscellaneous",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg1IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NiAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MSA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K"
+      },
+      "displayName": "OpenAI",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1281,
+      "icon": "file:openrouter.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenrouter/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenRouter"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjOTRBM0I4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0aXRsZT5PcGVuUm91dGVyPC90aXRsZT48cGF0aCBkPSJNMTYuODA0IDEuOTU3bDcuMjIgNC4xMDV2LjA4N0wxNi43MyAxMC4yMWwuMDE3LTIuMTE3LS44MjEtLjAzYy0xLjA1OS0uMDI4LTEuNjExLjAwMi0yLjI2OC4xMS0xLjA2NC4xNzUtMi4wMzguNTc3LTMuMTQ3IDEuMzUyTDguMzQ1IDExLjAzYy0uMjg0LjE5NS0uNDk1LjMzNi0uNjguNDU1bC0uNTE1LjMyMi0uMzk3LjIzNC4zODUuMjMuNTMuMzM4Yy40NzYuMzE0IDEuMTcuNzk2IDIuNzAxIDEuODY2IDEuMTEuNzc1IDIuMDgzIDEuMTc3IDMuMTQ3IDEuMzUybC4zLjA0NWMuNjk0LjA5MSAxLjM3NS4wOTQgMi44MjUuMDMzbC4wMjItMi4xNTkgNy4yMiA0LjEwNXYuMDg3TDE2LjU4OSAyMmwuMDE0LTEuODYyLS42MzUuMDIyYy0xLjM4Ni4wNDItMi4xMzcuMDAyLTMuMTM4LS4xNjItMS42OTQtLjI4LTMuMjYtLjkyNi00Ljg4MS0yLjA1OWwtMi4xNTgtMS41YTIxLjk5NyAyMS45OTcgMCAwMC0uNzU1LS40OThsLS40NjctLjI4YTU1LjkyNyA1NS45MjcgMCAwMC0uNzYtLjQzQzIuOTA4IDE0LjczLjU2MyAxNC4xMTYgMCAxNC4xMTZWOS44ODhsLjE0LjAwNGMuNTY0LS4wMDcgMi45MS0uNjIyIDMuODA5LTEuMTI0bDEuMDE2LS41OC40MzgtLjI3NGMuNDI4LS4yOCAxLjA3Mi0uNzI2IDIuNjg2LTEuODUzIDEuNjIxLTEuMTMzIDMuMTg2LTEuNzggNC44ODEtMi4wNTkgMS4xNTItLjE5IDEuOTc0LS4yMTMgMy44MTQtLjEzOGwuMDItMS45MDd6Ij48L3BhdGg+PC9zdmc+Cg=="
+      },
+      "displayName": "OpenRouter Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

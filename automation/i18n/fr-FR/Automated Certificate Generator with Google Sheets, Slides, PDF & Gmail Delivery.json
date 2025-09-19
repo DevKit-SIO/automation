@@ -1,0 +1,675 @@
+{
+  "id": 8163,
+  "name": "Générateur de certificats automatisé avec Google Sheets, Slides, PDF et livraison par Gmail",
+  "views": 52,
+  "recentViews": 10,
+  "totalViews": 52,
+  "createdAt": "2025-09-02T12:55:08.575Z",
+  "description": "### Générateur de certificats automatisé avec Google Sheets, Slides et livraison par Gmail 🎓\n\nCe flux de travail est conçu pour **les éducateurs, les formateurs et les organisateurs d'événements** qui souhaitent générer et envoyer automatiquement des certificats numériques.\n\nIl prend les données des participants à partir de **Google Sheets**, personnalise un **modèle de certificat Google Slides**, le convertit en **PDF**, le sauvegarde dans **Google Drive**, et l'envoie directement aux participants par **Gmail**.\n\n---\n\n#### ✅ Instructions de configuration\n\n1. **Préparer Google Sheets**\n   - Créez une feuille avec ces colonnes requises :  \n     - **Nom** → Nom complet du participant  \n     - **Email** → Adresse email du destinataire  \n     - **Score** (optionnel) → Pour le filtrage ou la tenue de dossiers  \n   - Ajoutez au moins une ligne de données de test.\n\n2. **Créer un modèle Google Slides**\n   - Concevez votre certificat (branding, couleurs, etc.).  \n   - Ajoutez un espace réservé `[NOM]` où le nom du participant doit apparaître.  \n\n3. **Configurer Google Drive**\n   - Créez un dossier pour stocker les certificats PDF générés.  \n   - Copiez l'URL du dossier pour l'utiliser dans le flux de travail.  \n\n4. **Connecter les services Google dans n8n**\n   - Ajoutez des identifiants pour **Google Sheets, Google Slides, Google Drive et Gmail**.  \n   - Remplacez les espaces réservés (`ID de la feuille`, `ID du modèle Slides`, `ID du dossier de destination`) dans le flux de travail.  \n\n5. **Personnaliser la livraison par Gmail**\n   - Mettez à jour le sujet et le corps du nœud Gmail.  \n   - Le PDF du certificat sera automatiquement joint à chaque email.  \n\n---\n\n#### 🎨 Options de personnalisation\n- **Conception du certificat** : Modifiez votre modèle Slides (logos, couleurs, champs supplémentaires).  \n- **Champs dynamiques** : Ajoutez des espaces réservés comme `[COURS]` ou `[DATE]` et mappez-les depuis votre feuille.  \n- **Corps de l'email** : Personnalisez avec des variables telles que `{{$json[\"Nom\"]}}`.  \n- **Nom de fichier** : Ajustez le nom de fichier dans les nœuds \"Copier le fichier\" et \"Télécharger le fichier\".  \n\n---\n\nCe modèle simplifie la distribution des certificats, le rendant idéal pour **les écoles, les universités, les programmes de formation et les webinaires**.",
+  "workflow": {
+    "name": "Create Certificates",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "node1",
+        "name": "Google Sheets Trigger",
+        "type": "n8n-nodes-base.googleSheetsTrigger",
+        "notes": "Getting data from sheets",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "event": "rowAdded",
+          "options": {},
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL#gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "YOUR_GOOGLE_SHEET_URL"
+          }
+        },
+        "credentials": {
+          "googleSheetsTriggerOAuth2Api": {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "Google Sheets Trigger account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "node2",
+        "name": "Copy file",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "Copy certificate template",
+        "position": [
+          208,
+          0
+        ],
+        "parameters": {
+          "name": "={{ $json.Name }} Certificate",
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "YOUR_SLIDES_TEMPLATE_ID"
+          },
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "YOUR_TARGET_FOLDER_URL"
+          },
+          "operation": "copy",
+          "sameFolder": false
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "Google Drive account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "node3",
+        "name": "Replace text in a presentation",
+        "type": "n8n-nodes-base.googleSlides",
+        "notes": "Change text",
+        "position": [
+          416,
+          0
+        ],
+        "parameters": {
+          "textUi": {
+            "textValues": [
+              {
+                "text": "[NAME]",
+                "replaceText": "={{ $('Google Sheets Trigger').item.json.Name }}",
+                "pageObjectIds": [
+                  "p1"
+                ]
+              }
+            ]
+          },
+          "options": {},
+          "operation": "replaceText",
+          "presentationId": "={{ $json.id }}"
+        },
+        "credentials": {
+          "googleSlidesOAuth2Api": {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "Google Slides account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 2
+      },
+      {
+        "id": "node4",
+        "name": "Download file",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          624,
+          0
+        ],
+        "parameters": {
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.presentationId }}"
+          },
+          "options": {
+            "fileName": "={{ $('Google Sheets Trigger').item.json.Name }} Certificate",
+            "googleFileConversion": {
+              "conversion": {
+                "slidesToFormat": "application/pdf"
+              }
+            }
+          },
+          "operation": "download"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "node5",
+        "name": "Upload file",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "Saving PDFs",
+        "position": [
+          864,
+          192
+        ],
+        "parameters": {
+          "name": "={{ $('Google Sheets Trigger').item.json.Name }} Certificate.pdf",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "YOUR_FINAL_PDF_FOLDER_URL"
+          }
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "Google Drive account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "node6",
+        "name": "Delete a file",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "Deleting temporary PPT",
+        "position": [
+          1152,
+          176
+        ],
+        "parameters": {
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Replace text in a presentation').item.json.presentationId }}"
+          },
+          "options": {},
+          "operation": "deleteFile"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "Google Drive account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "node7",
+        "name": "Send a message",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          864,
+          16
+        ],
+        "parameters": {
+          "sendTo": "={{ $('Google Sheets Trigger').item.json.Email }}",
+          "message": "=Dear {{ $('Google Sheets Trigger').item.json.Name }},\nCongratulations on completing the program 🎉.\nPlease find your certificate attached.\n\nBest regards,\nYour Team",
+          "options": {
+            "attachmentsUi": {
+              "attachmentsBinary": [
+                {
+                  "property": "data"
+                }
+              ]
+            }
+          },
+          "subject": "Your Certificate",
+          "emailType": "text"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "Gmail account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "note1",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          80,
+          784
+        ],
+        "parameters": {
+          "width": 752,
+          "height": 1008,
+          "content": "## Workflow Guide: Auto-Certificate Generator 🎓\n\n**Step 1 – Google Sheets Trigger**  \nWatches for new rows in the sheet (Name, Email).  \nEach new row starts the workflow.\n\n**Step 2 – Copy File (Google Drive)**  \nCopies the Google Slides certificate template.  \nNames the file `<Student Name> Certificate`.\n\n**Step 3 – Replace Text (Google Slides)**  \nFinds placeholder `[NAME]` in the copied template.  \nReplaces it with the student's actual name.\n\n**Step 4 – Download File (Google Drive)**  \nExports the customized Slides file as PDF.  \nFile name: `<Student Name> Certificate.pdf`.\n\n**Step 5 – Upload File (Google Drive)**  \nSaves the generated PDF into the selected folder.  \nKeeps all certificates organized.\n\n**Step 6 – Delete File (Google Drive)**  \nDeletes the temporary Slides copy.  \nOnly PDFs remain in Drive.\n\n**Step 7 – Send a message (Gmail)**  \nSends the generated certificate by email to the student.\n\n---\n\n📌 Notes:  \n- Update **Sheet ID**, **Slides template ID**, **Destination Folder ID**, and **Gmail credentials** with your own.  \n- Ensure your template has `[NAME]` exactly where the student name should appear.  \n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "connections": {
+      "Copy file": {
+        "main": [
+          [
+            {
+              "node": "Replace text in a presentation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file": {
+        "main": [
+          [
+            {
+              "node": "Delete a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Upload file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Sheets Trigger": {
+        "main": [
+          [
+            {
+              "node": "Copy file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Replace text in a presentation": {
+        "main": [
+          [
+            {
+              "node": "Download file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 8,
+    "nodeTypes": {
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 4
+      },
+      "n8n-nodes-base.googleSlides": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheetsTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Muhammad Saqib",
+    "username": "saqib",
+    "bio": "",
+    "verified": false,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/0b8287c8a6af066efb96bdecd7df1ec7eb8f44e46c61d7bc949253382e65720f?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 478,
+      "icon": "file:googleslides.svg",
+      "name": "n8n-nodes-base.googleSlides",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googleslides/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Slides"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii02MCAtNjAgNjMwIDYzMCI+PHBhdGggZmlsbD0iI2Y1YjkxMiIgZD0iTTQ0MC44IDE0MC4yVjQ3OWMwIDE4LjItMTQuOCAzMy0zMyAzM0gxMDIuOWMtMTguMiAwLTMzLTE0LjgtMzMtMzNWMzNjMC0xOC4yIDE0LjgtMzMgMzMtMzNoMTk3LjZ6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTMyMy42IDIzMy41SDE4OS4xYy0xMi41IDAtMjIuNiAxMC4xLTIyLjYgMjIuNnYxMzQuNWMwIDEyLjUgMTAuMSAyMi42IDIyLjYgMjIuNmgxMzQuNWMxMi41IDAgMjIuNi0xMC4xIDIyLjYtMjIuNlYyNTZjMC0xMi40LTEwLjEtMjIuNS0yMi42LTIyLjVtLS43IDEzOS41aC0xMzN2LTkwLjVoMTMzeiIvPjxwYXRoIGQ9Im0zMTkuNiAxMzQuNCAxMjEuMSA5OC4xdi05Mi4yTDM3MiAxMDAuNXoiIG9wYWNpdHk9Ii4xOSIvPjxwYXRoIGZpbGw9IiNmYWRjODciIGQ9Ik00NDEuNCAxNDAuMkgzMzQuMmMtMTguMiAwLTMzLTE0LjgtMzMtMzNWMHoiLz48L3N2Zz4="
+      },
+      "displayName": "Google Slides",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 841,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheetsTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.googlesheetstrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de documents"
+    }
+  ],
+  "image": []
+}
