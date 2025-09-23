@@ -1,0 +1,675 @@
+{
+  "id": 7066,
+  "name": "Créer des agents IA de raisonnement multi-étapes avec GPT-4 et des outils de pensée réutilisables",
+  "views": 503,
+  "recentViews": 3,
+  "totalViews": 503,
+  "createdAt": "2025-08-06T18:34:55.389Z",
+  "description": "Déverrouillez un nouveau niveau de sophistication pour vos agents IA avec ce modèle. Bien que l'**outil de pensée** natif d'n8n soit excellent pour donner à un agent un monologue interne, il est limité à une seule instance. Ce flux de travail fournit une solution astucieuse en utilisant un sous-flux de travail pour créer **plusieurs outils de pensée personnalisés**, chacun ayant son propre but spécifique.\n\nCe modèle fournit la base pour construire des agents capables de planifier, d'agir, puis de réfléchir sur leurs actions avant de continuer. Au lieu de simplement réagir, votre agent peut désormais suivre un processus de raisonnement structuré et multi-étapes que vous concevez, menant à des automatisations plus fiables et puissantes.\n\n## **Pour qui est-ce ?**\n\n* **Développeurs IA et automatisation :** Quiconque cherchant à construire des agents complexes à outils multiples nécessitant des capacités de logique et de planification robustes.\n* **Passionnés de LangChain :** Les utilisateurs familiers avec des concepts avancés d'agents comme ReAct (Raison-Agir) trouveront cela pratique pour mettre en œuvre des cadres similaires dans n8n.\n* **Résolveurs de problèmes :** Si votre agent actuel a du mal avec des tâches complexes, lui donner des étapes distinctes pour la planification et la réflexion peut améliorer considérablement ses performances.\n\n## **Quel problème cela résout-il ?**\n\n* **Contourne la limite de l'outil de pensée unique :** Le cœur de ce modèle est une technique qui vous permet d'ajouter autant d'étapes de pensée distinctes à votre agent que vous le souhaitez.\n* **Permet un raisonnement complexe :** Vous pouvez concevoir un processus de pensée structuré pour votre agent, tel que \"Planifier l'ensemble du processus\", \"Exécuter l'étape 1\" et \"Réfléchir au résultat\", le rendant plus intelligent.\n* **Améliore la fiabilité et le débogage de l'agent :** En forçant l'agent à écrire ses pensées à différentes étapes, vous pouvez facilement voir sa ligne de raisonnement, le rendant moins sujet aux erreurs et beaucoup plus facile à déboguer lorsque les choses tournent mal.\n* **Fournit un plan pour une IA sophistiquée :** Ce n'est pas juste un outil simple ; c'est un cadre fondamental pour construire des agents IA à la pointe de la technologie capables de gérer des tâches plus nuancées et multi-étapes.\n\n## **Comment cela fonctionne**\n\n1.  **L'espace de pensée réutilisable :** La magie de ce modèle est un simple sous-flux de travail qui ne fait rien d'autre que de recevoir du texte. Ce flux de travail agit comme un \"carnet de notes\" réutilisable.\n2.  **Création d'outils de pensée personnalisés :** Dans le flux de travail principal, nous utilisons le nœud **Outil (Flux de travail)** pour appeler ce sous-flux \"carnet de notes\" plusieurs fois. Nous donnons à chacun de ces outils un nom unique (par exemple, `Pensées initiales`, `Pensées supplémentaires`).\n3.  **Le pouvoir des descriptions :** La clé est la **description** que vous donnez à chacun de ces nœuds d'outil. Cette description indique à l'agent *quand* et *comment* il doit utiliser cette étape de pensée spécifique. Par exemple, l'outil `Pensées initiales` est décrit comme l'endroit pour créer un plan au début d'une tâche.\n4.  **Orchestration via l'invite système :** L'invite système du **l'agent IA** agit comme le chef d'orchestre, instruisant l'agent sur le processus global et lui parlant de ses nouvelles capacités de pensée (par exemple, \"Commencez toujours par utiliser l'outil `Pensées initiales` pour faire un plan...\").\n5.  **Un exemple pratique :** Ce modèle comprend deux outils de pensée pour démontrer un cycle \"Planifier et Réfléchir\", mais vous pouvez en ajouter beaucoup plus pour répondre à vos besoins.\n\n## **Configuration**\n\n1.  **Ajoutez vos propres outils d'action :** Ce modèle fournit le *cadre de pensée*. Pour le rendre utile, vous devez donner à l'agent quelque chose à faire. Ajoutez vos propres outils à l'**agent IA**, comme un outil de recherche web, une recherche dans une base de données ou un appel API.\n2.  **Personnalisez les outils de pensée :** Modifiez la **description** des outils `Pensées initiales` et `Pensées supplémentaires` existants. Rendez-les pertinents par rapport aux nouveaux outils d'action que vous avez ajoutés. Par exemple, \"Planifiez lequel des outils de recherche web ou de base de données utiliser.\"\n3.  **Mettez à jour le cerveau de l'agent :** Modifiez l'**invite système** dans le nœud principal de l'**agent IA**. Dites-lui quels nouveaux outils d'action vous avez ajoutés et comment il doit utiliser vos outils de pensée personnalisés pour accomplir ses tâches.\n4.  **Connectez votre modèle IA :** Sélectionnez le nœud **Modèle de chat OpenAI** et ajoutez vos identifiants.\n\n\n## **Aller plus loin**\n\n* **Créez des étapes de pensée plus granulaires :** Ajoutez plus d'outils de pensée pour différentes étapes d'un processus, comme un outil \"Hypothétiser une solution\", un outil \"Vérifier les hypothèses\" ou un outil \"Vérification de la réponse finale\".\n* **Personnalisez le processus de pensée :** Vous pouvez changer *comment* l'agent pense en modifiant l'invite à l'intérieur du champ `fromAI('Pensées', ...)` dans chaque outil. Vous pourriez demander des pensées dans un format spécifique, comme des points de balle ou un objet JSON.\n* **Changez le déclencheur du flux de travail :** Remplacez le déclencheur de chat par un déclencheur Telegram, un e-mail, Slack, tout ce dont vous avez besoin pour votre cas d'utilisation !\n* **Intégrez avec la mémoire :** Pour encore plus de puissance, combinez ce cadre avec une solution de mémoire à long terme, permettant à l'agent de réfléchir sur ses pensées des conversations passées.",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "97a1c69c-d9b4-44a4-a533-25c1af48b38f",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -32,
+          -96
+        ],
+        "webhookId": "35e86578-a7fb-4973-9783-9963602c9bb6",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "3a6435c3-636b-4e88-b4be-3fdc7af4f587",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          208,
+          -128
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "You are a very smart assistant.\n\nYou always start by calling the tool \"Initial thoughts\" to plan the way you'll proceed to use the tools X, Y, and Z.\n\nOnce you've executed your initial plan, call the tool \"Additional thoughts\" to check in with the results and decide if you need to further use tools X, Y, and Z or if you're ready to answer the user.\n"
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "1cdbe2f6-5b78-4c5c-8a76-2ddd2b126543",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          48,
+          112
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "dMiSy27YCK6c6rra",
+            "name": "Duv's OpenAI"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "99fb74bf-dae8-4ae4-9f35-ad5c95d5a97d",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          208,
+          112
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "74bd5f99-5e02-41b9-961e-7d4654df47a4",
+        "name": "Initial thoughts",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "position": [
+          448,
+          224
+        ],
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "KNxyzmWuqSCK1GUR",
+            "cachedResultName": "TEMPLATE - AI agent with multiple thinking tools"
+          },
+          "description": "Always start your process by calling this tool to write initial thoughts and plan the way you'll go about answering the user query.",
+          "workflowInputs": {
+            "value": {
+              "Thoughts": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Thoughts', `Write initial thoughts very concisely (be token efficient, just list some thoughts) on the best ways to go about the user query.`, 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "Thoughts",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Thoughts",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Thoughts"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "81f7dad8-01d4-4f26-be4b-250835f97a6b",
+        "name": "Additional thoughts",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "position": [
+          624,
+          224
+        ],
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "KNxyzmWuqSCK1GUR",
+            "cachedResultName": "TEMPLATE - AI agent with multiple thinking tools"
+          },
+          "description": "Call this tool after having ... to check-in and decide if other steps would be needed before being able to finally answer the user query.",
+          "workflowInputs": {
+            "value": {
+              "Thoughts": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Thoughts', `Write your thoughts very concisely (be token efficient, just list some thoughts) on the best ways to go about the user query.`, 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "Thoughts",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Thoughts",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Thoughts"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "6912f166-d7a7-441c-92e6-578f3f9a81e5",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -608,
+          -96
+        ],
+        "parameters": {
+          "width": 480,
+          "height": 768,
+          "content": "# Advanced Agent Reasoning Framework\n\nThis template demonstrates how to give an AI agent multiple, custom \"thinking\" steps to build more powerful and reliable automations. It bypasses the single **Think Tool** limit by using a reusable sub-workflow.\n\n## How it works\n\nA simple sub-workflow is used as a reusable \"scratchpad.\" We call it multiple times with the **Tool (Workflow)** node, giving each call a unique description to guide the agent's thinking process (e.g., plan first, then reflect later).\n\n## How to use this template\n\nThis template is a foundation. To make it your own:\n\n1.  **Add your action tools:** Connect your own tools (e.g., web search, API calls) to the **AI Agent**. It needs tasks to think about!\n2.  **Customize the thinking:** Edit the `description` of the `Initial thoughts` and `Additional thoughts` tools to make them relevant to your new action tools.\n3.  **Instruct the agent:** Update the **system prompt** of the main **AI Agent** to tell it how to use its new set of thinking and action tools to solve problems.\n4.  **Connect your AI provider** and activate the workflow."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3dd09d82-c7d3-40e9-bad6-3b64729142e5",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          384,
+          96
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 400,
+          "height": 240,
+          "content": "## Your thinking tools\nFeel free to adjust their prompts, add more, and connect other necessary tools for your workflow."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7fdd3183-a348-4c1b-b1ee-5ceef90bfc07",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -16,
+          352
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 304,
+          "height": 320,
+          "content": "## The subworkflow\nThis subworkflow imitates the thinking tool as it accepts a string called \"thought\" as an input."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3eab469a-d1d3-4da2-be78-c938f85dc943",
+        "name": "Thinking sub-workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          80,
+          512
+        ],
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "Thoughts"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "96cb61dc-146f-4c34-bec5-6d150d2c2bd7",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          192,
+          -240
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 400,
+          "height": 240,
+          "content": "## The agent\nDon't forget to customise the system prompt to your use case!"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Initial thoughts": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Additional thoughts": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.toolWorkflow": {
+        "count": 2
+      },
+      "n8n-nodes-base.executeWorkflowTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Guillaume Duvernay",
+    "username": "duv",
+    "bio": "AI and automation expert",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/guillaume-duvernay/"
+    ],
+    "avatar": "https://gravatar.com/avatar/1e93ed2388069da40b3202c5566318982166f1a0b4c4c35c4802c8ca4de79991?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 837,
+      "icon": "fa:sign-out-alt",
+      "name": "n8n-nodes-base.executeWorkflowTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.executeworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsqu'il est exécuté par un autre flux de travail",
+        "color": "#ff6d5a"
+      },
+      "iconData": {
+        "icon": "sign-out-alt",
+        "type": "icon"
+      },
+      "displayName": "Execute Workflow Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1205,
+      "icon": "fa:network-wired",
+      "name": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolworkflow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Recommended Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Appeler l'outil de flux de travail n8n"
+      },
+      "iconData": {
+        "icon": "network-wired",
+        "type": "icon"
+      },
+      "displayName": "Call n8n Workflow Tool",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsqu'un message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 5,
+      "name": "Ingénierie"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}

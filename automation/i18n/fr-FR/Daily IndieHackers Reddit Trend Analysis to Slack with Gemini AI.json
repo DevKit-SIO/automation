@@ -1,0 +1,903 @@
+{
+  "id": 7214,
+  "name": "Analyse des tendances Reddit Daily IndieHackers vers Slack avec Gemini AI",
+  "views": 219,
+  "recentViews": 1,
+  "totalViews": 219,
+  "createdAt": "2025-08-10T09:55:13.515Z",
+  "description": "# 🚀 Analyse des tendances Reddit Daily IndieHackers vers Slack\n\n&gt; **Transformez le chaos de Reddit en intelligence actionnable pour les startups**  \n&gt; Recevez des insights alimentés par l'IA de r/indiehackers livrés à votre Slack chaque matin\n\n---\n\n## 🎯 Pour Qui C'est\n\nCe modèle est conçu pour **les fondateurs de startups**, **les équipes de croissance**, et **les chefs de produit** qui ont besoin de :\n\n- Rester en avance sur les tendances des hackers indépendants sans navigation manuelle sur Reddit\n- Comprendre ce qui fonctionne dans la communauté entrepreneuriale\n- Obtenir des insights actionnables pour les décisions de produit et de marketing\n- Tenir leur équipe informée des opportunités émergentes\n\n**Parfait pour les équipes construisant des produits pour les entrepreneurs ou toute personne souhaitant tirer parti de l'intelligence communautaire pour un avantage concurrentiel.**\n\n---\n\n## ✨ Ce Que Cela Fait\n\nTransformez votre routine matinale avec **la collecte d'intelligence automatisée** qui livre des résumés structurés, alimentés par l'IA, des discussions les plus chaudes de r/indiehackers directement dans votre canal Slack.\n\n### 🧠 Fonctionnalités d'Analyse Intelligente\n\n| Fonctionnalité | Description |\n|----------------|-------------|\n| **🔥 Score de Popularité** | Calcule les scores d'engagement en utilisant des algorithmes de dépréciation temporelle |\n| **📊 Extraction de Thèmes** | Identifie les thèmes clés et les sujets tendance |\n| **💰 Signaux de Traction** | Repère les revenus, les métriques et les indicateurs de croissance |\n| **🎯 Regroupement de Thèmes** | Regroupe les publications en catégories actionnables |\n| **⚡ Actions à Entreprendre** | Génère des recommandations spécifiques pour votre équipe |\n\n### 📱 Intégration Slack\n\nRecevez des messages joliment formatés avec :\n- Résumés exécutifs et points clés\n- Top 3 des publications les plus chaudes avec des métriques d'engagement\n- Boutons interactifs pour une exploration plus approfondie\n- Incitations à la discussion en équipe\n\n---\n\n## ⚙️ Comment Cela Fonctionne\n\n```mermaid\ngraph LR\n    A[🕐 Déclencheur Quotidien 8H] --&gt; B[📱 Récupérer les Publications Reddit]\n    B --&gt; C[🔄 Traiter les Données]\n    C --&gt; D[🤖 Analyse AI Gemini]\n    D --&gt; E[✨ Formatage Slack Groq]\n    E --&gt; F[💬 Livrer à Slack]\n```\n\n### 🔄 Le Processus Complet\n\n**Étape 1 : Déclencheur Automatisé**  \nChaque matin à 8h, le flux de travail se met en action\n\n**Étape 2 : Collecte de Données Reddit**  \nRécupère les 5 dernières publications de r/indiehackers avec toutes les métadonnées\n\n**Étape 3 : Traitement des Données**  \nStructure les données brutes de Reddit pour une analyse optimale par l'IA\n\n**Étape 4 : Analyse Alimentée par l'IA**  \nGemini AI effectue une analyse approfondie en calculant les scores de popularité, en extrayant des sujets et en identifiant des modèles\n\n**Étape 5 : Formatage Slack**  \nL'Agent AI Groq transforme les insights en beaux messages Slack Block Kit\n\n**Étape 6 : Livraison à l'Équipe**  \nVotre canal Slack désigné reçoit l'analyse formatée\n\n---\n\n## 🛠️ Exigences\n\nVous aurez besoin d'un accès API pour : **Reddit** (OAuth2), **Google Gemini**, **Groq**, et **Slack** (OAuth2). Tous ont des niveaux gratuits disponibles.\n\n---\n\n## 🚀 Guide de Configuration\n\n### 1️⃣ Configurez Vos Identifiants\n\nAjoutez ces identifiants dans n8n : **Reddit OAuth2**, **Google Gemini**, **Groq**, et **Slack OAuth2**. Le flux de travail vous guidera à travers chaque configuration.\n\n### 2️⃣ Personnalisez le Calendrier\n\n**Par défaut :** Quotidien à 8h00  \n**Pour modifier :** Éditez le nœud de déclenchement cron \"Calendrier Quotidien\"\n\n```javascript\n// Exemple : Exécuter à 9h30\n{\n  \"triggerTimes\": {\n    \"item\": [{ \"hour\": 9, \"minute\": 30 }]\n  }\n}\n```\n\n### 3️⃣ Définissez Votre Destination Slack\n\n1. Ouvrez le nœud **\"Envoyer à Slack\"**\n2. Sélectionnez votre canal cible\n3. Configurez les préférences de notification\n\n### 4️⃣ Ajustez les Paramètres d'Analyse\n\n**Limite de Publications :** Changez de la limite par défaut de 5 publications\n```javascript\n// Dans le nœud Reddit \"Obtenir plusieurs publications\"\n\"limit\": 10  // Recommandé : 3-10 publications\n```\n\n**Personnalisation du Contexte :**\n```json\n{\n  \"channel_type\": \"team\",\n  \"audience\": \"Croissance, Produit, et Fondateurs\", \n  \"cta_link\": \"https://your-dashboard.com\",\n  \"timeframe_label\": \"Cette Semaine\"\n}\n```\n\n---\n\n## 🎨 Options de Personnalisation\n\n### 🔍 Domaines de Focalisation de l'Analyse\n\nTransformez le flux de travail pour différents insights :\n\n**Analyse Axée sur le SaaS**\n```markdown\nAjoutez au prompt de Gemini : \"Concentrez-vous sur les insights SaaS et B2B, \npriorisant les revenus récurrents et les signaux d'adéquation produit-marché\"\n```\n\n**Ciblage Géographique**\n```markdown\nAjoutez : \"Priorisez les publications pertinentes pour [votre région/marché]\"\n```\n\n**Insights Spécifiques à l'Étape**\n```markdown\nAjoutez : \"Concentrez-vous sur les défis des startups [en phase de démarrage/en phase de croissance]\"\n```\n\n### 📈 Ajustement de l'Algorithme de Popularité\n\n**Formule par Défaut :** `(ups + 2*num_comments) * freshness_decay`\n\n**Mettre l'Accent sur les Commentaires :** `(ups + 3*num_comments) * freshness_decay`  \n**Inclure le Ratio de Votes Positifs :** `(ups * upvote_ratio + 2*num_comments) * freshness_decay`\n\n### 🌐 Analyse Multi-Subreddits\n\nÉlargissez au-delà de r/indiehackers :\n\n```yaml\nCommunautés Supplémentaires :\n- r/startups\n- r/entrepreneur  \n- r/SideProject\n- r/buildinpublic\n- r/nocode\n```\n\n### 💾 Extensions de Stockage de Données\n\nAméliorez avec un suivi historique :\n\n| Type de Nœud | Objectif | Avantage |\n|---------------|---------|---------|\n| **Google Sheets** | Stockage des tendances | Analyse historique |\n| **Airtable** | Gestion avancée des données | Analyses riches |\n| **Webhook** | Analytique externe | Tableaux de bord personnalisés |\n\n---\n\n## 📊 Sortie Attendue\n\n### 📱 Structure du Message Slack Quotidien\n\n```markdown\n🚀 **Tendances IndieHackers — Cette Semaine**\n\n📋 **TL;DR :** [Insight clé en une phrase]\n\n🔥 **Publications Chaudes (Top 3)**\n1. [Titre de la Publication] (Popularité : 8.7)\n   Thèmes : Lancement SaaS, stratégie de prix\n   💬 23 commentaires | 👍 156 votes | 📅 Publiée il y a 4 heures\n   [Bouton Ouvrir Reddit]\n\n🧭 **Résumé des Thèmes**\n- Tactiques de mise sur le marché — 3 publications, popularité : 24.1\n- Lancements de produits — 2 publications, popularité : 18.3\n\n✅ **Que Faire Maintenant**\n- Tester des variations de page de prix basées sur les retours de la communauté\n- Considérer des stratégies d'email à froid mentionnées dans les publications chaudes\n- Valider des idées de produits en utilisant les cadres discutés\n\n[Bouton Ouvrir le Tableau de Bord]\n```\n\n---\n\n## 💡 Conseils Pro pour le Succès\n\n### 🎯 Stratégies d'Optimisation\n\n**Semaine 1-2 : Base de Référence**\n- Surveillez la qualité de la sortie et l'engagement de l'équipe\n- Notez quels insights génèrent le plus de discussions\n\n**Semaine 3-4 : Affinage**\n- Ajustez les prompts de l'IA en fonction des retours\n- Affinez le scoring de popularité selon vos besoins\n\n**Mois 2+ : Utilisation Avancée**\n- Ajoutez une analyse des tendances historiques\n- Créez des tableaux de bord personnalisés avec les données stockées\n- Construisez des boucles de rétroaction pour une amélioration continue\n\n### 🚨 Pièges Courants à Éviter\n\n| Problème | Solution |\n|----------|---------|\n| **Limites de Taux API** | Réduisez le nombre de publications ou augmentez les intervalles de temps |\n| **Qualité des Insights Médiocre** | Affinez les prompts avec des exemples spécifiques |\n| **Baisse de l'Engagement de l'Équipe** | Faites tourner les domaines de focalisation et encouragez les discussions de fil |\n| **Surcharge d'Information** | Limitez aux 3 meilleures publications et aux thèmes clés uniquement |\n\n---\n\n## 🔧 Dépannage\n\n### ❌ Problèmes Courants & Solutions\n\n**Erreur \"Modèle non trouvé\"**\n```\nCause : Disponibilité régionale de Gemini\nCorrection : Vérifiez les régions prises en charge ou passez à un modèle AI alternatif\n```\n\n**Formatage Slack Cassé**\n```\nCause : JSON Block Kit invalide\nCorrection : Validez la structure JSON dans la sortie de l'Agent AI\n```\n\n**Données Reddit Manquantes**\n```\nCause : Identifiants API ou limites de taux\nCorrection : Vérifiez la configuration OAuth2 et vérifiez les quotas d'utilisation\n```\n\n**Timeouts de l'IA**\n```\nCause : Trop de données ou prompts complexes\nCorrection : Réduisez le nombre de publications ou simplifiez les demandes d'analyse\n```\n\n### ⚡ Optimisation des Performances\n\n- Gardez l'analyse sous **10 publications** pour une vitesse optimale\n- Surveillez les temps d'exécution dans les journaux n8n\n- Ajoutez des nœuds de gestion des erreurs pour la fiabilité en production\n- Utilisez des délais de webhook pour les appels API externes\n\n---\n\n## 🌟 Cas d'Utilisation Avancés\n\n### 📈 Intelligence Concurrentielle\nModifiez les prompts pour suivre des concurrents spécifiques ou des segments de marché mentionnés dans les discussions\n\n### 🎯 Validation de Produit\nConcentrez l'analyse sur les publications liées à votre catégorie de produit pour des recherches de marché\n\n### 📝 Stratégie de Contenu\nUtilisez des sujets tendance pour informer votre calendrier de contenu et votre leadership éclairé\n\n### 🤝 Engagement Communautaire\nIdentifiez des opportunités de participer à des discussions et de construire des relations\n\n---\n\n**Prêt à transformer votre collecte d'intelligence pour startups ?** 🚀  \n*Déployez ce flux de travail et commencez à recevoir des insights actionnables demain matin !*",
+  "workflow": {
+    "meta": {
+      "instanceId": "bead0a5b25199559eb2b2715841bf43c72bdce5faf95fc5e5ce3a983ef98cb4a",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "d56d56ef-e47d-4662-8fcc-61d658e33266",
+        "name": "Daily Schedule",
+        "type": "n8n-nodes-base.cron",
+        "position": [
+          384,
+          272
+        ],
+        "parameters": {
+          "triggerTimes": {
+            "item": [
+              {
+                "hour": 8
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "91fa23ab-325d-455e-b8a2-41d4be6df8e0",
+        "name": "Extract Posts Data",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          784,
+          272
+        ],
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "c88ba66a-591a-4ade-9c82-40e37109c455",
+        "name": "AI Intent Analysis",
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "position": [
+          992,
+          160
+        ],
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "models/gemini-2.5-flash-lite-preview-06-17",
+            "cachedResultName": "models/gemini-2.5-flash-lite-preview-06-17"
+          },
+          "options": {
+            "temperature": 0.3
+          },
+          "messages": {
+            "values": [
+              {
+                "role": "model",
+                "content": "=You are an expert analyst for startup communities who identifies hot topics, growth patterns, and actionable insights from Reddit posts, focusing on indie hackers and solopreneurs."
+              },
+              {
+                "content": "=You are given an array of Reddit posts from r/indiehackers in JSON format. Each object includes fields like title, selftext, ups, num_comments, created_utc, link_flair_text, and url. Perform a structured analysis to identify what is hot and why. Use only the provided data. Do not invent data.\n\nTasks\n\nData sanity\n\nParse the JSON array and treat each object as a post.\n\nUse these fields when available: title, selftext, ups, score, upvote_ratio, num_comments, created_utc, link_flair_text, author, subreddit_subscribers, permalink, url.\n\nIf values are null or missing, handle gracefully.\n\nHotness scoring\n\nCompute a relative Hotness Score for each post to normalize by time and engagement:\nHotness Score = (ups + 2*num_comments) * freshness_decay\nwhere freshness_decay = 1 / (1 + hours_since_post/24)\n\nIf created_utc is not comparable, assume the freshest post has hours_since_post=1 and scale others proportionally.\n\nOutput Hotness Score to one decimal place.\n\nTopic extraction\n\nExtract concise topics using title+first 500 chars of selftext.\n\nPrefer 1-5 word topics, e.g., “Mod recruitment,” “SaaS boilerplate sales,” “Competitor paywalls research,” “Cold email performance,” “Data visualization SaaS.”\n\nAssign 1–3 topics per post.\n\nTheme clustering\n\nGroup posts into higher-level themes and count frequency and total Hotness by theme.\n\nExample themes: Go-to-market tactics, Product launches, Community/Moderation, Tooling/Boilerplates, Growth/Distribution, Monetization/Pricing, Research/Validation.\n\nSignals of traction\n\nFor each post, extract any concrete traction signals (metrics, revenue, sales, subscribers, conversion, demos booked).\n\nPresent as short bullet points tied to the post.\n\nActionable insights\n\nDerive 3–7 actionable insights for indie hackers based on patterns in high-heat posts (what to build, how to launch, which channels work, what content resonates).\n\nMake each insight specific and testable (Who, What, How, Expected signal).\n\nOutput format\nReturn the following sections:\n\nHot posts (ranked)\nFor each top 5 posts by Hotness Score:\n\nRank. Title (Hotness: X.X)\n\nTopics: …\n\nFlair: …\n\nEngagement: ups=, comments=, upvote_ratio=\n\nPosted: created_utc (as UNIX)\n\nTraction signals: bullets or “None stated”\n\nLink: permalink\n\nThemes summary\n\nTheme name — posts: N, total hotness: X.X\n\nOne-line takeaway per theme\n\nWhat’s working now (actionable insights)\n\n5–7 bullets with concrete experiments\n\nEmerging opportunities\n\n3–5 bullets identifying underserved needs or repeated pain points\n\nData appendix\n\nBrief note on scoring formula and any assumptions used\n\nConstraints\n\nDo not fetch external data; analyze only provided JSON.\n\nKeep the final output under 600 words.\n\nBe concise, avoid repetition, and prefer clear, skimmable bullets.\n\nNow analyze this dataset:\n{{ JSON.stringify($json, null, 10) }}"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "WXBzegbf5JJGseFg",
+            "name": "Google Gemini(PaLM) Api account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "65c2f7e8-d25f-428b-bc7a-d77715404155",
+        "name": "Parse AI Response",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1424,
+          160
+        ],
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "660c8c3e-312a-4e48-8e97-a5bd80c0f82d",
+        "name": "Send to Slack",
+        "type": "n8n-nodes-base.slack",
+        "onError": "continueRegularOutput",
+        "position": [
+          2096,
+          160
+        ],
+        "webhookId": "de5cfe06-2dd4-45fb-9d8b-fcba2cac25f1",
+        "parameters": {
+          "text": "={{ $json.content.parts[0].text }}",
+          "select": "channel",
+          "channelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "C098Y3YJC3C",
+            "cachedResultName": "product-ai"
+          },
+          "otherOptions": {
+            "mrkdwn": true
+          },
+          "authentication": "oAuth2"
+        },
+        "credentials": {
+          "slackOAuth2Api": {
+            "id": "i1bKyxInTqS4wicG",
+            "name": "Slack account 3"
+          }
+        },
+        "typeVersion": 2.3
+      },
+      {
+        "id": "4c8435df-f386-4939-9758-60cfd0b15afc",
+        "name": "Get many posts",
+        "type": "n8n-nodes-base.reddit",
+        "position": [
+          592,
+          272
+        ],
+        "parameters": {
+          "limit": 5,
+          "filters": {},
+          "operation": "getAll",
+          "subreddit": "indiehackers"
+        },
+        "credentials": {
+          "redditOAuth2Api": {
+            "id": "483pkfYlMMvnnZcG",
+            "name": "Reddit account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "85d5af69-f320-47c0-b7c4-5d21060dc8b0",
+        "name": "Groq Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+        "position": [
+          1632,
+          384
+        ],
+        "parameters": {
+          "model": "openai/gpt-oss-120b",
+          "options": {}
+        },
+        "credentials": {
+          "groqApi": {
+            "id": "kMzS3MA3i9DkfPCw",
+            "name": "Groq account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8b53096c-c429-432f-9b97-d1a511b81de9",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          1696,
+          160
+        ],
+        "parameters": {
+          "text": "=Input\n\nposts: JSON array of Reddit posts from r/indiehackers.\n\ncontext:\n\nchannel_type: one of [company, team, project].\n\naudience: string describing who should read this.\n\ncta_link: URL for the full analysis or dashboard.\n\ntimeframe_label: human label for the period (e.g., “This week”).\n\nask_in_thread_note: short text inviting questions in thread.\n\nTasks\n\nParse and validate\n\nTreat each array element as a post.\n\nUse available fields: title, selftext, ups, num_comments, upvote_ratio, created_utc, link_flair_text, permalink, url, score, subreddit_subscribers, author.\n\nHandle nulls gracefully.\n\nScore hotness\n\nHotness = (ups + 2*num_comments) * freshness_decay\n\nfreshness_decay = 1 / (1 + hours_since_post/24)\n\nIf absolute time unavailable, scale freshness so newest post has hours_since_post=1, others proportional.\n\nRound Hotness to 1 decimal.\n\nExtract topics and traction\n\nTopics: 1–3 concise phrases (1–5 words) from title+first 500 chars of selftext.\n\nTraction: any concrete metrics (sales, revenue, demos, reply rates, etc.). If none, “None stated.”\n\nCluster into themes\n\nThemes like: Go-to-market, Product launches, Community/Moderation, Tooling/Boilerplates, Growth/Distribution, Monetization/Pricing, Research/Validation.\n\nFor each theme: count posts and sum Hotness.\n\nProduce Slack Block Kit JSON\n\nOutput MUST be a single JSON object with a top-level blocks array only (no attachments), valid per Block Kit.\n\nKeep the message compact and skimmable. Use:\n\nheader block for TL;DR headline.\n\nsection blocks with mrkdwn for summaries.\n\nfields for compact stats.\n\ncontext block for disclaimers or timestamps.\n\nactions block with one “Open Dashboard” button if cta_link provided.\n\nUse minimal, meaningful emojis (1–3 per section).\n\nInvite discussion in a thread with a short line.\n\nSlack content rules\n\nHeadline (TL;DR): bold, 1–2 emojis. Example: “🚀 Indie Hackers Trends — This Week”.\n\nCore info first: one sentence summary of the biggest takeaway this period.\n\nHot posts: top 3 posts by Hotness. Each includes title, Hotness, topics, flair, key engagement, traction, and a Reddit button.\n\nThemes summary: top 3 themes with posts count and total hotness and a one‑line takeaway.\n\nCTA: a single bold CTA to view the dashboard/report.\n\nThread prompt: “Please ask questions in the thread 👇”.\n\nInclude a small “how scored” note in context.\n\nKeep total blocks under 50; aim for brief content.\n\nRequired output schema\nReturn ONLY a JSON object with this structure:\n\n{\n\"blocks\": [\n{\n\"type\": \"header\",\n\"text\": { \"type\": \"plain_text\", \"text\": \"🚀 Indie Hackers Trends — {timeframe_label}\", \"emoji\": true }\n},\n{\n\"type\": \"section\",\n\"text\": {\n\"type\": \"mrkdwn\",\n\"text\": \"TL;DR: {single_sentence_big_takeaway}\"\n}\n},\n{\n\"type\": \"section\",\n\"fields\": [\n{ \"type\": \"mrkdwn\", \"text\": \"Audience:\\n{audience}\" },\n{ \"type\": \"mrkdwn\", \"text\": \"Posts analyzed:\\n{posts_count}\" }\n]\n},\n\ntext\n{ \"type\": \"divider\" },\n\n{\n  \"type\": \"section\",\n  \"text\": { \"type\": \"mrkdwn\", \"text\": \"*🔥 Hot Posts (Top 3)*\" }\n},\n\n// Repeat this group for up to 3 posts\n{\n  \"type\": \"section\",\n  \"text\": {\n    \"type\": \"mrkdwn\",\n    \"text\": \"*{rank}\\\\. {title}*  \\nHotness: {hotness}\"\n  }\n},\n{\n  \"type\": \"context\",\n  \"elements\": [\n    { \"type\": \"mrkdwn\", \"text\": \"*Topics:* {topics_csv}\" },\n    { \"type\": \"mrkdwn\", \"text\": \"*Flair:* {flair_or_dash}\" }\n  ]\n},\n{\n  \"type\": \"section\",\n  \"fields\": [\n    { \"type\": \"mrkdwn\", \"text\": \"*Ups:*\\n{ups_or_dash}\" },\n    { \"type\": \"mrkdwn\", \"text\": \"*Comments:*\\n{num_comments_or_dash}\" },\n    { \"type\": \"mrkdwn\", \"text\": \"*Upvote ratio:*\\n{upvote_ratio_or_dash}\" },\n    { \"type\": \"mrkdwn\", \"text\": \"*Posted (UNIX):*\\n{created_utc_or_dash}\" }\n  ]\n},\n{\n  \"type\": \"section\",\n  \"text\": { \"type\": \"mrkdwn\", \"text\": \"*Traction:*\\n{traction_bullets_or_None_stated}\" }\n},\n{\n  \"type\": \"actions\",\n  \"elements\": [\n    {\n      \"type\": \"button\",\n      \"text\": { \"type\": \"plain_text\", \"text\": \"Open Reddit\" },\n      \"url\": \"https://www.reddit.com{permalink}\"\n    }\n  ]\n},\n\n{ \"type\": \"divider\" },\n\n{\n  \"type\": \"section\",\n  \"text\": { \"type\": \"mrkdwn\", \"text\": \"*🧭 Themes Summary*\" }\n},\n\n// Up to 3 themes\n{\n  \"type\": \"section\",\n  \"text\": { \"type\": \"mrkdwn\", \"text\": \"- *{theme_name}* — posts: {n}, total hotness: {sum_hotness}  \\n_{one_line_takeaway}_\" }\n},\n\n{ \"type\": \"divider\" },\n\n{\n  \"type\": \"section\",\n  \"text\": { \"type\": \"mrkdwn\", \"text\": \"*✅ What to do now*\" }\n},\n{\n  \"type\": \"section\",\n  \"text\": { \"type\": \"mrkdwn\", \"text\": \"- {actionable_insight_1}\\n- {actionable_insight_2}\\n- {actionable_insight_3}\" }\n},\n\n{\n  \"type\": \"actions\",\n  \"elements\": [\n    {\n      \"type\": \"button\",\n      \"text\": { \"type\": \"plain_text\", \"text\": \"Open Dashboard\" },\n      \"url\": \"{cta_link}\"\n    }\n  ]\n},\n\n{\n  \"type\": \"context\",\n  \"elements\": [\n    { \"type\": \"mrkdwn\", \"text\": \"_Please ask questions in the thread 👇  -   Hotness = (ups + 2×comments) × 1/(1 + hours/24)_\" }\n  ]\n}\n]\n}\n\nConstraints\n\nOutput only the JSON object above (no extra text).\n\nUse mrkdwn and fields per Slack docs.\n\nKeep emojis purposeful and minimal.\n\nButtons must be valid Block elements.\n\nDo not exceed 50 blocks.\n\nNow analyze this dataset and produce the Slack JSON:\n\nposts: [PASTE JSON ARRAY HERE]\n\ncontext:\n{\n\"channel_type\": \"team\",\n\"audience\": \"Growth, Product, and Founders\",\n\"cta_link\": \"https://example.com/trends-dashboard\",\n\"timeframe_label\": \"This Week\",\n\"ask_in_thread_note\": \"Please ask any questions in the thread 👇\"\n}\n\n{{ JSON.stringify($json, null, 2) }}",
+          "options": {
+            "systemMessage": "You are a startup community analyst and Slack content designer. Produce a single Slack Block Kit message that helps a team quickly understand what’s trending and what to do next. The message should be skimmable, well-structured, and intera"
+          },
+          "promptType": "define"
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "da239eeb-8398-4318-8361-e483e30ec70c",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -224,
+          -512
+        ],
+        "parameters": {
+          "width": 560,
+          "height": 1424,
+          "content": "# 🚀 Daily IndieHackers Reddit Trend Analysis to Slack\n\n> **Transform Reddit chaos into actionable startup intelligence**  \n> Get AI-powered insights from r/indiehackers delivered to your Slack every morning\n\n## 🛠️ Requirements\n\nYou'll need API access for: **Reddit** (OAuth2), **Google Gemini**, **Groq**, and **Slack** (OAuth2). All have free tiers available.\n\n---\n\n## 🚀 Setup Guide\n\n### 1️⃣ Configure Your Credentials\n\nAdd these credentials in n8n: **Reddit OAuth2**, **Google Gemini**, **Groq**, and **Slack OAuth2**. The workflow will guide you through each setup.\n\n### 2️⃣ Customize the Schedule\n\n**Default:** Daily at 8:00 AM  \n**To modify:** Edit the \"Daily Schedule\" cron trigger node\n\n```javascript\n// Example: Run at 9:30 AM\n{\n  \"triggerTimes\": {\n    \"item\": [{ \"hour\": 9, \"minute\": 30 }]\n  }\n}\n```\n\n### 3️⃣ Set Your Slack Destination\n\n1. Open the **\"Send to Slack\"** node\n2. Select your target channel\n3. Configure notification preferences\n\n### 4️⃣ Adjust Analysis Parameters\n\n**Post Limit:** Change from default 5 posts\n```javascript\n// In \"Get many posts\" Reddit node\n\"limit\": 10  // Recommended: 3-10 posts\n```\n\n**Context Customization:**\n```json\n{\n  \"channel_type\": \"team\",\n  \"audience\": \"Growth, Product, and Founders\", \n  \"cta_link\": \"https://your-dashboard.com\",\n  \"timeframe_label\": \"This Week\"\n}\n```"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Send to Slack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Daily Schedule": {
+        "main": [
+          [
+            {
+              "node": "Get many posts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many posts": {
+        "main": [
+          [
+            {
+              "node": "Extract Posts Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Groq Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse AI Response": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Intent Analysis": {
+        "main": [
+          [
+            {
+              "node": "Parse AI Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Posts Data": {
+        "main": [
+          [
+            {
+              "node": "AI Intent Analysis",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 62,
+  "workflowInfo": {
+    "nodeCount": 9,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 2
+      },
+      "n8n-nodes-base.cron": {
+        "count": 1
+      },
+      "n8n-nodes-base.slack": {
+        "count": 1
+      },
+      "n8n-nodes-base.reddit": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGroq": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.googleGemini": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Charles",
+    "username": "charlesnguyen",
+    "bio": "I'm a Freelance AI Automation Engineer, helping Sales & Marketing teams streamline their workflows with custom n8n automations. With 5+ years of experience, I’ve helped hundreds of businesses adopt AI-powered solutions using n8n ✅ Free consultation available — book now and start saving time: 👉 https://www.aivra.work/en",
+    "verified": true,
+    "links": [
+      "https://www.aivra.work/en"
+    ],
+    "avatar": "https://gravatar.com/avatar/fc59a9d70accb512755e22de22b2e4ecd4db0c9bca5502f9eeacb8ad6a7ab694?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 7,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.cron",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "details": "The Cron node uses Cron under the hood - a time-based job scheduler in Unix-like computer operating systems. Use this node when you want to trigger workflows periodically, especially in more complex scenarios like \"every Tuesday at 9 am\" or \"Weekdays\".",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-goals-level-up-your-vocabulary-with-vonage-and-n8n/",
+                "icon": "🎯",
+                "label": "2021 Goals: Level Up Your Vocabulary With Vonage and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/why-i-chose-n8n-over-zapier-in-2020/",
+                "icon": "😍",
+                "label": "Why I chose n8n over Zapier in 2020"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-host-virtual-coffee-breaks-with-n8n/",
+                "icon": "☕️",
+                "label": "How to host virtual coffee breaks with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-sync-data-between-two-systems/",
+                "icon": "🏬",
+                "label": "How to synchronize data between two systems (one-way vs. two-way sync"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/tracking-time-spent-in-meetings-with-google-calendar-twilio-and-n8n/",
+                "icon": "🗓",
+                "label": "Tracking Time Spent in Meetings With Google Calendar, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-error-workflows-in-n8n/",
+                "icon": "🌪",
+                "label": "Creating Error Workflows in n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Cron",
+        "color": "#29a568"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Cron",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "icon": "file:slack.svg",
+      "name": "n8n-nodes-base.slack",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/slack/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Slack"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgMTUwLjg1MiAxNTAuODUyIj48dXNlIHhsaW5rOmhyZWY9IiNhIiB4PSIuOTI2IiB5PSIuOTI2Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZS13aWR0aD0iMS44NTIiPjxwYXRoIGZpbGw9IiNlMDFlNWEiIHN0cm9rZT0iI2UwMWU1YSIgZD0iTTQwLjc0MSA5My41NWMwLTguNzM1IDYuNjA3LTE1Ljc3MiAxNC44MTUtMTUuNzcyczE0LjgxNSA3LjAzNyAxNC44MTUgMTUuNzcydjM4LjgyNGMwIDguNzM3LTYuNjA3IDE1Ljc3NC0xNC44MTUgMTUuNzc0cy0xNC44MTUtNy4wMzctMTQuODE1LTE1Ljc3MnoiLz48cGF0aCBmaWxsPSIjZWNiMjJkIiBzdHJva2U9IiNlY2IyMmQiIGQ9Ik05My41NSAxMDcuNDA4Yy04LjczNSAwLTE1Ljc3Mi02LjYwNy0xNS43NzItMTQuODE1czcuMDM3LTE0LjgxNSAxNS43NzItMTQuODE1aDM4LjgyNmM4LjczNSAwIDE1Ljc3MiA2LjYwNyAxNS43NzIgMTQuODE1cy03LjAzNyAxNC44MTUtMTUuNzcyIDE0LjgxNXoiLz48cGF0aCBmaWxsPSIjMmZiNjdjIiBzdHJva2U9IiMyZmI2N2MiIGQ9Ik03Ny43NzggMTUuNzcyQzc3Ljc3OCA3LjAzNyA4NC4zODUgMCA5Mi41OTMgMHMxNC44MTUgNy4wMzcgMTQuODE1IDE1Ljc3MnYzOC44MjZjMCA4LjczNS02LjYwNyAxNS43NzItMTQuODE1IDE1Ljc3MnMtMTQuODE1LTcuMDM3LTE0LjgxNS0xNS43NzJ6Ii8+PHBhdGggZmlsbD0iIzM2YzVmMSIgc3Ryb2tlPSIjMzZjNWYxIiBkPSJNMTUuNzcyIDcwLjM3MUM3LjAzNyA3MC4zNzEgMCA2My43NjMgMCA1NS41NTZzNy4wMzctMTQuODE1IDE1Ljc3Mi0xNC44MTVoMzguODI2YzguNzM1IDAgMTUuNzcyIDYuNjA3IDE1Ljc3MiAxNC44MTVzLTcuMDM3IDE0LjgxNS0xNS43NzIgMTQuODE1eiIvPjxnIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiPjxwYXRoIGZpbGw9IiNlY2IyMmQiIHN0cm9rZT0iI2VjYjIyZCIgZD0iTTc3Ljc3OCAxMzMuMzMzYzAgOC4yMDggNi42MDcgMTQuODE1IDE0LjgxNSAxNC44MTVzMTQuODE1LTYuNjA3IDE0LjgxNS0xNC44MTUtNi42MDctMTQuODE1LTE0LjgxNS0xNC44MTVINzcuNzc4eiIvPjxwYXRoIGZpbGw9IiMyZmI2N2MiIHN0cm9rZT0iIzJmYjY3YyIgZD0iTTEzMy4zMzQgNzAuMzcxaC0xNC44MTVWNTUuNTU2YzAtOC4yMDcgNi42MDctMTQuODE1IDE0LjgxNS0xNC44MTVzMTQuODE1IDYuNjA3IDE0LjgxNSAxNC44MTUtNi42MDcgMTQuODE1LTE0LjgxNSAxNC44MTV6Ii8+PHBhdGggZmlsbD0iI2UwMWU1YSIgc3Ryb2tlPSIjZTAxZTVhIiBkPSJNMTQuODE1IDc3Ljc3OEgyOS42M3YxNC44MTVjMCA4LjIwNy02LjYwNyAxNC44MTUtMTQuODE1IDE0LjgxNVMwIDEwMC44IDAgOTIuNTkzczYuNjA3LTE0LjgxNSAxNC44MTUtMTQuODE1eiIvPjxwYXRoIGZpbGw9IiMzNmM1ZjEiIHN0cm9rZT0iIzM2YzVmMSIgZD0iTTcwLjM3MSAxNC44MTVWMjkuNjNINTUuNTU2Yy04LjIwNyAwLTE0LjgxNS02LjYwNy0xNC44MTUtMTQuODE1UzQ3LjM0OCAwIDU1LjU1NiAwczE0LjgxNSA2LjYwNyAxNC44MTUgMTQuODE1eiIvPjwvZz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Slack",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 445,
+      "icon": "file:reddit.svg",
+      "name": "n8n-nodes-base.reddit",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.reddit/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/reddit/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Reddit"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNTEzIDUxNCI+PHVzZSB4bGluazpocmVmPSIjYSIgeD0iLjUiIHk9Ii41Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSJub25lIj48cGF0aCBmaWxsPSIjZmY0NTAwIiBkPSJNMCA3Ni44QzAgMzQuMjUzIDM0LjI1MyAwIDc2LjggMGgzNTguNEM0NzcuNzQ3IDAgNTEyIDM0LjI1MyA1MTIgNzYuOHYzNTguNGMwIDQyLjU0Ny0zNC4yNTMgNzYuOC03Ni44IDc2LjhINzYuOEMzNC4yNTMgNTEyIDAgNDc3Ljc0NyAwIDQzNS4yeiIvPjxwYXRoIGQ9Ik03OSAzMDVjMC02OC4xNDIgNzguOTQyLTEyMyAxNzctMTIzczE3NyA1NC44NTggMTc3IDEyMy03OC45NDIgMTIzLTE3NyAxMjNTNzkgMzczLjE0MiA3OSAzMDUiLz48ZyBmaWxsPSIjZmY0NTAwIj48cGF0aCBkPSJNMTk5IDM0N2MzNSAyOSA3OSAyOSAxMTQgMGwxMiAxMWMtNDIgMzUtOTYgMzUtMTM4IDB6Ii8+PHVzZSB4bGluazpocmVmPSIjYiIvPjx1c2UgeGxpbms6aHJlZj0iI2IiIHg9Ii0xMTgiLz48L2c+PC9nPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiI+PHVzZSB4bGluazpocmVmPSIjYiIgeD0iNzUiIHk9Ii0xNjAiIHN0cm9rZS13aWR0aD0iMjUiLz48cGF0aCBzdHJva2Utd2lkdGg9IjIyIiBkPSJNODcgMjgyYy00NS0yMi01LTkyIDQwLTUwbTI5OCA1MGM0NS0yMiA1LTkyLTQwLTUwbS0xMjctNDUgMjQtODMgODAgMTYiLz48L2c+PC9zeW1ib2w+PGRlZnM+PHBhdGggaWQ9ImIiIGQ9Ik0yODcgMjg1YTI3Ljk0IDI3Ljk0IDAgMSAxIDU2IDAgMjcuOTQgMjcuOTQgMCAxIDEtNTYgMCIvPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Reddit",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent AI",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1263,
+      "icon": "file:groq.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgroq/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat Groq"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgaWQ9IkxheWVyXzIiCiAgIHZpZXdCb3g9IjAgMCA0OTkuOTk5OTkgNDk5Ljk5OTk5IgogICB2ZXJzaW9uPSIxLjEiCiAgIHdpZHRoPSI1MDAiCiAgIGhlaWdodD0iNTAwIgogICB4bWw6c3BhY2U9InByZXNlcnZlIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzCiAgICAgaWQ9ImRlZnM0IiAvPjxnCiAgICAgaWQ9IlBBR0VTIj48Y2lyY2xlCiAgICAgICBzdHlsZT0iZmlsbDojZjU0ZjM1O2ZpbGwtb3BhY2l0eToxO3N0cm9rZS13aWR0aDoxLjEzNjIyIgogICAgICAgaWQ9InBhdGg0IgogICAgICAgY3g9IjI1MCIKICAgICAgIGN5PSIyNTAiCiAgICAgICByPSIyNTAiIC8+PHBhdGgKICAgICAgIGQ9Ik0gMjUwLjUzNjY0LDk3LjEyMjk5NCBDIDE5Mi43MTkzMSw5Ni41ODg2MzggMTQ1LjQ4MjIyLDE0Mi45NzA3NSAxNDQuOTQ3ODYsMjAwLjc4ODA4IGMgLTAuNTM0MzQsNTcuODE3MzMgNDUuODQ3NzcsMTA1LjA1NDQyIDEwMy42NjUxLDEwNS41ODg3NyBoIDM2LjMzNjIxIHYgLTM5LjIyMTc0IGggLTM0LjQxMjUzIGMgLTM2LjEyMjQ4LDAuNDI3NSAtNjUuNzI1OCwtMjguNTM0NjIgLTY2LjE1MzI5LC02NC42NTcwOCAtMC40Mjc0OSwtMzYuMTIyNDggMjguNTM0NjMsLTY1LjcyNTgxIDY0LjY1NzA4LC02Ni4xNTMzIGggMS40OTYyMSBjIDM2LjEyMjQ4LDAgNjUuNDA1MiwyOS4yODI3MiA2NS41MTIwNyw2NS40MDUyIHYgMCA5Ni4zOTc4MyAwIGMgMCwzNS44MDE4NyAtMjkuMTc1ODUsNjQuOTc3NzMgLTY0Ljg3MDgzLDY1LjQwNTIxIC0xNy4wOTk0MSwtMC4xMDY4OCAtMzMuNDUwNzEsLTcuMDUzNTEgLTQ1LjUyNzE3LC0xOS4xMjk5NSBsIC0yNy43ODY1LDI3Ljc4NjUxIGMgMTkuMjM2ODEsMTkuMzQzNyA0NS4zMTMzOSwzMC4zNTE0MyA3Mi41NjU1NiwzMC42NzIwNSBoIDEuMzg5MzMgYyA1Ny4wNjkyNCwtMC44NTQ5NyAxMDIuOTE3LC00Ny4xMzAyMiAxMDMuMjM3NiwtMTA0LjE5OTQ1IFYgMTk5LjI5MTg5IEMgMzUzLjY2NzM5LDE0Mi40MzYzOSAzMDcuMjg1MjcsOTcuMTIyOTk0IDI1MC41MzY2NCw5Ny4xMjI5OTQgWiIKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7c3Ryb2tlLXdpZHRoOjBweCIKICAgICAgIGlkPSJwYXRoMS0zIiAvPjwvZz48L3N2Zz4K"
+      },
+      "displayName": "Groq Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1309,
+      "icon": "file:gemini.svg",
+      "name": "@n8n/n8n-nodes-langchain.googleGemini",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "video",
+            "document",
+            "audio",
+            "transcribe",
+            "assistant"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.googlegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Miscellaneous",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iX2Zvb3RlclNwYXJrXzk4dWR0XzE1MSIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiB2aWV3Qm94PSIwIDAgNjQgNjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTU3LjA2NjcgMjguNjEwM0M1Mi4xMzU5IDI2LjQ4NzggNDcuODIxNyAyMy41NzYgNDQuMTIyMyAxOS44Nzg0QzQwLjQyNDcgMTYuMTgwOCAzNy41MTI4IDExLjg2NDkgMzUuMzkwMiA2LjkzNDJDMzQuNTc1NCA1LjA0NDQ5IDMzLjkyMDYgMy4xMDIwNCAzMy40MTg2IDEuMTEwNDlDMzMuMjU0OSAwLjQ1OTM2OCAzMi42NzExIDAuMDAxMDM3NiAzMiAwLjAwMTAzNzZDMzEuMzI4OCAwLjAwMTAzNzYgMzAuNzQ1IDAuNDU5MzY4IDMwLjU4MTMgMS4xMTA0OUMzMC4wNzkzIDMuMTAyMDQgMjkuNDI0NiA1LjA0MjY3IDI4LjYwOTcgNi45MzQyQzI2LjQ4NzIgMTEuODY0OSAyMy41NzUzIDE2LjE4MDggMTkuODc3NyAxOS44Nzg0QzE2LjE4IDIzLjU3NiAxMS44NjQgMjYuNDg3OCA2LjkzMzI3IDI4LjYxMDNDNS4wNDM1MyAyOS40MjUxIDMuMTAxMDUgMzAuMDc5OSAxLjEwOTQ3IDMwLjU4MTlDMC40NTgzMzggMzAuNzQ1NiAwIDMxLjMyOTQgMCAzMi4wMDA1QzAgMzIuNjcxNiAwLjQ1ODMzOCAzMy4yNTU1IDEuMTA5NDcgMzMuNDE5MUMzLjEwMTA1IDMzLjkyMTEgNS4wNDE3MiAzNC41NzU5IDYuOTMzMjcgMzUuMzkwN0MxMS44NjQgMzcuNTEzMiAxNi4xNzgyIDQwLjQyNTEgMTkuODc3NyA0NC4xMjI2QzIzLjU3NzEgNDcuODIwMiAyNi40ODcyIDUyLjEzNjEgMjguNjA5NyA1Ny4wNjY4QzI5LjQyNDYgNTguOTU2NSAzMC4wNzkzIDYwLjg5OSAzMC41ODEzIDYyLjg5MDVDMzAuNzQ1IDYzLjU0MTYgMzEuMzI4OCA2NCAzMiA2NEMzMi42NzExIDY0IDMzLjI1NDkgNjMuNTQxNiAzMy40MTg2IDYyLjg5MDVDMzMuOTIwNiA2MC44OTkgMzQuNTc1NCA1OC45NTgzIDM1LjM5MDIgNTcuMDY2OEMzNy41MTI4IDUyLjEzNjEgNDAuNDI0NyA0Ny44MjIgNDQuMTIyMyA0NC4xMjI2QzQ3LjgxOTkgNDAuNDI1MSA1Mi4xMzU5IDM3LjUxMzIgNTcuMDY2NyAzNS4zOTA3QzU4Ljk1NjQgMzQuNTc1OSA2MC44OTg5IDMzLjkyMTEgNjIuODkwNSAzMy40MTkxQzYzLjU0MTYgMzMuMjU1NSA2NCAzMi42NzE2IDY0IDMyLjAwMDVDNjQgMzEuMzI5NCA2My41NDE2IDMwLjc0NTYgNjIuODkwNSAzMC41ODE5QzYwLjg5ODkgMzAuMDc5OSA1OC45NTgyIDI5LjQyNTEgNTcuMDY2NyAyOC42MTAzWiIgZmlsbD0id2hpdGUiPjwvcGF0aD48bWFzayBpZD0ibWFzazBfMTA4NTlfNDg5NCIgc3R5bGU9Im1hc2stdHlwZTphbHBoYSIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij48cGF0aCBkPSJNMzIgMEMzMi42NzExIDEuMTQ0ZS0wNSAzMy4yNTUzIDAuNDU4MjYzIDMzLjQxODkgMS4xMDkzOEMzMy45MjA5IDMuMTAwOTMgMzQuNTc1OCA1LjA0Mzg5IDM1LjM5MDYgNi45MzM1OUMzNy41MTMxIDExLjg2MzkgNDAuNDI0NyAxNi4xNzk2IDQ0LjEyMjEgMTkuODc3QzQ3LjgyMTUgMjMuNTc0NSA1Mi4xMzU3IDI2LjQ4NjkgNTcuMDY2NCAyOC42MDk0QzU4Ljk1OCAyOS40MjQyIDYwLjg5OSAzMC4wNzkxIDYyLjg5MDYgMzAuNTgxMUM2My41NDE1IDMwLjc0NDggNjMuOTk5OCAzMS4zMjgxIDY0IDMxLjk5OUM2NCAzMi42NzAxIDYzLjU0MTcgMzMuMjU0MiA2Mi44OTA2IDMzLjQxOEM2MC44OTkgMzMuOTE5OSA1OC45NTYxIDM0LjU3NDggNTcuMDY2NCAzNS4zODk2QzUyLjEzNTggMzcuNTEyMSA0Ny44MTk2IDQwLjQyMzcgNDQuMTIyMSA0NC4xMjExQzQwLjQyNDYgNDcuODIwNCAzNy41MTMxIDUyLjEzNDkgMzUuMzkwNiA1Ny4wNjU0QzM0LjU3NTggNTguOTU3IDMzLjkyMDkgNjAuODk4MSAzMy40MTg5IDYyLjg4OTZDMzMuMjU1MiA2My41NDA3IDMyLjY3MTEgNjMuOTk5IDMyIDYzLjk5OUMzMS4zMjg5IDYzLjk5OSAzMC43NDQ4IDYzLjU0MDcgMzAuNTgxMSA2Mi44ODk2QzMwLjA3OTEgNjAuODk4MSAyOS40MjQyIDU4Ljk1NTEgMjguNjA5NCA1Ny4wNjU0QzI2LjQ4NjkgNTIuMTM0OSAyMy41NzczIDQ3LjgxODYgMTkuODc3OSA0NC4xMjExQzE2LjE3ODYgNDAuNDIzNyAxMS44NjQyIDM3LjUxMjEgNi45MzM1OSAzNS4zODk2QzUuMDQyMDQgMzQuNTc0OCAzLjEwMDk2IDMzLjkxOTkgMS4xMDkzOCAzMy40MThDMC40NTgzMDkgMzMuMjU0MiAwIDMyLjY3MDEgMCAzMS45OTlDMC4wMDAyMDE1NDggMzEuMzI4MSAwLjQ1ODQ2MyAzMC43NDQ4IDEuMTA5MzggMzAuNTgxMUMzLjEwMDk2IDMwLjA3OTEgNS4wNDM4NiAyOS40MjQyIDYuOTMzNTkgMjguNjA5NEMxMS44NjQzIDI2LjQ4NjkgMTYuMTgwNCAyMy41NzQ1IDE5Ljg3NzkgMTkuODc3QzIzLjU3NTMgMTYuMTc5NiAyNi40ODY5IDExLjg2MzkgMjguNjA5NCA2LjkzMzU5QzI5LjQyNDIgNS4wNDIwNyAzMC4wNzkxIDMuMTAwOTMgMzAuNTgxMSAxLjEwOTM4QzMwLjc0NDggMC40NTgyNiAzMS4zMjg5IDAgMzIgMFoiIGZpbGw9ImJsYWNrIj48L3BhdGg+PHBhdGggZD0iTTMyIDBDMzIuNjcxMSAxLjE0NGUtMDUgMzMuMjU1MyAwLjQ1ODI2MyAzMy40MTg5IDEuMTA5MzhDMzMuOTIwOSAzLjEwMDkzIDM0LjU3NTggNS4wNDM4OSAzNS4zOTA2IDYuOTMzNTlDMzcuNTEzMSAxMS44NjM5IDQwLjQyNDcgMTYuMTc5NiA0NC4xMjIxIDE5Ljg3N0M0Ny44MjE1IDIzLjU3NDUgNTIuMTM1NyAyNi40ODY5IDU3LjA2NjQgMjguNjA5NEM1OC45NTggMjkuNDI0MiA2MC44OTkgMzAuMDc5MSA2Mi44OTA2IDMwLjU4MTFDNjMuNTQxNSAzMC43NDQ4IDYzLjk5OTggMzEuMzI4MSA2NCAzMS45OTlDNjQgMzIuNjcwMSA2My41NDE3IDMzLjI1NDIgNjIuODkwNiAzMy40MThDNjAuODk5IDMzLjkxOTkgNTguOTU2MSAzNC41NzQ4IDU3LjA2NjQgMzUuMzg5NkM1Mi4xMzU4IDM3LjUxMjEgNDcuODE5NiA0MC40MjM3IDQ0LjEyMjEgNDQuMTIxMUM0MC40MjQ2IDQ3LjgyMDQgMzcuNTEzMSA1Mi4xMzQ5IDM1LjM5MDYgNTcuMDY1NEMzNC41NzU4IDU4Ljk1NyAzMy45MjA5IDYwLjg5ODEgMzMuNDE4OSA2Mi44ODk2QzMzLjI1NTIgNjMuNTQwNyAzMi42NzExIDYzLjk5OSAzMiA2My45OTlDMzEuMzI4OSA2My45OTkgMzAuNzQ0OCA2My41NDA3IDMwLjU4MTEgNjIuODg5NkMzMC4wNzkxIDYwLjg5ODEgMjkuNDI0MiA1OC45NTUxIDI4LjYwOTQgNTcuMDY1NEMyNi40ODY5IDUyLjEzNDkgMjMuNTc3MyA0Ny44MTg2IDE5Ljg3NzkgNDQuMTIxMUMxNi4xNzg2IDQwLjQyMzcgMTEuODY0MiAzNy41MTIxIDYuOTMzNTkgMzUuMzg5NkM1LjA0MjA0IDM0LjU3NDggMy4xMDA5NiAzMy45MTk5IDEuMTA5MzggMzMuNDE4QzAuNDU4MzA5IDMzLjI1NDIgMCAzMi42NzAxIDAgMzEuOTk5QzAuMDAwMjAxNTQ4IDMxLjMyODEgMC40NTg0NjMgMzAuNzQ0OCAxLjEwOTM4IDMwLjU4MTFDMy4xMDA5NiAzMC4wNzkxIDUuMDQzODYgMjkuNDI0MiA2LjkzMzU5IDI4LjYwOTRDMTEuODY0MyAyNi40ODY5IDE2LjE4MDQgMjMuNTc0NSAxOS44Nzc5IDE5Ljg3N0MyMy41NzUzIDE2LjE3OTYgMjYuNDg2OSAxMS44NjM5IDI4LjYwOTQgNi45MzM1OUMyOS40MjQyIDUuMDQyMDcgMzAuMDc5MSAzLjEwMDkzIDMwLjU4MTEgMS4xMDkzOEMzMC43NDQ4IDAuNDU4MjYgMzEuMzI4OSAwIDMyIDBaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMTA4NTlfNDg5NCkiPjwvcGF0aD48L21hc2s+PGcgbWFzaz0idXJsKCNtYXNrMF8xMDg1OV80ODk0KSI+PGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjBfZl8xMDg1OV80ODk0KSI+PGVsbGlwc2UgY3g9IjE0LjIwODQiIGN5PSIxNi43MTY0IiByeD0iMTQuMjA4NCIgcnk9IjE2LjcxNjQiIHRyYW5zZm9ybT0ibWF0cml4KDAuOTQyMzQzIDAuMzM0NjQ5IC0wLjMzNDY1NiAwLjk0MjM0IC03Ljk3OSAxMy43NzM1KSIgZmlsbD0iI0ZGRTQzMiI+PC9lbGxpcHNlPjwvZz48ZyBmaWx0ZXI9InVybCgjZmlsdGVyMV9mXzEwODU5XzQ4OTQpIj48ZWxsaXBzZSBjeD0iMjcuMDU0MyIgY3k9IjIuNTUxMTQiIHJ4PSIxOC4zOTQ0IiByeT0iMTguNzk4NSIgZmlsbD0iI0ZDNDEzRCI+PC9lbGxpcHNlPjwvZz48ZyBmaWx0ZXI9InVybCgjZmlsdGVyMl9mXzEwODU5XzQ4OTQpIj48ZWxsaXBzZSBjeD0iMTkuMjI0NSIgY3k9IjI0LjkwNDIiIHJ4PSIxOS4yMjQ1IiByeT0iMjQuOTA0MiIgdHJhbnNmb3JtPSJtYXRyaXgoMC45OTg4MDcgLTAuMDQ4ODI1NCAwLjA0ODgyNjYgMC45OTg4MDcgLTEuNzI3NzggMzIuNjU3MykiIGZpbGw9IiMwMEI5NUMiPjwvZWxsaXBzZT48L2c+PGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjNfZl8xMDg1OV80ODk0KSI+PGVsbGlwc2UgY3g9IjE5LjIyNDUiIGN5PSIyNC45MDQyIiByeD0iMTkuMjI0NSIgcnk9IjI0LjkwNDIiIHRyYW5zZm9ybT0ibWF0cml4KDAuOTk4ODA3IC0wLjA0ODgyNTQgMC4wNDg4MjY2IDAuOTk4ODA3IC0xLjcyNzc4IDMyLjY1NzMpIiBmaWxsPSIjMDBCOTVDIj48L2VsbGlwc2U+PC9nPjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI0X2ZfMTA4NTlfNDg5NCkiPjxlbGxpcHNlIGN4PSIxOC44NDI5IiBjeT0iMjAuNzQ0MSIgcng9IjE4Ljg0MjkiIHJ5PSIyMC43NDQxIiB0cmFuc2Zvcm09Im1hdHJpeCgwLjg1NDMwMSAtMC41MTk3NzkgMC41MTk3OSAwLjg1NDI5NCAtNy4xMzU3NCA0Ny41MDc4KSIgZmlsbD0iIzAwQjk1QyI+PC9lbGxpcHNlPjwvZz48ZyBmaWx0ZXI9InVybCgjZmlsdGVyNV9mXzEwODU5XzQ4OTQpIj48ZWxsaXBzZSBjeD0iNjYuNDYxNyIgY3k9IjI0Ljk3NyIgcng9IjE4LjA5MzMiIHJ5PSIxNy40MjI5IiBmaWxsPSIjMzE4NkZGIj48L2VsbGlwc2U+PC9nPjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI2X2ZfMTA4NTlfNDg5NCkiPjxlbGxpcHNlIGN4PSIyMC45MjkyIiBjeT0iMjIuMDc1MiIgcng9IjIwLjkyOTIiIHJ5PSIyMi4wNzUyIiB0cmFuc2Zvcm09Im1hdHJpeCgwLjc5NTk5IDAuNjA1MzEgLTAuNjA1MzIgMC43OTU5ODIgLTIuODE4ODUgLTcuNDMzMjMpIiBmaWxsPSIjRkJCQzA0Ij48L2VsbGlwc2U+PC9nPjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI3X2ZfMTA4NTlfNDg5NCkiPjxlbGxpcHNlIGN4PSIyNC4xMzExIiBjeT0iMjIuMjkxOSIgcng9IjI0LjEzMTEiIHJ5PSIyMi4yOTE5IiB0cmFuc2Zvcm09Im1hdHJpeCgwLjgyNDAzNyAwLjU2NjUzNiAtMC41NjY1NDYgMC44MjQwMyAzOS42MzM4IDAuMzEwNjA4KSIgZmlsbD0iIzMxODZGRiI+PC9lbGxpcHNlPjwvZz48ZyBmaWx0ZXI9InVybCgjZmlsdGVyOF9mXzEwODU5XzQ4OTQpIj48cGF0aCBkPSJNNTQuMjI1NSAtMi4zMDQwM0M1Ny4wMTk1IDEuNDk0NjIgNTMuNDI5NCA4Ljg4MDQgNDYuMjA2OCAxNC4xOTI2QzM4Ljk4NDIgMTkuNTA0OCAzMC44NjQyIDIwLjczMTggMjguMDcwMiAxNi45MzMxQzI1LjI3NjIgMTMuMTM0NSAyOC44NjYzIDUuNzQ4NjcgMzYuMDg4OSAwLjQzNjQ4NkM0My4zMTE1IC00Ljg3NTcgNTEuNDMxNSAtNi4xMDI2NyA1NC4yMjU1IC0yLjMwNDAzWiIgZmlsbD0iIzc0OUJGRiI+PC9wYXRoPjwvZz48ZyBmaWx0ZXI9InVybCgjZmlsdGVyOV9mXzEwODU5XzQ4OTQpIj48ZWxsaXBzZSBjeD0iMjcuNTg1MyIgY3k9IjE3LjE0NzgiIHJ4PSIyNy41ODUzIiByeT0iMTcuMTQ3OCIgdHJhbnNmb3JtPSJtYXRyaXgoMC43MzMxNjYgLTAuNjgwMDQ5IDAuNjgwMDYxIDAuNzMzMTU1IC0xMi4yNTgzIDkuNDk2OTUpIiBmaWxsPSIjRkM0MTNEIj48L2VsbGlwc2U+PC9nPjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIxMF9mXzEwODU5XzQ4OTQpIj48ZWxsaXBzZSBjeD0iMTQuNzgxOSIgY3k9IjguNTk2MzciIHJ4PSIxNC43ODE5IiByeT0iOC41OTYzNyIgdHJhbnNmb3JtPSJtYXRyaXgoMC44MTMxODYgMC41ODIwMDQgLTAuNTgyMDE2IDAuODEzMTc3IDYuMzc4NDIgMzAuNTExKSIgZmlsbD0iI0ZGRUU0OCI+PC9lbGxpcHNlPjwvZz48L2c+PGRlZnM+PGZpbHRlciBpZD0iZmlsdGVyMF9mXzEwODU5XzQ4OTQiIHg9Ii0xOS42MTgiIHk9IjEyLjkwMjciIHdpZHRoPSIzOC44NjgxIiBoZWlnaHQ9IjQyLjc1NjIiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj48ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCI+PC9mZUZsb29kPjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9InNoYXBlIj48L2ZlQmxlbmQ+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMi40NTk2NSIgcmVzdWx0PSJlZmZlY3QxX2ZvcmVncm91bmRCbHVyXzEwODU5XzQ4OTQiPjwvZmVHYXVzc2lhbkJsdXI+PC9maWx0ZXI+PGZpbHRlciBpZD0iZmlsdGVyMV9mXzEwODU5XzQ4OTQiIHg9Ii0xNS4xMjIzIiB5PSItNDAuMDI5NiIgd2lkdGg9Ijg0LjM1MzMiIGhlaWdodD0iODUuMTYxNSIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiPjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ij48L2ZlRmxvb2Q+PGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiPjwvZmVCbGVuZD48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMS44OTExIiByZXN1bHQ9ImVmZmVjdDFfZm9yZWdyb3VuZEJsdXJfMTA4NTlfNDg5NCI+PC9mZUdhdXNzaWFuQmx1cj48L2ZpbHRlcj48ZmlsdGVyIGlkPSJmaWx0ZXIyX2ZfMTA4NTlfNDg5NCIgeD0iLTIwLjc2ODIiIHk9IjExLjQ4MzUiIHdpZHRoPSI3OC45MTYxIiBoZWlnaHQ9IjkwLjIxOTYiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj48ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCI+PC9mZUZsb29kPjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9InNoYXBlIj48L2ZlQmxlbmQ+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMTAuMTA4NiIgcmVzdWx0PSJlZmZlY3QxX2ZvcmVncm91bmRCbHVyXzEwODU5XzQ4OTQiPjwvZmVHYXVzc2lhbkJsdXI+PC9maWx0ZXI+PGZpbHRlciBpZD0iZmlsdGVyM19mXzEwODU5XzQ4OTQiIHg9Ii0yMC43NjgyIiB5PSIxMS40ODM1IiB3aWR0aD0iNzguOTE2MSIgaGVpZ2h0PSI5MC4yMTk2IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+PGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiPjwvZmVGbG9vZD48ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSI+PC9mZUJsZW5kPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjEwLjEwODYiIHJlc3VsdD0iZWZmZWN0MV9mb3JlZ3JvdW5kQmx1cl8xMDg1OV80ODk0Ij48L2ZlR2F1c3NpYW5CbHVyPjwvZmlsdGVyPjxmaWx0ZXIgaWQ9ImZpbHRlcjRfZl8xMDg1OV80ODk0IiB4PSItMTkuODUiIHk9IjE0Ljk2NjQiIHdpZHRoPSI3OS4xODg2IiBoZWlnaHQ9IjgwLjkzNzgiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj48ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCI+PC9mZUZsb29kPjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9InNoYXBlIj48L2ZlQmxlbmQ+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMTAuMTA4NiIgcmVzdWx0PSJlZmZlY3QxX2ZvcmVncm91bmRCbHVyXzEwODU5XzQ4OTQiPjwvZmVHYXVzc2lhbkJsdXI+PC9maWx0ZXI+PGZpbHRlciBpZD0iZmlsdGVyNV9mXzEwODU5XzQ4OTQiIHg9IjI5LjE1NjEiIHk9Ii0xMS42NTgyIiB3aWR0aD0iNzQuNjExMSIgaGVpZ2h0PSI3My4yNzAzIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+PGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiPjwvZmVGbG9vZD48ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSI+PC9mZUJsZW5kPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjkuNjA2MTMiIHJlc3VsdD0iZWZmZWN0MV9mb3JlZ3JvdW5kQmx1cl8xMDg1OV80ODk0Ij48L2ZlR2F1c3NpYW5CbHVyPjwvZmlsdGVyPjxmaWx0ZXIgaWQ9ImZpbHRlcjZfZl8xMDg1OV80ODk0IiB4PSItMzguMjkxIiB5PSItMTYuMjY4NyIgd2lkdGg9Ijc3LjUzOCIgaGVpZ2h0PSI3OC4xNTEzIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+PGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiPjwvZmVGbG9vZD48ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSI+PC9mZUJsZW5kPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjguNzA1OTEiIHJlc3VsdD0iZWZmZWN0MV9mb3JlZ3JvdW5kQmx1cl8xMDg1OV80ODk0Ij48L2ZlR2F1c3NpYW5CbHVyPjwvZmlsdGVyPjxmaWx0ZXIgaWQ9ImZpbHRlcjdfZl8xMDg1OV80ODk0IiB4PSI3Ljc4MDM4IiB5PSItNi4wOTgxIiB3aWR0aD0iNzguMjE4MSIgaGVpZ2h0PSI3Ni44OTgyIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+PGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiPjwvZmVGbG9vZD48ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSI+PC9mZUJsZW5kPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjcuNzc0NzMiIHJlc3VsdD0iZWZmZWN0MV9mb3JlZ3JvdW5kQmx1cl8xMDg1OV80ODk0Ij48L2ZlR2F1c3NpYW5CbHVyPjwvZmlsdGVyPjxmaWx0ZXIgaWQ9ImZpbHRlcjhfZl8xMDg1OV80ODk0IiB4PSIxMy4yMDgyIiB5PSItMTguNDI1IiB3aWR0aD0iNTUuODc5MyIgaGVpZ2h0PSI1MS40NzkxIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+PGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiPjwvZmVGbG9vZD48ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSI+PC9mZUJsZW5kPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjYuOTU2OTQiIHJlc3VsdD0iZWZmZWN0MV9mb3JlZ3JvdW5kQmx1cl8xMDg1OV80ODk0Ij48L2ZlR2F1c3NpYW5CbHVyPjwvZmlsdGVyPjxmaWx0ZXIgaWQ9ImZpbHRlcjlfZl8xMDg1OV80ODk0IiB4PSItMTUuNDczOSIgeT0iLTMxLjAyNzIiIHdpZHRoPSI3MC4yMDM0IiBoZWlnaHQ9IjY4LjY3MzUiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj48ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCI+PC9mZUZsb29kPjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9InNoYXBlIj48L2ZlQmxlbmQ+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iNS44NzU5OCIgcmVzdWx0PSJlZmZlY3QxX2ZvcmVncm91bmRCbHVyXzEwODU5XzQ4OTQiPjwvZmVHYXVzc2lhbkJsdXI+PC9maWx0ZXI+PGZpbHRlciBpZD0iZmlsdGVyMTBfZl8xMDg1OV80ODk0IiB4PSItMTQuMTczIiB5PSIyMC40NzQiIHdpZHRoPSI1NS4xMzczIiBoZWlnaHQ9IjUxLjI2MSIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiPjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ij48L2ZlRmxvb2Q+PGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiPjwvZmVCbGVuZD48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI3LjI3MjUzIiByZXN1bHQ9ImVmZmVjdDFfZm9yZWdyb3VuZEJsdXJfMTA4NTlfNDg5NCI+PC9mZUdhdXNzaWFuQmx1cj48L2ZpbHRlcj48bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMTA4NTlfNDg5NCIgeDE9IjE4LjE5MzEiIHkxPSI0Mi44MjEiIHgyPSI1MS40MzM1IiB5Mj0iMTQuNzk1OSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiM0ODkzRkMiPjwvc3RvcD48c3RvcCBvZmZzZXQ9IjAuMjciIHN0b3AtY29sb3I9IiM0ODkzRkMiPjwvc3RvcD48c3RvcCBvZmZzZXQ9IjAuNzc2OTgxIiBzdG9wLWNvbG9yPSIjOTY5REZGIj48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQkQ5OUZFIj48L3N0b3A+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+Cg=="
+      },
+      "displayName": "Google Gemini",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de Marché"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": []
+}

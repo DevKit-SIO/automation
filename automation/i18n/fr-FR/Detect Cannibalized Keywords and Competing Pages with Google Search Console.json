@@ -1,0 +1,438 @@
+{
+  "id": 7237,
+  "name": "Détecter les mots-clés cannibalisés et les pages concurrentes avec Google Search Console",
+  "views": 97,
+  "recentViews": 1,
+  "totalViews": 97,
+  "createdAt": "2025-08-11T09:09:32.394Z",
+  "description": "# Trouver des pages cannibalisées (Google Search Console)\n\nCe modèle n8n vous aide à **détecter la cannibalisation des pages** dans Google Search Console (GSC) : des situations où **plusieurs pages** de votre site se classent pour la **même requête** et où **plus d'une page reçoit des clics**. Utilisez-le pour repérer les URL concurrentes, consolider le contenu, améliorer le maillage interne et protéger votre CTR/classements.\n\n---\n\n## Bon à savoir\n- **Source de données :** Google Search Console Search Analytics (Dimensions : `query`, `page`).\n- **Portée :** Par défaut, **12 derniers mois** et jusqu'à **10 000 lignes** par exécution (ajustable).\n- **Logique :** Ne conserve que les requêtes avec **&gt;1 page** et où la **deuxième page a des clics &gt; 0** → confiance plus élevée dans la véritable cannibalisation.\n- **Confidentialité :** Le modèle est livré avec une propriété de remplacement (`sc-domain:example.com`) et un nom de credential neutre ; remplacez les deux après importation.\n- **Coût :** Les nœuds n8n utilisés ici sont gratuits. L'utilisation de GSC est également gratuite (sous réserve des limites de Google).\n\n---\n\n## Comment ça fonctionne\n1. **Démarrage manuel** — exécutez le flux de travail à la demande.  \n2. **Google Search Console** — récupérez les 12 derniers mois de lignes requête–page.  \n3. **Résumer** — regroupez par `query`, en construisant deux tableaux :  \n   - `appended_page[]` → toutes les pages vues pour cette requête  \n   - `appended_clicks[]` → clics pour chaque ligne requête-page (alignés avec `appended_page`)\n4. **Filtrer** — ne passez que les requêtes où :  \n   - `count_query &gt; 1` (plus d'une page impliquée), et  \n   - `appended_clicks[1] &gt; 0` (la deuxième page a également reçu des clics)\n5. **Sortie** — liste des **requêtes cannibalisées** avec les **pages concurrentes** et leurs comptes de clics.\n\n**Exemple de sortie**\n```json\n{\n  \"query\": \"meilleures chaussures de course\",\n  \"appended_page\": [\n    \"https://example.com/blog/meilleures-chaussures-de-course\",\n    \"https://example.com/guide/chaussures-de-course-2025\"\n  ],\n  \"appended_clicks\": [124, 37],\n  \"count_query\": 3\n}\n```\n## Comment utiliser\n1. Importez le JSON dans n8n.  \n2. Ouvrez le nœud **Google Search Console** et :  \n   - Connectez votre **credential OAuth2 Google Search Console**.  \n   - Remplacez `siteUrl` par votre propriété (`sc-domain:votre-domaine.com`).  \n3. Appuyez sur **Exécuter le flux de travail** sur **Démarrage manuel**.  \n4. Examinez la sortie — concentrez-vous sur les requêtes où la deuxième page a des clics significatifs.  \n\n💡 **Astuce :** Si votre site est grand, commencez par une plage de dates plus courte (par exemple, 90 jours) ou augmentez `rowLimit`.\n\n---\n\n## Exigences\n- Accès à la propriété cible dans **Google Search Console**.  \n- Un **credential OAuth2 Google Search Console** dans n8n.\n\n---\n\n## Personnalisation de ce flux de travail\n- **Détection plus robuste :** Dans le nœud **Résumer**, changez l'agrégation `clicks` de `append` à `sum`. Ensuite, filtrez pour “**au moins 2 pages avec `sum_clicks &gt; 0`**” pour éviter toute dépendance à l'ordre des lignes.  \n- **Notation et tri :** Ajoutez un nœud **Code/Fonction** pour trier les pages concurrentes par clics ou impressions et calculer la part de clics par page.  \n- **Analyse plus approfondie :** Incluez `impressions` et `position` dans le nœud GSC et étendez le résumé pour prioriser les corrections (par exemple, impressions élevées + clics partagés).  \n- **Rapport :** Envoyez les résultats à **Google Sheets** ou exportez un **CSV** ; créez un tableau de bord des principales requêtes cannibalisées.  \n- **Seuils :** Exposez les seuils de clics minimums en tant que **variables de flux de travail** (par exemple, clics de la deuxième page ≥ 3) pour réduire le bruit.\n\n---\n\n## Dépannage\n- **Résultats vides :** Élargissez la plage de dates, augmentez `rowLimit`, ou détendez temporairement le filtre (supprimez la condition de clic de la deuxième page pour valider le flux de données).  \n- **Pas de données de propriété :** Assurez-vous d'avoir utilisé correctement le format de propriété `sc-domain:` par rapport à `https://` et que votre utilisateur a accès à GSC.  \n- **Problèmes de credential :** Reconnectez le credential OAuth2 et réautorisez si nécessaire.\n",
+  "workflow": {
+    "meta": {
+      "instanceId": "370f0437fbf8d71caf7e9230e115239afcf5012c55ac368aa9dee29869df4a6b",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "d552d0a9-902d-4f5e-8910-8ade5a5511f9",
+        "name": "Workflow Description",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          464,
+          -272
+        ],
+        "parameters": {
+          "width": 760,
+          "height": 460,
+          "content": "## 🔎 Find Query Cannibalization (Google Search Console)\n\n**Purpose**\nDetect queries where **multiple pages** on your site compete and both receive clicks (true cannibalization).\n\n**How it works**\n1) Fetch last 12 months from GSC with dimensions **query** + **page**.\n2) Summarize by **query** → build arrays of pages and clicks per query.\n3) Filter → keep queries with **>1 page** AND **second page has clicks > 0**.\n\n**Before running**\n- Connect a **Google Search Console OAuth2** credential to the GSC node.\n- Replace `sc-domain:example.com` with your property (e.g., `sc-domain:your-domain.com`).\n\n**Tips**\n- For more robust results, consider summing clicks per page (use `sum` instead of `append`) and then filter for **≥ 2 pages with clicks > 0**.\n- You can run ad‑hoc via **Manual Start** or automate via **Weekly Trigger**.\n\n**Output fields**\n- `query`, `appended_page[]`, `appended_clicks[]`, `count_query`\n\nTags: SEO, GSC, Cannibalization"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "04e6147e-7496-4596-a9e8-20c3e59ac1b2",
+        "name": "Manual Start",
+        "type": "n8n-nodes-base.start",
+        "position": [
+          768,
+          240
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "c71d3c12-f095-4aac-affa-ed5196b5759e",
+        "name": "Query Search Analytics",
+        "type": "n8n-nodes-google-search-console.googleSearchConsole",
+        "position": [
+          1008,
+          240
+        ],
+        "parameters": {
+          "siteUrl": "sc-domain:example.com",
+          "rowLimit": 10000,
+          "operation": "getPageInsights",
+          "dimensions": [
+            "query",
+            "page"
+          ],
+          "dateRangeMode": "last12mo"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d9b96eac-bad1-4a41-9df4-4673076e24dd",
+        "name": "Summarize by Query",
+        "type": "n8n-nodes-base.summarize",
+        "position": [
+          1280,
+          240
+        ],
+        "parameters": {
+          "options": {},
+          "fieldsToSplitBy": "query",
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "field": "query"
+              },
+              {
+                "field": "page",
+                "aggregation": "append"
+              },
+              {
+                "field": "clicks",
+                "aggregation": "append"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "c7c50db0-8706-4f65-985a-262ab0a644e9",
+        "name": "Filter Cannibal Queries",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          1520,
+          240
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                },
+                "leftValue": "={{ $json.count_query }}",
+                "rightValue": 1
+              },
+              {
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                },
+                "leftValue": "={{ $json.appended_clicks[1] }}",
+                "rightValue": 0
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Manual Start": {
+        "main": [
+          [
+            {
+              "node": "Query Search Analytics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarize by Query": {
+        "main": [
+          [
+            {
+              "node": "Filter Cannibal Queries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Query Search Analytics": {
+        "main": [
+          [
+            {
+              "node": "Summarize by Query",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 5,
+    "nodeTypes": {
+      "n8n-nodes-base.start": {
+        "count": 1
+      },
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.summarize": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-google-search-console.googleSearchConsole": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Mohammadreza azari",
+    "username": "mrazari",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/07ca413e08043e29e9738f610062a2ee9c1993409290dbd45c0ef18488b00bd6?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 42,
+      "icon": "fa:play",
+      "name": "n8n-nodes-base.start",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/why-i-chose-n8n-over-zapier-in-2020/",
+                "icon": "😍",
+                "label": "Why I chose n8n over Zapier in 2020"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-sms-the-low-code-way-with-airtable-twilio-programmable-sms-and-n8n/",
+                "icon": "📱",
+                "label": "Sending SMS the Low-Code Way with Airtable, Twilio Programmable SMS, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automating-conference-organization-processes-with-n8n/",
+                "icon": "🙋‍♀️",
+                "label": "Automating Conference Organization Processes with n8n"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.start/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Démarrer",
+        "color": "#00e000"
+      },
+      "iconData": {
+        "icon": "play",
+        "type": "icon"
+      },
+      "displayName": "Start",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filtrer",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1241,
+      "icon": "file:summarize.svg",
+      "name": "n8n-nodes-base.summarize",
+      "codex": {
+        "data": {
+          "alias": [
+            "Append",
+            "Array",
+            "Average",
+            "Concatenate",
+            "Count",
+            "Group",
+            "Item",
+            "List",
+            "Max",
+            "Min",
+            "Pivot",
+            "Sum",
+            "Summarise",
+            "Summarize",
+            "Transform",
+            "Unique"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.summarize/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Résumer"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSIjRjkyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzIgOTFjLTE1LjQ2NCAwLTI4IDEyLjUzNi0yOCAyOHYzMTdjMCAxNS40NjQgMTIuNTM2IDI4IDI4IDI4aDI0OGMxNS40NjQgMCAyOC0xMi41MzYgMjgtMjhWMTE5YzAtMTUuNDY0LTEyLjUzNi0yOC0yOC0yOGgtNmE2IDYgMCAwIDEtNi02VjQ5YTYgNiAwIDAgMSA2LTZoNmM0MS45NzQgMCA3NiAzNC4wMjYgNzYgNzZ2MzE3YzAgNDEuOTc0LTM0LjAyNiA3Ni03NiA3NkgxMzJjLTQxLjk3NCAwLTc2LTM0LjAyNi03Ni03NlYxMTljMC00MS45NzQgMzQuMDI2LTc2IDc2LTc2aDZhNiA2IDAgMCAxIDYgNnYzNmE2IDYgMCAwIDEtNiA2eiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iI0Y5MiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMjU2IDBjLTI3LjIzMiAwLTUwLjIyNyAxOC4xNDItNTcuNTU4IDQzSDE4MmE2IDYgMCAwIDAtNiA2djcwYTYgNiAwIDAgMCA2IDZoMTQ4YTYgNiAwIDAgMCA2LTZWNDlhNiA2IDAgMCAwLTYtNmgtMTYuNDQyQzMwNi4yMjcgMTguMTQyIDI4My4yMzIgMCAyNTYgMG0wIDQwYTE5LjkgMTkuOSAwIDAgMC0xMC41NDEgM0MyMzkuNzgxIDQ2LjUyOCAyMzYgNTIuODIzIDIzNiA2MGMwIDExLjA0NiA4Ljk1NCAyMCAyMCAyMHMyMC04Ljk1NCAyMC0yMGMwLTcuMTc3LTMuNzgxLTEzLjQ3Mi05LjQ1OS0xN0ExOS45IDE5LjkgMCAwIDAgMjU2IDQwbTEwMSAxNzljMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgyMzNjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ2LTI0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBmaWxsPSIjRjkyIiBkPSJNMTk3IDIwN2MwIDEzLjI1NS0xMC43NDUgMjQtMjQgMjRzLTI0LTEwLjc0NS0yNC0yNCAxMC43NDUtMjQgMjQtMjQgMjQgMTAuNzQ1IDI0IDI0Ii8+PHBhdGggZmlsbD0iI0Y5MiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzU3IDM5NWMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDIzM2MtNi42MjcgMC0xMi01LjM3My0xMi0xMnYtMjRjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxMTJjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGZpbGw9IiNGOTIiIGQ9Ik0xOTcgMzgzYzAgMTMuMjU1LTEwLjc0NSAyNC0yNCAyNHMtMjQtMTAuNzQ1LTI0LTI0IDEwLjc0NS0yNCAyNC0yNCAyNCAxMC43NDUgMjQgMjQiLz48cGF0aCBmaWxsPSIjRjkyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNTcgMzA3YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMjMzYy02LjYyNyAwLTEyLTUuMzczLTEyLTEydi0yNGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDExMmM2LjYyNyAwIDEyIDUuMzczIDEyIDEyeiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iI0Y5MiIgZD0iTTE5NyAyOTVjMCAxMy4yNTUtMTAuNzQ1IDI0LTI0IDI0cy0yNC0xMC43NDUtMjQtMjQgMTAuNzQ1LTI0IDI0LTI0IDI0IDEwLjc0NSAyNCAyNCIvPjwvc3ZnPg=="
+      },
+      "displayName": "Summarize",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

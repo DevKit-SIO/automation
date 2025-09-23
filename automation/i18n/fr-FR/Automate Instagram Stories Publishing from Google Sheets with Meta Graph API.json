@@ -1,0 +1,1751 @@
+{
+  "id": 8785,
+  "name": "Automatiser la publication d'histoires Instagram depuis Google Sheets avec l'API Meta Graph",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-09-20T17:59:39.105Z",
+  "description": "# Histoires Instagram automatisées depuis Google Sheets\n\n## 🚀 Ce que cela fait\n\nCe flux de travail **automatisent la publication d'histoires Instagram** directement à partir d'une liste d'URL de vidéos dans une feuille Google. Il vous suffit d'ajouter un lien vidéo à la feuille, et ce modèle le programmera et le publiera pour vous. Il est conçu pour être une solution \"à configurer et à oublier\" pour votre stratégie de contenu.\n\n**Caractéristiques clés :**\n\n  * **Entièrement automatisé :** Fonctionne selon un calendrier pour publier du nouveau contenu sans intervention manuelle.\n  * **Gestion de contenu simple :** Gérez toute votre file d'attente de vidéos depuis une seule feuille Google.\n  * **Intelligent et sûr :** Évite automatiquement de publier du contenu en double en suivant ce qui a déjà été publié.\n  * **Publication aléatoire :** Mélange la liste de vidéos pour garantir que du contenu varié est publié, et pas seulement le premier de la liste.\n\n-----\n\n## 📋 Exigences préalables\n\nAvant de commencer, vous aurez besoin de quelques éléments. C'est la partie la plus importante de la configuration\\!\n\n1.  **Compte professionnel Instagram :** Un compte personnel ne fonctionnera pas. Il doit s'agir d'un compte professionnel ou créateur.\n2.  **Page Facebook :** Votre compte professionnel Instagram doit être connecté à une page Facebook.\n3.  **Compte développeur Meta :** Ceci est requis pour créer une \"Application\" qui donne à n8n la permission de publier en votre nom.\n4.  **Un endroit accessible au public pour héberger des vidéos :** C'est critique. Les URL de vidéos que vous utilisez doivent être des liens directs vers le fichier vidéo.\n      * ✅ **Bonnes sources :** Stockage de fichiers Shopify, Amazon S3, un site WordPress avec un certificat SSL valide (`https://...`).\n      * ❌ **Sources peu fiables :** Les liens de partage Google Drive et Dropbox **ne fonctionneront pas** car ils ne sont pas des liens directs vers le fichier vidéo lui-même.\n\n-----\n\n## ⚙️ Guide de configuration étape par étape\n\nSuivez ces trois parties attentivement. Une fois terminé, vous n'aurez plus à toucher à la configuration.\n\n### Partie 1 : Configuration Meta (Facebook/Instagram)\n\nCette section génère les clés et les ID dont vous avez besoin pour permettre à n8n de communiquer avec Instagram.\n\n1.  **Créer une application Meta :**\n\n      * Allez sur [Meta pour les développeurs](https://developers.facebook.com/) et créez une nouvelle application.\n      * **Guide détaillé :** [Guide officiel de Meta pour créer une application](https://developers.facebook.com/docs/development/create-an-app/)\n\n2.  **Configurer les autorisations de l'application :**\n\n      * Dans le tableau de bord de votre nouvelle application, ajoutez le produit \"**API Graph Instagram**\".\n      * Sous \"Autorisations\", vous devrez accorder `instagram_basic`, `instagram_content_publish`, `pages_show_list` et `pages_read_engagement`.\n\n3.  **Trouvez l'ID de votre compte professionnel Instagram :**\n\n      * Vous aurez besoin de cet ID pour le flux de travail.\n3.1. **Connectez-vous :** à votre compte Instagram.  \n3.2. **Cliquez sur votre profil :** dans le menu à gauche.  \n3.3. **Cliquez :** \"Modifier le profil\" en haut.  \n3.4. Sous le titre **\"Paramètres\"**, cliquez sur **\"Voir plus dans le Centre de comptes\"**.  \n3.5. **Sélectionnez :** votre profil Instagram prévu.  \n3.6. Dans l'URL, l'ID de votre compte professionnel Instagram sera affiché après `/profiles` au format numérique.  \n\n   **Exemple :**  \n   `https://accountscenter.instagram.com/profiles/[VOTRE_ID]/?theme=dark`\n\n\n4.  **Générez un jeton d'accès à long terme :**\n\n      * Un jeton d'accès est comme un mot de passe pour que n8n puisse l'utiliser. Un standard expire rapidement, donc vous avez besoin d'un jeton à long terme.\n      * **Guide officiel :** [Guide de Meta pour générer un jeton à long terme](https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived/)\n\n-----\n\n### Partie 2 : Préparation de la feuille Google\n\nC'est ici que vous gérerez votre contenu vidéo.\n\n1.  **Créez une feuille Google :** Vous pouvez en créer une nouvelle ou utiliser notre modèle pour commencer rapidement.\n      * **Télécharger le modèle :** [Modèle de vidéos Instagram.xlsx](https://imanetworks.ch/wp-content/uploads/2025/09/Instagram-Videos-Template.xlsx)\n2.  **Configurez les colonnes :** Votre feuille **doit** avoir ces deux colonnes avec ces noms exacts :\n      * `source_url` : C'est ici que vous collerez l'URL directe vers votre fichier vidéo.\n      * `posted_story` : Laissez cette colonne **vide**. Le flux de travail la remplira automatiquement avec `true` après qu'une vidéo ait été publiée avec succès.\n3.  **Obtenez l'ID de la feuille :** Dans l'URL de votre feuille Google, copiez la longue chaîne de lettres et de chiffres du milieu :\n    `https://docs.google.com/spreadsheets/d/`**`[CECI_EST_L_ID_DE_LA_FEUILLE]`**`/edit`\n\n-----\n\n### Partie 3 : Configuration du flux de travail n8n\n\nMaintenant, connectons tout dans votre flux de travail n8n.\n\n1.  **Remplissez le nœud `⚙️ Configuration Hub` :**\n\n      * **IG\\_BUSINESS\\_ID :** Collez l'ID Instagram que vous avez trouvé dans la Partie 1.\n      * **SHEET\\_DOC\\_ID :** Collez l'ID de la feuille Google que vous avez trouvé dans la Partie 2.\n      * **SHEET\\_TAB\\_NAME :** Entrez le nom exact de l'onglet dans votre feuille Google (par exemple, \"Vidéos Instagram\").\n\n2.  **Connectez vos identifiants :**\n\n      * **Google Sheets :** Dans le nœud `📊 Récupérer des vidéos depuis la feuille`, créez un nouvel identifiant et connectez votre compte Google.\n      * **API Graph Facebook :** Dans le nœud `📤 Créer un conteneur d'histoire`, créez un nouvel identifiant. Utilisez l'**ID de l'application**, le **secret de l'application** et le **jeton d'accès à long terme** que vous avez généré dans la Partie 1. Vous utiliserez ce même identifiant pour les autres nœuds Facebook/Instagram.\n\n3.  **Activez le flux de travail :**\n\n      * D'abord, testez-le en cliquant sur le bouton \"Exécuter le flux de travail\" sur le nœud `🚀 Démarrage manuel`.\n      * Une fois que vous confirmez que cela fonctionne, **activez le flux de travail** en utilisant le commutateur en haut de l'écran. Le nœud `⏰ Planification automatique` est configuré pour s'exécuter quotidiennement par défaut, mais vous pouvez changer l'heure selon vos préférences.\n\n-----\n\n## 🤔 Dépannage\n\n  * **Erreur : \"(\\#10) Ce point de terminaison nécessite l'autorisation 'instagram\\_content\\_publish'\"** : Votre application Meta manque des autorisations correctes. Retournez aux paramètres de l'application dans le tableau de bord des développeurs Meta et ajoutez-les.\n  * **Erreur : \"Demande de publication non prise en charge\" ou échec du traitement vidéo** : C'est presque toujours un problème avec l'URL de la vidéo. Assurez-vous qu'il s'agit d'un **lien direct** et non d'un service comme Google Drive. Collez l'URL dans votre navigateur - elle devrait commencer à lire la vidéo immédiatement, et non vous amener à une page de prévisualisation.\n  * **Erreur : \"Feuille non trouvée\"** : Vérifiez que votre `SHEET_DOC_ID` et `SHEET_TAB_NAME` dans le nœud de configuration sont parfaitement corrects (c'est sensible à la casse\\!).\n  * **Le flux de travail s'exécute mais ne publie pas** : Assurez-vous d'avoir des lignes dans votre feuille Google où la colonne `posted_story` est vide. Si toutes sont marquées `true`, il n'y a rien de nouveau à publier.\n\n@iMan https://imanetworks.ch/",
+  "workflow": {
+    "meta": {
+      "instanceId": "c86cef8a4808edf0fbf0288e26f131ef9d9ffb9633fdc6fda13cbd82ffdc8203",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "ca8d9fd3-1e78-4e59-8038-c3e240e1a933",
+        "name": "📖 SETUP GUIDE",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -16,
+          -112
+        ],
+        "parameters": {
+          "width": 736,
+          "height": 384,
+          "content": "🎬 **Instagram Story Automation Template**\n\n**What this does:** Automatically posts Instagram Stories from videos listed in a Google Sheet.\n\n**Quick Setup (5 minutes):**\n1️⃣ Configure the ⚙️ Config node with your Instagram Business ID and Sheet details\n2️⃣ Connect your Google Sheets and Facebook Graph API credentials\nYou can download my template here:\nhttps://imanetworks.ch/wp-content/uploads/2025/09/Instagram-Videos-Template.xlsx\n\n3️⃣ Add video URLs to your Google Sheet\n4️⃣ Test with Manual Trigger, then enable Schedule\n\n**For Non-Technical Users:**\n• You only need to edit the ⚙️ Config node once\n• After setup, just add videos to your Google Sheet\n• The workflow handles everything automatically\n\n**Need Help?** Check the troubleshooting section below!"
+        },
+        "notesInFlow": false,
+        "typeVersion": 1
+      },
+      {
+        "id": "2bc10b0a-49c6-438b-be8d-39dcecc210bc",
+        "name": "⚙️ Configuration Hub",
+        "type": "n8n-nodes-base.set",
+        "notes": "🔧 **SETUP REQUIRED** - Replace these values:\n\n• **IG_BUSINESS_ID**: Your Instagram Business Account ID\n  → Find in Facebook Business Manager > Instagram Accounts\n  → It's a long number (e.g., 17841450311185426)\n\n• **GRAPH_VERSION**: Facebook API version (usually v21.0 or newer)\n  → Check https://developers.facebook.com/docs/graph-api\n\n• **SHEET_DOC_ID**: Your Google Sheet ID from the URL\n  → Copy from: docs.google.com/spreadsheets/d/[THIS_PART]/edit\n\n• **SHEET_TAB_NAME**: The exact name of your sheet tab\n  → Default: \"Instagram Videos\" (case-sensitive)\n\n⚠️ **Important**: Only change these values once during setup!",
+        "position": [
+          368,
+          352
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cfg-1",
+                "name": "IG_BUSINESS_ID",
+                "type": "string",
+                "value": "Your Instagram ID"
+              },
+              {
+                "id": "cfg-2",
+                "name": "GRAPH_VERSION",
+                "type": "string",
+                "value": "v23.0"
+              },
+              {
+                "id": "cfg-3",
+                "name": "SHEET_DOC_ID",
+                "type": "string",
+                "value": "Google Sheet ID (you can see it in the url of your sheet)"
+              },
+              {
+                "id": "cfg-4",
+                "name": "SHEET_TAB_NAME",
+                "type": "string",
+                "value": "Instagram Videos"
+              }
+            ]
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 3.4
+      },
+      {
+        "id": "9df8e039-b164-45e7-9555-58d8435e6c55",
+        "name": "🚀 Manual Start",
+        "type": "n8n-nodes-base.manualTrigger",
+        "notes": "🎯 **FOR TESTING**\n\nClick the ▶️ button to test your workflow immediately.\n\n**When to use:**\n• First-time setup testing\n• Checking if credentials work\n• Testing new videos before scheduling\n\n**Non-technical tip**: Always test manually before enabling the schedule!",
+        "position": [
+          0,
+          288
+        ],
+        "parameters": {},
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "5f866e09-81ce-474f-965d-905f0bf7aae5",
+        "name": "⏰ Auto Schedule",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "notes": "🕐 **AUTOMATIC POSTING**\n\nCurrently set to run daily at 8:30 PM.\n\n**To change the time:**\n1. Click this node\n2. Adjust 'triggerAtHour' (0-23, where 20 = 8 PM)\n3. Adjust 'triggerAtMinute' (0-59)\n\n**Examples:**\n• 9:00 AM = Hour: 9, Minute: 0\n• 2:30 PM = Hour: 14, Minute: 30\n• 11:45 PM = Hour: 23, Minute: 45\n\n**Tip**: Choose times when your audience is most active!",
+        "position": [
+          0,
+          496
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 20,
+                "triggerAtMinute": 30
+              }
+            ]
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 1.2
+      },
+      {
+        "id": "047a3a06-0dc3-4ab1-bdc9-7a39ab2c9c24",
+        "name": "📊 Sheet Requirements",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          752,
+          -112
+        ],
+        "parameters": {
+          "width": 480,
+          "height": 384,
+          "content": "📋 **Google Sheet Format Requirements**\n\n**Required Columns:**\n• **Path** → Direct video URL (must be publicly accessible)\n• **Posted** → Leave empty for new videos\n\n**Video Requirements:**\n• Format: MP4\n• Max duration: 60 seconds\n• Aspect ratio: 9:16 (vertical) recommended\n• Max file size: 4GB\n• URL must not require login/authentication\n\n**Example Row:**\n| Path | Posted |\n|------|--------|\n| https://example.com/video.mp4 | |\n\n**After posting, 'Posted' will show 'true'**"
+        },
+        "notesInFlow": false,
+        "typeVersion": 1
+      },
+      {
+        "id": "fa49cbfe-4746-4bad-acb7-f3db282bf84b",
+        "name": "📊 Fetch Videos from Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "notes": "📥 **CREDENTIAL SETUP REQUIRED**\n\n**What it does:** Reads all videos from your Google Sheet\n\n**Setup Steps:**\n1. Click the 'Credential for Google Sheets' dropdown\n2. Select 'Create New Credential'\n3. Choose 'Google Sheets OAuth2 API'\n4. Click 'Connect my account' and sign in\n5. Grant permissions to access your sheets\n\n**Troubleshooting:**\n• Error 403: Check sheet sharing permissions\n• 'Sheet not found': Verify SHEET_TAB_NAME in Config\n• No data: Ensure sheet has headers 'Path' and 'Posted'",
+        "position": [
+          800,
+          448
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "mode": "name",
+            "value": "={{ $json.SHEET_TAB_NAME }}"
+          },
+          "documentId": {
+            "mode": "list",
+            "value": "={{ $json.SHEET_DOC_ID }}"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ZcotjdhaT5mLuV86",
+            "name": "Google Sheets account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 4.5,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "e98b5339-cd2a-454f-980d-6585c79a67af",
+        "name": "🎲 Randomize Order",
+        "type": "n8n-nodes-base.sort",
+        "notes": "🔀 **SMART SELECTION**\n\n**What it does:** Shuffles your video list randomly\n\n**Why this helps:**\n• Prevents always posting the first video\n• Creates variety in your content schedule\n• Ensures fair rotation of all videos\n\n**No setup needed** - this works automatically!\n\n**Note:** The workflow will still skip videos already marked as 'Posted'",
+        "position": [
+          1040,
+          448
+        ],
+        "parameters": {
+          "type": "random"
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "7f427af0-2f29-43c8-9fbf-59e8e0fe60fc",
+        "name": "🔄 Process Each Video",
+        "type": "n8n-nodes-base.splitInBatches",
+        "notes": "🔍 **VIDEO PROCESSOR**\n\n**What it does:** Checks each video one by one to find unposted content\n\n**How it works:**\n1. Takes the shuffled list\n2. Examines each video's 'Posted' status\n3. Finds the first video that hasn't been posted\n4. Processes only that video\n\n**No configuration needed** - this is automatic!\n\n**Result:** Only posts one new video per run",
+        "position": [
+          1280,
+          448
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "notesInFlow": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "46174ca9-894c-47f2-9a3c-1a2176bcb8b0",
+        "name": "❓ Already Posted Check",
+        "type": "n8n-nodes-base.if",
+        "notes": "🚦 **SMART FILTER**\n\n**What it does:** Checks if this video was already posted\n\n**Logic:**\n• **If Posted = 'true'** → Skip this video, check next one\n• **If Posted is empty/false** → Continue to post this video\n\n**Why this matters:**\n• Prevents duplicate posts\n• Automatically tracks what's been shared\n• Saves you from manual tracking\n\n**No setup needed** - works automatically!",
+        "position": [
+          1568,
+          448
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "cond-posted",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                },
+                "leftValue": "={{ $json.posted_story }}",
+                "rightValue": "true"
+              }
+            ]
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 2.2
+      },
+      {
+        "id": "c446ed83-b373-4887-b639-f30bb4a50721",
+        "name": "🎯 Prepare Video Data",
+        "type": "n8n-nodes-base.set",
+        "notes": "📋 **DATA PREPARATION**\n\n**What it does:** Organizes the video information for Instagram\n\n**Variables created:**\n• **instagram_business_id**: Your Instagram account ID\n• **video_url**: The video file location\n• **api_version**: Facebook API version to use\n\n**Why this step:** Makes the data clean and ready for Instagram's API\n\n**No configuration needed** - uses values from your Config node automatically!",
+        "position": [
+          1808,
+          320
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "instagram_business_id",
+                "type": "string",
+                "value": "={{ $json.IG_BUSINESS_ID || $('⚙️ Configuration Hub').item.json.IG_BUSINESS_ID }}"
+              },
+              {
+                "id": "a2",
+                "name": "video_url",
+                "type": "string",
+                "value": "={{ $json.source_url }}"
+              },
+              {
+                "id": "a3",
+                "name": "api_version",
+                "type": "string",
+                "value": "={{ $json.GRAPH_VERSION || $('⚙️ Configuration Hub').item.json.GRAPH_VERSION }}"
+              }
+            ]
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 3.4
+      },
+      {
+        "id": "7b86b176-296f-4e7b-8525-a0f42c53f8f8",
+        "name": "📱 Video Requirements",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1664,
+          -112
+        ],
+        "parameters": {
+          "width": 400,
+          "height": 376,
+          "content": "📱 **Instagram Story Requirements**\n\n**Video Specs:**\n• Format: MP4, MOV\n• Duration: 1-60 seconds\n• Resolution: 1080x1920 (9:16 ratio)\n• Max file size: 4GB\n• Frame rate: 30 fps max\n\n**URL Requirements:**\n• Must be publicly accessible\n• No login/password required\n• HTTPS recommended\n• Direct link to video file\n\n**Common Issues:**\n• Google Drive/Dropbox share links won't work\n• Password-protected videos will fail\n• Very large files may timeout\n\n**Tip:** Test your URL in a browser first!"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7182482a-dc7a-477f-ad28-8fbee137029c",
+        "name": "📤 Create Story Container",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "🏗️ **CREDENTIAL SETUP REQUIRED**\n\n**What it does:** Creates an Instagram Story container (not published yet)\n\n**Setup Steps:**\n1. Click 'Credential for Facebook Graph API'\n2. Select 'Create New Credential'\n3. Enter your Facebook App credentials:\n   • App ID (from Facebook Developers)\n   • App Secret (from Facebook Developers)\n4. Grant Instagram permissions\n\n**What happens:** Instagram downloads and processes your video\n\n**Result:** Returns a container ID for the next step",
+        "position": [
+          2080,
+          368
+        ],
+        "parameters": {
+          "url": "={{ 'https://graph.facebook.com/' + $('⚙️ Configuration Hub').item.json.GRAPH_VERSION + '/' + $('🎯 Prepare Video Data').item.json['instagram_business_id'] + '/media' }}",
+          "method": "POST",
+          "options": {},
+          "sendQuery": true,
+          "authentication": "predefinedCredentialType",
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "media_type",
+                "value": "STORIES"
+              },
+              {
+                "name": "video_url",
+                "value": "={{ $json['video_url'] }}"
+              }
+            ]
+          },
+          "nodeCredentialType": "facebookGraphApi"
+        },
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "UO25G0tgMnT1nQgI",
+            "name": "Facebook Graph accounts"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 4.2
+      },
+      {
+        "id": "5063827b-044c-42c4-be40-81cb50f1b643",
+        "name": "🔍 Check Processing Status",
+        "type": "n8n-nodes-base.httpRequest",
+        "notes": "⏳ **STATUS MONITOR**\n\n**What it does:** Checks if Instagram finished processing your video\n\n**Possible statuses:**\n• **IN_PROGRESS**: Still processing (wait more)\n• **FINISHED**: Ready to publish ✅\n• **ERROR**: Something went wrong ❌\n\n**Why this step:** Instagram needs time to encode/validate your video\n\n**No configuration needed** - uses the same Facebook credentials as previous step",
+        "position": [
+          2368,
+          368
+        ],
+        "parameters": {
+          "url": "={{ 'https://graph.facebook.com/' + $('⚙️ Configuration Hub').item.json.GRAPH_VERSION + '/' + $('📤 Create Story Container').item.json.id }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "json"
+              }
+            }
+          },
+          "sendQuery": true,
+          "authentication": "predefinedCredentialType",
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "fields",
+                "value": "status_code,status"
+              }
+            ]
+          },
+          "nodeCredentialType": "facebookGraphApi"
+        },
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "UO25G0tgMnT1nQgI",
+            "name": "Facebook Graph accounts"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 4.2
+      },
+      {
+        "id": "3520c4de-e2dc-4739-8ed5-5c6f15e805cd",
+        "name": "✅ Ready to Publish?",
+        "type": "n8n-nodes-base.if",
+        "notes": "🚦 **PUBLISH GATE**\n\n**What it checks:** Is the video ready for publishing?\n\n**Two paths:**\n• **TRUE (status = FINISHED)** → Proceed to publish\n• **FALSE (still processing)** → Wait 30 seconds and check again\n\n**Why this matters:**\n• Publishing too early = failure\n• This ensures your video is properly processed\n\n**Automatic loop:** Will keep checking until ready or timeout",
+        "position": [
+          2640,
+          368
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "cond-finished",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.body.status_code }}",
+                "rightValue": "FINISHED"
+              }
+            ]
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 2.2
+      },
+      {
+        "id": "5b05c0c2-34cf-413d-bad9-87a35bfd5935",
+        "name": "⏰ Wait 30 Seconds",
+        "type": "n8n-nodes-base.wait",
+        "notes": "⏸️ **PATIENCE IS KEY**\n\n**What it does:** Waits 30 seconds before checking status again\n\n**Why 30 seconds:**\n• Gives Instagram time to process\n• Prevents overwhelming their servers\n• Most videos process within 1-3 minutes\n\n**Adjustable:** You can change the wait time if needed\n• Smaller videos: 15-20 seconds\n• Larger videos: 45-60 seconds\n\n**Note:** The workflow will loop until processing is complete",
+        "position": [
+          2688,
+          896
+        ],
+        "webhookId": "8a695322-e5bf-4b2c-bfb9-892f2cb0d8e6",
+        "parameters": {
+          "amount": 30
+        },
+        "notesInFlow": true,
+        "typeVersion": 1.1
+      },
+      {
+        "id": "1dc888c6-26a9-48a2-b7d4-47a65a264ea2",
+        "name": "🎉 Publish to Instagram",
+        "type": "n8n-nodes-base.facebookGraphApi",
+        "notes": "🚀 **THE MOMENT OF TRUTH**\n\n**What it does:** Publishes your video as an Instagram Story\n\n**This step:**\n• Takes the processed video container\n• Makes it live on your Instagram account\n• Your followers can now see the story\n\n**Success indicators:**\n• Returns a media ID\n• No error messages\n• Story appears on your Instagram profile\n\n**Uses the same Facebook credentials** as previous steps",
+        "position": [
+          2928,
+          368
+        ],
+        "parameters": {
+          "edge": "media_publish",
+          "node": "={{ $('🎯 Prepare Video Data').item.json['instagram_business_id'] }}",
+          "options": {
+            "queryParameters": {
+              "parameter": [
+                {
+                  "name": "creation_id",
+                  "value": "={{ $('📤 Create Story Container').item.json.id }}"
+                }
+              ]
+            }
+          },
+          "graphApiVersion": "={{ $('⚙️ Configuration Hub').item.json.GRAPH_VERSION }}",
+          "httpRequestMethod": "POST"
+        },
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "UO25G0tgMnT1nQgI",
+            "name": "Facebook Graph accounts"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "08e727a9-baa5-4028-8d5d-c1d62b7b0d40",
+        "name": "✏️ Mark as Posted",
+        "type": "n8n-nodes-base.googleSheets",
+        "notes": "📝 **RECORD KEEPING**\n\n**What it does:** Updates your Google Sheet to mark this video as posted\n\n**How it works:**\n1. Finds the row with the matching video URL\n2. Sets the 'Posted' column to 'true'\n3. Prevents the same video from being posted again\n\n**Why this matters:**\n• Automatic tracking\n• No duplicate posts\n• Clear record of what's been shared\n\n**Uses the same Google Sheets credentials** as the fetch step",
+        "position": [
+          3200,
+          368
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "source_url": "={{ $('🎯 Prepare Video Data').item.json.video_url }}",
+              "posted_story": "\"true\""
+            },
+            "schema": [
+              {
+                "id": "id",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "id",
+                "defaultMatch": true,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "title",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "media_type",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "media_type",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "mime_type",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "mime_type",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "source_url",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "source_url",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "posted_reels",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "posted_reels",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "posted_story",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "posted_story",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "source_url"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "appendOrUpdate",
+          "sheetName": {
+            "mode": "name",
+            "value": "={{ $('⚙️ Configuration Hub').item.json.SHEET_TAB_NAME }}"
+          },
+          "documentId": {
+            "mode": "list",
+            "value": "={{ $('⚙️ Configuration Hub').item.json.SHEET_DOC_ID }}"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ZcotjdhaT5mLuV86",
+            "name": "Google Sheets account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 4.5
+      },
+      {
+        "id": "9b340387-74b9-4245-a20c-7a5f4074f4c2",
+        "name": "🔧 Troubleshooting",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2896,
+          528
+        ],
+        "parameters": {
+          "width": 500,
+          "height": 560,
+          "content": "🚨 **Troubleshooting Guide**\n\n**Common Issues:**\n\n**1. Workflow stops at processing:**\n• Video URL not accessible publicly\n• Video doesn't meet Instagram requirements\n• Check video format (MP4 recommended)\n\n**2. 'Sheet not found' error:**\n• Verify SHEET_DOC_ID in Config\n• Check SHEET_TAB_NAME spelling (case-sensitive)\n• Ensure sheet is accessible to your Google account\n\n**3. Facebook API errors:**\n• Verify Instagram Business Account connection\n• Check app permissions in Facebook Developers\n• Ensure account has Instagram Content Publishing permission\n\n**4. Posted column not updating:**\n• Confirm Path values are unique in sheet\n• Check Google Sheets permissions\n• Verify credential connections\n\n**Need more help?** Check n8n community forums or documentation."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9dab79de-3039-4330-94fe-d7fc02bfb5a4",
+        "name": "✅ Setup Checklist",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          240,
+          560
+        ],
+        "parameters": {
+          "width": 440,
+          "height": 536,
+          "content": "🎓 **Setup Checklist for Non-Technical Users**\n\n**Before you start:**\n☐ Instagram Business Account (not personal)\n☐ Facebook Business Manager access\n☐ Google account with Sheets access\n☐ Videos in MP4 format, publicly hosted\n\n**Required Credentials:**\n☐ Facebook Developer App (free)\n☐ Google Sheets OAuth connection\n☐ Instagram Business Account linked to Facebook\n\n**One-time setup:**\n☐ Replace values in ⚙️ Configuration Hub\n☐ Connect Facebook Graph API credential\n☐ Connect Google Sheets credential\n☐ Test with Manual Trigger\n☐ Enable Schedule Trigger\n\n**Ongoing usage:**\n☐ Add video URLs to Google Sheet\n☐ Leave 'Posted' column empty for new videos\n☐ Check Instagram for posted stories\n\n**That's it! The workflow handles everything else automatically.**"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "⏰ Auto Schedule": {
+        "main": [
+          [
+            {
+              "node": "⚙️ Configuration Hub",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🚀 Manual Start": {
+        "main": [
+          [
+            {
+              "node": "⚙️ Configuration Hub",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "⏰ Wait 30 Seconds": {
+        "main": [
+          [
+            {
+              "node": "🔍 Check Processing Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🎲 Randomize Order": {
+        "main": [
+          [
+            {
+              "node": "🔄 Process Each Video",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "✅ Ready to Publish?": {
+        "main": [
+          [
+            {
+              "node": "🎉 Publish to Instagram",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "⏰ Wait 30 Seconds",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🎯 Prepare Video Data": {
+        "main": [
+          [
+            {
+              "node": "📤 Create Story Container",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔄 Process Each Video": {
+        "main": [
+          [],
+          [
+            {
+              "node": "❓ Already Posted Check",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "⚙️ Configuration Hub": {
+        "main": [
+          [
+            {
+              "node": "📊 Fetch Videos from Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "❓ Already Posted Check": {
+        "main": [
+          [
+            {
+              "node": "🎯 Prepare Video Data",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "🔄 Process Each Video",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🎉 Publish to Instagram": {
+        "main": [
+          [
+            {
+              "node": "✏️ Mark as Posted",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📤 Create Story Container": {
+        "main": [
+          [
+            {
+              "node": "🔍 Check Processing Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📊 Fetch Videos from Sheet": {
+        "main": [
+          [
+            {
+              "node": "🎲 Randomize Order",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔍 Check Processing Status": {
+        "main": [
+          [
+            {
+              "node": "✅ Ready to Publish?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 19,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 2
+      },
+      "n8n-nodes-base.set": {
+        "count": 2
+      },
+      "n8n-nodes-base.sort": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 5
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.facebookGraphApi": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "iMan",
+    "username": "iman",
+    "bio": "",
+    "verified": false,
+    "links": [
+      "https://imanetworks.ch/"
+    ],
+    "avatar": "https://gravatar.com/avatar/29a4daa02c40aae245b5f84fc3a4c0baadb197072a15f8288024e95ec753b41d?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 314,
+      "icon": "file:facebook.svg",
+      "name": "n8n-nodes-base.facebookGraphApi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.facebookgraphapi/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/facebookGraph/"
+              }
+            ]
+          },
+          "categories": [
+            "Development"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "API Graph Facebook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MCA2MCI+PHBhdGggZmlsbD0iIzE4NzdmMiIgZD0iTTU5LjUgMzBDNTkuNSAxMy43MSA0Ni4yOS41IDMwIC41Uy41IDEzLjcxLjUgMzBjMCAxNC43MiAxMC43OSAyNi45MyAyNC44OSAyOS4xNFYzOC41M0gxNy45VjMwaDcuNDl2LTYuNWMwLTcuMzkgNC40LTExLjQ4IDExLjE0LTExLjQ4IDMuMjMgMCA2LjYuNTggNi42LjU4djcuMjZoLTMuNzJjLTMuNjYgMC00LjgxIDIuMjctNC44MSA0LjYxVjMwaDguMThsLTEuMzEgOC41M0gzNC42djIwLjYxQzQ4LjcxIDU2LjkzIDU5LjUgNDQuNzIgNTkuNSAzMCIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik00MS40OCAzOC41MyA0Mi43OSAzMGgtOC4xOHYtNS41M2MwLTIuMzMgMS4xNC00LjYxIDQuODEtNC42MWgzLjcyVjEyLjZzLTMuMzgtLjU4LTYuNi0uNThjLTYuNzQgMC0xMS4xNCA0LjA4LTExLjE0IDExLjQ4VjMwaC03LjV2OC41M2g3LjQ5djIwLjYxYzEuNS4yNCAzLjA0LjM2IDQuNjEuMzZzMy4xMS0uMTIgNC42MS0uMzZWMzguNTN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Facebook Graph API",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur 'Exécuter le flux de travail'",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1240,
+      "icon": "file:sort.svg",
+      "name": "n8n-nodes-base.sort",
+      "codex": {
+        "data": {
+          "alias": [
+            "Sort",
+            "Order",
+            "Transform",
+            "Array",
+            "List",
+            "Item",
+            "Random"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.sort/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Trier"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48cGF0aCBmaWxsPSIjODI4N0VCIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzAuNSA0MjIuNWMtNi42MjcgMC0xMi01LjM3My0xMi0xMnYtMzUxYzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMjRjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYzNTFjMCA2LjYyNy01LjM3MyAxMi0xMiAxMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGZpbGw9IiM4Mjg3RUIiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTM2LjA3NyAzMzMuNDgyYzkuMzk4LTkuMzQ2IDI0LjU5NC05LjMwNCAzMy45NC4wOTVsNzIuNDgzIDcyLjg4NyA3Mi40ODItNzIuODg3YzkuMzQ3LTkuMzk5IDI0LjU0My05LjQ0MSAzMy45NDEtLjA5NXM5LjQ0MSAyNC41NDMuMDk1IDMzLjk0MWwtODkuNSA5MGEyNCAyNCAwIDAgMS0zNC4wMzYgMGwtODkuNS05MGMtOS4zNDYtOS4zOTgtOS4zMDQtMjQuNTk0LjA5NS0zMy45NDFNMzgxLjUgODkuNWM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjM1MWMwIDYuNjI3LTUuMzczIDEyLTEyIDEyaC0yNGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnYtMzUxYzAtNi42MjcgNS4zNzMtMTIgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBmaWxsPSIjODI4N0VCIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00NzUuOTIzIDE3OC41MThjLTkuMzk4IDkuMzQ2LTI0LjU5NCA5LjMwNC0zMy45NDEtLjA5NUwzNjkuNSAxMDUuNTM2bC03Mi40ODIgNzIuODg3Yy05LjM0NyA5LjM5OS0yNC41NDMgOS40NDEtMzMuOTQxLjA5NXMtOS40NDEtMjQuNTQzLS4wOTUtMzMuOTQxbDg5LjUtOTBhMjQgMjQgMCAwIDEgMzQuMDM2IDBsODkuNSA5MGM5LjM0NiA5LjM5OCA5LjMwNCAyNC41OTQtLjA5NSAzMy45NDEiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg=="
+      },
+      "displayName": "Sort",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

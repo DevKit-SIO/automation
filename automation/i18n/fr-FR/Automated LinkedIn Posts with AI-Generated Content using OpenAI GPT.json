@@ -1,0 +1,400 @@
+{
+  "id": 7521,
+  "name": "Publications LinkedIn automatisées avec contenu généré par IA utilisant OpenAI GPT",
+  "views": 273,
+  "recentViews": 2,
+  "totalViews": 273,
+  "createdAt": "2025-08-17T16:42:00.462Z",
+  "description": "# Agent de publication automatique LinkedIn pour n8n\n\n🚀 **Automatisez votre présence sur LinkedIn avec génération de contenu alimentée par IA**\n\nCe flux de travail n8n génère et publie automatiquement des publications LinkedIn engageantes en utilisant les modèles GPT d'OpenAI. Parfait pour les professionnels et les entreprises qui souhaitent maintenir une présence active sur LinkedIn sans effort manuel.\n\n## ✨ Fonctionnalités\n\n- **🤖 Contenu alimenté par IA** : Générez des publications professionnelles LinkedIn en utilisant OpenAI GPT-3.5-turbo ou GPT-4\n- **⏰ Planification automatisée** : Publiez du contenu automatiquement les jours de semaine à 9h (personnalisable)\n- **🎯 Déclencheur manuel** : Générez et publiez du contenu à la demande\n- **🔒 Sécurisé** : Tous les identifiants sont stockés en toute sécurité dans le système d'identifiants chiffré de n8n\n- **📊 Gestion des erreurs** : Logique de réessai intégrée et notifications d'erreur\n- **🎨 Personnalisable** : Modifiez facilement les invites, la planification et les paramètres de contenu\n\n## 🏗️ Architecture\n\nCe flux de travail utilise une architecture simplifiée à 3 nœuds :\n\n```\nPlanification/Déclencheur manuel → Génération de contenu OpenAI → Publication LinkedIn\n```\n\n### Détails des nœuds\n\n1. **Déclencheur de planification** : Déclenche automatiquement le flux de travail (par défaut : jours de semaine à 9h)\n2. **Déclencheur manuel** : Permet la génération de contenu à la demande\n3. **Génération de contenu OpenAI** : Crée du contenu optimisé pour LinkedIn en utilisant l'IA\n4. **Publication LinkedIn** : Publie le contenu généré sur LinkedIn\n\n## 📋 Prérequis\n\n- Instance n8n (auto-hébergée ou cloud)\n- Compte API OpenAI et clé API\n- Compte LinkedIn avec accès API\n- Familiarité de base avec les flux de travail n8n\n\n## 🚀 Démarrage rapide\n\n### 1. Importer le flux de travail\n\n1. Téléchargez le fichier `linkedin-auto-post-agent.json`\n2. Dans votre instance n8n, allez à **Flux de travail** → **Importer depuis un fichier**\n3. Sélectionnez le fichier JSON téléchargé\n4. Cliquez sur **Importer**\n\n### 2. Configurer les identifiants\n\n#### Identifiants API OpenAI\n\n1. Allez dans **Identifiants** dans votre instance n8n\n2. Cliquez sur **Créer un nouvel identifiant**\n3. Sélectionnez **OpenAI**\n4. Entrez votre clé API OpenAI\n5. Nommez-le \"API OpenAI\" et enregistrez\n\n#### Identifiants OAuth2 LinkedIn\n\n1. Créez une application LinkedIn sur [LinkedIn Developer Portal](https://developer.linkedin.com/)\n2. Configurez les paramètres OAuth 2.0 :\n   - **URL de redirection** : `https://your-n8n-instance.com/rest/oauth2-credential/callback`\n   - **Scopes** : `r_liteprofile`, `w_member_social`\n3. Dans n8n, créez de nouveaux identifiants **OAuth2 LinkedIn**\n4. Entrez l'ID client et le secret client de votre application LinkedIn\n5. Complétez le flux d'autorisation OAuth\n\n### 3. Configurer le flux de travail\n\n1. Ouvrez le flux de travail importé\n2. Cliquez sur le nœud **Génération de contenu OpenAI**\n3. Sélectionnez vos identifiants OpenAI\n4. Personnalisez l'invite de contenu si désiré\n5. Cliquez sur le nœud **Publication LinkedIn**\n6. Sélectionnez vos identifiants OAuth2 LinkedIn\n7. Enregistrez le flux de travail\n\n### 4. Tester le flux de travail\n\n1. Cliquez sur le nœud **Déclencheur manuel**\n2. Cliquez sur **Exécuter le nœud** pour tester la génération de contenu\n3. Vérifiez le contenu généré dans la sortie du nœud LinkedIn\n4. Vérifiez votre profil LinkedIn pour confirmer que la publication a été publiée\n\n### 5. Activer la publication automatisée\n\n1. Cliquez sur le bouton **Actif** dans le coin supérieur droit\n2. Le flux de travail s'exécutera désormais automatiquement selon le calendrier\n\n## ⚙️ Options de configuration\n\n### Planification\n\nLe calendrier par défaut publie du contenu les jours de semaine à 9h. Pour modifier :\n\n1. Cliquez sur le nœud **Déclencheur de planification**\n2. Modifiez l'**Expression Cron** : `0 9 * * 1-5`\n   - `0 9 * * 1-5` : Jours de semaine à 9h\n   - `0 12 * * *` : Quotidiennement à midi\n   - `0 9 * * 1,3,5` : Lundi, mercredi, vendredi à 9h\n\n### Personnalisation du contenu\n\nModifiez l'invite OpenAI pour changer le style de contenu :\n\n1. Cliquez sur le nœud **Génération de contenu OpenAI**\n2. Modifiez le **Message système** pour ajuster le ton et le style\n3. Modifiez le **Message utilisateur** pour changer le sujet\n\n#### Exemples d'invites\n\n**Concentration sur le développement professionnel** :\n```\nCréez une publication LinkedIn sur la croissance professionnelle, le développement des compétences ou l'avancement de carrière. Gardez-la sous 280 caractères et incluez 2-3 hashtags pertinents.\n```\n\n**Aperçus de l'industrie** :\n```\nGénérez une publication LinkedIn partageant un aperçu ou une tendance de l'industrie technologique. Rendez-la stimulante et incluez des hashtags pertinents.\n```\n\n**Contenu motivant** :\n```\nÉcrivez une publication LinkedIn inspirante sur le surpassement des défis ou l'atteinte des objectifs. Gardez-la positive et engageante avec des hashtags appropriés.\n```\n\n### Sélection du modèle\n\nChoisissez entre les modèles OpenAI en fonction de vos besoins :\n\n- **gpt-3.5-turbo** : Économique, bonne qualité\n- **gpt-4** : Qualité supérieure, plus cher\n- **gpt-4-turbo** : Dernier modèle avec performances améliorées\n\n## 🔧 Configuration avancée\n\n### Gestion des erreurs\n\nLe flux de travail comprend une gestion des erreurs intégrée :\n\n- **Logique de réessai** : 3 tentatives avec des délais d'une seconde\n- **Continuer en cas d'échec** : Le flux de travail continue même si des nœuds individuels échouent\n- **Notifications d'erreur** : Notifications par e-mail/Slack optionnelles en cas d'échecs\n\n### Flux de travail de révision de contenu (optionnel)\n\nPour ajouter une révision manuelle du contenu avant publication :\n\n1. Ajoutez un nœud **Attendre** entre les nœuds OpenAI et LinkedIn\n2. Configurez un déclencheur webhook pour approbation\n3. Ajoutez une logique conditionnelle basée sur le statut d'approbation\n\n### Limitation de taux\n\nPour respecter les limites de l'API :\n\n- OpenAI : 3 requêtes par minute (par défaut)\n- LinkedIn : 100 publications par jour par utilisateur\n- Ajustez la fréquence de planification en conséquence\n\n## 📊 Surveillance et analyses\n\n### Historique d'exécution\n\n1. Allez dans **Exécutions** dans votre instance n8n\n2. Filtrez par nom de flux de travail pour voir tous les exécutions\n3. Cliquez sur des exécutions individuelles pour voir les journaux détaillés\n\n### Principales métriques à surveiller\n\n- **Taux de réussite** : Pourcentage d'exécutions réussies\n- **Qualité du contenu** : Examinez périodiquement les publications générées\n- **Utilisation de l'API** : Surveillez la consommation de jetons OpenAI\n- **Engagement LinkedIn** : Suivez la performance des publications sur LinkedIn\n\n## 🛠️ Dépannage\n\n### Problèmes courants\n\n**Échec du nœud OpenAI**\n- Vérifiez que la clé API est correcte et dispose de crédits suffisants\n- Vérifiez si vous avez dépassé les limites de taux\n- Assurez-vous que le nom du modèle est correctement orthographié\n\n**Échec du nœud LinkedIn**\n- Vérifiez que les identifiants OAuth2 sont correctement configurés\n- Vérifiez si l'application LinkedIn a les autorisations requises\n- Assurez-vous que le contenu ne viole pas les politiques de publication de LinkedIn\n\n**Le flux de travail ne se déclenche pas**\n- Confirmez que le flux de travail est marqué comme \"Actif\"\n- Vérifiez la syntaxe de l'expression cron\n- Vérifiez les paramètres de fuseau horaire de n8n\n\n### Mode débogage\n\n1. Activez **Enregistrer les exécutions manuelles** dans les paramètres du flux de travail\n2. Exécutez le flux de travail manuellement pour voir les données d'exécution détaillées\n3. Vérifiez les données d'entrée/sortie de chaque nœud\n\n## 🔒 Meilleures pratiques de sécurité\n\n- Stockez toutes les clés API dans le système d'identifiants chiffré de n8n\n- Faites régulièrement tourner les clés API (mensuel recommandé)\n- Utilisez des variables d'environnement pour la configuration sensible\n- Activez la journalisation des exécutions pour les pistes d'audit\n- Surveillez les modèles d'utilisation inhabituels de l'API\n\n## 📈 Conseils d'optimisation\n\n### Qualité du contenu\n- Examinez et affinez les invites en fonction de la qualité de la sortie\n- Testez A/B différentes variations d'invite\n- Surveillez les métriques d'engagement LinkedIn\n- Ajustez la fréquence de publication en fonction de la réponse du public\n\n### Optimisation des coûts\n- Utilisez gpt-3.5-turbo pour une génération de contenu économique\n- Définissez des limites de jetons appropriées (200 jetons recommandés)\n- Surveillez l'utilisation d'OpenAI dans votre tableau de bord\n\n### Performance\n- Gardez les flux de travail simples avec un minimum de nœuds\n- Utilisez des paramètres de réessai appropriés\n- Surveillez les temps d'exécution et optimisez si nécessaire\n\n## 🤝 Contribuer\n\nNous accueillons les contributions pour améliorer ce flux de travail :\n\n1. Forkez le dépôt\n2. Créez une branche de fonctionnalité\n3. Apportez vos améliorations\n4. Soumettez une demande de tirage\n\n## 📄 Licence\n\nCe projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.\n\n## 🆘 Support\n\nSi vous rencontrez des problèmes ou avez des questions :\n\n1. Consultez la section de dépannage ci-dessus\n2. Consultez la documentation officielle de n8n\n3. Rejoignez le forum de la communauté n8n\n4. Créez un problème dans ce dépôt\n\n## 🔗 Liens utiles\n\n- [Documentation n8n](https://docs.n8n.io/)\n- [Documentation API OpenAI](https://platform.openai.com/docs)\n- [Documentation API LinkedIn](https://docs.microsoft.com/en-us/linkedin/)\n- [Forum de la communauté n8n](https://community.n8n.io/)\n\n---\n\n**Bonne automatisation ! 🚀**\n\n*Ce flux de travail vous aide à maintenir une présence LinkedIn cohérente tout en vous concentrant sur ce qui compte le plus - votre entreprise et votre croissance professionnelle.*",
+  "workflow": {
+    "id": "linkedin-auto-post-agent",
+    "meta": {
+      "instanceId": "linkedin-auto-post-agent",
+      "templateCredsSetupCompleted": false
+    },
+    "name": "LinkedIn Auto-Post Agent",
+    "tags": [
+      {
+        "id": "social-media",
+        "name": "Social Media",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-01T00:00:00.000Z"
+      },
+      {
+        "id": "ai-automation",
+        "name": "AI Automation",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-01T00:00:00.000Z"
+      },
+      {
+        "id": "linkedin",
+        "name": "LinkedIn",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-01T00:00:00.000Z"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "f6b4c8d0-1234-4567-8901-234567890abc",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          240,
+          300
+        ],
+        "webhookId": "",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "cronExpression": "0 9 * * 1-5"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "a1b2c3d4-5678-9012-3456-789012345678",
+        "name": "OpenAI Content Generation",
+        "type": "n8n-nodes-base.openAi",
+        "position": [
+          460,
+          300
+        ],
+        "parameters": {
+          "model": "gpt-3.5-turbo",
+          "prompt": "You are a professional LinkedIn content creator. Generate an engaging, professional post that is 150-300 characters long with relevant hashtags. Focus on industry insights, professional development, or thought leadership topics.\n\nCreate a LinkedIn post about professional growth and continuous learning in the tech industry. Make it inspiring and include 2-3 relevant hashtags.",
+          "options": {
+            "topP": 1,
+            "maxTokens": 200,
+            "temperature": 0.7
+          },
+          "operation": "complete"
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "openai-credentials",
+            "name": "OpenAI API"
+          }
+        },
+        "retryOnFail": {
+          "enabled": true,
+          "maxRetries": 3,
+          "waitBetween": 1000
+        },
+        "typeVersion": 1,
+        "continueOnFail": true
+      },
+      {
+        "id": "e5f6g7h8-9012-3456-7890-123456789012",
+        "name": "LinkedIn Post",
+        "type": "n8n-nodes-base.linkedIn",
+        "position": [
+          680,
+          300
+        ],
+        "parameters": {
+          "text": "={{ $json.choices[0].text }}",
+          "resource": "post",
+          "operation": "create",
+          "additionalFields": {
+            "visibility": "public"
+          }
+        },
+        "credentials": {
+          "linkedInOAuth2Api": {
+            "id": "linkedin-oauth",
+            "name": "LinkedIn OAuth2"
+          }
+        },
+        "retryOnFail": {
+          "enabled": true,
+          "maxRetries": 3,
+          "waitBetween": 1000
+        },
+        "typeVersion": 1,
+        "continueOnFail": true
+      },
+      {
+        "id": "m7n8o9p0-1234-5678-9012-345678901234",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          240,
+          180
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "settings": {
+      "callerPolicy": "workflowsFromSameOwner",
+      "errorWorkflow": {
+        "enabled": false
+      },
+      "executionOrder": "v1",
+      "saveManualExecutions": true
+    },
+    "versionId": "1.0.0",
+    "connections": {
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "OpenAI Content Generation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "OpenAI Content Generation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Content Generation": {
+        "main": [
+          [
+            {
+              "node": "LinkedIn Post",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 4,
+    "nodeTypes": {
+      "n8n-nodes-base.openAi": {
+        "count": 1
+      },
+      "n8n-nodes-base.linkedIn": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Wevanta Infotech",
+    "username": "wevantainfotech",
+    "bio": "",
+    "verified": false,
+    "links": [],
+    "avatar": "https://gravatar.com/avatar/435685616e5df8d87003ecb93f503eccfeb4f26e711ab9c828865a980611309c?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 367,
+      "icon": "file:linkedin.svg",
+      "name": "n8n-nodes-base.linkedIn",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.linkedin/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/linkedIn/"
+              }
+            ]
+          },
+          "categories": [
+            "Marketing",
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "LinkedIn"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNjcgNjYiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9IjEiIHk9IjEiLz48c3ltYm9sIGlkPSJhIiBvdmVyZmxvdz0idmlzaWJsZSI+PGcgZmlsbC1ydWxlPSJub256ZXJvIiBzdHJva2U9Im5vbmUiPjxwYXRoIGZpbGw9IiMwMTc3YjUiIGQ9Ik01OS4yNiAwSDQuNzI0QzIuMTIgMCAwIDIuMDY2IDAgNC42MXY1NC43ODhjMCAyLjUzIDIuMTIgNC42IDQuNzI0IDQuNmg1NC41NGMyLjYxIDAgNC43MzYtMi4wNyA0LjczNi00LjZWNC42MUM2NCAyLjA2NiA2MS44NzQgMCA1OS4yNiAwIi8+PHBhdGggZD0iTTkuNDkgMjMuOTkySDE5djMwLjU0SDkuNDl6bTQuNzQ4LTE1LjJjMy4wMzQgMCA1LjUgMi40NjYgNS41IDUuNWE1LjUxIDUuNTEgMCAwIDEtNS40OTggNS41MDYgNS41MiA1LjUyIDAgMCAxLTUuNTA4LTUuNTA2IDUuNSA1LjUgMCAwIDEgNS41MDYtNS41bTEwLjcgMTUuMmg5LjEwNHY0LjE3NGguMTI2YzEuMjY4LTIuNCA0LjM2NC00LjkzMiA5LTQuOTMyIDkuNjEyIDAgMTEuMzg2IDYuMzI2IDExLjM4NiAxNC41NDh2MTYuNzUyaC05LjQ4NlYzOS42NzhjMC0zLjU0LS4wNjQtOC4xLTQuOTMyLTguMS00Ljk0IDAtNS43IDMuODYtNS43IDcuODR2MTUuMTA4aC05LjQ4NHYtMzAuNTR6Ii8+PC9nPjwvc3ltYm9sPjwvc3ZnPg=="
+      },
+      "displayName": "LinkedIn",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 27,
+          "name": "Marketing"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 840,
+      "icon": "file:openAi.svg",
+      "name": "n8n-nodes-base.openAi",
+      "codex": {
+        "data": {
+          "alias": [
+            "ChatGPT",
+            "DallE"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/openai/"
+              }
+            ]
+          },
+          "categories": [
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjYwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZD0iTTIzOS4xODQgMTA2LjIwM2E2NC43MiA2NC43MiAwIDAgMC01LjU3Ni01My4xMDNDMjE5LjQ1MiAyOC40NTkgMTkxIDE1Ljc4NCAxNjMuMjEzIDIxLjc0QTY1LjU4NiA2NS41ODYgMCAwIDAgNTIuMDk2IDQ1LjIyYTY0LjcyIDY0LjcyIDAgMCAwLTQzLjIzIDMxLjM2Yy0xNC4zMSAyNC42MDItMTEuMDYxIDU1LjYzNCA4LjAzMyA3Ni43NGE2NC42NyA2NC42NyAwIDAgMCA1LjUyNSA1My4xMDJjMTQuMTc0IDI0LjY1IDQyLjY0NCAzNy4zMjQgNzAuNDQ2IDMxLjM2YTY0LjcyIDY0LjcyIDAgMCAwIDQ4Ljc1NCAyMS43NDRjMjguNDgxLjAyNSA1My43MTQtMTguMzYxIDYyLjQxNC00NS40ODFhNjQuNzcgNjQuNzcgMCAwIDAgNDMuMjI5LTMxLjM2YzE0LjEzNy0yNC41NTggMTAuODc1LTU1LjQyMy04LjA4My03Ni40ODNtLTk3LjU2IDEzNi4zMzhhNDguNCA0OC40IDAgMCAxLTMxLjEwNS0xMS4yNTVsMS41MzUtLjg3IDUxLjY3LTI5LjgyNWE4LjYgOC42IDAgMCAwIDQuMjQ3LTcuMzY3di03Mi44NWwyMS44NDUgMTIuNjM2Yy4yMTguMTExLjM3LjMyLjQwOS41NjN2NjAuMzY3Yy0uMDU2IDI2LjgxOC0yMS43ODMgNDguNTQ1LTQ4LjYwMSA0OC42MDFNMzcuMTU4IDE5Ny45M2E0OC4zNSA0OC4zNSAwIDAgMS01Ljc4MS0zMi41ODlsMS41MzQuOTIxIDUxLjcyMiAyOS44MjZhOC4zNCA4LjM0IDAgMCAwIDguNDQxIDBsNjMuMTgxLTM2LjQyNXYyNS4yMjFhLjg3Ljg3IDAgMCAxLS4zNTguNjY1bC01Mi4zMzUgMzAuMTg0Yy0yMy4yNTcgMTMuMzk4LTUyLjk3IDUuNDMxLTY2LjQwNC0xNy44MDNNMjMuNTQ5IDg1LjM4YTQ4LjUgNDguNSAwIDAgMSAyNS41OC0yMS4zMzN2NjEuMzlhOC4yOSA4LjI5IDAgMCAwIDQuMTk1IDcuMzE2bDYyLjg3NCAzNi4yNzItMjEuODQ1IDEyLjYzNmEuODIuODIgMCAwIDEtLjc2NyAwTDQxLjM1MyAxNTEuNTNjLTIzLjIxMS0xMy40NTQtMzEuMTcxLTQzLjE0NC0xNy44MDQtNjYuNDA1em0xNzkuNDY2IDQxLjY5NS02My4wOC0zNi42M0wxNjEuNzMgNzcuODZhLjgyLjgyIDAgMCAxIC43NjggMGw1Mi4yMzMgMzAuMTg0YTQ4LjYgNDguNiAwIDAgMS03LjMxNiA4Ny42MzV2LTYxLjM5MWE4LjU0IDguNTQgMCAwIDAtNC40LTcuMjEzbTIxLjc0Mi0zMi42OS0xLjUzNS0uOTIyLTUxLjYxOS0zMC4wODFhOC4zOSA4LjM5IDAgMCAwLTguNDkyIDBMOTkuOTggOTkuODA4Vjc0LjU4N2EuNzIuNzIgMCAwIDEgLjMwNy0uNjY1bDUyLjIzMy0zMC4xMzNhNDguNjUyIDQ4LjY1MiAwIDAgMSA3Mi4yMzYgNTAuMzkxek04OC4wNjEgMTM5LjA5N2wtMjEuODQ1LTEyLjU4NWEuODcuODcgMCAwIDEtLjQxLS42MTRWNjUuNjg1YTQ4LjY1MiA0OC42NTIgMCAwIDEgNzkuNzU3LTM3LjM0NmwtMS41MzUuODctNTEuNjcgMjkuODI1YTguNiA4LjYgMCAwIDAtNC4yNDYgNy4zNjd6bTExLjg2OC0yNS41OEwxMjguMDY3IDk3LjNsMjguMTg4IDE2LjIxOHYzMi40MzRsLTI4LjA4NiAxNi4yMTgtMjguMTg4LTE2LjIxOHoiLz48L3N2Zz4="
+      },
+      "displayName": "OpenAI",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

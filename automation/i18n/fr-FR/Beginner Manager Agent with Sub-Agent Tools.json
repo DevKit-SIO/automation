@@ -1,0 +1,612 @@
+{
+  "id": 7158,
+  "name": "Agent Manager Débutant avec Outils de Sous-Agent",
+  "views": 849,
+  "recentViews": 5,
+  "totalViews": 849,
+  "createdAt": "2025-08-08T00:45:19.792Z",
+  "description": "Ce guide vous accompagne dans la création d'un Agent IA intelligent dans n8n qui achemine les tâches vers le sous-agent approprié en utilisant le nouveau cadre d'agent `@n8n/n8n-nodes-langchain`. Vous créerez un **Agent Manager** qui évalue l'entrée de l'utilisateur et la délègue soit à un **Agent Email**, soit à un **Agent Données**—chacun ayant son propre rôle, sa mémoire et son modèle OpenAI.\n\nC'est parfait pour les cas d'utilisation où vous souhaitez un point d'entrée unique mais un branchement intelligent en arrière-plan.\n\n---\n\n## 🔧 Étape 1 : Configurer l'Agent Manager\n\nCommencez par faire glisser un nœud **Agent** et nommez-le quelque chose comme `AgentManager`. Cet agent agira comme le \"cerveau\" de votre système, analysant l'entrée de l'utilisateur et déterminant si elle doit être traitée par le sous-agent de rédaction d'e-mails ou le sous-agent de résumé de données.\n\nOuvrez les paramètres du nœud et collez ce qui suit dans le **Message Système** :\n\n```\nVous êtes un Manager IA qui délègue des tâches à des agents spécialisés. Votre travail consiste à analyser le message de l'utilisateur et à décider s'il nécessite :\n\nUn AgentEmail pour rédiger des e-mails de sensibilisation, de suivi ou des e-mails modèles, ou\n\nUn AgentDonnées pour des tâches impliquant des résumés de données, des métriques ou des analyses.\n\nEnvoyez les instructions aux sous-agents.\n```\n\nCette instruction donne à l'Agent Manager une clarté sur les rôles existants et les types de tâches qui leur appartiennent.\n\n---\n\n## 🧠 Étape 2 : Ajouter de la Mémoire à l'Agent Manager\n\nFaites glisser un nœud **Mémoire (BufferWindow)** et étiquetez-le `Mémoire Manager`. Connectez-le à l'entrée `ai_memory` de l'Agent Manager. Cela garantit que l'agent peut se souvenir des entrées et sorties récentes de l'utilisateur et des agents pendant la conversation.\n\nAucune configuration supplémentaire n'est nécessaire dans ce nœud de mémoire—il suffit de le connecter à l'agent.\n\n---\n\n## 🔌 Étape 3 : Connecter un Modèle de Langue à l'Agent Manager\n\nEnsuite, ajoutez un nœud **Modèle de Langue** et choisissez `Modèle de Chat OpenAI`. Sélectionnez un modèle comme `gpt-4o-mini` ou `gpt-4`, selon ce à quoi vous avez accès. Sous **Identifiants**, connectez votre clé API OpenAI. Si vous n'avez pas encore créé cet identifiant :\n\n1. Cliquez sur \"OpenAI API\" sous Identifiants.\n2. Choisissez \"Créer Nouveau\".\n3. Collez votre clé API OpenAI (trouvée sur [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)).\n4. Enregistrez-la et revenez au flux de travail.\n\nUne fois le modèle configuré, connectez-le à l'entrée `ai_languageModel` de l'Agent Manager.\n\n---\n\n## ✉️ Étape 4 : Créer l'Outil Agent Email\n\nMaintenant, vous allez créer un sous-agent spécialisé qui ne rédige que des e-mails.\n\nAjoutez un nœud **Outil Agent** et appelez-le `AgentEmail`. Dans les paramètres de l'outil, décrivez clairement son travail. Par exemple :\n\n```\nRédige des e-mails professionnels, amicaux ou orientés vers l'action en fonction des instructions.\n```\n\nEnsuite, faites défiler jusqu'à la section **Message Système** et entrez ce qui suit :\n\n```\nVous êtes un Assistant de Rédaction d'E-mails professionnel. Vous rédigez des e-mails soignés et efficaces pour des tâches telles que la sensibilisation, les suivis et la communication avec les clients. Suivez les instructions fournies exactement et renvoyez uniquement le contenu de l'e-mail. Utilisez un ton chaleureux et approprié au monde des affaires.\n```\n\nPour le champ de saisie de texte, utilisez l'expression :\n\n```\n{{ $fromAI('Prompt__User_Message_', ``, 'string') }}\n```\n\nCela permet à l'Agent Email de recevoir exactement ce que l'Agent Manager souhaite qu'il traite.\n\nAjoutez un autre nœud **Mémoire** et reliez-le à cet outil pour l'aider à maintenir un contexte à court terme. Ensuite, ajoutez un deuxième nœud **Modèle de Langue**, configuré exactement comme le premier (vous pouvez même le cloner), et connectez-le à l'AgentEmail.\n\nEnfin, connectez toute cette configuration d'AgentEmail à l'`AgentManager` en l'attachant à son entrée `ai_tool`.\n\n---\n\n## 📊 Étape 5 : Créer l'Outil Agent Données\n\nRépétez les mêmes étapes, mais cette fois pour les résumés de données et l'analyse.\n\nAjoutez un autre nœud **Outil Agent** et nommez-le `AgentDonnées`. Dans la **Description de l'Outil**, écrivez quelque chose comme :\n\n```\nRépond aux instructions nécessitant des métriques, des résumés ou des explications d'analyse de données.\n```\n\nPour son champ de saisie de texte, vous pouvez utiliser :\n\n```\n{{json.query}}\n```\n\nSi vous le souhaitez, fournissez un message système qui donne à l'agent des instructions plus détaillées sur son comportement :\n\n```\nVous êtes un Analyste de Données utile. Résumez les tendances, expliquez les métriques et décomposez les données clairement en fonction des instructions de l'utilisateur.\n```\n\nComme avec l'AgentEmail, vous aurez également besoin de :\n- Un nœud **Mémoire** dédié\n- Un nœud **Modèle de Langue** dédié\n- Une connexion à l'entrée `ai_tool` de l'Agent Manager\n\nMaintenant, l'Agent Manager a deux outils auxquels il peut déléguer : un pour la communication et un pour les insights.\n\n---\n\n## 🧪 Étape 6 : Testez Votre Système d'Agent IA\n\nDéployez le flux de travail et commencez à tester en envoyant des invites comme :\n\n&gt; “Rédigez un e-mail de sensibilisation à froid à une entreprise de logiciels.”\n\nL'AgentManager devrait le diriger vers l'AgentEmail.\n\nEssayez ensuite :\n\n&gt; “Résumez comment notre volume de prospects a changé le mois dernier.”\n\nL'AgentDonnées devrait recevoir cette tâche.\n\nSi le routage ne fonctionne pas comme prévu, vérifiez vos messages système et liaisons d'entrée dans chaque outil d'agent.\n\n---\n\n## ✅ Vous avez terminé !\n\nVous avez maintenant un système IA modulaire et multi-agents alimenté par n8n. L'Agent Manager délègue intelligemment, chaque sous-agent est optimisé pour son rôle, et tous bénéficient de la mémoire contextuelle.\n\nPour des configurations plus avancées, vous pouvez enchaîner des outils, ajouter des types de mémoire supplémentaires ou utiliser des outils de récupération (RAG) pour le support de documents externes.\n\n---\n",
+  "workflow": {
+    "meta": {
+      "instanceId": "ad0113c344ee237399e44e9f11798b05baeb83a6196d514a9ae9d2ad71c3b5c9",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "e816ff5f-d3d4-4416-96d9-961a078fb188",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -32,
+          736
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "4l6TDfLZVFS24g3X",
+            "name": "OpenAi account 4"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "9b121aea-be80-46a0-879d-5732b7d4d4f3",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          784,
+          720
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "2f8104f9-c975-4ed0-b5a9-c5c592878e8c",
+        "name": "Simple Memory1",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          1312,
+          688
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "c07ce435-64a0-4939-918b-9954e7e663e3",
+        "name": "OpenAI Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          640,
+          672
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "4l6TDfLZVFS24g3X",
+            "name": "OpenAi account 4"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "20c108c9-221d-4dde-92ff-028ab4b12c2b",
+        "name": "OpenAI Chat Model2",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          1184,
+          672
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "4l6TDfLZVFS24g3X",
+            "name": "OpenAi account 4"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "263bd596-d242-4a3e-8555-d23e172b23ef",
+        "name": "DataAgent (Insight Generator)",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          1184,
+          480
+        ],
+        "parameters": {
+          "text": "{{json.query}}",
+          "options": {},
+          "toolDescription": "Role: Responds to instructions requiring metrics, summaries, or data analysis explanations."
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "2efc2325-6fee-4fce-a4ba-8b9b72701a8d",
+        "name": "Simple Memory2",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          176,
+          720
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "8c0e14bd-e64f-473f-9f31-0b0d2c800669",
+        "name": "ManagerAgent (Routing + Instruction Generator)",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          32,
+          512
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "You are an AI Manager that delegates tasks to specialized agents. Your job is to analyze the user's message and decide whether it requires:\n\nAn EmailAgent for writing outreach, follow-up, or templated emails, or\n\nA DataAgent for tasks involving data summaries, metrics, or analysis.\n\nsend the instructions to the sub agents. \n\n"
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ee67ff1c-5651-43bb-a836-f48cf0f4c2bd",
+        "name": "EmailAgent (Communication Specialist)",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          656,
+          512
+        ],
+        "parameters": {
+          "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+          "options": {
+            "systemMessage": "You are a professional Email Writing Assistant. You write polished, effective emails for tasks such as outreach, follow-ups, and client communication. Follow the instruction provided exactly and return only the email content. Use a warm, business-appropriate tone."
+          },
+          "toolDescription": "Role: Writes professional, friendly, or action-oriented emails based on instructions."
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "0f5fe30c-3d39-472e-ae83-985adfdab40a",
+        "name": "Sticky Note16",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -144,
+          -192
+        ],
+        "parameters": {
+          "width": 1680,
+          "content": "## 📬 Need Help or Want to Customize This?\n📧 [robert@ynteractive.com](mailto:robert@ynteractive.com)  \n🔗 [LinkedIn](https://www.linkedin.com/in/robert-breen-29429625/)"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2b2938bf-6d85-487a-8a3a-af4e7258162b",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -144,
+          -16
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 600,
+          "height": 860,
+          "content": "## 🔧 Step 1: Set Up the Manager Agent\n\nStart by dragging in an **Agent** node and name it something like `ManagerAgent`. This agent will act as the “brain” of your system, analyzing the user's input and determining whether it should be handled by the email-writing sub-agent or the data-summary sub-agent.\n\nOpen the node’s settings and paste the following into the **System Message**:\n\nYou are an AI Manager that delegates tasks to specialized agents. Your job is to analyze the user's message and decide whether it requires:\n\nAn EmailAgent for writing outreach, follow-up, or templated emails, or\n\nA DataAgent for tasks involving data summaries, metrics, or analysis.\n\nSend the instructions to the sub agents.\n\n\nThis instruction gives the Manager Agent clarity on what roles exist and what types of tasks belong to each one.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "31c629b0-c8a3-47ad-9d1b-110690f5c5c2",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1040,
+          -16
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 496,
+          "height": 860,
+          "content": "## 📊 Step 3: Create the Data Agent Tool\n\nRepeat the same steps, but this time for data summaries and analysis.\n\nAdd another **Agent Tool** node and name it `DataAgent`. In the **Tool Description**, write something like:\n\nResponds to instructions requiring metrics, summaries, or data analysis explanations.\n\nFor its input text field, you can use:\n\n{{json.query}}\n\nIf desired, provide a system message that gives the agent more detailed instruction on how to behave:\n\nNow the Manager Agent has two tools it can delegate to: one for communication and one for insights.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3e609caf-b457-4b4f-8f1d-579b5c6cf3ee",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          480,
+          -16
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 536,
+          "height": 860,
+          "content": "\n## ✉️ Step 4: Create the Email Agent Tool\n\nNow you’ll create a specialized sub-agent that only writes emails.\n\nAdd an **Agent Tool** node and call it `EmailAgent`. In the tool’s settings, describe its job clearly. For example:\n\n```\nWrites professional, friendly, or action-oriented emails based on instructions.\n```\n\nThen scroll down to the **System Message** section and enter the message\n\nFor the text input field, use the expression:\n\n{{ $fromAI('Prompt__User_Message_', ``, 'string') }}\n\nThis allows the Email Agent to receive exactly what the Manager Agent wants it to handle.\n\n\nFinally, connect this entire EmailAgent setup back to the `ManagerAgent` by attaching it to its `ai_tool` input.\n\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "EmailAgent (Communication Specialist)",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory1": {
+        "ai_memory": [
+          [
+            {
+              "node": "DataAgent (Insight Generator)",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory2": {
+        "ai_memory": [
+          [
+            {
+              "node": "ManagerAgent (Routing + Instruction Generator)",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "ManagerAgent (Routing + Instruction Generator)",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "EmailAgent (Communication Specialist)",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model2": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "DataAgent (Insight Generator)",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DataAgent (Insight Generator)": {
+        "ai_tool": [
+          [
+            {
+              "node": "ManagerAgent (Routing + Instruction Generator)",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "EmailAgent (Communication Specialist)": {
+        "ai_tool": [
+          [
+            {
+              "node": "ManagerAgent (Routing + Instruction Generator)",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 13,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agentTool": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 3
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 3
+      }
+    }
+  },
+  "user": {
+    "name": "Robert Breen",
+    "username": "rbreen",
+    "bio": "Professional services consultant with over 10 years of experience solving complex business problems across industries. I specialize in n8n and process automation—designing custom workflows that integrate tools like Google Calendar, Airtable, GPT, and internal systems. Whether you need to automate scheduling, sync data, or streamline operations, I build solutions that save time and drive results.",
+    "verified": true,
+    "links": [
+      "https://ynteractive.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/15bb5ad97bad47ca2079e1fa123a8287000c72c86498c90043f70ec2adab05f3?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire Simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1310,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agentTool",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Other Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Outil Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent Tool",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 5,
+      "name": "Ingénierie"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": []
+}

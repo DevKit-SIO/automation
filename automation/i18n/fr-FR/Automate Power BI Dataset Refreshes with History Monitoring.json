@@ -1,0 +1,242 @@
+{
+  "id": 7336,
+  "name": "Automatiser les actualisations de jeux de données Power BI avec surveillance de l'historique",
+  "views": 462,
+  "recentViews": 3,
+  "totalViews": 462,
+  "createdAt": "2025-08-13T18:00:28.951Z",
+  "description": "*Ce flux de travail contient des nœuds communautaires qui ne sont compatibles qu'avec la version auto-hébergée de n8n.*\n\nCe flux de travail n8n fournit des capacités d'actualisation automatisée des jeux de données Power BI avec une surveillance intégrée de l'historique des actualisations. Il déclenche une actualisation de jeu de données dans Power BI et vérifie simultanément l'historique des actualisations pour suivre l'état de mise à jour des données. C'est parfait pour les analystes de données, les équipes d'intelligence d'affaires, ou quiconque ayant besoin d'automatiser les actualisations de jeux de données Power BI et de surveiller leurs taux de réussite sans intervention manuelle.\n\n### Caractéristiques clés :\n- Déclenchement automatisé des actualisations de jeux de données Power BI\n- Surveillance simultanée de l'historique des actualisations\n- Déclenchement manuel pour une exécution à la demande\n- Suivi de l'état en temps réel\n- Intégration avec l'API REST de Power BI\n- Support pour les jeux de données de travail et personnels\n\n## Guide d'implémentation étape par étape\n\n### Prérequis\nAvant de configurer ce flux de travail, vous aurez besoin de :\n\n1. **Instance n8n** (cloud ou auto-hébergée)\n2. **Compte Power BI** (Pro ou Premium)\n3. **Enregistrement d'application Microsoft Azure** pour l'accès à l'API\n4. **Jeu de données Power BI** que vous souhaitez actualiser\n\n### Étape 1 : Configurer l'enregistrement de l'application\n\n1. Allez sur [Azure Portal](https://portal.azure.com/)\n2. Naviguez vers **Azure Active Directory** → **Enregistrements d'applications**\n3. Cliquez sur **Nouvel enregistrement**\n4. Configurez votre application :\n   - **Nom** : `n8n-powerbi-integration`\n   - **Types de comptes pris en charge** : Comptes uniquement dans cet annuaire organisationnel\n   - **URI de redirection** : `https://your-n8n-instance.com/rest/oauth2-credential/callback`\n5. Cliquez sur **Enregistrer**\n6. Notez l'**ID d'application (client)** et l'**ID de répertoire (locataire)**\n\n### Étape 2 : Configurer les autorisations de l'application\n\n1. Dans votre enregistrement d'application, allez à **Autorisations API**\n2. Cliquez sur **Ajouter une autorisation** → **Service Power BI**\n3. Sélectionnez **Autorisations déléguées** et ajoutez :\n   - `Dataset.ReadWrite.All`\n   - `Dataset.Read.All`\n   - `Workspace.Read.All`\n4. Cliquez sur **Accorder le consentement de l'administrateur** pour votre organisation\n\n### Étape 3 : Créer un secret client\n\n1. Dans votre enregistrement d'application, allez à **Certificats et secrets**\n2. Cliquez sur **Nouveau secret client**\n3. Ajoutez une description : `n8n-powerbi-secret`\n4. Définissez l'expiration (recommandé : 24 mois)\n5. Cliquez sur **Ajouter** et copiez immédiatement la valeur du secret\n\n### Étape 4 : Configurer les identifiants de l'API Power BI dans n8n\n\n1. Dans n8n, allez à **Identifiants** → **Ajouter un identifiant** → **API Power BI OAuth2**\n2. Configurez comme suit :\n   - **ID client** : Votre ID d'application (client) de l'étape 1\n   - **Secret client** : Votre secret client de l'étape 3\n   - **Portée** : `https://analysis.windows.net/powerbi/api/.default`\n3. Enregistrez et testez la connexion\n\n\n\n### Étape 6 : Importer et configurer le flux de travail\n\n1. Copiez le JSON du flux de travail fourni\n2. Dans n8n, cliquez sur **Importer depuis un fichier** ou **Importer depuis le presse-papiers**\n3. Collez le JSON du flux de travail\n4. Configurez chaque nœud comme détaillé ci-dessous :\n\n#### Détails de configuration des nœuds :\n\n##### Lors de l'exécution de 'Exécuter le flux de travail' (Déclencheur manuel)\n- **Type** : Déclencheur manuel\n- **But** : Permet l'exécution manuelle du flux de travail\n- Aucune configuration nécessaire\n\n##### Actualiser la source de données (Power BI)\n- **Ressource** : `dataset`\n- **Opération** : `refresh`\n- **ID de groupe** : `me` (pour l'espace de travail personnel) ou votre ID d'espace de travail\n- **ID de jeu de données** : Votre ID de jeu de données Power BI (de l'étape 5)\n- **Identifiants** : Sélectionnez votre \"compte Power BI\"\n\n##### Vérifier l'historique des actualisations (Power BI)\n- **Ressource** : `dataset`\n- **Opération** : `getRefreshHistory`\n- **ID de groupe** : `me` (pour l'espace de travail personnel) ou votre ID d'espace de travail  \n- **ID de jeu de données** : Votre ID de jeu de données Power BI (même que ci-dessus)\n- **Top** : `10` (nombre d'enregistrements d'actualisation récents à récupérer)\n- **Identifiants** : Sélectionnez votre \"compte Power BI\"\n\n\n\n## Résumé du flux de travail\n\n1. **Déclencheur manuel** → L'utilisateur initie l'exécution du flux de travail\n2. **Exécution parallèle** :\n   - **Actualiser le jeu de données** → Déclenche l'actualisation du jeu de données Power BI\n   - **Obtenir l'historique** → Récupère l'historique récent des actualisations\n3. **Résultats** → Les deux opérations se terminent simultanément, fournissant :\n   - Confirmation de l'initiation de l'actualisation\n   - Contexte historique des actualisations précédentes\n\n\n\n## Informations de contact\n\n**Robert A Ynteractive**\n\nPour le support, la personnalisation ou des questions concernant ce flux de travail :\n\n- 📧 Email : rbreen@ynteractive.com\n- 🌐 Site Web : https://ynteractive.com/\n- 💼 LinkedIn : https://www.linkedin.com/in/robert-breen-29429625/\n\n*Besoin d'aide pour mettre en œuvre ce flux de travail ou souhaitez des solutions d'automatisation personnalisées ? Contactez-nous pour des services professionnels de conseil n8n et de développement de flux de travail.*",
+  "workflow": {
+    "meta": {
+      "instanceId": "efb474b59b0341d7791932605bd9ff04a6c7ed9941fdd53dc4a2e4b99a6f9439",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "be660458-e667-4bad-84c6-b43635acb074",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -520,
+          -200
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "34b3425b-e8ce-4713-a786-417b898e3b89",
+        "name": "Sticky Note16",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1460,
+          -1000
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 832,
+          "height": 1360,
+          "content": "## 📬 Need Help or Want to Customize This?\n📧 [robert@ynteractive.com](mailto:robert@ynteractive.com)  \n🔗 [LinkedIn](https://www.linkedin.com/in/robert-breen-29429625/)\n\n\n\n### Step 1: Set Up Azure App Registration\n\n1. Go to [Azure Portal](https://portal.azure.com/)\n2. Navigate to **Azure Active Directory** → **App registrations**\n3. Click **New registration**\n4. Configure your app:\n   - **Name**: `n8n-powerbi-integration`\n   - **Supported account types**: Accounts in this organizational directory only\n   - **Redirect URI**: `https://your-n8n-instance.com/rest/oauth2-credential/callback`\n5. Click **Register**\n6. Note down the **Application (client) ID** and **Directory (tenant) ID**\n\n### Step 2: Configure App Permissions\n\n1. In your app registration, go to **API permissions**\n2. Click **Add a permission** → **Power BI Service**\n3. Select **Delegated permissions** and add:\n   - `Dataset.ReadWrite.All`\n   - `Dataset.Read.All`\n   - `Workspace.Read.All`\n4. Click **Grant admin consent** for your organization\n\n### Step 3: Create Client Secret\n\n1. In your app registration, go to **Certificates & secrets**\n2. Click **New client secret**\n3. Add description: `n8n-powerbi-secret`\n4. Set expiration (recommended: 24 months)\n5. Click **Add** and copy the secret value immediately\n\n### Step 4: Configure Power BI API Credentials in n8n\n\n1. In n8n, go to **Credentials** → **Add Credential** → **Power BI OAuth2 API**\n2. Configure as follows:\n   - **Client ID**: Your Application (client) ID from Step 1\n   - **Client Secret**: Your client secret from Step 3\n   - **Scope**: `https://analysis.windows.net/powerbi/api/.default`\n3. Save and test the connection\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "921821cb-ca64-49c9-87d6-083395532c72",
+        "name": "Refresh Datasource",
+        "type": "n8n-nodes-powerbi.powerBi",
+        "position": [
+          -180,
+          -360
+        ],
+        "parameters": {
+          "groupId": "me",
+          "resource": "dataset",
+          "datasetId": "475347ba-f8d9-4f9d-b5c7-87fa6d5afd4c",
+          "operation": "refresh"
+        },
+        "credentials": {
+          "powerBiApiOAuth2Api": {
+            "id": "fEMWdLtLYSmHmvlb",
+            "name": "Power BI account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "53dccada-90a0-4408-aaab-395366109010",
+        "name": "Check Refresh History",
+        "type": "n8n-nodes-powerbi.powerBi",
+        "position": [
+          -180,
+          -20
+        ],
+        "parameters": {
+          "top": 10,
+          "groupId": "me",
+          "resource": "dataset",
+          "datasetId": "475347ba-f8d9-4f9d-b5c7-87fa6d5afd4c",
+          "operation": "getRefreshHistory"
+        },
+        "credentials": {
+          "powerBiApiOAuth2Api": {
+            "id": "fEMWdLtLYSmHmvlb",
+            "name": "Power BI account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "79ad7fb7-eadb-491d-80bc-6626facd7d3d",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -600,
+          -1000
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 712,
+          "height": 1360,
+          "content": "\n#### Node Configuration Details:\n\n##### When clicking 'Execute workflow' (Manual Trigger)\n- **Type**: Manual Trigger\n- **Purpose**: Allows manual execution of the workflow\n- No configuration needed\n\n##### Refresh Datasource (Power BI)\n- **Resource**: `dataset`\n- **Operation**: `refresh`\n- **Group ID**: `me` (for personal workspace) or your workspace ID\n- **Dataset ID**: Your Power BI dataset ID (from Step 5)\n- **Credentials**: Select your \"Power BI account\"\n\n##### Check Refresh History (Power BI)\n- **Resource**: `dataset`\n- **Operation**: `getRefreshHistory`\n- **Group ID**: `me` (for personal workspace) or your workspace ID  \n- **Dataset ID**: Your Power BI dataset ID (same as above)\n- **Top**: `10` (number of recent refresh records to retrieve)\n- **Credentials**: Select your \"Power BI account\"\n\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Refresh Datasource",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Check Refresh History",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 62,
+  "workflowInfo": {
+    "nodeCount": 5,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-powerbi.powerBi": {
+        "count": 2
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Robert Breen",
+    "username": "rbreen",
+    "bio": "Professional services consultant with over 10 years of experience solving complex business problems across industries. I specialize in n8n and process automation—designing custom workflows that integrate tools like Google Calendar, Airtable, GPT, and internal systems. Whether you need to automate scheduling, sync data, or streamline operations, I build solutions that save time and drive results.",
+    "verified": true,
+    "links": [
+      "https://ynteractive.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/15bb5ad97bad47ca2079e1fa123a8287000c72c86498c90043f70ec2adab05f3?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lors de l'exécution de ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 5,
+      "name": "Ingénierie"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

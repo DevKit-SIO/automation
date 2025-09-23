@@ -1,0 +1,709 @@
+{
+  "id": 7235,
+  "name": "Interface de recherche dynamique avec Elasticsearch et génération de rapports automatisée",
+  "views": 118,
+  "recentViews": 1,
+  "totalViews": 118,
+  "createdAt": "2025-08-11T07:59:00.003Z",
+  "description": "# Interface de recherche dynamique avec Elasticsearch et génération de rapports automatisée\n\n## 🎯 Ce que fait ce flux de travail\n\nCe modèle crée un système complet de recherche de données et de reporting qui permet aux utilisateurs d'interroger de grands ensembles de données via une interface de formulaire web intuitive. Le système effectue des recherches en temps réel contre Elasticsearch, traite les résultats et génère automatiquement des rapports structurés dans plusieurs formats pour l'analyse des données et l'intelligence d'affaires.\n\n**Fonctionnalités clés :**\n- 🔍 Formulaire web interactif pour des requêtes de données dynamiques\n- ⚡ Récupération de données Elasticsearch en temps réel avec filtrage complexe\n- 📊 Rapports auto-générés (formats texte et CSV) avec formatage personnalisé\n- 💾 Système de stockage de fichiers automatique pour la persistance des données\n- 🎯 Paramètres de recherche configurables (montants, plages horaires, filtres d'entité)\n- 🔧 Architecture évolutive pour gérer de grands ensembles de données\n\n## 🛠️ Exigences de configuration\n\n### Prérequis\n- **Cluster Elasticsearch** fonctionnant sur `https://localhost:9220`\n- **Ensemble de données de transactions** indexé dans l'index `bank_transactions`\n- **Ensemble de données d'exemple** : Téléchargez depuis [Ensemble de données de transactions bancaires](https://github.com/dataminexcode/n8n-workflow/blob/main/Dynamic%20Search%20Interface%20with%20Elasticsearch%20and%20Automated%20Report%20Generation/data)\n- **Accès au système de fichiers** au répertoire `/tmp/` pour le stockage des rapports\n- **Identifiants d'authentification de base HTTP** pour Elasticsearch\n\n### Structure d'index Elasticsearch requise\nCe modèle utilise l'**Ensemble de données de transactions bancaires** de GitHub : https://github.com/dataminexcode/n8n-workflow/blob/main/Dynamic%20Search%20Interface%20with%20Elasticsearch%20and%20Automated%20Report%20Generation/data\n\nVous pouvez utiliser ce script python pour importer le fichier csv dans elasticsearch : [Script Python pour importer des données](https://github.com/dataminexcode/n8n-workflow/blob/main/Dynamic%20Search%20Interface%20with%20Elasticsearch%20and%20Automated%20Report%20Generation/python_scripts/import_to_elasticsearch.py)\n\nVotre index `bank_transactions` doit contenir des documents avec ces champs :\n```json\n{\n  \"transaction_id\": \"TXN_123456789\",\n  \"customer_id\": \"CUST_000001\", \n  \"amount\": 5000,\n  \"merchant_category\": \"grocery_net\",\n  \"timestamp\": \"2025-08-10T15:30:00Z\"\n}\n```\n\n**Informations sur l'ensemble de données** : Cet ensemble de données contient des données de transactions financières réalistes parfaites pour tester des algorithmes de recherche et la génération de rapports, avec plus d'un million d'enregistrements de transactions incluant divers modèles de transactions et types de données.\n\n### Configuration des identifiants\n1. Créez des identifiants d'authentification de base HTTP dans n8n\n2. Configurez avec votre nom d'utilisateur/mot de passe Elasticsearch\n3. Assignez au nœud \"Rechercher Elasticsearch\"\n\n## ⚙️ Configuration\n\n### 1. Personnalisation du formulaire\n- **Chemin du Webhook** : Mettez à jour l'ID du webhook si nécessaire\n- **Champs du formulaire** : Modifiez les montants, les plages horaires ou ajoutez de nouveaux filtres\n- **Validation** : Ajustez les champs requis en fonction de vos besoins\n\n### 2. Configuration d'Elasticsearch\n- **URL** : Changez `localhost:9220` pour le point de terminaison de votre cluster ES\n- **Nom de l'index** : Mettez à jour `bank_transactions` avec le nom de votre index\n- **Logique de requête** : Modifiez les critères de recherche dans le nœud \"Construire la requête de recherche\"\n- **Limite de résultats** : Ajustez le paramètre `size: 100` pour plus ou moins de résultats\n\n### 3. Stockage de fichiers\n- **Répertoire** : Changez `/tmp/` pour votre emplacement de stockage préféré\n- **Modèle de nom de fichier** : Modifiez le format `fraud_report_YYYY-MM-DD.{ext}`\n- **Permissions** : Assurez-vous que n8n a accès en écriture au répertoire cible\n\n### 4. Formatage des rapports\n- **En-têtes CSV** : Personnalisez les noms de colonnes dans le nœud Format Report\n- **Mise en page du texte** : Modifiez le modèle de rapport pour votre organisation\n- **Champs de données** : Ajoutez/retirez des champs de transaction selon les besoins\n\n## 🚀 Comment utiliser\n\n### Pour les administrateurs :\n1. **Importer** ce modèle de flux de travail\n2. **Configurer** les identifiants Elasticsearch\n3. **Activer** le flux de travail\n4. **Partager** l'URL du webhook avec les analystes de données\n\n### Pour les analystes de données :\n1. **Accéder** à l'interface de recherche via l'URL du webhook\n2. **Définir les paramètres** : Montant minimum, plage horaire, filtre d'entité\n3. **Choisir le format** : Rapport texte ou export CSV\n4. **Soumettre** le formulaire pour générer un rapport de données instantané\n5. **Examiner** les résultats dans le fichier généré\n\n### Exemples de cas d'utilisation :\n- **Analyse de données** : Rechercher des transactions &gt; 10 000 $ au cours des dernières 24 heures\n- **Enquête sur une entité** : Filtrer toute l'activité pour un ID client spécifique  \n- **Analyse de modèles** : Analyse rapide des modèles d'activité des transactions\n- **Reporting commercial** : Générer des exports CSV pour l'intelligence d'affaires\n- **Test d'ensemble de données** : Parfait pour tester avec l'ensemble de données de transactions\n\n## 📊 Exemple de sortie\n\n### Format de rapport texte :\n```\nRAPPORT D'ANALYSE DES DONNÉES\n====================\n\nCritères de recherche :\n- Montant minimum : 10 000 $\n- Plage horaire : Dernières 24 heures  \n- Client : Tous\n\nRésultats : 3 transactions trouvées\n\nTRANSACTIONS :\n=============\n\n1. ID de transaction : TXN_123456789\n   Client : CUST_000001\n   Montant : 15 000 $\n   Marchand : grocery_net\n   Heure : 2025-08-10T15:30:00Z\n```\n\n### Format d'export CSV :\n```csv\nTransaction_ID,Customer_ID,Amount,Merchant_Category,Timestamp\n\"TXN_123456789\",\"CUST_000001\",15000,\"grocery_net\",\"2025-08-10T15:30:00Z\"\n```\n\n## 🔧 Idées de personnalisation\n\n### Fonctionnalités d'analyse améliorées :\n- Ajouter des validations de données et des contrôles de qualité\n- Mettre en œuvre des analyses statistiques (moyennes, tendances, modèles)\n- Inclure des graphiques et des diagrammes de visualisation des données\n- Générer des métriques de résumé et des KPI\n\n### Capacités de recherche avancées :\n- Recherche multi-champs avec logique booléenne complexe\n- Recherche floue et algorithmes de correspondance de texte\n- Filtrage par plage de dates avec périodes personnalisées\n- Requêtes d'agrégation pour le regroupement de données\n\n### Options d'intégration :\n- **Notifications par e-mail** : Alerter les équipes des résultats de données significatifs\n- **Intégration Slack** : Publier les résultats d'analytique dans les canaux d'équipe  \n- **Mises à jour de tableau de bord** : Pousser des métriques vers des systèmes d'intelligence d'affaires\n- **Points de terminaison API** : Exposer la fonctionnalité de recherche en tant qu'API REST\n\n### Améliorations des rapports :\n- **Génération de PDF** : Créer des rapports d'analytique PDF formatés\n- **Visualisation des données** : Ajouter des graphiques, des diagrammes et des analyses de tendance\n- **Résumé exécutif** : Inclure des métriques clés et des insights commerciaux\n- **Formats d'exportation** : Support pour Excel, JSON et d'autres formats de données\n\n## 🏷️ Étiquettes\n`elasticsearch`, `recherche-de-données`, `reporting`, `analytique`, `automatisation`, `intelligence-d'affaires`, `traitement-des-données`, `export-csv`\n\n## 📈 Cas d'utilisation\n- **Intelligence d'affaires** : Organisations analysant les modèles et tendances des transactions\n- **Analytique e-commerce** : Détection des modèles de paiement et analyse du comportement des clients\n- **Science des données** : Exploration de données en temps réel et systèmes de reconnaissance de modèles\n- **Équipes opérationnelles** : Reporting automatisé et flux de travail de surveillance des données\n- **Recherche et développement** : Tester des algorithmes de recherche et des techniques de traitement des données\n- **Formation et éducation** : Apprendre l'intégration d'Elasticsearch avec des ensembles de données réalistes\n- **Technologie financière** : Analyse des données de transactions et systèmes de reporting commercial\n\n## ⚠️ Notes importantes\n\n### Considérations de sécurité :\n- Ne jamais exposer les identifiants Elasticsearch dans les journaux ou les données de formulaire\n- Mettre en œuvre des contrôles d'accès appropriés pour l'URL du webhook\n- Envisager le chiffrement pour le traitement des données sensibles\n- Audit régulier des rapports générés et des journaux d'accès\n\n### Conseils de performance :\n- L'optimisation de l'index améliore les temps de réponse des recherches\n- Envisager la pagination pour de grands ensembles de résultats\n- Surveiller les performances du cluster Elasticsearch sous charge\n- Archiver les anciens rapports pour gérer l'utilisation du disque\n\n### Gestion des données :\n- Assurez-vous que les politiques de conservation des données sont conformes aux exigences commerciales\n- Mettre en œuvre des pistes de vérification pour toutes les opérations de recherche\n- Envisager les exigences de confidentialité des données lors du traitement des ensembles de données\n- Documenter tous les changements de configuration pour la maintenance\n\n---\n\n*Ce modèle fournit un système de recherche et de reporting de données prêt pour la production qui peut être facilement personnalisé pour divers besoins d'analyse de données. La conception modulaire permet des améliorations incrémentielles tout en maintenant la fonctionnalité de recherche et de reporting de base.*",
+  "workflow": {
+    "id": "3eqTGbhtSxDjuMZC",
+    "meta": {
+      "instanceId": "5cee0adb1ef2b84ac8a86937fac5115d710898b6c70f9f7c3f3ca3ef70a11bf7",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Dynamic Search Interface with Elasticsearch and Automated Report Generation",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "e3eb30ef-51d9-4cd5-ab1f-807b87e06795",
+        "name": "Search Form",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          480,
+          -220
+        ],
+        "webhookId": "169f8e1c-e4a8-4229-9b2a-9db33003f221",
+        "parameters": {
+          "path": "169f8e1c-e4a8-4229-9b2a-9db33003f221",
+          "options": {},
+          "formTitle": "🔍 Dynamic Search",
+          "formFields": {
+            "values": [
+              {
+                "fieldType": "number",
+                "fieldLabel": "Minimum Amount ($)"
+              },
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "Time Range",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Last 1 Hour"
+                    },
+                    {
+                      "option": "Last 6 Hours"
+                    },
+                    {
+                      "option": "Last 24 Hours"
+                    },
+                    {
+                      "option": "Last 3 Days"
+                    }
+                  ]
+                },
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "Customer ID (Optional)"
+              },
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "Report Format",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Text Report"
+                    },
+                    {
+                      "option": "CSV Export"
+                    }
+                  ]
+                },
+                "requiredField": true
+              }
+            ]
+          },
+          "responseMode": "responseNode",
+          "formDescription": "Search for suspicious transactions in your banking database"
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "79e2a04d-9427-4d8d-ae8a-41005a2ab80d",
+        "name": "Build Search Query",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          700,
+          -220
+        ],
+        "parameters": {
+          "jsCode": "// Process form input and build Elasticsearch query\nconst formData = $input.first().json;\n\n// Extract form values\nconst minAmount = formData['Minimum Amount ($)'] || 1000;\nconst timeRange = formData['Time Range'] || 'Last 24 Hours';\nconst customerId = formData['Customer ID (Optional)']?.trim() || null;\nconst reportFormat = formData['Report Format'] || 'Text Report';\n\n// Convert time range to Elasticsearch format\nlet timeRangeES;\nswitch(timeRange) {\n  case 'Last 1 Hour':\n    timeRangeES = 'now-1h';\n    break;\n  case 'Last 6 Hours':\n    timeRangeES = 'now-6h';\n    break;\n  case 'Last 24 Hours':\n    timeRangeES = 'now-24h';\n    break;\n  case 'Last 3 Days':\n    timeRangeES = 'now-3d';\n    break;\n  default:\n    timeRangeES = 'now-24h';\n}\n\n// Build Elasticsearch query\nconst mustConditions = [\n  {\n    \"range\": {\n      \"timestamp\": {\n        \"gte\": timeRangeES\n      }\n    }\n  },\n  {\n    \"range\": {\n      \"amount\": {\n        \"gte\": minAmount\n      }\n    }\n  }\n];\n\n// Add customer filter if provided\nif (customerId) {\n  mustConditions.push({\n    \"term\": {\n      \"customer_id.keyword\": customerId\n    }\n  });\n}\n\nconst esQuery = {\n  \"query\": {\n    \"bool\": {\n      \"must\": mustConditions\n    }\n  },\n  \"sort\": [{ \"timestamp\": { \"order\": \"desc\" } }],\n  \"size\": 100\n};\n\nreturn {\n  elasticsearchQuery: esQuery,\n  searchParams: {\n    minAmount,\n    timeRange,\n    customerId,\n    reportFormat\n  }\n};"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "62e186d7-c90f-4576-8c56-d850e784e9e0",
+        "name": "Search Elasticsearch",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          940,
+          -220
+        ],
+        "parameters": {
+          "url": "https://localhost:9220/bank_transactions/_search",
+          "options": {
+            "allowUnauthorizedCerts": true
+          },
+          "jsonBody": "={{ $json.elasticsearchQuery }}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth"
+        },
+        "typeVersion": 4.1
+      },
+      {
+        "id": "4869c996-8a2e-40a1-aea3-384e0e379c14",
+        "name": "Format Report",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1140,
+          -220
+        ],
+        "parameters": {
+          "jsCode": "// Get data from previous nodes\nconst esResponse = $input.first().json;\nconst searchParams = $('Build Search Query').first().json.searchParams;\n\n// Extract results\nconst hits = esResponse.hits?.hits || [];\nconst totalFound = esResponse.hits?.total?.value || 0;\n\n// Generate filename\nconst timestamp = new Date().toISOString().split('T')[0];\nconst isCSV = searchParams.reportFormat === 'CSV Export';\nconst filename = `report_${timestamp}.${isCSV ? 'csv' : 'txt'}`;\nconst mimeType = isCSV ? 'text/csv' : 'text/plain';\n\n// Generate report content\nlet reportContent = '';\n\nif (isCSV) {\n  // CSV format\n  reportContent = 'Transaction_ID,Customer_ID,Amount,Merchant_Category,Timestamp\\n';\n  hits.forEach(hit => {\n    const t = hit._source || {};\n    reportContent += `\"${t.transaction_id || ''}\",\"${t.customer_id || ''}\",${t.amount || 0},\"${t.merchant_category || ''}\",\"${t.timestamp || ''}\"\\n`;\n  });\n} else {\n  // Text format\n  reportContent = `DYNAMIC SEARCH REPORT\\n`;\n  reportContent += `======================\\n\\n`;\n  reportContent += `Search Criteria:\\n`;\n  reportContent += `- Minimum Amount: $${searchParams.minAmount}\\n`;\n  reportContent += `- Time Range: ${searchParams.timeRange}\\n`;\n  reportContent += `- Customer: ${searchParams.customerId || 'All'}\\n\\n`;\n  reportContent += `Results: ${totalFound} transactions found\\n\\n`;\n  \n  if (hits.length > 0) {\n    reportContent += `TRANSACTIONS:\\n`;\n    reportContent += `=============\\n\\n`;\n    hits.forEach((hit, index) => {\n      const t = hit._source || {};\n      reportContent += `${index + 1}. Transaction ID: ${t.transaction_id}\\n`;\n      reportContent += `   Customer: ${t.customer_id}\\n`;\n      reportContent += `   Amount: $${t.amount}\\n`;\n      reportContent += `   Merchant: ${t.merchant_category}\\n`;\n      reportContent += `   Time: ${t.timestamp}\\n\\n`;\n    });\n  } else {\n    reportContent += `No suspicious transactions found matching your criteria.\\n`;\n  }\n}\n\n// Convert content to binary data\nconst binaryData = Buffer.from(reportContent, 'utf8');\n\nreturn {\n  json: {\n    filename: filename,\n    mimeType: mimeType,\n    content: reportContent\n  },\n  binary: {\n    data: binaryData\n  }\n};"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "764ac1c5-0ae2-4048-884b-dceb4ea6d719",
+        "name": "Read/Write Files from Disk",
+        "type": "n8n-nodes-base.readWriteFile",
+        "position": [
+          1320,
+          -220
+        ],
+        "parameters": {
+          "options": {},
+          "fileName": "=/tmp/{{ $json.filename }}",
+          "operation": "write"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b4c9ae5c-cd17-492e-a543-205329a872b9",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          40,
+          -260
+        ],
+        "parameters": {
+          "width": 360,
+          "height": 220,
+          "content": "## 🎯 ENTRY POINT\nUser fills out dynamic search form with:\n- Minimum transaction amount\n- Time range (1hr to 3 days)\n- Optional customer ID filter\n- Output format (Text/CSV)\n\n💡 TIP: Form auto-validates required fields!"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b36fea54-e177-4edc-a091-110b25475ad4",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          40,
+          0
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 360,
+          "height": 300,
+          "content": "## 🔧 QUERY BUILDER\nTransforms user input into Elasticsearch query:\n\n✅ Converts time ranges:\n   \"Last 24 Hours\" → \"now-24h\"\n   \"Last 3 Days\" → \"now-3d\"\n\n✅ Builds filters:\n   • Amount >= minimum\n   • Timestamp within range\n   • Customer ID (if provided)\n\n📊 Output: Ready-to-use ES query + metadata"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8d3f38d7-b483-43cb-bcb5-9524a7a17e86",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          440,
+          0
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 320,
+          "height": 260,
+          "content": "## 🎯 DATA HUNTER\nSearches bank_transactions index for suspicious activity\n\n🔧 Configuration:\n   • POST to localhost:9220\n   • Uses HTTP Basic Auth\n   • Sends JSON query from previous node\n   • Returns max 100 results, newest first\n\n⚠️ Note: Requires valid ES credentials!"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "11039177-def0-4de1-ad25-f91e1294abee",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          800,
+          0
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 340,
+          "height": 340,
+          "content": "## 📝 REPORT GENERATOR\nTransforms raw ES data into user-friendly reports\n\n🎨 Creates two formats:\n   📄 TEXT: Human-readable summary\n   📊 CSV: Spreadsheet-ready data export\n\n✨ Features:\n   • Auto-generates timestamped filename\n   • Converts text to binary for file writing\n   • Includes search criteria summary\n   • Lists all suspicious transactions\n\n🔄 Output: Content + Binary data ready for file save"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7c8c7226-a9e3-4edb-9497-e1980f3e84ea",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1180,
+          0
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 400,
+          "height": 260,
+          "content": "## 📁 FILE SAVER\nWrites the report to server disk\n\n📍 Location: /tmp/report_YYYY-MM-DD.{txt|csv}\n🔧 Uses binary data from Format Report node\n✅ File ready for download or further processing\n\n🎯 Perfect for:\n   • Audit trails\n   • Batch processing\n   • Compliance reporting"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "79d96536-a117-474b-a524-ec0e54f7ae2b",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          40,
+          -520
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 720,
+          "height": 200,
+          "content": "## 🎯 DYNAMIC SEARCH PIPELINE\n\nUser Form → Query Builder → ES Search → Report Format → File Save\n\n⏱️ Typical execution: 2-5 seconds\n📊 Handles up to 100 suspicious transactions\n🔒 Secure: Uses authenticated ES connection\n📁 Output: Timestamped report files in /tmp/"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "42705d97-c55a-4ebe-8107-536a8c7faea3",
+    "connections": {
+      "Search Form": {
+        "main": [
+          [
+            {
+              "node": "Build Search Query",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Report": {
+        "main": [
+          [
+            {
+              "node": "Read/Write Files from Disk",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Search Query": {
+        "main": [
+          [
+            {
+              "node": "Search Elasticsearch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Elasticsearch": {
+        "main": [
+          [
+            {
+              "node": "Format Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 6
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.readWriteFile": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "DataMinex",
+    "username": "dataminex",
+    "bio": "Smart Connection Analysis from Open Data, Globally at Scale",
+    "verified": true,
+    "links": [
+      "https://dataminex.org/"
+    ],
+    "avatar": "https://gravatar.com/avatar/90698524e558a57e8ad02ee3525456607d83a0a9e7fdce196f1cd009aaf9df85?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1233,
+      "icon": "file:readWriteFile.svg",
+      "name": "n8n-nodes-base.readWriteFile",
+      "codex": {
+        "data": {
+          "alias": [
+            "Binary",
+            "File",
+            "Text",
+            "Open",
+            "Import",
+            "Save",
+            "Export",
+            "Disk",
+            "Transfer"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.readwritefile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Lire/Écrire des fichiers depuis le disque"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTQxXzE1NDcpIj4KPHBhdGggZD0iTTAgMTJDMCA1LjM3MjU4IDUuMzcyNTggMCAxMiAwSDE1OVYxNTRDMTU5IDE2MC42MjcgMTY0LjM3MyAxNjYgMTcxIDE2NkgzMjVWMjQySDIyOC41NjJDMjEwLjg5NSAyNDIgMTk0LjY1NiAyNTEuNzA1IDE4Ni4yODggMjY3LjI2NEwxMjkuMjAzIDM3My40MDdDMTI1LjEzMSAzODAuOTc4IDEyMyAzODkuNDQgMTIzIDM5OC4wMzdWNDM0SDEyQzUuMzcyNTcgNDM0IDAgNDI4LjYyNyAwIDQyMlYxMloiIGZpbGw9IiM0NEFBNDQiLz4KPHBhdGggZD0iTTMyNSAxMzRWMTI3LjQwMUMzMjUgMTI0LjIyMyAzMjMuNzQgMTIxLjE3NSAzMjEuNDk1IDExOC45MjVMMjA2LjM2OSAzLjUyNDgxQzIwNC4xMTggMS4yNjgyIDIwMS4wNjEgMCAxOTcuODczIDBIMTkxVjEzNEgzMjVaIiBmaWxsPSIjNDRBQTQ0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjI4LjU2MyAyNzRDMjIyLjY3NCAyNzQgMjE3LjI2MSAyNzcuMjM1IDIxNC40NzIgMjgyLjQyMUwxNzIuMjExIDM2MUg0OTIuNjRMNDQ0LjY3IDI4MS43MTdDNDQxLjc3MiAyNzYuOTI3IDQzNi41OCAyNzQgNDMwLjk4MSAyNzRIMjI4LjU2M1oiIGZpbGw9IiM0NEFBNDQiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNTUgNDA5QzE1NSA0MDAuMTYzIDE2Mi4xNjMgMzkzIDE3MSAzOTNINDk2QzUwNC44MzcgMzkzIDUxMiA0MDAuMTYzIDUxMiA0MDlWNDk2QzUxMiA1MDQuODM3IDUwNC44MzcgNTEyIDQ5NiA1MTJIMTcxQzE2Mi4xNjMgNTEyIDE1NSA1MDQuODM3IDE1NSA0OTZWNDA5Wk0zOTcgNDUzQzM5NyA0NjYuMjU1IDM4Ni4yNTUgNDc3IDM3MyA0NzdDMzU5Ljc0NSA0NzcgMzQ5IDQ2Ni4yNTUgMzQ5IDQ1M0MzNDkgNDM5Ljc0NSAzNTkuNzQ1IDQyOSAzNzMgNDI5QzM4Ni4yNTUgNDI5IDM5NyA0MzkuNzQ1IDM5NyA0NTNaTTQ0NSA0NzdDNDU4LjI1NSA0NzcgNDY5IDQ2Ni4yNTUgNDY5IDQ1M0M0NjkgNDM5Ljc0NSA0NTguMjU1IDQyOSA0NDUgNDI5QzQzMS43NDUgNDI5IDQyMSA0MzkuNzQ1IDQyMSA0NTNDNDIxIDQ2Ni4yNTUgNDMxLjc0NSA0NzcgNDQ1IDQ3N1oiIGZpbGw9IiM0NEFBNDQiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTQxXzE1NDciPgo8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K"
+      },
+      "displayName": "Read/Write Files from Disk",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de documents"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

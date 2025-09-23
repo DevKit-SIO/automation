@@ -1,0 +1,874 @@
+{
+  "id": 6763,
+  "name": "Générer automatiquement des notes de version GitHub et notifier via Slack",
+  "views": 51,
+  "recentViews": 0,
+  "totalViews": 51,
+  "createdAt": "2025-08-01T08:11:07.904Z",
+  "description": "## Générer automatiquement des notes de version GitHub et notifier via Slack (flux de travail n8n)\n\nCe flux de travail n8n automatise le processus de :\n- Génération de notes de version GitHub structurées à partir des demandes de tirage fusionnées depuis le dernier tag.\n- Création d'une **version préliminaire GitHub** utilisant le dernier tag et les informations de PR.\n- Envoi d'un résumé formaté à un canal Slack.\n\nTout cela est **déclenché manuellement via un formulaire**, où l'utilisateur saisit le dépôt, le propriétaire et la branche cible.\n\n## Pour qui est-ce\n\nCe flux est parfait pour :\n- **Les mainteneurs de projets open-source** cherchant à automatiser la gestion des journaux de modifications.\n- **Les ingénieurs DevOps** gérant les cycles de publication.\n- **Les équipes d'ingénierie** maintenant des versions GitHub structurées et cohérentes.\n- **Les rédacteurs techniques** qui préparent les notes de version.\n\n## Comment ça fonctionne\n\n### Résumé des nœuds :\n\n| Numéro de nœud | Nom du nœud                          | Description                                                   |\n|----------------|--------------------------------------|---------------------------------------------------------------|\n| 1              | **Formulaire d'entrée de version GitHub** | Prend les entrées de l'utilisateur (propriétaire, dépôt, branche).  |\n| 2              | **Configuration**                    | Extrait l'entrée et définit la configuration de regroupement des étiquettes PR. |\n| 3              | **Obtenir le dernier tag Git**       | Récupère le dernier tag Git (utilisé comme point de référence). |\n| 4              | **Obtenir la date de commit du dernier tag** | Obtient l'horodatage exact du commit du dernier tag.          |\n| 5              | **Récupérer toutes les PR fusionnées depuis le dernier tag** | Interroge GitHub pour les PR fusionnées après cet horodatage. |\n| 6              | **Regrouper les PR et générer des notes de version** | Organise les PR par étiquette et génère des notes en markdown. |\n| 7              | **Pré-version GitHub**               | Crée une version préliminaire GitHub avec ces notes.          |\n| 8              | **Envoyer un message à Slack**      | Envoie le résumé final de la version à Slack.                |\n\n## Comment configurer\n\n1. Clonez ou importez ce flux de travail dans votre instance n8n.\n2. Configurez les **identifiants** suivants :\n    - OAuth GitHub ou PAT (jeton d'accès personnel)\n    - URL Webhook Slack ou identifiants OAuth\n3. Ouvrez le nœud de formulaire et remplissez :\n    - `propriétaire` : nom d'utilisateur/org GitHub\n    - `dépôt` : nom du dépôt GitHub\n    - `branche` : branche de base (par exemple, `main`)\n4. Exécutez le flux de travail manuellement et observez la note de version être :\n    - Créée en tant que brouillon sur GitHub\n    - Envoyée à Slack\n\n## Exigences\n\n| Exigence        | Description                                         |\n|-----------------|-----------------------------------------------------|\n| version n8n     | Cloud ou auto-hébergé                               |\n| Accès GitHub    | Un jeton avec des permissions `repo` et `write:repo_hook` |\n| Accès Slack     | URL Webhook ou application OAuth Slack              |\n| Tags Git        | Tags de version sémantique poussés vers le dépôt   |\n| Étiquettes       | Les PR doivent être étiquetées (par exemple, `feature`, `bug`, `autre`) pour le regroupement |\n\n## Comment personnaliser\n\n| Fonctionnalité        | Comment personnaliser                                              |\n|-----------------------|-------------------------------------------------------------------|\n| Regroupement d'étiquettes | Modifiez la carte de configuration dans le nœud `Configuration` (étape 2). |\n| Filtrage des PR       | Ajustez la requête de recherche dans le nœud 5 pour correspondre aux conventions de votre dépôt. |\n| Modèle Markdown       | Ajustez la logique de génération de markdown dans le nœud 6.     |\n| Format du message Slack| Personnalisez le texte Slack dans le nœud 8.                     |\n| Format de tag         | Changez de la version sémantique si nécessaire dans la logique du nœud 3. |\n| Type de version       | Changez `draft: true` en `false` dans le nœud 7 pour une publication immédiate. |\n\n## Add-ons\n\nVous pouvez étendre le flux en :\n- Ajoutant un planificateur cron pour des publications périodiques.\n- Envoyant des notes de version par e-mail (utilisez le nœud Email).\n- Publier directement sur Jira ou Confluence.\n- Publier des liens de version GitHub sur Discord.\n\n## Exemples de cas d'utilisation\n\n| Scénario                  | Description                                                   |\n|---------------------------|---------------------------------------------------------------|\n| Versions hebdomadaires de l'équipe OSS  | Publiez automatiquement des notes de version hebdomadaires résumant les PR fusionnées. |\n| Rapports de révision de sprint     | Utilisez-le à la fin de chaque sprint pour générer des résumés de changements. |\n| Pipelines CI/CD           | Intégrez avec GitHub Actions ou Jenkins pour un étiquetage + publication automatisés. |\n\n## Dépannage courant\n\n| Problème                                   | Cause possible                            | Solution                                                             |\n|--------------------------------------------|-------------------------------------------|----------------------------------------------------------------------|\n| `Aucune donnée trouvée pour l'index d'élément : \"1\"`    | La recherche GitHub n'a retourné aucune PR             | Assurez-vous que les PR ont été fusionnées après le dernier tag et que le nom de la branche est correct |\n| `Impossible d'accéder à $node dans le code`          | Mauvais contexte d'exécution du script            | Assurez-vous que JavaScript est sélectionné et que les variables sont accessibles correctement    |\n| `le brouillon doit être un booléen`                | Le champ brouillon passé en tant que chaîne              | Utilisez `true` (pas `\"true\"`) dans l'entrée JSON du nœud HTTP                 |\n| `Les étiquettes PR ne sont pas regroupées`                | Les PR n'ont pas d'étiquettes correspondantes               | Mettez à jour votre carte de configuration d'étiquettes ou assurez-vous que les étiquettes existent sur les PRs          |\n| Message Slack vide                    | Le nœud Slack ne reçoit pas de données             | Assurez-vous que `$json.release_notes` est passé correctement               |\n\n---\n\n## Besoin d'aide ?\n\nBesoin d'aide pour configurer cela pour votre équipe ou l'étendre pour plus de fonctionnalités (par exemple, JIRA, auto-étiquetage, exportation de journaux de modifications) ? \nNous sommes là pour vous aider à **personnaliser, déboguer et évoluer** ce flux.\n\nN'hésitez pas à contacter WeblineIndia si vous avez besoin de :\n- Assistance à la configuration individuelle.\n- Nœuds ou scripts n8n personnalisés.\n- Intégrations avancées GitHub/Slack.",
+  "workflow": {
+    "id": "CK1X6HPPuntaDwNl",
+    "meta": {
+      "instanceId": "14e4c77104722ab186539dfea5182e419aecc83d85963fe13f6de862c875ebfa",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Auto‑Generate Release Notes",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "74c1115a-e28b-478e-b4d5-d3c7e890b39c",
+        "name": "Config",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          200,
+          40
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8b87d9c7-3a18-42a9-9ec1-8568fea2908a",
+                "name": "repoOwner",
+                "type": "string",
+                "value": "={{ $json['Repository Owner'] }}"
+              },
+              {
+                "id": "5cac0fee-0aa9-4a4f-a610-8fc3b8682039",
+                "name": "repoName",
+                "type": "string",
+                "value": "={{ $json['Repository Name'] }}"
+              },
+              {
+                "id": "ce2d2b21-55c8-4913-863f-c686e0a51610",
+                "name": "defaultBranch",
+                "type": "string",
+                "value": "={{ $json['Branch Name'] }}"
+              },
+              {
+                "id": "3445fa18-848c-4df5-b5d0-458f978d7cf1",
+                "name": "=labelMap",
+                "type": "string",
+                "value": "{ \"Feature\": \"🚀 Features\", \"bug\": \"🐞 Bug Fixes\", \"performance\": \"⚡ Performance\", \"sdk\": \"📦 SDK / Dependency\" }"
+              },
+              {
+                "id": "29753009-bf1f-40d0-adb9-2ae8135c2eed",
+                "name": "=qaChecklist",
+                "type": "string",
+                "value": "[ \"[ ] App boots successfully\", \"[ ] No crash on startup\", \"[ ] All features tested\", \"[ ] No broken UI on devices\" ]"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "dc575c60-f1ad-439f-8176-0729c109f631",
+        "name": "Get Latest Git Tag",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          420,
+          40
+        ],
+        "parameters": {
+          "url": "=https://api.github.com/repos/{{$json[\"repoOwner\"]}}/{{$json[\"repoName\"]}}/tags",
+          "options": {},
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "githubApi"
+        },
+        "credentials": {
+          "githubApi": {
+            "id": "sWK5QVSgNgKCkpaF",
+            "name": "GitHub account"
+          },
+          "httpHeaderAuth": {
+            "id": "Q6oCLdEppyzR0Uga",
+            "name": "Header Auth account 3"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "a45ac6c8-8f50-49c8-97cd-24e57d3b9c24",
+        "name": "Get Commit Date of Latest Tag",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          640,
+          40
+        ],
+        "parameters": {
+          "url": "={{$json[\"commit\"][\"url\"]}}",
+          "options": {}
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "51399899-3a7b-44d3-9067-64e474d0a00a",
+        "name": "Fetch All Merged PRs Since Last Tag",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          860,
+          40
+        ],
+        "parameters": {
+          "url": "=https://api.github.com/search/issues?q=is:pr+is:merged+repo:{{ $('Config').first().json.repoOwner }}/{{ $('Config').first().json.repoName }}+base:{{ $('Config').first().json.defaultBranch }}+merged:>={{ $json.commit.author.date }}",
+          "options": {}
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "ed1609f1-f1c0-4c15-adb5-b116af6e0a44",
+        "name": "Adjusted: Group PRs & Generate Release Notes",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1080,
+          40
+        ],
+        "parameters": {
+          "jsCode": "// SAFELY access config node data\nconst configNode = $('Config').first();\nif (!configNode) {\n  throw new Error(\"Missing 'Config' node or it's not accessible.\");\n}\n\nconst labelMap =  configNode.labelMap|| {};\nconst qaChecklist = configNode.qaChecklist || [];\n\nconsole.log(\"Your message\", labelMap);\nconsole.log(\"Your message\", qaChecklist);\n\n// Access PR list from previous node\nconst prNode = $('Fetch All Merged PRs Since Last Tag').first(); // <-- Replace with your actual PR-fetch node name\nif (!prNode || !prNode.json || !Array.isArray(prNode.json.items)) {\n  throw new Error(\"Pull request data not found or improperly formatted.\");\n}\n\nconst prItems = prNode.json.items;\n\n/** @type {Record<string, string[]>} */\nconst grouped = {};\n\n// Loop through each PR\nfor (const pr of prItems) {\n  const labels = pr.labels?.map(l => l.name) || [];\n  const matchedKey = labels.find(l => labelMap[l]);\n  const groupTitle = matchedKey ? labelMap[matchedKey] : \"📋 Others\";\n\n  if (!grouped[groupTitle]) {\n    grouped[groupTitle] = [];\n  }\n\n  grouped[groupTitle].push(`- ${pr.title} (#${pr.number})`);\n}\n\n// Build Markdown content\nlet markdown = `## 📝 Release Notes\\n`;\n\nfor (const group in grouped) {\n  markdown += `\\n### ${group}\\n`;\n  markdown += grouped[group].join(\"\\n\") + \"\\n\";\n}\n\nmarkdown += `\\n## ✅ QA Checklist\\n`;\nmarkdown += qaChecklist.map(item => `[ ] ${item}`).join(\"\\n\");\n\nreturn [\n  {\n    json: {\n      release_notes: markdown,\n    },\n  },\n];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "589e2cf2-e5f5-4411-a0ba-a4f705d242f9",
+        "name": "Github Pre Release",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          1300,
+          40
+        ],
+        "parameters": {
+          "url": "=https://api.github.com/repos/{{ $('Config').first().json.repoOwner }}/{{ $('Config').first().json.repoName }}/releases",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "tag_name",
+                "value": "={{ $('Get Latest Git Tag').first().json.name }}"
+              },
+              {
+                "name": "name",
+                "value": "={{ $('Get Latest Git Tag').first().json.name }}"
+              },
+              {
+                "name": "body",
+                "value": "={{ $json.release_notes }}"
+              },
+              {
+                "name": "draft",
+                "value": "={{ true }}"
+              },
+              {
+                "name": "prerelease",
+                "value": "={{ false }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Q6oCLdEppyzR0Uga",
+            "name": "Header Auth account 3"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "2190c525-95c9-49e8-84de-e13df0d826e5",
+        "name": " Send message to slack",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          1520,
+          40
+        ],
+        "parameters": {
+          "url": "",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "text",
+                "value": "={{ $('Adjusted: Group PRs & Generate Release Notes').item.json.release_notes }} {{ $json.html_url }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "6c385b76-cc8e-4cbd-b086-0e2c7e9f42bc",
+        "name": "GitHub Release Input Form",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -20,
+          40
+        ],
+        "webhookId": "80253212-d5c6-4542-9dba-b9ec3f7cc48d",
+        "parameters": {
+          "options": {},
+          "formTitle": "GitHub Release Input Form",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "Repository Name",
+                "placeholder": "Enter name of the repository",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "Repository Owner",
+                "placeholder": "Enter username of github",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "Branch Name",
+                "placeholder": "Enter branch name ",
+                "requiredField": true
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "bd0ad833-757e-4619-b31a-7abfef910fe7",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -100,
+          -60
+        ],
+        "parameters": {
+          "width": 1860,
+          "height": 360,
+          "content": "## Auto‑Generate Release Notes for Any GitHub Repo → Slack"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fa9609ed-9ef4-43b7-b1e5-1b2245cdc657",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -100,
+          320
+        ],
+        "parameters": {
+          "width": 1880,
+          "height": 1260,
+          "content": "#🚀 GitHub Automated Release Workflow (n8n)\n\nThis workflow auto-generates release notes from merged pull requests and creates a draft GitHub release, notifying via Slack. Below are the descriptions for each node involved:\n\n⸻\n\n🧩 1. GitHub Release Input Form\n\t•\tPurpose: Collects user input for:\n\t•\towner: GitHub username/org\n\t•\trepo: Repository name\n\t•\tbranch: Target base branch\n\n⸻\n\n⚙️ 2. Config\n\t•\tPurpose:\n\t•\tExtracts user input from the form node.\n\t•\tDefines the label grouping map to classify PRs under sections like feature, bug, performance, etc.\n\n⸻\n\n🔖 3. Get Latest Git Tag\n\t•\tPurpose: Fetches the most recent semantic Git tag from the selected repository.\n\t•\tWhy: Used to determine what PRs were merged after the last release.\n\n⸻\n\n🕒 4. Get Commit Date of Latest Tag\n\t•\tPurpose: Retrieves the commit timestamp for the latest tag.\n\t•\tWhy: This timestamp is used to filter only the PRs merged after the last release.\n\n⸻\n\n📥 5. Fetch All Merged PRs Since Last Tag\n\t•\tPurpose: Queries GitHub’s Search API for pull requests:\n\t•\tThat are merged.\n\t•\tMerged after the latest tag’s commit date.\n\t•\tOn the selected base branch.\n\t•\tWhy: Ensures only new, relevant PRs are included in the release.\n\n⸻\n\n🧠 6. Adjusted: Group PRs & Generate Release Note\n\t•\tPurpose:\n\t•\tGroups the filtered PRs by label (using Config map).\n\t•\tFormats them into a clean Markdown release note.\n\t•\tAdds a ✅ QA Checklist section at the end.\n\n⸻\n\n🪄 7. GitHub Pre Release\n\t•\tPurpose:\n\t•\tCreates a draft GitHub release.\n\t•\tUses the latest tag and generated notes.\n\t•\tSets:\n\t•\t\"draft\": true\n\t•\t\"prerelease\": false\n\n⸻\n\n💬 8. Send Message to Slack\n\t•\tPurpose: Posts the release summary to a designated Slack channel.\n\t•\tIncludes: Tag name, categorized release notes, and optionally a link to the GitHub release."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "e0e3b36d-59a8-4ec1-a1e5-5a19fb5063ed",
+    "connections": {
+      "Config": {
+        "main": [
+          [
+            {
+              "node": "Get Latest Git Tag",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Latest Git Tag": {
+        "main": [
+          [
+            {
+              "node": "Get Commit Date of Latest Tag",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Github Pre Release": {
+        "main": [
+          [
+            {
+              "node": " Send message to slack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GitHub Release Input Form": {
+        "main": [
+          [
+            {
+              "node": "Config",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Commit Date of Latest Tag": {
+        "main": [
+          [
+            {
+              "node": "Fetch All Merged PRs Since Last Tag",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch All Merged PRs Since Last Tag": {
+        "main": [
+          [
+            {
+              "node": "Adjusted: Group PRs & Generate Release Notes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Adjusted: Group PRs & Generate Release Notes": {
+        "main": [
+          [
+            {
+              "node": "Github Pre Release",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 10,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 5
+      }
+    }
+  },
+  "user": {
+    "name": "WeblineIndia",
+    "username": "weblineindia",
+    "bio": "A Leading Software Engineering, Consulting & Outsourcing Services Company in USA & India serving Clients Globally since 1999.",
+    "verified": true,
+    "links": [
+      "https://www.weblineindia.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/a229d43aefca4588581583c58bb37b4773aebbdf4c1fef86a08bb1d38eae91fa?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 16,
+      "name": "DevOps"
+    }
+  ],
+  "image": []
+}

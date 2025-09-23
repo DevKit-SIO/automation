@@ -1,0 +1,600 @@
+{
+  "id": 7360,
+  "name": "Recherche académique dans cinq bases de données avec PDF Vector et plusieurs exports",
+  "views": 237,
+  "recentViews": 2,
+  "totalViews": 237,
+  "createdAt": "2025-08-14T03:56:25.221Z",
+  "description": "*Ce flux de travail contient des nœuds communautaires qui ne sont compatibles qu'avec la version auto-hébergée de n8n.*\n\n**Description :**\n## Recherche académique unifiée dans les principales bases de données de recherche\n\nCe puissant flux de travail permet aux chercheurs de rechercher simultanément plusieurs bases de données académiques, de dédupliquer automatiquement les résultats et d'exporter des bibliographies formatées. En tirant parti des capacités de recherche multi-bases de données de PDF Vector, les chercheurs peuvent économiser des heures de recherche manuelle et garantir une couverture complète de la littérature à travers les bases de données PubMed, ArXiv, Google Scholar, Semantic Scholar et ERIC.\n\n### Public cible et problème résolu\nCe modèle est conçu pour :\n- **Étudiants diplômés** réalisant des revues systématiques de la littérature\n- **Chercheurs** garantissant une couverture complète de leur domaine\n- **Bibliothécaires** aidant les usagers avec des recherches complexes\n- **Équipes académiques** construisant des bibliographies partagées\n\nIl résout le problème critique de la recherche académique fragmentée en fournissant une interface unique pour interroger toutes les principales bases de données, éliminant les résultats en double et standardisant les formats de sortie.\n\n### Prérequis\n- Instance n8n avec le nœud PDF Vector installé\n- Identifiants API PDF Vector avec autorisations de recherche\n- Compréhension de base de la syntaxe de recherche académique\n- Optionnel : PostgreSQL pour l'enregistrement de l'historique des recherches\n- Minimum de 50 crédits API pour des recherches complètes\n\n### Instructions de configuration étape par étape\n\n1. **Configurer les identifiants PDF Vector**\n   - Allez dans la section Identifiants de n8n\n   - Créez de nouveaux identifiants PDF Vector\n   - Entrez votre clé API de pdfvector.io\n   - Testez la connexion pour vérifier la configuration\n\n2. **Importer le modèle de flux de travail**\n   - Copiez le code JSON du modèle\n   - Dans n8n, cliquez sur \"Importer le flux de travail\"\n   - Collez le JSON et enregistrez\n   - Passez en revue tous les nœuds pour d'éventuels besoins de configuration\n\n3. **Personnaliser les paramètres de recherche**\n   - Ouvrez le nœud \"Définir les paramètres de recherche\"\n   - Modifiez la requête de recherche par défaut pour votre domaine\n   - Ajustez la plage d'années (par défaut : 2020-présent)\n   - Définissez la limite de résultats par source (par défaut : 25)\n\n4. **Configurer les options d'exportation**\n   - Choisissez vos formats d'exportation préférés (BibTeX, CSV, JSON)\n   - Définissez le répertoire de sortie pour les fichiers\n   - Configurez les conventions de nommage des fichiers\n   - Activez/désactivez des types d'exportation spécifiques\n\n5. **Tester votre configuration**\n   - Exécutez le flux de travail avec une requête d'exemple\n   - Vérifiez que toutes les bases de données renvoient des résultats\n   - Vérifiez que la déduplication fonctionne correctement\n   - Confirmez que les fichiers d'exportation sont créés correctement\n\n### Détails de mise en œuvre\n\nLe flux de travail met en œuvre un pipeline de recherche sophistiqué :\n\n1. **Requêtes de base de données parallèles** : Recherche dans toutes les bases de données configurées simultanément pour plus d'efficacité\n2. **Déduplication intelligente** : Utilise la correspondance DOI et la comparaison de titres flous pour supprimer les doublons\n3. **Notation de pertinence** : Combine le nombre de citations, la pertinence du titre et la récence pour le classement\n4. **Génération de format** : Crée des citations correctement formatées dans plusieurs styles\n5. **Traitement par lots** : Gère de grands ensembles de résultats sans problèmes de mémoire\n\n### Guide de personnalisation\n\n**Ajout de bases de données personnalisées :**\n```javascript\n// Dans le nœud de recherche PDF Vector, ajoutez au tableau des fournisseurs :\n\"providers\": [\"pubmed\", \"semantic_scholar\", \"arxiv\", \"google_scholar\", \"eric\", \"votre_db_personnalisée\"]\n```\n\n**Modification de l'algorithme de pertinence :**\nÉditez le nœud \"Classer par pertinence\" pour ajuster les poids de notation :\n```javascript\n// Ajustez ces poids selon vos besoins :\nconst titleWeight = 10;    // Importance de la correspondance du titre\nconst citationWeight = 5;  // Importance du nombre de citations\nconst recencyWeight = 10;  // Bonus de publication récente\nconst fulltextWeight = 15; // Bonus de disponibilité du texte intégral\n```\n\n**Formats d'exportation personnalisés :**\nAjoutez de nouveaux générateurs de format dans le flux de travail :\n```javascript\n// Exemple : Ajouter l'exportation au format APA\nconst apaFormat = papers.map(p =&gt; {\n  const authors = p.authors.slice(0, 3).join(', ');\n  return `${authors} (${p.year}). ${p.title}. ${p.journal || 'Prépublication'}.`;\n});\n```\n\n**Filtrage avancé :**\nImplémentez des filtres supplémentaires :\n- Seuils de facteur d'impact des revues\n- Options d'accès ouvert uniquement\n- Restrictions linguistiques\n- Filtres de méthodologie pour les revues systématiques\n\n### Fonctionnalités de recherche :\n- Interroger plusieurs bases de données en parallèle\n- Filtrage avancé et déduplication\n- Exportation au format de citation (BibTeX, RIS, etc.)\n- Classement par pertinence à travers les sources\n- Vérification de la disponibilité du texte intégral\n\n### Processus de flux de travail :\n1. **Entrée** : Requête de recherche et paramètres\n2. **Recherche parallèle** : Interroger toutes les bases de données\n3. **Fusion et déduplication** : Combiner les résultats\n4. **Classement** : Trier par pertinence/citations\n5. **Enrichissement** : Ajouter des liens vers le texte intégral\n6. **Exportation** : Options de format multiples",
+  "workflow": {
+    "meta": {
+      "instanceId": "placeholder"
+    },
+    "nodes": [
+      {
+        "id": "search-info",
+        "name": "Search Configuration",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          250,
+          150
+        ],
+        "parameters": {
+          "content": "## Multi-Database Search\n\nSearches:\n- PubMed\n- ArXiv\n- Google Scholar\n- Semantic Scholar\n- ERIC\n\nDeduplicates and ranks results"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "search-params",
+        "name": "Set Search Parameters",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          450,
+          300
+        ],
+        "parameters": {
+          "values": {
+            "number": [
+              {
+                "name": "yearFrom",
+                "value": 2020
+              },
+              {
+                "name": "resultsPerSource",
+                "value": 25
+              }
+            ],
+            "string": [
+              {
+                "name": "searchQuery",
+                "value": "machine learning healthcare applications"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "pdfvector-search",
+        "name": "PDF Vector - Multi-DB Search",
+        "type": "n8n-nodes-pdfvector.pdfVector",
+        "position": [
+          650,
+          300
+        ],
+        "parameters": {
+          "limit": "={{ $json.resultsPerSource }}",
+          "query": "={{ $json.searchQuery }}",
+          "fields": [
+            "title",
+            "authors",
+            "year",
+            "doi",
+            "abstract",
+            "totalCitations",
+            "pdfUrl",
+            "provider"
+          ],
+          "resource": "academic",
+          "yearFrom": "={{ $json.yearFrom }}",
+          "operation": "search",
+          "providers": [
+            "pubmed",
+            "semantic_scholar",
+            "arxiv",
+            "google_scholar",
+            "eric"
+          ]
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "deduplicate",
+        "name": "Deduplicate Results",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          850,
+          300
+        ],
+        "parameters": {
+          "functionCode": "// Deduplicate papers based on DOI and title similarity\nconst papers = $json;\nconst unique = new Map();\n\npapers.forEach(paper => {\n  // First check DOI\n  if (paper.doi && !unique.has(paper.doi)) {\n    unique.set(paper.doi, paper);\n  } else if (!paper.doi) {\n    // For papers without DOI, check title similarity\n    const normalizedTitle = paper.title.toLowerCase().replace(/[^a-z0-9]/g, '');\n    let isDuplicate = false;\n    \n    for (const [key, existingPaper] of unique) {\n      const existingTitle = existingPaper.title.toLowerCase().replace(/[^a-z0-9]/g, '');\n      if (normalizedTitle === existingTitle) {\n        isDuplicate = true;\n        // Merge provider info\n        if (!existingPaper.providers) existingPaper.providers = [existingPaper.provider];\n        existingPaper.providers.push(paper.provider);\n        break;\n      }\n    }\n    \n    if (!isDuplicate) {\n      unique.set(normalizedTitle, paper);\n    }\n  }\n});\n\nreturn Array.from(unique.values());"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "rank-results",
+        "name": "Rank by Relevance",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1050,
+          300
+        ],
+        "parameters": {
+          "functionCode": "// Calculate relevance score\nconst papers = $json;\nconst query = $node['Set Search Parameters'].json.searchQuery.toLowerCase();\n\nconst scored = papers.map(paper => {\n  let score = 0;\n  \n  // Title relevance\n  const titleWords = paper.title.toLowerCase().split(' ');\n  const queryWords = query.split(' ');\n  queryWords.forEach(word => {\n    if (titleWords.includes(word)) score += 10;\n  });\n  \n  // Citation impact\n  score += Math.log(paper.totalCitations + 1) * 5;\n  \n  // Recency bonus\n  const yearDiff = new Date().getFullYear() - paper.year;\n  score += Math.max(0, 10 - yearDiff);\n  \n  // Full text availability\n  if (paper.pdfUrl) score += 15;\n  \n  return { ...paper, relevanceScore: score };\n});\n\n// Sort by relevance\nreturn scored.sort((a, b) => b.relevanceScore - a.relevanceScore);"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "generate-bibtex",
+        "name": "Generate BibTeX",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1250,
+          250
+        ],
+        "parameters": {
+          "functionCode": "// Generate BibTeX entries\nconst papers = $json;\n\nconst bibtex = papers.map((paper, index) => {\n  const key = paper.doi ? paper.doi.replace(/[^a-zA-Z0-9]/g, '') : `paper${index}`;\n  const authors = paper.authors.join(' and ');\n  \n  return `@article{${key},\n  title={${paper.title}},\n  author={${authors}},\n  year={${paper.year}},\n  doi={${paper.doi || ''}},\n  abstract={${paper.abstract || ''}}\n}`;\n}).join('\\n\\n');\n\nreturn { bibtex, papers };"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "export-bibtex",
+        "name": "Export BibTeX File",
+        "type": "n8n-nodes-base.writeBinaryFile",
+        "position": [
+          1450,
+          250
+        ],
+        "parameters": {
+          "fileName": "search_results_{{ $now.format('yyyy-MM-dd') }}.bib",
+          "fileContent": "={{ $json.bibtex }}"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "export-json",
+        "name": "Export JSON",
+        "type": "n8n-nodes-base.writeBinaryFile",
+        "position": [
+          1450,
+          350
+        ],
+        "parameters": {
+          "fileName": "search_results_{{ $now.format('yyyy-MM-dd') }}.json",
+          "fileContent": "={{ JSON.stringify($json.papers, null, 2) }}"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "export-csv",
+        "name": "Export CSV",
+        "type": "n8n-nodes-base.writeBinaryFile",
+        "position": [
+          1450,
+          450
+        ],
+        "parameters": {
+          "fileName": "search_results_{{ $now.format('yyyy-MM-dd') }}.csv",
+          "fileContent": "={{ $json.papers.map(p => [p.title, p.authors.join(';'), p.year, p.doi, p.totalCitations, p.pdfUrl].join(',\t')).join('\\n') }}"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "Generate BibTeX": {
+        "main": [
+          [
+            {
+              "node": "Export BibTeX File",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Export JSON",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Export CSV",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rank by Relevance": {
+        "main": [
+          [
+            {
+              "node": "Generate BibTeX",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Deduplicate Results": {
+        "main": [
+          [
+            {
+              "node": "Rank by Relevance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Search Parameters": {
+        "main": [
+          [
+            {
+              "node": "PDF Vector - Multi-DB Search",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF Vector - Multi-DB Search": {
+        "main": [
+          [
+            {
+              "node": "Deduplicate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 62,
+  "workflowInfo": {
+    "nodeCount": 9,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 3
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-pdfvector.pdfVector": {
+        "count": 1
+      },
+      "n8n-nodes-base.writeBinaryFile": {
+        "count": 3
+      }
+    }
+  },
+  "user": {
+    "name": "PDF Vector",
+    "username": "pdfvector",
+    "bio": "A fully featured PDF APIs for developers - Parse any PDF or Word document, extract structured data, and access millions of academic papers - all through simple APIs.",
+    "verified": true,
+    "links": [
+      "https://www.pdfvector.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/c3284f6b75ccb280de2edf5a173c7f761f64ea1b1f9114ff2ef4c4b72f980675?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "icon": "fa:file-export",
+      "name": "n8n-nodes-base.writeBinaryFile",
+      "codex": {
+        "data": {
+          "alias": [
+            "Text",
+            "Save",
+            "Export"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.readwritefile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Écrire un fichier binaire",
+        "color": "#CC2233"
+      },
+      "iconData": {
+        "icon": "file-export",
+        "type": "icon"
+      },
+      "displayName": "Write Binary File",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 48,
+      "name": "IA RAG"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

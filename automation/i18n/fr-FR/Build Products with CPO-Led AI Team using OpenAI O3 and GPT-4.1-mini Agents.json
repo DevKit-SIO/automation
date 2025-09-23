@@ -1,0 +1,844 @@
+{
+  "id": 6903,
+  "name": "Construire des produits avec une équipe AI dirigée par le CPO utilisant OpenAI O3 et les agents GPT-4.1-mini",
+  "views": 288,
+  "recentViews": 1,
+  "totalViews": 288,
+  "createdAt": "2025-08-02T17:59:22.114Z",
+  "description": "# Agent CPO avec l'équipe produit\n\n## Description\nRationalisez le développement de produits avec un agent Chief Product Officer (CPO) alimenté par l'IA orchestrant des membres spécialisés de l'équipe produit pour une stratégie et une exécution de produit complètes.\n\n## Aperçu\nCe flux de travail n8n crée un département de développement de produits complet utilisant des agents IA. L'agent CPO analyse les opportunités de produit et délègue des tâches à des agents spécialisés pour la gestion de produit, le design UX, la recherche utilisateur, l'analyse, la documentation et la planification stratégique.\n\n## Caractéristiques\n- Agent CPO stratégique utilisant OpenAI O3 pour une stratégie de produit complexe et une prise de décision\n- Six agents de produit spécialisés alimentés par GPT-4.1-mini pour une exécution efficace\n- Couverture complète du cycle de vie du produit, de l'idéation au lancement\n- Recherche utilisateur automatisée et développement de personas\n- Spécifications de design UX/UI et wireframing\n- Analyse de produit et suivi des KPI\n- Documentation technique et spécifications API\n\n## Structure de l'équipe\n- **Agent CPO** : Coordination de la vision et de la stratégie produit (modèle O3)\n- **Chef de produit** : Feuilles de route, spécifications de fonctionnalités, histoires utilisateur, planification\n- **Designer UX/UI** : Flux utilisateur, wireframes, design d'interface, utilisabilité\n- **Spécialiste de la recherche utilisateur** : Plans de recherche, personas, analyse de marché, insights\n- **Spécialiste de l'analyse produit** : Métriques, KPI, tests A/B, analyse de données\n- **Rédacteur technique** : Documentation produit, docs API, guides utilisateur\n- **Analyste de stratégie produit** : Analyse concurrentielle, positionnement sur le marché, stratégie GTM\n\n## Comment utiliser\n1. Importez le flux de travail dans votre instance n8n\n2. Configurez les identifiants API OpenAI pour tous les modèles de chat\n3. Déployez le webhook pour les interactions de chat\n4. Envoyez des demandes de produit via le chat (par exemple, \"Concevez une nouvelle fonctionnalité d'application mobile pour l'onboarding utilisateur\")\n5. Le CPO analysera et délèguera aux spécialistes appropriés\n6. Recevez des livrables de produit complets et des insights stratégiques\n\n## Cas d'utilisation\n- **Développement de fonctionnalités** : Concept → Recherche → Design → Spécifications → Métriques\n- **Lancement de produit** : Stratégie → Documentation → Analyse → Planification de mise sur le marché\n- **Optimisation de l'expérience utilisateur** : Recherche → Personas → Flux utilisateur → Tests → Itération\n- **Analyse concurrentielle** : Recherche de marché → Positionnement → Stratégies de différenciation\n- **Planification de produit** : Vision → Priorités → Chronologie → Planification des ressources\n- **Suite de documentation** : Guides utilisateur → Documentation API → Spécifications techniques\n- **Mise en œuvre de l'analyse** : Définition des KPI → Configuration du suivi → Analyse de performance\n- **Recherche de marché** : Interviews clients → Développement de personas → Collecte des exigences\n\n## Exigences\n- Instance n8n avec des nœuds LangChain\n- Accès à l'API OpenAI (O3 pour CPO, GPT-4.1-mini pour les spécialistes)\n- Capacité de webhook pour les interactions de chat\n- Optionnel : Intégration avec des outils de gestion de produit (Jira, Figma, etc.)\n\n## Optimisation des coûts\n- Modèle O3 utilisé uniquement pour les décisions stratégiques du CPO\n- GPT-4.1-mini offre une réduction de coût de 90 % pour les tâches spécialisées\n- Le traitement parallèle permet l'exécution simultanée des agents\n- La bibliothèque de modèles exploite des cadres de produit éprouvés\n\n## Options d'intégration\n- Connectez-vous aux outils de gestion de produit (Jira, Asana, Linear)\n- Intégrez-vous aux plateformes de design (Figma, Sketch, Adobe XD)\n- Liez-vous aux outils d'analyse (Mixpanel, Amplitude, Google Analytics)\n- Exportez vers des plateformes de documentation (Notion, Confluence)\n\n## Métriques de performance\n- Taux d'adoption des fonctionnalités et engagement des utilisateurs\n- Indicateurs d'adéquation produit-marché\n- Satisfaction des utilisateurs et scores NPS\n- Vitesse de développement et temps de cycle\n- Complétude et clarté de la documentation\n\n## Contact & Ressources\n- **Site Web** : [nofluff.online](https://www.nofluff.online)\n- **YouTube** : [@YaronBeen](https://www.youtube.com/@YaronBeen/videos)\n- **LinkedIn** : [Yaron Been](https://www.linkedin.com/in/yaronbeen/)\n\n## Tags\n#GestionDeProduit #DesignUX #RechercheUtilisateur #StratégieProduit #OpérationsProduit #AnalyseProduit #RédactionTechnique #DéveloppementProduit #DesignDeFonctionnalité #ProduitIA #n8n #OpenAI #SystèmeMultiAgent #TechnologieProduit #LeadershipProduit #Innovation",
+  "workflow": {
+    "meta": {
+      "instanceId": "12e6f290a974a1eee154f8d915aade185e90e826260e6aeab8a087ba7386a1bc",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "CPO Agent with Product Team",
+    "nodes": [
+      {
+        "id": "product-chat-trigger",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -2864,
+          -576
+        ],
+        "webhookId": "product-webhook-id",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "cpo-agent",
+        "name": "CPO Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -2640,
+          -816
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "product-think",
+        "name": "Think",
+        "type": "@n8n/n8n-nodes-langchain.toolThink",
+        "position": [
+          -2512,
+          -496
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "pm-agent",
+        "name": "Product Manager",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          -2240,
+          -96
+        ],
+        "parameters": {
+          "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+          "options": {},
+          "toolDescription": "call this AI Agent that specializes in product roadmaps, feature specifications, user stories, and product planning"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ux-agent",
+        "name": "UX/UI Designer",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          -1280,
+          -704
+        ],
+        "parameters": {
+          "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+          "options": {},
+          "toolDescription": "call this AI Agent that specializes in user experience design, wireframes, user flows, and interface specifications"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "research-agent",
+        "name": "User Research Specialist",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          -1840,
+          -304
+        ],
+        "parameters": {
+          "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+          "options": {},
+          "toolDescription": "call this AI Agent that specializes in user research, surveys, interviews, persona creation, and market analysis"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "analytics-agent",
+        "name": "Product Analytics Specialist",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          -1328,
+          -80
+        ],
+        "parameters": {
+          "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+          "options": {},
+          "toolDescription": "call this AI Agent that specializes in product metrics, KPI tracking, A/B testing, and data-driven insights"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "tech-writer-agent",
+        "name": "Technical Writer",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          -1744,
+          -1024
+        ],
+        "parameters": {
+          "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+          "options": {},
+          "toolDescription": "call this AI Agent that specializes in product documentation, API docs, user guides, and technical specifications"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "strategy-agent",
+        "name": "Product Strategy Analyst",
+        "type": "@n8n/n8n-nodes-langchain.agentTool",
+        "position": [
+          -1344,
+          -1264
+        ],
+        "parameters": {
+          "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+          "options": {},
+          "toolDescription": "call this AI Agent that specializes in competitive analysis, market positioning, go-to-market strategy, and product-market fit"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "cpo-model",
+        "name": "OpenAI Chat Model CPO",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -2672,
+          -496
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "o3",
+            "cachedResultName": "o3"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "YOUR_OPENAI_CREDENTIAL_ID",
+            "name": "OpenAI account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "pm-model",
+        "name": "OpenAI Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -2208,
+          368
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "YOUR_OPENAI_CREDENTIAL_ID",
+            "name": "OpenAI account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ux-model",
+        "name": "OpenAI Chat Model2",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -1312,
+          -496
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "YOUR_OPENAI_CREDENTIAL_ID",
+            "name": "OpenAI account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "research-model",
+        "name": "OpenAI Chat Model3",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -1824,
+          -144
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "YOUR_OPENAI_CREDENTIAL_ID",
+            "name": "OpenAI account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "analytics-model",
+        "name": "OpenAI Chat Model4",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -1328,
+          96
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "YOUR_OPENAI_CREDENTIAL_ID",
+            "name": "OpenAI account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "tech-writer-model",
+        "name": "OpenAI Chat Model5",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -1776,
+          -768
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "YOUR_OPENAI_CREDENTIAL_ID",
+            "name": "OpenAI account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "strategy-model",
+        "name": "OpenAI Chat Model6",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -1312,
+          -944
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "YOUR_OPENAI_CREDENTIAL_ID",
+            "name": "OpenAI account"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "product-header-sticky",
+        "name": "Sticky Note Header",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -3808,
+          -880
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 580,
+          "height": 320,
+          "content": "=======================================\n        CPO AGENT WITH PRODUCT TEAM\n=======================================\nFor any questions or support, please contact:\n    Yaron@nofluff.online\n\nExplore more tips and tutorials here:\n   - YouTube: https://www.youtube.com/@YaronBeen/videos\n   - LinkedIn: https://www.linkedin.com/in/yaronbeen/\n======================================="
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "product-main-sticky",
+        "name": "Sticky Note Main",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -3808,
+          -544
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 740,
+          "height": 2500,
+          "content": "## 🚀 **CPO AGENT WITH PRODUCT TEAM - AI WORKFLOW**\n\n**🔥 Powered by OpenAI O3 & GPT-4.1-mini Multi-Agent System**\n\n#ProductManagement #ProductOps #n8nWorkflows #OpenAI #ProductStrategy\n\n---\n\n### 📝 **Overview**\n\nThis multi-agent n8n automation creates a comprehensive product development team. A strategic CPO agent receives your input, analyzes product opportunities, and coordinates specialized agents for product management, UX design, user research, analytics, documentation, and strategy—delivering end-to-end product development support with AI efficiency.\n\n---\n\n### ⚙️ **How It Works**\n\n1. **Chat trigger** receives product requests (e.g., \"Design a new mobile app feature for user onboarding\")\n2. **CPO Agent** (O3) analyzes requirements and creates product strategy\n3. Delegates to specialist agents:\n   - Product Manager\n   - UX/UI Designer\n   - User Research Specialist\n   - Product Analytics Specialist\n   - Technical Writer\n   - Product Strategy Analyst\n4. Each agent uses **GPT-4.1-mini** for specialized execution\n5. Results compiled into comprehensive product deliverables\n\n---\n\n### 👥 **Meet Your AI Product Team**\n\n| Agent | Purpose | Model | Output |\n|-------|---------|-------|--------|\n| 🚀 **CPO Agent** | Product vision & strategy coordination | O3 | Strategic oversight |\n| 📋 **Product Manager** | Roadmaps, specs, user stories | GPT-4.1-mini | Product requirements |\n| 🎨 **UX/UI Designer** | User flows, wireframes, interfaces | GPT-4.1-mini | Design specifications |\n| 🔍 **User Research** | Research plans, personas, insights | GPT-4.1-mini | User understanding |\n| 📊 **Analytics Specialist** | Metrics, KPIs, A/B tests | GPT-4.1-mini | Data-driven insights |\n| 📝 **Technical Writer** | Documentation, guides, specs | GPT-4.1-mini | Clear documentation |\n| 🎯 **Strategy Analyst** | Market analysis, positioning | GPT-4.1-mini | Strategic insights |\n\n---\n\n### 💡 **Use Cases**\n\n- **Feature Development**: Concept → Research → Design → Specs → Metrics\n- **Product Launch**: Strategy → Documentation → Analytics → Go-to-market\n- **User Experience**: Research → Personas → Flows → Testing → Optimization\n- **Competitive Analysis**: Market research → Positioning → Differentiation\n- **Product Roadmaps**: Vision → Priorities → Timeline → Resource planning\n- **Documentation Suite**: User guides → API docs → Technical specs\n\n---\n\n### 💸 **Cost Optimization**\n\n- **O3 for CPO**: Strategic product decisions only\n- **GPT-4.1-mini for execution**: 90% cost reduction\n- **Parallel processing**: All specialists work simultaneously\n- **Template reuse**: Leverage proven product frameworks\n\n---\n\n### 🏷️ **Tags**\n\n#ProductManagement #UXDesign #UserResearch #ProductStrategy #ProductOps\n#ProductAnalytics #TechnicalWriting #ProductDevelopment #FeatureDesign #ProductAI\n#n8n #OpenAI #MultiAgentSystem #ProductTech #ProductLeadership #Innovation"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "Think": {
+        "ai_tool": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "UX/UI Designer": {
+        "ai_tool": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Product Manager": {
+        "ai_tool": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Technical Writer": {
+        "ai_tool": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Product Manager",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model2": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "UX/UI Designer",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model3": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "User Research Specialist",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model4": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Product Analytics Specialist",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model5": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Technical Writer",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model6": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Product Strategy Analyst",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model CPO": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Product Strategy Analyst": {
+        "ai_tool": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "User Research Specialist": {
+        "ai_tool": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Product Analytics Specialist": {
+        "ai_tool": [
+          [
+            {
+              "node": "CPO Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 18,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.agentTool": {
+        "count": 6
+      },
+      "@n8n/n8n-nodes-langchain.toolThink": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 7
+      }
+    }
+  },
+  "user": {
+    "name": "Yaron Been",
+    "username": "yaron-nofluff",
+    "bio": "Building AI Agents and Automations | Growth Marketer | Entrepreneur | Book Author & Podcast Host\n\nIf you need any help with Automations, feel free to reach out via linkedin:\nhttps://www.linkedin.com/in/yaronbeen/\n\nAnd check out my Youtube channel:\nhttps://www.youtube.com/@YaronBeen/videos",
+    "verified": true,
+    "links": [
+      "https://www.nofluff.online/automation-services/"
+    ],
+    "avatar": "https://gravatar.com/avatar/a4e4dcaa1f76ff5266bbf80e8df86d22efda890474c68f7796e72fd82e3f2375?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1289,
+      "icon": "fa:brain",
+      "name": "@n8n/n8n-nodes-langchain.toolThink",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolthink/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Other Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Penser"
+      },
+      "iconData": {
+        "icon": "brain",
+        "type": "icon"
+      },
+      "displayName": "Think Tool",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1310,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agentTool",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Other Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Outil Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent Tool",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 46,
+      "name": "Gestion de projet"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}

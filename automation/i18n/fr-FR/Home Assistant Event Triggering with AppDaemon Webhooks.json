@@ -1,0 +1,410 @@
+{
+  "id": 6693,
+  "name": "Déclenchement d'événements Home Assistant avec les webhooks AppDaemon",
+  "views": 49,
+  "recentViews": 0,
+  "totalViews": 49,
+  "createdAt": "2025-07-30T10:21:15.567Z",
+  "description": "## Résumé\nCeci est un modèle minimal qui se concentre sur la façon d'intégrer n8n et Home Assistant pour le déclenchement basé sur des événements depuis Home Assistant en utilisant l'addon AppDaemon pour appeler un nœud webhook. \n\n## Problème résolu : \nIl n'y a pas de nœud de déclenchement Home Assistant dans n8n. Vous pouvez interroger l'API Home Assistant selon un calendrier. Une solution plus efficace consiste à utiliser l'addon AppDaemon pour créer une application d'écoute au sein de Home Assistant. Lorsque l'écouteur détecte l'événement auquel il est abonné, une application AppDaemon est initiée qui appelle un webhook n8n en passant les données de l'événement au flux de travail.\n\nAppDaemon exécute du code python. Le modèle contient une note autocollante. Dans la note autocollante, il y a un exemple de code (répété ci-dessous) pour une application AppDaemon, le code contient des instructions annotées sur la configuration.\n\n## Étapes :\n\n## Installer l'addon AppDaemon\nA. Ouvrez Home Assistant. Dans votre interface utilisateur Home Assistant, allez dans Paramètres - Add-ons (ou Superviseur - Boutique d'add-ons, selon votre version).\n\nB. Recherchez et installez. Dans la Boutique d'add-ons, recherchez \"AppDaemon 4\". Cliquez sur le résultat puis sur le bouton Installer pour commencer l'installation.\n\nC. Démarrez l'addon. Une fois installé, ouvrez la page de l'addon AppDaemon 4. Cliquez sur Démarrer pour lancer AppDaemon. (Optionnel mais recommandé) Activez les options Démarrer au démarrage et Watchdog pour vous assurer qu'AppDaemon démarre automatiquement et redémarre s'il plante.\n\nD. Vérifiez l'installation. Vérifiez les journaux dans la page de l'addon AppDaemon pour vous assurer qu'il fonctionne sans problèmes. Pas besoin de définir manuellement des jetons d'accès ou l'URL de Home Assistant ; l'addon est préconfiguré pour se connecter à votre Home Assistant.\n\nE. Configurez AppDaemon. Après l'installation, un répertoire nommé appdaemon apparaîtra dans votre répertoire de configuration Home Assistant (/config/appdaemon/). À l'intérieur, vous trouverez un fichier appelé appdaemon.yaml. Pour la plupart des utilisations, la configuration par défaut est suffisante, mais vous pouvez la personnaliser si nécessaire.\n\n## Créez l'application AppDaemon. \n\nF. Préparez votre répertoire d'applications. À l'intérieur de /config/appdaemon/, localisez ou créez un dossier apps. Chemin : /config/appdaemon/apps/. \n\nG. Créez une application Python \nÀ l'intérieur du dossier apps, créez un nouveau fichier Python (exemple : n8n_WebHook.py).\n\nOuvrez le fichier dans un éditeur et collez l'exemple de code dans le fichier.\n\n``` python\nimport appdaemon.plugins.hass.hassapi as hass\nimport requests\nimport json\nclass EventTon8nWebhook(hass.Hass):\n    \"\"\"\n    Application AppDaemon qui écoute les événements Home Assistant et les transmet au webhook n8n\n    \"\"\"\n#\n# \n    def initialize(self):\n        \"\"\"\n        Initialiser l'écouteur d'événements et configurer les paramètres du webhook\n        \"\"\"\n        # ÉDITER : Remplacez 'your_event_name' par l'événement réel que vous souhaitez écouter\n        # Événements HA courants : 'state_changed', 'call_service', 'automation_triggered', etc.\n        self.target_event = self.args.get('target_event', 'your_event_name')\n        \n        # ÉDITER : Définissez votre URL de webhook n8n dans apps.yaml ou remplacez la valeur par défaut ici\n        self.webhook_url = self.args.get('webhook_url', 'n8n_webhook_url')\n        \n        # ÉDITER : Optionnel - définissez le délai d'attente pour les requêtes webhook (secondes)\n        self.webhook_timeout = self.args.get('webhook_timeout', 10)\n        \n        # ÉDITER : Optionnel - activer/désactiver la vérification SSL\n        self.verify_ssl = self.args.get('verify_ssl', True)\n        \n        # Configurer l'écouteur d'événements\n        self.listen_event(self.event_handler, self.target_event)\n        \n        self.log(f\"Écouteur d'événements initialisé pour l'événement : {self.target_event}\")\n        self.log(f\"URL du webhook configurée : {self.webhook_url}\")\n#\n#\n    def event_handler(self, event_name, data, kwargs):\n        \"\"\"\n        Gérer l'événement déclenché et le transmettre au webhook n8n\n        Args:\n            event_name (str): Nom de l'événement déclenché\n            data (dict): Données de l'événement provenant de Home Assistant\n            kwargs (dict): Arguments supplémentaires provenant de l'événement\n        \"\"\"\n        try:\n            # Préparer la charge utile pour le webhook n8n\n            payload = {\n                'event_name': event_name,\n                'event_data': data,\n                'event_kwargs': kwargs,\n                'timestamp': self.datetime().isoformat(),\n                'source': 'home_assistant_appdaemon'\n            }\n            \n            self.log(f\"Événement reçu '{event_name}' - transmission à n8n\")\n            self.log(f\"Données de l'événement : {data}\")\n            \n            # Envoyer au webhook n8n\n            self.send_to_n8n(payload)\n            \n        except Exception as e:\n            self.log(f\"Erreur lors du traitement de l'événement {event_name}: {str(e)}\", level=\"ERROR\")\n#\n#\n    def send_to_n8n(self, payload):\n        \"\"\"\n        Envoyer la charge utile au webhook n8n\n        Args:payload (dict): Données à envoyer à n8n\n        \"\"\"\n        try:\n            headers = {\n                'Content-Type': 'application/json',\n#ÉDITER suppose que le paramètre d'authentification d'en-tête et la valeur ci-dessous doivent correspondre à ce qui est défini dans les informations d'identification utilisées dans le nœud.\n                'CredName': 'credValue', #définir sur ce que vous avez configuré comme information d'identification pour le nœud webhook\n            }\n            \n            response = requests.post(\n                self.webhook_url,\n                json=payload,\n                headers=headers,\n                timeout=self.webhook_timeout,\n                verify=self.verify_ssl\n            )\n            \n            response.raise_for_status()\n            \n            self.log(f\"Événement envoyé avec succès au webhook n8n. Statut : {response.status_code}\")\n            \n            # ÉDITER : Optionnel - enregistrer la réponse de n8n pour le débogage\n            if response.text:\n                self.log(f\"Réponse n8n : {response.text}\")\n                \n        except requests.exceptions.Timeout:\n            self.log(f\"Délai d'attente lors de l'envoi au webhook n8n après {self.webhook_timeout}s\", level=\"ERROR\")\n        except requests.exceptions.RequestException as e:\n            self.log(f\"Erreur lors de l'envoi au webhook n8n : {str(e)}\", level=\"ERROR\")\n        except Exception as e:\n            self.log(f\"Erreur inattendue lors de l'envoi à n8n : {str(e)}\", level=\"ERROR\")\n```\n\nH. Enregistrez votre application\n\nDans le même dossier d'applications, localisez ou créez un fichier nommé apps.yaml.\n\nAjoutez une entrée pour enregistrer votre application :\n\n```yaml\nEventTon8nWebhook:\n  module: n8n_WebHook\n  class: EventTon8nWebhook\n```\n\n\nLe module doit correspondre à votre nom de fichier Python (sans le .py).\nla classe correspond au nom de la classe à l'intérieur de votre fichier Python, c'est-à-dire *EventTon8nWebHook*\n\nI. Rechargez AppDaemon\nDans Home Assistant, retournez à la page de l'addon AppDaemon 4 et cliquez sur Redémarrer.\n\nSurveillez les journaux ; vous devriez voir une entrée de journal de votre application confirmant qu'elle est initialisée et en cours d'exécution.\n\n## Configurez n8n\nJ. Dans votre flux de travail, créez un nœud de déclenchement webhook comme premier nœud, ou utilisez le modèle comme point de départ.\n\nAssurez-vous que l'URL du webhook (production ou test) est correctement copiée dans le code python.\n\nSi vous utilisez une authentification, cela nécessite la création d'une information d'identification pour le webhook. L'exemple utilise l'authentification par en-tête. Naturellement, cela doit correspondre à ce qui est dans le code. Pour des raisons de sécurité, il est probablement préférable de mettre les informations d'identification dans un fichier *\"secrets.yaml\"* plutôt que de les coder en dur comme dans cette démo.\n\nExécutez le flux de travail ou activez-le si vous utilisez le webhook de production. Attendez un événement dans Home Assistant ou un événement peut être déclenché manuellement depuis la page des paramètres développeur, onglet événements.\n\nK. Enfin, développez votre flux de travail pour traiter l'événement reçu selon votre cas d'utilisation.\n\nConsultez la documentation de Home Assistant sur les événements pour plus de détails sur les types d'événements auxquels vous pouvez vous abonner : [Événements Home Assistant](https://www.home-assistant.io/docs/configuration/events/)",
+  "workflow": {
+    "id": "RJ4nSdsxI4FQiDI4",
+    "meta": {
+      "instanceId": "e7281588c6a5bfbbf1af86f0946485a3d9e2154b9b2973c88d730fb17289a5df",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "AppDaemon Webhook",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "2c448b0c-acba-415b-854e-6413e0070d51",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -784,
+          -48
+        ],
+        "parameters": {
+          "width": 1024,
+          "height": 1664,
+          "content": "## Triggering N8N from Home Assistant using AppDaemon\n\n\n\n\n\n\n\n\n\n\nThere is no N8N node or API endpoint in Home Assistant that allows a workflow to be triggered on an event in Home Assistant.\nA workaround is to use the AppDaemon addon in Home Assistant to create a listener to catch an event in Home Assistant that calls a N8N webhook to trigger the flow.\n \nThe python code implements an AppDaemon class that initialises an event listener. When an event is registered the N8N webhook is called POSTing the event data to N8N to process in the workflow. The N8N webhook trigger node should use the POST method.\n\nSee the Home Assistant event documentation, for details of events. https://www.home-assistant.io/docs/configuration/events/\n\nThe lines in the code commented #EDIT should be changed to your instance and use case.\n\nCode:\n\n```\nimport appdaemon.plugins.hass.hassapi as hass\nimport requests\nimport json\nclass EventToN8NWebhook(hass.Hass):\n    \"\"\"\n    AppDaemon app that listens for Home Assistant events and forwards them to n8n webhook\n    \"\"\"\n#\n# \n    def initialize(self):\n        \"\"\"\n        Initialize the event listener and configure webhook settings\n        \"\"\"\n        # EDIT: Replace 'your_event_name' with the actual event you want to listen for\n        # Common HA events: 'state_changed', 'call_service', 'automation_triggered', etc.\n        self.target_event = self.args.get('target_event', 'event_name')\n        \n        # EDIT: Set your n8n webhook URL in apps.yaml or replace the default here\n        self.webhook_url = self.args.get('webhook_url', 'n8n_webhook_url')\n        \n        # EDIT: Optional - set timeout for webhook requests (seconds)\n        self.webhook_timeout = self.args.get('webhook_timeout', 10)\n        \n        # EDIT: Optional - enable/disable SSL verification\n        self.verify_ssl = self.args.get('verify_ssl', True)\n        \n        # Set up the event listener\n        self.listen_event(self.event_handler, self.target_event)\n        \n        self.log(f\"Event listener initialized for event: {self.target_event}\")\n        self.log(f\"Webhook URL configured: {self.webhook_url}\")\n#\n#\n    def event_handler(self, event_name, data, kwargs):\n        \"\"\"\n        Handle the triggered event and forward to n8n webhook\n        Args:\n            event_name (str): Name of the triggered event\n            data (dict): Event data from Home Assistant\n            kwargs (dict): Additional keyword arguments from the event\n        \"\"\"\n        try:\n            # Prepare payload for n8n webhook\n            payload = {\n                'event_name': event_name,\n                'event_data': data,\n                'event_kwargs': kwargs,\n                'timestamp': self.datetime().isoformat(),\n                'source': 'home_assistant_appdaemon'\n            }\n            \n            self.log(f\"Received event '{event_name}' - forwarding to n8n\")\n            self.log(f\"Event data: {data}\")\n            \n            # Send to n8n webhook\n            self.send_to_n8n(payload)\n            \n        except Exception as e:\n            self.log(f\"Error handling event {event_name}: {str(e)}\", level=\"ERROR\")\n#\n#\n    def send_to_n8n(self, payload):\n        \"\"\"\n        Send payload to n8n webhook\n        Args:payload (dict): Data to send to n8n\n        \"\"\"\n        try:\n            headers = {\n                'Content-Type': 'application/json',\n#EDIT assume header authentication parameter and value below need to match what is set in the credential used in the node.\n                'CredName': 'credValue', #set to what you set up as a credential for the webhook node\n            }\n            \n            response = requests.post(\n                self.webhook_url,\n                json=payload,\n                headers=headers,\n                timeout=self.webhook_timeout,\n                verify=self.verify_ssl\n            )\n            \n            response.raise_for_status()\n            \n            self.log(f\"Successfully sent event to n8n webhook. Status: {response.status_code}\")\n            \n            # EDIT: Optional - log response from n8n for debugging\n            if response.text:\n                self.log(f\"n8n response: {response.text}\")\n                \n        except requests.exceptions.Timeout:\n            self.log(f\"Timeout sending to n8n webhook after {self.webhook_timeout}s\", level=\"ERROR\")\n        except requests.exceptions.RequestException as e:\n            self.log(f\"Error sending to n8n webhook: {str(e)}\", level=\"ERROR\")\n        except Exception as e:\n            self.log(f\"Unexpected error sending to n8n: {str(e)}\", level=\"ERROR\")\n       ```"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a2c5ad96-0547-415d-8276-f2a95dbf1b60",
+        "name": "Home Assistant Event Trigger",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          96,
+          -32
+        ],
+        "webhookId": "758ef827-bafc-4241-83f8-6e745b21fc44",
+        "parameters": {
+          "path": "758ef827-bafc-4241-83f8-6e745b21fc44",
+          "options": {},
+          "httpMethod": "POST",
+          "authentication": "headerAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "Tskm0haXXpHykA5x",
+            "name": "AppDaemon Home Assistant"
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "b5055ca1-817f-4e15-81ad-0dc995b43b4c",
+        "name": "Process data from webhook",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          400,
+          -32
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "935d2974-1a08-42da-8fe4-231905921e4a",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          336,
+          -64
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 448,
+          "height": 384,
+          "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Continue the workflow as needed\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "cd794c4b-e82f-454b-b05a-5c3f508f88f6",
+    "connections": {
+      "Home Assistant Event Trigger": {
+        "main": [
+          [
+            {
+              "node": "Process data from webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 4,
+    "nodeTypes": {
+      "n8n-nodes-base.noOp": {
+        "count": 1
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "Adrian Kendall",
+    "username": "akendall1966",
+    "bio": "Business process improvement and continuous improvement SME. Process automation advocate.",
+    "verified": false,
+    "links": [
+      "https://www.linkedin.com/in/adrian-kendall-cambridge/"
+    ],
+    "avatar": "https://gravatar.com/avatar/5ce86524e3f54c5205f3d758ef2efd51cef5c2dfa01b523553cf3f28c083a216?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 26,
+      "icon": "fa:arrow-right",
+      "name": "n8n-nodes-base.noOp",
+      "codex": {
+        "data": {
+          "alias": [
+            "nothing"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.noop/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Aucune opération, ne rien faire",
+        "color": "#b0b0b0"
+      },
+      "iconData": {
+        "icon": "arrow-right",
+        "type": "icon"
+      },
+      "displayName": "No Operation, do nothing",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 43,
+      "name": "Productivité personnelle"
+    }
+  ],
+  "image": []
+}

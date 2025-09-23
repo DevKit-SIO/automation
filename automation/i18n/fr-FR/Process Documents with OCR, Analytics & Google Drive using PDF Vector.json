@@ -1,0 +1,920 @@
+{
+  "id": 8505,
+  "name": "Traiter des documents avec OCR, analyses et Google Drive en utilisant PDF Vector",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-09-12T06:43:48.867Z",
+  "description": "## Aperçu\n\nLes organisations traitant un volume élevé de documents font face à des défis pour gérer efficacement des types de documents divers tout en maintenant la qualité et en suivant les indicateurs de performance. Ce flux de travail de niveau entreprise offre une solution évolutive pour le traitement par lots de documents, y compris les PDF, les documents numérisés et les images (JPG, PNG) avec des analyses complètes, la gestion des erreurs et l'assurance qualité.\n\n## Ce que vous pouvez faire\n\n- Traiter des milliers de documents en lots parallèles de manière efficace\n- Surveiller les indicateurs de performance et les taux de réussite en temps réel\n- Gérer des formats de documents divers avec détection automatique de format\n- Générer des tableaux de bord d'analyses et des rapports complets\n- Mettre en œuvre une assurance qualité automatisée et une gestion des erreurs\n\n## Pour qui c'est destiné\n\nGrandes organisations, centres de traitement de documents, équipes de transformation numérique, départements informatiques d'entreprise et entreprises qui ont besoin de traiter des milliers de documents de manière fiable avec un suivi détaillé des performances et des analyses.\n\n## Le problème qu'il résout\n\nLe traitement de documents à volume élevé sans surveillance appropriée entraîne des goulets d'étranglement, des problèmes de qualité et une utilisation inefficace des ressources. Les organisations ont du mal à suivre les taux de réussite du traitement, à identifier les types de documents problématiques et à optimiser leurs flux de travail. Ce modèle fournit un traitement par lots de niveau entreprise avec des analyses complètes et une assurance qualité automatisée.\n\n**Instructions de configuration :**\n1. Configurer les identifiants Google Drive pour l'accès au dossier de documents\n2. Installer le nœud communautaire PDF Vector depuis le marché n8n\n3. Configurer les identifiants API PDF Vector avec des limites de taux appropriées\n4. Configurer les paramètres de traitement par lots (taille de lot, logique de réessai)\n5. Configurer les seuils de qualité et les règles de validation\n6. Configurer le tableau de bord d'analyses et les préférences de rapport\n7. Configurer la gestion des erreurs et les systèmes de notification\n\n**Fonctionnalités clés :**\n- Traitement par lots parallèle pour un débit maximal\n- Support pour des formats de documents mixtes (PDF, documents Word, images)\n- Traitement OCR pour les documents manuscrits et numérisés\n- Tableau de bord d'analyses complet avec taux de réussite et indicateurs de performance\n- Priorisation automatique des documents en fonction de la taille et de la complexité\n- Gestion intelligente des erreurs avec logique de réessai automatique\n- Contrôles d'assurance qualité et validation\n- Surveillance et alertes de traitement en temps réel\n\n**Options de personnalisation :**\n- Configurer des catégories de documents personnalisées et des règles de traitement\n- Mettre en place des modèles d'extraction spécifiques pour différents types de documents\n- Mettre en œuvre des flux de travail automatisés pour les documents qui échouent aux contrôles de qualité\n- Configurer l'optimisation de l'utilisation des crédits pour minimiser les coûts\n- Configurer des tableaux de bord d'analyses et de rapports personnalisés\n- Ajouter une intégration avec des systèmes de gestion de documents existants\n- Configurer des notifications automatisées pour l'achèvement du traitement ou les erreurs\n\n**Détails de mise en œuvre :**\nLe flux de travail utilise un traitement par lots intelligent pour traiter les documents efficacement tout en surveillant les indicateurs de performance en temps réel. Il gère automatiquement différents formats de documents, applique l'OCR si nécessaire et fournit des analyses détaillées pour aider les organisations à optimiser leurs opérations de traitement de documents. Le système comprend des mécanismes sophistiqués de récupération d'erreurs et d'assurance qualité.\n\n**Remarque :** Ce flux de travail utilise le nœud communautaire PDF Vector. Assurez-vous de l'installer depuis la collection de nœuds communautaires n8n avant d'utiliser ce modèle.",
+  "workflow": {
+    "meta": {
+      "instanceId": "placeholder"
+    },
+    "nodes": [
+      {
+        "id": "overview-note",
+        "name": "Analytics Overview",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          50,
+          50
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 350,
+          "height": 180,
+          "content": "## 📊 Real-Time Analytics\n\nDocument processing metrics:\n• **Tracks** all workflows in database\n• **Calculates** KPIs every 30 minutes\n• **Monitors** success/failure rates\n• **Analyzes** trends & patterns\n• **Updates** dashboards automatically"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "metrics-note",
+        "name": "Metrics Tracked",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          450,
+          550
+        ],
+        "parameters": {
+          "width": 260,
+          "height": 160,
+          "content": "## 📈 Key Metrics\n\n**Tracking:**\n• Documents/hour\n• Processing time\n• Error rates\n• API usage\n• Cost analysis\n\n💡 30-day rolling window"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "output-note",
+        "name": "Dashboard Output",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          750,
+          550
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 250,
+          "height": 150,
+          "content": "## 📊 Visualizations\n\n**Outputs to:**\n• Google Sheets\n• Tableau\n• Power BI\n• Slack alerts\n\n✨ Real-time updates!"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "manual-trigger",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "notes": "Start batch processing",
+        "position": [
+          250,
+          300
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "list-documents",
+        "name": "List Documents",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "Replace FOLDER_ID_HERE with your Google Drive folder ID",
+        "position": [
+          450,
+          300
+        ],
+        "parameters": {
+          "limit": 100,
+          "fields": [
+            "id",
+            "name",
+            "mimeType",
+            "size",
+            "webViewLink",
+            "createdTime"
+          ],
+          "operation": "list",
+          "queryString": "'FOLDER_ID_HERE' in parents and trashed=false"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "validate-files",
+        "name": "Validate & Queue Files",
+        "type": "n8n-nodes-base.code",
+        "notes": "Validate and prioritize files",
+        "position": [
+          650,
+          300
+        ],
+        "parameters": {
+          "jsCode": "// Validate and categorize documents\nconst files = $input.all().map(item => item.json);\nconst processingQueue = {\n  valid: [],\n  invalid: [],\n  stats: {\n    totalFiles: files.length,\n    pdfCount: 0,\n    wordCount: 0,\n    imageCount: 0,\n    otherCount: 0,\n    totalSizeMB: 0\n  }\n};\n\n// Define supported formats\nconst supportedFormats = {\n  pdf: ['application/pdf'],\n  word: [\n    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',\n    'application/msword'\n  ],\n  image: ['image/jpeg', 'image/png', 'image/gif']\n};\n\nfiles.forEach(file => {\n  const mimeType = file.mimeType;\n  const sizeMB = (parseInt(file.size) || 0) / (1024 * 1024);\n  \n  // Check if supported\n  let fileType = 'other';\n  let isValid = false;\n  \n  if (supportedFormats.pdf.includes(mimeType)) {\n    fileType = 'pdf';\n    isValid = true;\n    processingQueue.stats.pdfCount++;\n  } else if (supportedFormats.word.includes(mimeType)) {\n    fileType = 'word';\n    isValid = true;\n    processingQueue.stats.wordCount++;\n  } else if (supportedFormats.image.includes(mimeType)) {\n    fileType = 'image';\n    isValid = true;\n    processingQueue.stats.imageCount++;\n  } else {\n    processingQueue.stats.otherCount++;\n  }\n  \n  // Check file size (max 50MB)\n  if (sizeMB > 50) {\n    isValid = false;\n  }\n  \n  const fileInfo = {\n    ...file,\n    fileType,\n    sizeMB: Math.round(sizeMB * 100) / 100,\n    processingPriority: sizeMB < 5 ? 'high' : sizeMB < 20 ? 'medium' : 'low',\n    estimatedCredits: fileType === 'pdf' ? Math.ceil(sizeMB * 2) : 1\n  };\n  \n  if (isValid) {\n    processingQueue.valid.push(fileInfo);\n  } else {\n    processingQueue.invalid.push({\n      ...fileInfo,\n      reason: sizeMB > 50 ? 'File too large' : 'Unsupported format'\n    });\n  }\n  \n  processingQueue.stats.totalSizeMB += sizeMB;\n});\n\n// Sort by priority\nprocessingQueue.valid.sort((a, b) => {\n  const priority = { high: 1, medium: 2, low: 3 };\n  return priority[a.processingPriority] - priority[b.processingPriority];\n});\n\nreturn [{\n  json: processingQueue\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "batch-processor",
+        "name": "Process in Batches",
+        "type": "n8n-nodes-base.splitInBatches",
+        "notes": "Process 5 files at a time",
+        "position": [
+          850,
+          300
+        ],
+        "parameters": {
+          "options": {},
+          "batchSize": 5
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "split-files",
+        "name": "Split Out Files",
+        "type": "n8n-nodes-base.set",
+        "notes": "Prepare individual files",
+        "position": [
+          1050,
+          300
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "assignment1",
+                "name": "processingBatch",
+                "type": "object",
+                "value": "={{ $json }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "split-items",
+        "name": "Split Items",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          1250,
+          300
+        ],
+        "parameters": {
+          "options": {},
+          "fieldToSplitOut": "processingBatch.valid"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "pdfvector-process",
+        "name": "PDF Vector - Process Document/Image",
+        "type": "n8n-nodes-pdfvector.pdfVector",
+        "notes": "Process document or image",
+        "position": [
+          1450,
+          250
+        ],
+        "parameters": {
+          "url": "={{ $json.webViewLink }}",
+          "useLLM": "auto",
+          "resource": "document",
+          "inputType": "url",
+          "operation": "parse"
+        },
+        "typeVersion": 1,
+        "continueOnFail": true
+      },
+      {
+        "id": "track-results",
+        "name": "Track Processing Results",
+        "type": "n8n-nodes-base.code",
+        "notes": "Analyze results",
+        "position": [
+          1650,
+          300
+        ],
+        "parameters": {
+          "jsCode": "// Track processing results\nconst result = $input.first().json;\nconst originalFile = $node['Split Items'].json;\nconst startTime = new Date($node['Split Items'].context.executionTime);\nconst endTime = new Date();\nconst processingTime = (endTime - startTime) / 1000;\n\nconst processedFile = {\n  // Original file info\n  fileName: originalFile.name,\n  fileType: originalFile.fileType,\n  sizeMB: originalFile.sizeMB,\n  \n  // Processing results\n  success: !result.error,\n  processingTime: Math.round(processingTime * 100) / 100,\n  creditsUsed: result.creditsUsed || originalFile.estimatedCredits,\n  \n  // Content info\n  contentLength: result.content?.length || 0,\n  wordCount: result.content?.split(' ').length || 0,\n  \n  // Error tracking\n  error: result.error ? {\n    message: result.error.message || 'Unknown error',\n    code: result.error.code\n  } : null,\n  \n  // Timestamps\n  processedAt: new Date().toISOString()\n};\n\n// Quality checks\nif (processedFile.success) {\n  processedFile.qualityChecks = {\n    hasContent: processedFile.contentLength > 100,\n    reasonableLength: processedFile.wordCount > 10 && processedFile.wordCount < 100000,\n    properEncoding: !result.content?.includes('�'),\n    creditsEfficiency: processedFile.creditsUsed / processedFile.sizeMB < 5\n  };\n  \n  // Overall quality score\n  const checks = Object.values(processedFile.qualityChecks);\n  processedFile.qualityScore = (checks.filter(c => c).length / checks.length) * 100;\n}\n\nreturn [{ json: processedFile }];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "collect-batch",
+        "name": "Collect Batch Results",
+        "type": "n8n-nodes-base.aggregate",
+        "notes": "Aggregate batch results",
+        "position": [
+          1850,
+          300
+        ],
+        "parameters": {
+          "options": {},
+          "aggregate": "aggregateAllItemData"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "generate-analytics",
+        "name": "Generate Analytics Report",
+        "type": "n8n-nodes-base.code",
+        "notes": "Create analytics dashboard",
+        "position": [
+          2050,
+          300
+        ],
+        "parameters": {
+          "jsCode": "// Generate comprehensive analytics report\nconst allResults = $input.all().map(item => item.json);\nconst initialStats = $node['Validate & Queue Files'].json.stats;\n\n// Calculate processing analytics\nconst analytics = {\n  overview: {\n    totalFilesFound: initialStats.totalFiles,\n    filesProcessed: allResults.length,\n    successfulProcessing: allResults.filter(r => r.success).length,\n    failedProcessing: allResults.filter(r => !r.success).length,\n    successRate: 0,\n    totalProcessingTime: 0,\n    totalCreditsUsed: 0,\n    averageQualityScore: 0\n  },\n  \n  byFileType: {\n    pdf: { processed: 0, successful: 0, failed: 0, avgTime: 0, creditsUsed: 0 },\n    word: { processed: 0, successful: 0, failed: 0, avgTime: 0, creditsUsed: 0 },\n    image: { processed: 0, successful: 0, failed: 0, avgTime: 0, creditsUsed: 0 }\n  },\n  \n  errors: {},\n  \n  performance: {\n    fastestFile: null,\n    slowestFile: null,\n    mostEfficientCredit: null,\n    leastEfficientCredit: null\n  },\n  \n  quality: {\n    highQuality: [],\n    lowQuality: [],\n    averageWordCount: 0\n  }\n};\n\n// Process results\nlet totalQualityScore = 0;\nlet qualityCount = 0;\n\nallResults.forEach(result => {\n  // Update overview\n  analytics.overview.totalProcessingTime += result.processingTime || 0;\n  analytics.overview.totalCreditsUsed += result.creditsUsed || 0;\n  \n  // Update by file type\n  const type = result.fileType;\n  if (analytics.byFileType[type]) {\n    analytics.byFileType[type].processed++;\n    if (result.success) {\n      analytics.byFileType[type].successful++;\n    } else {\n      analytics.byFileType[type].failed++;\n    }\n    analytics.byFileType[type].avgTime += result.processingTime || 0;\n    analytics.byFileType[type].creditsUsed += result.creditsUsed || 0;\n  }\n  \n  // Track errors\n  if (result.error) {\n    const errorType = result.error.message || 'Unknown';\n    analytics.errors[errorType] = (analytics.errors[errorType] || 0) + 1;\n  }\n  \n  // Track performance\n  if (!analytics.performance.fastestFile || result.processingTime < analytics.performance.fastestFile.time) {\n    analytics.performance.fastestFile = {\n      name: result.fileName,\n      time: result.processingTime\n    };\n  }\n  if (!analytics.performance.slowestFile || result.processingTime > analytics.performance.slowestFile.time) {\n    analytics.performance.slowestFile = {\n      name: result.fileName,\n      time: result.processingTime\n    };\n  }\n  \n  // Track quality\n  if (result.qualityScore !== undefined) {\n    totalQualityScore += result.qualityScore;\n    qualityCount++;\n    \n    if (result.qualityScore >= 75) {\n      analytics.quality.highQuality.push(result.fileName);\n    } else if (result.qualityScore < 50) {\n      analytics.quality.lowQuality.push(result.fileName);\n    }\n  }\n  \n  analytics.quality.averageWordCount += result.wordCount || 0;\n});\n\n// Calculate averages\nanalytics.overview.successRate = Math.round((analytics.overview.successfulProcessing / analytics.overview.filesProcessed) * 100);\nanalytics.overview.averageQualityScore = qualityCount > 0 ? Math.round(totalQualityScore / qualityCount) : 0;\nanalytics.quality.averageWordCount = Math.round(analytics.quality.averageWordCount / allResults.length);\n\n// Calculate file type averages\nObject.keys(analytics.byFileType).forEach(type => {\n  const typeData = analytics.byFileType[type];\n  if (typeData.processed > 0) {\n    typeData.avgTime = Math.round((typeData.avgTime / typeData.processed) * 100) / 100;\n    typeData.successRate = Math.round((typeData.successful / typeData.processed) * 100);\n  }\n});\n\n// Generate report\nlet report = `# Batch Processing Analytics Report\\n\\n`;\nreport += `**Generated:** ${new Date().toLocaleString()}\\n\\n`;\n\nreport += `## Overview\\n`;\nreport += `- **Files Processed:** ${analytics.overview.filesProcessed} of ${analytics.overview.totalFilesFound}\\n`;\nreport += `- **Success Rate:** ${analytics.overview.successRate}%\\n`;\nreport += `- **Total Processing Time:** ${Math.round(analytics.overview.totalProcessingTime)}s\\n`;\nreport += `- **Credits Used:** ${analytics.overview.totalCreditsUsed}\\n`;\nreport += `- **Average Quality Score:** ${analytics.overview.averageQualityScore}%\\n\\n`;\n\nreport += `## Performance by File Type\\n`;\nObject.entries(analytics.byFileType).forEach(([type, data]) => {\n  if (data.processed > 0) {\n    report += `### ${type.toUpperCase()}\\n`;\n    report += `- Processed: ${data.processed}\\n`;\n    report += `- Success Rate: ${data.successRate}%\\n`;\n    report += `- Avg Time: ${data.avgTime}s\\n`;\n    report += `- Credits: ${data.creditsUsed}\\n\\n`;\n  }\n});\n\nif (Object.keys(analytics.errors).length > 0) {\n  report += `## Errors Encountered\\n`;\n  Object.entries(analytics.errors).forEach(([error, count]) => {\n    report += `- ${error}: ${count} occurrences\\n`;\n  });\n  report += `\\n`;\n}\n\nreport += `## Recommendations\\n`;\nif (analytics.overview.successRate < 90) {\n  report += `- Success rate is below 90%. Review error logs for common issues.\\n`;\n}\nif (analytics.overview.averageQualityScore < 70) {\n  report += `- Quality scores are low. Consider using 'always' LLM mode for better results.\\n`;\n}\nif (analytics.quality.lowQuality.length > 0) {\n  report += `- ${analytics.quality.lowQuality.length} files had low quality scores. Manual review recommended.\\n`;\n}\n\nreturn [{\n  json: {\n    analytics,\n    report,\n    processedFiles: allResults,\n    timestamp: new Date().toISOString()\n  }\n}];"
+        },
+        "typeVersion": 2
+      }
+    ],
+    "connections": {
+      "Split Items": {
+        "main": [
+          [
+            {
+              "node": "PDF Vector - Process Document/Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "List Documents": {
+        "main": [
+          [
+            {
+              "node": "Validate & Queue Files",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "List Documents",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out Files": {
+        "main": [
+          [
+            {
+              "node": "Split Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Process in Batches": {
+        "main": [
+          [
+            {
+              "node": "Split Out Files",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Generate Analytics Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Collect Batch Results": {
+        "main": [
+          [
+            {
+              "node": "Generate Analytics Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate & Queue Files": {
+        "main": [
+          [
+            {
+              "node": "Process in Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Track Processing Results": {
+        "main": [
+          [
+            {
+              "node": "Collect Batch Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF Vector - Process Document/Image": {
+        "main": [
+          [
+            {
+              "node": "Track Processing Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 13,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 3
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.aggregate": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-pdfvector.pdfVector": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "PDF Vector",
+    "username": "pdfvector",
+    "bio": "A fully featured PDF APIs for developers - Parse any PDF or Word document, extract structured data, and access millions of academic papers - all through simple APIs.",
+    "verified": true,
+    "links": [
+      "https://www.pdfvector.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/c3284f6b75ccb280de2edf5a173c7f761f64ea1b1f9114ff2ef4c4b72f980675?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucler sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1236,
+      "icon": "file:aggregate.svg",
+      "name": "n8n-nodes-base.aggregate",
+      "codex": {
+        "data": {
+          "alias": [
+            "Aggregate",
+            "Combine",
+            "Flatten",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.aggregate/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agrégat"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjRkY2RDVBIiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMyIDE0OGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDE0NmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJINDRjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6bTAgOTZjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxNDZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYyNGMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDQ0Yy02LjYyNyAwLTEyLTUuMzczLTEyLTEyem0wIDk2YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTQ2YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkg0NGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik03NCA3NmMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDExNi4yMTdjMTcuNjczIDAgMzIgMTQuMzI3IDMyIDMydjU2YzAgMjYuOTc4IDEwLjI3MiA1MS41NTcgMjcuMTE5IDcwLjAzOSA1LjA1NSA1LjU0NSA1LjA1NSAxNC4zNzcgMCAxOS45MjItMTYuODQ3IDE4LjQ4Mi0yNy4xMTkgNDMuMDYxLTI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMtMTQuMzI3IDMyLTMyIDMySDg2Yy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTE2LjIxN2M0NC4xODMgMCA4MC0zNS44MTcgODAtODB2LTU2YzAtMzAuOTI4IDI1LjA3Mi01NiA1Ni01NmE1Ljc4MyA1Ljc4MyAwIDAgMCA1Ljc4My01Ljc4M3YtMzYuNDM0YTUuNzgzIDUuNzgzIDAgMCAwLTUuNzgzLTUuNzgzYy0zMC45MjggMC01Ni0yNS4wNzItNTYtNTZ2LTU2YzAtNDQuMTgzLTM1LjgxNy04MC04MC04MEg4NmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNzYgMjQ0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgzODhjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L2c+PGRlZnM+PGNsaXBQYXRoIGlkPSJhIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDUxMnY1MTJIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Aggregate",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Séparer"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de documents"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    },
+    {
+      "id": 51,
+      "name": "AI multimodal"
+    }
+  ],
+  "image": []
+}

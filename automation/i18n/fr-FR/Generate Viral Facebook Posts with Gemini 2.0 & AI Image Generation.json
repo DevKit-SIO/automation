@@ -1,0 +1,1956 @@
+{
+  "id": 8756,
+  "name": "Générer des publications Facebook virales avec Gemini 2.0 et la génération d'images AI",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-09-19T13:51:23.565Z",
+  "description": "# 🚀 Générateur de publications Facebook AI - Guide de configuration complet\n\n&gt; Transformez vos idées de contenu en publications Facebook virales grâce à l'automatisation alimentée par l'IA en seulement 30 minutes !\n\n---\n\n## 📋 Liste de vérification des prérequis\n\n**Ce dont vous aurez besoin avant de commencer :**\n\n- ✅ instance n8n (cloud ou auto-hébergée)\n- ✅ Page professionnelle Facebook (*pas de profil personnel*)\n- ✅ Compte Google avec accès à Sheets et Gmail\n- ✅ Compréhension de base des identifiants API\n\n**⏱️ Temps de configuration estimé :** 30-45 minutes  \n**🎯 Niveau de difficulté :** Intermédiaire  \n**💰 Coût :** Niveau gratuit disponible pour tous les services\n\n---\n\n## 🎨 Ce que vous allez construire\n\nÀ la fin de ce guide, vous aurez :\n\n- 📝 **Formulaire de contenu intelligent** - Formulaire web qui capture vos idées\n- 🤖 **Optimiseur de contenu AI** - Gemini AI qui peaufine votre écriture\n- 🖼️ **Générateur d'images automatique** - Visuels personnalisés créés automatiquement\n- 📊 **Suivi de contenu** - Journalisation Google Sheets pour l'analyse\n- 📱 **Éditeur Facebook** - Publication directe sur votre page\n- 📧 **Notifications de succès** - Confirmations par e-mail avec des liens vers les publications\n\n---\n\n# 🔧 Configuration étape par étape\n\n## Étape 1 : 📘 Configuration de l'intégration Facebook\n\n### 🔸 1.1 Créez votre application Facebook\n\n**Pourquoi c'est important :** Cela donne à votre flux de travail la permission de publier en votre nom.\n\n1. Accédez à [Facebook Developers](https://developers.facebook.com/) 🌐\n2. Cliquez sur **\"Mes applications\"** → **\"Créer une application\"**\n3. Sélectionnez **\"Entreprise\"** comme type d'application\n4. **Nom de l'application :** `AI-Content-Poster` *(ou votre nom préféré)*\n5. Cliquez sur **\"Créer une application\"**\n\n&gt; 💡 **Astuce Pro :** Choisissez un nom descriptif - vous le verrez dans vos journaux d'activité Facebook\n\n### 🔸 1.2 Configurez les paramètres de l'application\n\n1. Dans votre tableau de bord d'application : **\"Ajouter un produit\"**\n2. Trouvez **\"Connexion Facebook\"** → **\"Configurer\"**\n3. Accédez à **Paramètres** → **De base**\n4. **Domaines de l'application :** Ajoutez `app.n8n.cloud` *(pour les utilisateurs de n8n cloud)*\n5. **Enregistrez les modifications** ✅\n\n### 🔸 1.3 Générez votre jeton d'accès à la page\n\n**C'est la clé qui déverrouille les pouvoirs de publication ! 🔑**\n\n1. Allez dans **Outils** → **Explorateur d'API Graph**\n2. Sélectionnez votre application nouvellement créée\n3. Cliquez sur **\"Générer un jeton d'accès\"**\n4. **Autorisations requises :** \n   - `pages_manage_posts`\n   - `pages_read_engagement`\n   - `pages_show_list`\n5. Sélectionnez votre page Facebook cible\n6. **Copiez le jeton** *(commence par `EAAG...`)*\n\n⚠️ **Étape critique - Rendre le jeton à long terme :**\n- Dans l'Explorateur d'API Graph, effectuez une requête GET à :\n```\n/oauth/access_token?grant_type=fb_exchange_token&client_id=YOUR_APP_ID&client_secret=YOUR_APP_SECRET&fb_exchange_token=YOUR_SHORT_TOKEN\n```\n\n### 🔸 1.4 Trouvez votre ID de page\n\n**Deux méthodes pour obtenir votre ID de page :**\n\n**Méthode 1 - Directement depuis Facebook :**\n1. Visitez votre page Facebook\n2. Cliquez sur l'onglet **\"À propos\"**\n3. Faites défiler pour trouver **\"ID de page\"**\n\n**Méthode 2 - Explorateur API :**\n1. Utilisez l'Explorateur d'API Graph\n2. Requête GET à : `/me/accounts`\n3. Trouvez votre page dans la réponse\n\n---\n\n## Étape 2 : 🔍 Configuration des services Google\n\n### 🔸 2.1 Activez les API requises\n\n**Configuration de votre fondation Google Cloud :**\n\n1. Visitez [Google Cloud Console](https://console.cloud.google.com/) ☁️\n2. **Créez un nouveau projet** ou sélectionnez un existant\n3. **\"APIs & Services\"** → **\"Bibliothèque\"**\n4. **Activez ces API :**\n   - ✅ API Google Sheets\n   - ✅ API Gmail  \n   - ✅ API Google Drive *(optionnel)*\n\n### 🔸 2.2 Créez un compte de service\n\n**Cela crée un compte \"robot\" pour un accès automatisé :**\n\n1. **\"APIs & Services\"** → **\"Identifiants\"**\n2. **\"Créer des identifiants\"** → **\"Compte de service\"**\n3. **Nom :** `ai-facebook-automation`\n4. **\"Créer et continuer\"**\n5. Ignorez l'attribution de rôle → **\"Continuer\"**\n6. **\"Terminé\"** ✅\n\n### 🔸 2.3 Téléchargez le fichier d'identifiants\n\n1. Cliquez sur l'e-mail de votre compte de service\n2. Onglet **\"Clés\"** → **\"Ajouter une clé\"** → **\"Créer une nouvelle clé\"**\n3. Choisissez le format **\"JSON\"**\n4. **Téléchargez et enregistrez en toute sécurité** 📁\n\n&gt; 🔒 **Remarque de sécurité :** Ce fichier contient des identifiants sensibles. Conservez-le en sécurité !\n\n### 🔸 2.4 Préparez vos Google Sheets\n\n**Créez votre système de suivi de données :**\n\n**📊 Feuille 1 : Journal de contenu**\n- **But :** Suivre tout le contenu généré\n- **Colonnes :**\n  - A : Date *(Date)*\n  - B : Contenu court *(Contenu court)*  \n  - C : Contenu complet *(Contenu complet)*\n\n**📝 Feuille 2 : Suivi des entrées**\n- **But :** Journaliser les soumissions de formulaire\n- **Colonnes :**\n  - A : Date\n  - B : Heure\n  - C : Contenu\n\n**🔗 Important :** Partagez les deux feuilles avec l'e-mail de votre compte de service *(trouvé dans le fichier JSON)*\n\n---\n\n## Étape 3 : 🤖 Configuration des services AI\n\n### 🔸 3.1 Obtenez votre clé API Gemini\n\n**Dynamisez votre génération de contenu AI :**\n\n1. Rendez-vous sur [Google AI Studio](https://makersuite.google.com/app/apikey) 🎨\n2. Connectez-vous avec votre compte Google\n3. **\"Créer une clé API\"**\n4. **Copiez la clé** *(commence par `AIza...`)*\n\n&gt; 💰 **Informations sur le coût :** Gemini offre des limites généreuses de niveau gratuit - parfait pour commencer !\n\n---\n\n## Étape 4 : ⚙️ Configuration du flux de travail n8n\n\n### 🔸 4.1 Importez la magie ✨\n\n1. **Copiez le JSON du flux de travail** à partir du modèle\n2. Dans n8n : **\"Importer depuis JSON\"**\n3. **Collez** le code du flux de travail\n4. **\"Importer\"** pour charger votre nouvelle automatisation\n\n### 🔸 4.2 Configurez vos identifiants\n\n**🔑 Configuration de l'API Graph Facebook :**\n1. **Paramètres** → **Identifiants** → **\"Ajouter un identifiant\"**\n2. Recherchez : **\"API Graph Facebook\"**\n3. **Jeton d'accès :** Votre jeton d'accès à la page de l'étape 1.3\n4. **Tester la connexion** → **Enregistrer sous :** `Accès à la page Facebook`\n\n**🔍 Configuration des services Google :**\n1. **\"Ajouter un identifiant\"** → **\"Compte de service Google\"**\n2. **Téléchargez votre fichier JSON** de l'étape 2.3\n3. **Tester la connexion** → **Enregistrer sous :** `Services Google`\n\n**🧠 Configuration de Gemini AI :**\n1. **\"Ajouter un identifiant\"** → **\"API Google PaLM\"**\n2. **Entrez votre clé Gemini** de l'étape 3.1\n3. **Enregistrer sous :** `Gemini AI`\n\n### 🔸 4.3 Personnalisez les paramètres des nœuds\n\n**📱 Mettez à jour la configuration Facebook :**\n\n**Dans le nœud \"API Graph Facebook\" :**\n- Remplacez `\"113732581629527\"` par **votre ID de page** de l'étape 1.4\n\n**Dans le nœud \"Télécharger Img Facebook\" :**\n- Remplacez `\"113732581629527\"` par **votre ID de page** de l'étape 1.4\n\n**📊 Mettez à jour Google Sheets :**\n\n**Dans le nœud \"enregistrer le contenu\" :**\n- Remplacez l'ID du document par votre **ID de feuille de journal de contenu**\n\n**Dans le nœud \"Ajouter une ligne dans la feuille\" :**\n- Remplacez l'ID du document par votre **ID de feuille de suivi des entrées**\n\n&gt; 💡 **Trouver l'ID de la feuille :** C'est la longue chaîne dans l'URL de vos Google Sheets après `/spreadsheets/d/`\n\n**📧 Mettez à jour l'e-mail de notification :**\n\n**Dans le nœud \"Envoyer un message\" :**\n- Remplacez `xxx@gmail.com` par **votre adresse e-mail**\n- Configurez les identifiants Gmail\n\n---\n\n## Étape 5 : 🧪 Test et validation\n\n### 🔸 5.1 Test des composants\n\n**📊 Test de la connexion Google Sheets :**\n1. Cliquez avec le bouton droit sur le nœud **\"Ajouter une ligne dans la feuille\"**\n2. **\"Exécuter le nœud\"**\n3. ✅ Vérifiez qu'une ligne de test apparaît dans votre feuille\n\n**🤖 Test de Gemini AI :**\n1. Cliquez avec le bouton droit sur le nœud **\"Chaîne LLM de base\"**\n2. **\"Modifier les données d'entrée\"** → Ajoutez du contenu de test\n3. **Exécuter** → ✅ Vérifiez la qualité de la réponse AI\n\n**🖼️ Test de génération d'images :**\n1. Cliquez avec le bouton droit sur le nœud **\"Requête HTTP\"**\n2. Assurez-vous d'avoir un prompt valide de l'étape précédente\n3. **Exécuter** → ✅ Vérifiez les données d'image base64\n\n**📱 Test de téléchargement sur Facebook :**\n1. Exécutez le flux de travail complet avec du contenu de test\n2. ✅ Vérifiez votre page Facebook pour un nouveau post\n3. ✅ Vérifiez que l'image a été téléchargée correctement\n\n### 🔸 5.2 Test de victoire de bout en bout 🎉\n\n1. **\"Exécuter le flux de travail\"** sur le nœud de déclenchement\n2. **Soumettez du contenu de test** via le formulaire\n3. **Surveillez l'exécution de chaque nœud**\n4. **🎊 Célébrez votre première publication générée par AI !**\n\n---\n\n## 🎯 Indicateurs de succès\n\n**Votre configuration est complète lorsque vous voyez :**\n\n- ✅ Le formulaire accepte et traite le contenu\n- ✅ L'IA génère un texte optimisé + un prompt d'image  \n- ✅ L'image personnalisée apparaît dans la publication Facebook\n- ✅ Le contenu est enregistré dans Google Sheets\n- ✅ E-mail de succès dans votre boîte de réception\n- ✅ Publication au look professionnel sur votre page Facebook\n\n---\n\n## 🚨 Solutions rapides aux problèmes\n\n### Problèmes Facebook\n- **Jeton expiré ?** → Générez un nouveau jeton à long terme\n- **Permission refusée ?** → Vérifiez les droits d'administrateur de la page\n- **ID de page invalide ?** → Vérifiez le format de l'ID de page\n\n### Problèmes Google Sheets  \n- **403 Interdit ?** → Partagez la feuille avec le compte de service\n- **Feuille introuvable ?** → Vérifiez l'ID de la feuille dans l'URL\n- **Erreurs de colonne ?** → Faites correspondre les noms de colonnes exacts\n\n### Problèmes de contenu AI\n- **Réponses vides ?** → Vérifiez les quotas de l'API Gemini\n- **Qualité médiocre ?** → Ajustez les prompts AI\n- **Erreurs JSON ?** → Validez la logique de parsing\n\n---\n\n## 🎨 Idées de personnalisation\n\n**Rendez-le unique :**\n\n- 🎨 **Voix de marque :** Ajustez les prompts AI pour votre ton\n- ⏰ **Planification :** Ajoutez des délais pour des publications stratégiques\n- 📈 **Analyse :** Connectez des outils de suivi de performance\n- 🔄 **Multi-plateforme :** Étendez à Instagram, LinkedIn\n- 👥 **Fonctionnalités d'équipe :** Ajoutez des flux de travail d'approbation\n\n---\n\n## 🎉 Vous l'avez fait !\n\n**Félicitations ! Vous avez construit une machine de contenu alimentée par l'IA qui vous fera gagner des heures chaque semaine.**\n\n**Quelle est la suite ?**\n- Testez avec différents types de contenu\n- Surveillez les performances dans Google Sheets\n- Affinez les prompts AI pour de meilleurs résultats\n- Partagez votre succès avec la communauté !\n\n**Besoin d'aide ?** 🤝\n- Rejoignez [n8n Discord](https://discord.com/invite/XPKeKXeB7d)\n- Visitez [Forum communautaire](https://community.n8n.io/)\n- Consultez [Documentation n8n](https://docs.n8n.io/)\n\n---\n\n*Prêt à révolutionner votre création de contenu ? Votre assistant AI vous attend ! 🚀*",
+  "workflow": {
+    "meta": {
+      "instanceId": "bead0a5b25199559eb2b2715841bf43c72bdce5faf95fc5e5ce3a983ef98cb4a"
+    },
+    "nodes": [
+      {
+        "id": "c79bacb7-1910-4467-a904-af2bc4439df4",
+        "name": "If2",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -1056,
+          1264
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "809ee214-220b-4344-a75c-c5b9d9f8021d",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                },
+                "leftValue": "={{ !!$json.prompt_image }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "6d8b7fa3-2660-49ec-a26b-a82537506004",
+        "name": "If1",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          400,
+          1488
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "d5c84381-db43-4375-ba9f-79404a34f520",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.post_supports_client_mutation_id }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "6a4e8e34-9b02-407b-ad14-f997fc1d86b8",
+        "name": "Merge",
+        "type": "n8n-nodes-base.merge",
+        "position": [
+          -32,
+          1488
+        ],
+        "parameters": {
+          "mode": "combine",
+          "options": {},
+          "combineBy": "combineByPosition"
+        },
+        "typeVersion": 3.1,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "e5863143-f99e-42e5-8dea-de3b52ec438d",
+        "name": "Facebook Graph API",
+        "type": "n8n-nodes-base.facebookGraphApi",
+        "position": [
+          176,
+          1488
+        ],
+        "parameters": {
+          "edge": "feed",
+          "node": "113732581629527",
+          "options": {
+            "queryParameters": {
+              "parameter": [
+                {
+                  "name": "message",
+                  "value": "={{ $('Format Content').item.json.content }}"
+                },
+                {
+                  "name": "attached_media",
+                  "value": "={{ $json.id ? `[{\"media_fbid\":\"${$json.id}\"}]` : \"\" }}"
+                }
+              ]
+            }
+          },
+          "graphApiVersion": "v22.0",
+          "httpRequestMethod": "POST"
+        },
+        "credentials": {
+          "facebookGraphApi": {
+            "id": "lp88zzdLN27PRInF",
+            "name": "Facebook Graph account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0072f8aa-e0c7-423c-98b1-6739e523d600",
+        "name": "Facebook Upload Img",
+        "type": "n8n-nodes-base.facebookGraphApi",
+        "onError": "continueRegularOutput",
+        "position": [
+          -272,
+          1248
+        ],
+        "parameters": {
+          "edge": "photos",
+          "node": "113732581629527",
+          "options": {
+            "queryParameters": {
+              "parameter": [
+                {
+                  "name": "published",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "sendBinaryData": true,
+          "graphApiVersion": "v22.0",
+          "httpRequestMethod": "POST",
+          "binaryPropertyName": "data"
+        },
+        "typeVersion": 1,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "54431a5d-e2cd-4fec-9ae6-f0d32398fa0e",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -1968,
+          1520
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "cfb85fb7-2dbd-4122-83bd-9083fb029d25",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json[\"Content\"] ? $json[\"Content\"].length > 0 : (\n    $json[\"message\"]?.text?.length >= 50\n) }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "63a571c9-790c-42a8-ad8d-b726f49ac025",
+        "name": "Format Content",
+        "type": "n8n-nodes-base.function",
+        "position": [
+          -400,
+          1504
+        ],
+        "parameters": {
+          "functionCode": "const raw =\n  $json[\"Nội dung đầy đủ\"] ||\n  $json.message?.content ||\n  \"\";\n\nconst cleaned = raw.replace(/[#*]+/g, \"\").trim();\n\nreturn [\n  {\n    json: {\n      content: cleaned,\n      platform: \"facebook\",\n    },\n  },\n];"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3c56769c-2757-4e7c-9aa1-5b340040bb98",
+        "name": "save content",
+        "type": "n8n-nodes-base.googleSheets",
+        "onError": "continueRegularOutput",
+        "position": [
+          -624,
+          1504
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Ngày": "={{ new Date().toLocaleDateString(\"vi-VN\") }}",
+              "Nội dung ngắn": "={{ $('code2').item.json.content }}",
+              "Nội dung đầy đủ": "={{ $json.text?.trim() ? $json.text : $json.message?.content }}"
+            },
+            "schema": [
+              {
+                "id": "Ngày",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Ngày",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Nội dung ngắn",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Nội dung ngắn",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Nội dung đầy đủ",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Nội dung đầy đủ",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TBcyVVQ6JVNkvw8qFFbuct_3WxtggOBnI1kwUXMyTY8/edit#gid=0",
+            "cachedResultName": "Tự động"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1TBcyVVQ6JVNkvw8qFFbuct_3WxtggOBnI1kwUXMyTY8",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TBcyVVQ6JVNkvw8qFFbuct_3WxtggOBnI1kwUXMyTY8/edit?usp=drivesdk",
+            "cachedResultName": "ai5phut_AutoPost_Demo"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "v4GKb4dRdpOLmxHa",
+            "name": "Google Sheets account"
+          }
+        },
+        "retryOnFail": false,
+        "typeVersion": 4.5,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "d3978e2b-0dee-405f-ae89-814e75289d7b",
+        "name": "Basic LLM Chain",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "onError": "continueRegularOutput",
+        "position": [
+          -1728,
+          1504
+        ],
+        "parameters": {
+          "text": "=You are a marketing content writer. Here is the input content. Do 3 things:\n\n1. Quickly analyze the content.\n\n2. Bullet out the main points to write the article (content marketing or social media post).\n\n3. Return the correct format requested, **no further explanation**, **no additional paragraphs other than the following JSON**.\n\nReturn the result in the following format:\n{\n\"prompt_image\": \"...\",\n\"content\": \"...\"\n}\n\n---\n\"prompt_image\": [write a prompt to create an AI image that matches the content, note: absolutely do not put text in the image, only describe the image and appropriate design style]\n\n\"content\": [write complete, clear, concise, and focused content that can be posted on Facebook, website, or blog]\n\nContent to be processed:\n\"\"\n{{\n$json.message?.text?.trim()\n? $json.message.text\n: $json.content?.trim()\n? $json.content\n: $json['Content']?.trim()\n? $json['Content']\n: \"\"\n}}\n\"\"\"",
+          "promptType": "define",
+          "hasOutputParser": true
+        },
+        "typeVersion": 1.6,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "9521d4e2-c7d9-4b91-a5a9-eb01f1b76f58",
+        "name": "Basic LLM Chain1",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          -1024,
+          1504
+        ],
+        "parameters": {
+          "text": "=You are a social media content writer. Here is a summary of the content that has been analyzed by AI. Let's turn it into **a complete article**, with the following requirements:\n\n1. **Keep the spirit and main message of the content intact.**\n2. Rewrite it into a coherent article, with a clear introduction - body - conclusion.\n3. Use a **friendly, approachable tone**, easy to understand, suitable for posting on Facebook\n4. Use emojis sparingly to increase attraction (if appropriate).\n5. Keep the length moderate (from 200–350 words).\n6. **Do not insert titles or #hashtags**, just focus on the main content.\n\nHere is the summary:\n\"\"\n{{ $json.content }}\n\"\"\"",
+          "promptType": "define"
+        },
+        "typeVersion": 1.6,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "ca94be67-d90b-4709-b9dc-0a37d6178a22",
+        "name": "Convert to File code",
+        "type": "n8n-nodes-base.code",
+        "onError": "continueRegularOutput",
+        "position": [
+          -496,
+          1248
+        ],
+        "parameters": {
+          "jsCode": "const base64Data = $json.data[0].b64_json;\n\nif (!base64Data) {\n  throw new Error(\"Không tìm thấy dữ liệu ảnh base64.\");\n}\n\nreturn [\n  {\n    json: {},\n    binary: {\n      data: {\n        data: base64Data,\n        mimeType: \"image/png\",\n        fileName: \"image.png\"\n      }\n    }\n  }\n];\n"
+        },
+        "retryOnFail": true,
+        "typeVersion": 2,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "6357acfa-99b4-45c8-80e9-65c3fb267071",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          -1728,
+          1712
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-2.0-flash-001"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "WXBzegbf5JJGseFg",
+            "name": "Google Gemini(PaLM) Api account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "860674d1-d0f1-4e7a-aeeb-ee78d2a3ae1c",
+        "name": "Google Gemini Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          -1024,
+          1696
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-2.0-flash-001"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "WXBzegbf5JJGseFg",
+            "name": "Google Gemini(PaLM) Api account 2"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f4ebfcd4-5aeb-4292-b0d9-a3dc52eb75b3",
+        "name": "code2",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -1344,
+          1504
+        ],
+        "parameters": {
+          "jsCode": "let rawText = $json.text || '';\n\n// Bước 1: Tách phần JSON bên trong ```json ... ```\nconst matched = rawText.match(/```json\\s*([\\s\\S]*?)\\s*```/);\n\nif (!matched || !matched[1]) {\n  return [{ json: { prompt_image: '', content: '', error: 'Can not find JSON in ```json```' } }];\n}\n\nlet jsonString = matched[1]\n  .replace(/\\n/g, '')      // Xoá xuống dòng\n  .replace(/\\r/g, '')      // Xoá carriage return\n  .replace(/\\t/g, '')      // Xoá tab (nếu có)\n  .trim();\n\ntry {\n  const parsed = JSON.parse(jsonString);\n  return [{\n    json: {\n      prompt_image: parsed.prompt_image || '',\n      content: parsed.content || ''\n    }\n  }];\n} catch (err) {\n  return [{\n    json: {\n      prompt_image: '',\n      content: '',\n      error: 'error parse JSON: ' + err.message\n    }\n  }];\n}"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "b3e26901-72f3-4304-b6d9-6c97b9e9d02a",
+        "name": "HTTP Request",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -800,
+          1248
+        ],
+        "parameters": {
+          "url": "https://router.huggingface.co/together/v1/images/generations",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n  \"response_format\": \"b64_json\",\n  \"prompt\": \"{{ $json.prompt_image }}\",\n  \"model\": \"black-forest-labs/FLUX.1-schnell\"\n}\n",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer <key>"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "4006af3a-f2e9-45f7-85c5-966c1c82d2e6",
+        "name": "On form submission1",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -2576,
+          1520
+        ],
+        "webhookId": "6e9f8a5b-2f3b-4ea5-927d-76a9a34febc9",
+        "parameters": {
+          "options": {
+            "buttonLabel": "Gửi thông tin",
+            "appendAttribution": false,
+            "respondWithOptions": {
+              "values": {
+                "formSubmittedText": "Information sent"
+              }
+            }
+          },
+          "formTitle": "Input the post idea",
+          "formFields": {
+            "values": [
+              {
+                "fieldType": "textarea",
+                "fieldLabel": "Input Information here",
+                "placeholder": "At least 50 words",
+                "requiredField": true
+              }
+            ]
+          },
+          "formDescription": "Input the idea that you want upload to Facebook,"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ca09e6e7-3536-432d-9f68-d2455194061b",
+        "name": "Append row in sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -2272,
+          1520
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Date": "={{ $now.toFormat(\"dd/MM/yyyy\") }}",
+              "Time": "={{ $now.toFormat(\"HH\") }}",
+              "Content": "={{ $json[\"Input Information here\"] }}"
+            },
+            "schema": [
+              {
+                "id": "Date",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Date",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Time",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Time",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Content",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Content",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1icCYSzDhpAc4itXrfwxhjQgisKye-mtdR8UwyZfS1m8/edit#gid=0",
+            "cachedResultName": "Post via form"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1icCYSzDhpAc4itXrfwxhjQgisKye-mtdR8UwyZfS1m8",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1icCYSzDhpAc4itXrfwxhjQgisKye-mtdR8UwyZfS1m8/edit?usp=drivesdk",
+            "cachedResultName": "Content"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "v4GKb4dRdpOLmxHa",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.5,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "0ce21a3e-5ab5-477d-89a9-606ee4e84dfa",
+        "name": "Send a message",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          624,
+          1472
+        ],
+        "webhookId": "7f9e790e-fb8d-485a-9c8c-8d592c4cd138",
+        "parameters": {
+          "sendTo": "truong11062002@gmail.com",
+          "message": "=✅ The post will be published after 2 minutes!\n📄 Review in: https://facebook.com/{{ $json.id.split('_')[0] }}/posts/{{ $json.id.split('_')[1] }}",
+          "options": {
+            "appendAttribution": false
+          },
+          "subject": "✅ The draft version is uploaded"
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "GkwYsewcP2AJJXFH",
+            "name": "Gmail account 2"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "b38bbebe-cf2a-4d94-b6ce-f8ecd3c26d23",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -3392,
+          464
+        ],
+        "parameters": {
+          "width": 672,
+          "height": 1264,
+          "content": "# Complete Setup Guide: AI Facebook Post Generator\n\n## Prerequisites Checklist\n\nBefore starting, ensure you have:\n- [ ] n8n instance (cloud or self-hosted)\n- [ ] Facebook Business Page (not personal profile)\n- [ ] Google account with access to Sheets and Gmail\n- [ ] Basic understanding of API credentials\n\n**Estimated Setup Time**: 30-45 minutes\n\n---\n\n## Step 1: Facebook Integration Setup\n\n### 1.1 Create Facebook App\n1. Go to [Facebook Developers](https://developers.facebook.com/)\n2. Click **\"My Apps\"** → **\"Create App\"**\n3. Choose **\"Business\"** as app type\n4. Enter app name: `n8n-facebook-poster` (or your preferred name)\n5. Click **\"Create App\"**\n\n### 1.2 Configure Facebook App\n1. In your app dashboard, go to **\"Add a Product\"**\n2. Find **\"Facebook Login\"** and click **\"Set Up\"**\n3. Go to **Settings** → **Basic**\n4. Add your domain to **\"App Domains\"** (for n8n cloud: `app.n8n.cloud`)\n5. Save changes\n\n### 1.3 Get Page Access Token\n1. Go to **Tools** → **Graph API Explorer**\n2. Select your app from the dropdown\n3. Click **\"Generate Access Token\"**\n4. Grant permissions: `pages_manage_posts`, `pages_read_engagement`, `pages_show_list`\n5. Select your Facebook page\n6. Copy the **Page Access Token** (starts with `EAAG...`)\n7. **Important**: Extend token to long-lived:\n   - Use Graph API Explorer\n   - Make GET request to: `/oauth/access_token?grant_type=fb_exchange_token&client_id=YOUR_APP_ID&client_secret=YOUR_APP_SECRET&fb_exchange_token=YOUR_SHORT_TOKEN`\n\n### 1.4 Get Your Page ID\n1. Go to your Facebook page\n2. Click **\"About\"** tab\n3. Scroll down to find **\"Page ID\"** or\n4. Use Graph API Explorer: GET request to `/me/accounts` with your token\n\n---"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2f98cd9a-6ffc-4898-9faa-dd82c220ce65",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -2416,
+          368
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 656,
+          "height": 1040,
+          "content": "\n## Step 2: Google Services Setup\n\n### 2.1 Enable Google APIs\n1. Go to [Google Cloud Console](https://console.cloud.google.com/)\n2. Create new project or select existing one\n3. Go to **\"APIs & Services\"** → **\"Library\"**\n4. Enable these APIs:\n   - Google Sheets API\n   - Gmail API\n   - Google Drive API (optional)\n\n### 2.2 Create Service Account\n1. Go to **\"APIs & Services\"** → **\"Credentials\"**\n2. Click **\"Create Credentials\"** → **\"Service Account\"**\n3. Name: `n8n-facebook-automation`\n4. Click **\"Create and Continue\"**\n5. Skip role assignment (click **\"Continue\"**)\n6. Click **\"Done\"**\n\n### 2.3 Generate Service Account Key\n1. Click on your service account email\n2. Go to **\"Keys\"** tab\n3. Click **\"Add Key\"** → **\"Create New Key\"**\n4. Choose **\"JSON\"** format\n5. Download the JSON file (save securely)\n\n### 2.4 Prepare Google Sheets\n1. Create two Google Sheets:\n   - **Content Log Sheet**: For tracking generated content\n   - **Input Tracking Sheet**: For logging form submissions\n\n2. **Content Log Sheet Structure**:\n   - Column A: (Date)\n   - Column B: (Short Content)\n   - Column C: (Full Content)\n\n3. **Input Tracking Sheet Structure**:\n   - Column A: \"Date\"\n   - Column B: \"Time\"\n   - Column C: \"Content\"\n\n4. Share both sheets with your service account email (found in the JSON file)\n\n---\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "dca9ca80-5913-4236-aa21-e0c87bbe0859",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          272,
+          -48
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 928,
+          "height": 1440,
+          "content": "\n## Step 3: AI Services Setup\n\n### Get Gemini API Key\n1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)\n2. Sign in with your Google account\n3. Click **\"Create API Key\"**\n4. Copy the API key (starts with `AIza...`)\n---\n\n## Step 4: n8n Configuration\n\n### 4.1 Import the Workflow\n1. Copy the workflow JSON from the template\n2. In n8n, click **\"Import from JSON\"**\n3. Paste the workflow JSON\n4. Click **\"Import\"**\n\n### 4.2 Configure Credentials\n\n#### Facebook Graph API Credentials\n1. Go to **Settings** → **Credentials**\n2. Click **\"Add Credential\"**\n3. Search for **\"Facebook Graph API\"**\n4. Enter:\n   - **Access Token**: Your Page Access Token from Step 1.3\n5. Test the connection\n6. Save as: `Facebook Page Access`\n\n#### Google Credentials  \n1. Add **\"Google Service Account\"** credential\n2. Upload the JSON file from Step 2.3\n3. Test connection\n4. Save as: `Google Services`\n\n#### Gemini API Credentials\n1. Add **\"Google PaLM API\"** credential\n2. Enter your Gemini API key from Step 3.1\n3. Save as: `Gemini AI`\n\n### 4.3 Update Node Configurations\n\n#### Update Facebook Page ID\n1. Open **\"Facebook Graph API\"** node\n2. Replace `\"113732581629527\"` with your actual Page ID from Step 1.4\n3. Do the same for **\"Facebook Upload Img\"** node\n\n#### Update Google Sheets IDs\n1. Open **\"save content\"** node\n2. Replace the Document ID with your Content Log Sheet ID\n3. Open **\"Append row in sheet\"** node  \n4. Replace the Document ID with your Input Tracking Sheet ID\n\n**To find Sheet ID**: Look at the URL - it's the long string after `/spreadsheets/d/`\n\n#### Update Email Address\n1. Open **\"Send a message\"** node\n2. Replace `xxx@gmail.com` with your email\n3. Configure Gmail credentials if not already done\n\n---\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9ec09d40-9548-42e2-8e41-bbd8e9490fb2",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          48,
+          1728
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 464,
+          "height": 736,
+          "content": "\n## Step 5: Testing & Validation\n\n### 5.1 Test Individual Components\n\n#### Test Google Sheets Connection\n1. Right-click **\"Append row in sheet\"** node\n2. Click **\"Execute Node\"**\n3. Check if a test row appears in your sheet\n\n#### Test Gemini AI\n1. Right-click **\"Basic LLM Chain\"** node\n2. Add test data in **\"Edit Input Data\"**\n3. Execute and verify AI response\n\n#### Test Image Generation\n1. Right-click **\"HTTP Request\"** node\n2. Ensure it has a valid prompt from previous step\n3. Execute and check for base64 image data\n\n#### Test Facebook Upload\n1. Run the full workflow with test content\n2. Check your Facebook page for the post\n3. Verify image uploaded correctly\n\n### 5.2 End-to-End Test\n1. Click **\"Execute Workflow\"** on the trigger node\n2. Submit test content through the form\n3. Monitor each node's execution\n4. Verify final Facebook post"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Facebook Graph API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "code2": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Basic LLM Chain1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Convert to File code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "save content": {
+        "main": [
+          [
+            {
+              "node": "Format Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Content": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "code2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain1": {
+        "main": [
+          [
+            {
+              "node": "save content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Facebook Graph API": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Facebook Upload Img": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "On form submission1": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File code": {
+        "main": [
+          [
+            {
+              "node": "Facebook Upload Img",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain1",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 22,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 3
+      },
+      "n8n-nodes-base.code": {
+        "count": 2
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.merge": {
+        "count": 1
+      },
+      "n8n-nodes-base.function": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.facebookGraphApi": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "Charles",
+    "username": "charlesnguyen",
+    "bio": "I'm a Freelance AI Automation Engineer, helping Sales & Marketing teams streamline their workflows with custom n8n automations. With 5+ years of experience, I’ve helped hundreds of businesses adopt AI-powered solutions using n8n ✅ Free consultation available — book now and start saving time: 👉 https://www.aivra.work/en",
+    "verified": true,
+    "links": [
+      "https://www.aivra.work/en"
+    ],
+    "avatar": "https://gravatar.com/avatar/fc59a9d70accb512755e22de22b2e4ecd4db0c9bca5502f9eeacb8ad6a7ab694?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 14,
+      "icon": "fa:code",
+      "name": "n8n-nodes-base.function",
+      "codex": {
+        "data": {
+          "alias": [
+            "Code",
+            "Javascript",
+            "Custom Code",
+            "Script",
+            "cpde"
+          ],
+          "details": "The Function node allows you to execute JavaScript in your workflow. Unlike the Function Item node, this node does not operate on incoming node data per-item. Instead, you must iterate over multiple items of incoming data yourself. This can be useful if you're performing data transformation where you want to manipulate the number of items being outputted by the node (i.e. 1 item is inputted in with nested object, 10 items are outputted without any nested objects)",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-goals-level-up-your-vocabulary-with-vonage-and-n8n/",
+                "icon": "🎯",
+                "label": "2021 Goals: Level Up Your Vocabulary With Vonage and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/why-i-chose-n8n-over-zapier-in-2020/",
+                "icon": "😍",
+                "label": "Why I chose n8n over Zapier in 2020"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-host-virtual-coffee-breaks-with-n8n/",
+                "icon": "☕️",
+                "label": "How to host virtual coffee breaks with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/tracking-time-spent-in-meetings-with-google-calendar-twilio-and-n8n/",
+                "icon": "🗓",
+                "label": "Tracking Time Spent in Meetings With Google Calendar, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-error-workflows-in-n8n/",
+                "icon": "🌪",
+                "label": "Creating Error Workflows in n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Fonction",
+        "color": "#FF9922"
+      },
+      "iconData": {
+        "icon": "code",
+        "type": "icon"
+      },
+      "displayName": "Function",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "icon": "file:merge.svg",
+      "name": "n8n-nodes-base.merge",
+      "codex": {
+        "data": {
+          "alias": [
+            "Join",
+            "Concatenate",
+            "Wait"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-sync-data-between-two-systems/",
+                "icon": "🏬",
+                "label": "How to synchronize data between two systems (one-way vs. two-way sync"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.merge/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Fusionner"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTc3XzUxOCkiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTAgNDhDMCAyMS40OTAzIDIxLjQ5MDMgMCA0OCAwSDExMkMxMzguNTEgMCAxNjAgMjEuNDkwMyAxNjAgNDhWNTZIMTk2LjI1MkMyNDAuNDM1IDU2IDI3Ni4yNTIgOTEuODE3MiAyNzYuMjUyIDEzNlYxOTJDMjc2LjI1MiAyMTQuMDkxIDI5NC4xNjEgMjMyIDMxNi4yNTIgMjMySDM1MlYyMjRDMzUyIDE5Ny40OSAzNzMuNDkgMTc2IDQwMCAxNzZINDY0QzQ5MC41MSAxNzYgNTEyIDE5Ny40OSA1MTIgMjI0VjI4OEM1MTIgMzE0LjUxIDQ5MC41MSAzMzYgNDY0IDMzNkg0MDBDMzczLjQ5IDMzNiAzNTIgMzE0LjUxIDM1MiAyODhWMjgwSDMxNi4yNTJDMjk0LjE2MSAyODAgMjc2LjI1MiAyOTcuOTA5IDI3Ni4yNTIgMzIwVjM3NkMyNzYuMjUyIDQyMC4xODMgMjQwLjQzNSA0NTYgMTk2LjI1MiA0NTZIMTYwVjQ2NEMxNjAgNDkwLjUxIDEzOC41MSA1MTIgMTEyIDUxMkg0OEMyMS40OTAzIDUxMiAwIDQ5MC41MSAwIDQ2NFY0MDBDMCAzNzMuNDkgMjEuNDkwMyAzNTIgNDggMzUySDExMkMxMzguNTEgMzUyIDE2MCAzNzMuNDkgMTYwIDQwMFY0MDhIMTk2LjI1MkMyMTMuOTI1IDQwOCAyMjguMjUyIDM5My42NzMgMjI4LjI1MiAzNzZWMzIwQzIyOC4yNTIgMjk0Ljc4NCAyMzguODU5IDI3Mi4wNDQgMjU1Ljg1MyAyNTZDMjM4Ljg1OSAyMzkuOTU2IDIyOC4yNTIgMjE3LjIxNiAyMjguMjUyIDE5MlYxMzZDMjI4LjI1MiAxMTguMzI3IDIxMy45MjUgMTA0IDE5Ni4yNTIgMTA0SDE2MFYxMTJDMTYwIDEzOC41MSAxMzguNTEgMTYwIDExMiAxNjBINDhDMjEuNDkwMyAxNjAgMCAxMzguNTEgMCAxMTJWNDhaTTEwNCA0OEMxMDguNDE4IDQ4IDExMiA1MS41ODE3IDExMiA1NlYxMDRDMTEyIDEwOC40MTggMTA4LjQxOCAxMTIgMTA0IDExMkg1NkM1MS41ODE3IDExMiA0OCAxMDguNDE4IDQ4IDEwNFY1NkM0OCA1MS41ODE3IDUxLjU4MTcgNDggNTYgNDhIMTA0Wk00NTYgMjI0QzQ2MC40MTggMjI0IDQ2NCAyMjcuNTgyIDQ2NCAyMzJWMjgwQzQ2NCAyODQuNDE4IDQ2MC40MTggMjg4IDQ1NiAyODhINDA4QzQwMy41ODIgMjg4IDQwMCAyODQuNDE4IDQwMCAyODBWMjMyQzQwMCAyMjcuNTgyIDQwMy41ODIgMjI0IDQwOCAyMjRINDU2Wk0xMTIgNDA4QzExMiA0MDMuNTgyIDEwOC40MTggNDAwIDEwNCA0MDBINTZDNTEuNTgxNyA0MDAgNDggNDAzLjU4MiA0OCA0MDhWNDU2QzQ4IDQ2MC40MTggNTEuNTgxNyA0NjQgNTYgNDY0SDEwNEMxMDguNDE4IDQ2NCAxMTIgNDYwLjQxOCAxMTIgNDU2VjQwOFoiIGZpbGw9IiM1NEI4QzkiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTc3XzUxOCI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Merge",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 314,
+      "icon": "file:facebook.svg",
+      "name": "n8n-nodes-base.facebookGraphApi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.facebookgraphapi/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/facebookGraph/"
+              }
+            ]
+          },
+          "categories": [
+            "Development"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "API Graph Facebook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MCA2MCI+PHBhdGggZmlsbD0iIzE4NzdmMiIgZD0iTTU5LjUgMzBDNTkuNSAxMy43MSA0Ni4yOS41IDMwIC41Uy41IDEzLjcxLjUgMzBjMCAxNC43MiAxMC43OSAyNi45MyAyNC44OSAyOS4xNFYzOC41M0gxNy45VjMwaDcuNDl2LTYuNWMwLTcuMzkgNC40LTExLjQ4IDExLjE0LTExLjQ4IDMuMjMgMCA2LjYuNTggNi42LjU4djcuMjZoLTMuNzJjLTMuNjYgMC00LjgxIDIuMjctNC44MSA0LjYxVjMwaDguMThsLTEuMzEgOC41M0gzNC42djIwLjYxQzQ4LjcxIDU2LjkzIDU5LjUgNDQuNzIgNTkuNSAzMCIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik00MS40OCAzOC41MyA0Mi43OSAzMGgtOC4xOHYtNS41M2MwLTIuMzMgMS4xNC00LjYxIDQuODEtNC42MWgzLjcyVjEyLjZzLTMuMzgtLjU4LTYuNi0uNThjLTYuNzQgMC0xMS4xNCA0LjA4LTExLjE0IDExLjQ4VjMwaC03LjV2OC41M2g3LjQ5djIwLjYxYzEuNS4yNCAzLjA0LjM2IDQuNjEuMzZzMy4xMS0uMTIgNC42MS0uMzZWMzguNTN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Facebook Graph API",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chaîne LLM de base",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

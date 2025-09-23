@@ -1,0 +1,1050 @@
+{
+  "id": 7334,
+  "name": "Générer des images AI en masse avec Freepik, Google Sheets et Drive",
+  "views": 752,
+  "recentViews": 5,
+  "totalViews": 752,
+  "createdAt": "2025-08-13T16:16:46.407Z",
+  "description": "\nCe flux de travail n8n automatise la génération d'images AI en masse en utilisant l'API Text-to-Image de Freepik. Il lit les invites à partir d'une feuille Google, génère plusieurs variations de chaque image en utilisant l'IA de Freepik, et télécharge automatiquement les résultats sur Google Drive avec des noms de fichiers organisés. C'est parfait pour les créateurs de contenu, les marketeurs ou les designers qui ont besoin de générer plusieurs images AI en masse et de les stocker de manière systématique.\n\n### Caractéristiques clés :\n- Génération d'images en masse à partir des invites de Google Sheets\n- Plusieurs variations par invite (doublons configurables)\n- Nommage et organisation automatiques des fichiers\n- Téléchargement direct sur Google Drive\n- Traitement par lots pour une utilisation efficace de l'API\n- Génération d'images alimentée par l'IA de Freepik\n\n## Guide d'implémentation étape par étape\n\n### Prérequis\nAvant de configurer ce flux de travail, vous aurez besoin de :\n\n1. **Instance n8n** (cloud ou auto-hébergée)\n2. **Compte API Freepik** avec accès à Text-to-Image\n3. **Compte Google** avec accès à Sheets et Drive\n4. **Feuille Google** avec vos invites\n\n### Étape 1 : Configurer les identifiants de l'API Freepik\n\n1. Allez sur [Portail des développeurs de l'API Freepik](https://freepik.com/api)\n2. Créez un compte ou connectez-vous\n3. Accédez à votre tableau de bord API\n4. Générez une clé API pour le service Text-to-Image\n5. Copiez la clé API et conservez-la en toute sécurité\n6. Dans n8n, allez à **Identifiants** → **Ajouter un identifiant** → **Authentification par en-tête HTTP**\n7. Configurez comme suit :\n   - **Nom** : \"Compte Auth en-tête\"\n   - **Nom de l'en-tête** : `x-freepik-api-key`\n   - **Valeur de l'en-tête** : Votre clé API Freepik\n\n### Étape 2 : Configurer les identifiants Google\n\n#### Accès à Google Sheets :\n1. Allez sur [Google Cloud Console](https://console.cloud.google.com/)\n2. Créez un nouveau projet ou sélectionnez-en un existant\n3. Activez l'API Google Sheets\n4. Créez des identifiants OAuth2\n5. Dans n8n, allez à **Identifiants** → **Ajouter un identifiant** → **API Google Sheets OAuth2**\n6. Entrez vos identifiants OAuth2 et autorisez avec le champ `spreadsheets.readonly`\n\n#### Accès à Google Drive :\n1. Dans Google Cloud Console, activez l'API Google Drive\n2. Dans n8n, allez à **Identifiants** → **Ajouter un identifiant** → **API Google Drive OAuth2**\n3. Entrez vos identifiants OAuth2 et autorisez\n\n### Étape 3 : Créez votre feuille Google\n\n1. Créez une nouvelle feuille Google : [sheets.google.com](https://sheets.google.com)\n2. Configurez votre feuille avec ces colonnes :\n   - **Colonne A** : `Invite` (vos invites de génération d'images)\n   - **Colonne B** : `Nom` (identifiant pour le nommage des fichiers)\n3. Exemple de données :\n   ```\n   | Invite                                    | Nom         |\n   |-------------------------------------------|-------------|\n   | Un paysage de montagne serein au lever du soleil | montagne-01 |\n   | Espace de bureau moderne avec lumière naturelle | bureau-02   |\n   | Intérieur d'un café confortable            | café-03     |\n   ```\n4. Copiez l'ID de la feuille à partir de l'URL (la longue chaîne entre `/d/` et `/edit`)\n\n### Étape 4 : Configurer le dossier Google Drive\n\n1. Créez un dossier dans Google Drive pour vos images générées\n2. Copiez l'ID du dossier à partir de l'URL lors de la visualisation du dossier\n3. Remarque : Le flux de travail est configuré pour utiliser un dossier appelé \"flux de travail n8n\"\n\n### Étape 5 : Importer et configurer le flux de travail\n\n1. Copiez le JSON du flux de travail fourni\n2. Dans n8n, cliquez sur **Importer à partir d'un fichier** ou **Importer à partir du presse-papiers**\n3. Collez le JSON du flux de travail\n4. Configurez chaque nœud comme détaillé ci-dessous :\n\n#### Détails de configuration des nœuds :\n\n##### Démarrer le flux de travail (Déclencheur manuel)\n- Aucune configuration nécessaire\n- Utilisé pour démarrer manuellement le flux de travail\n\n##### Obtenir l'invite de la feuille Google (Google Sheets)\n- **ID du document** : Votre ID de feuille Google (à partir de l'étape 3)\n- **Nom de la feuille** : `Sheet1` (ou le nom de votre feuille)\n- **Opération** : Lire\n- **Identifiants** : Sélectionnez votre \"compte Google Sheets\"\n\n##### Double sortie (Nœud de code)\n- **But** : Crée plusieurs variations de chaque invite\n- **Code JavaScript** :\n```javascript\nconst original = items[0].json;\n\nreturn [\n  { json: { ...original, run: 1 } },\n  { json: { ...original, run: 2 } },\n];\n```\n- **Personnalisation** : Ajoutez plus de courses pour des variations supplémentaires\n\n##### Boucle (Diviser en lots)\n- Traite les éléments par lots pour gérer les limites de taux de l'API\n- **Options** : Conservez les paramètres par défaut\n- **Réinitialiser** : `false`\n\n##### Créer une image (Demande HTTP)\n- **Méthode** : `POST`\n- **URL** : `https://api.freepik.com/v1/ai/text-to-image`\n- **Authentification** : Générique → Authentification par en-tête HTTP\n- **Identifiants** : Sélectionnez votre \"compte Auth en-tête\"\n- **Envoyer le corps** : `true`\n- **Paramètres du corps** :\n  - **Nom** : `prompt`\n  - **Valeur** : `={{ $json.Prompt }}`\n\n##### Diviser les réponses (Diviser en sortie)\n- **Champ à diviser** : `data`\n- **But** : Sépare plusieurs images de la réponse de l'API\n\n##### Convertir en fichier (Convertir en fichier)\n- **Opération** : `toBinary`\n- **Propriété source** : `base64`\n- **But** : Convertit les données d'image base64 en format de fichier\n\n##### Télécharger l'image sur Google Drive (Google Drive)\n- **Opération** : Télécharger\n- **Nom** : `=Image - {{ $('Obtenir l'invite de la feuille Google').item.json.Nom }} - {{ $('Double sortie').item.json.run }}`\n- **ID du Drive** : `Mon Drive`\n- **ID du dossier** : Votre ID de dossier Google Drive (à partir de l'étape 4)\n- **Identifiants** : Sélectionnez votre \"compte Google Drive\"\n\n### Étape 6 : Personnalisez pour votre cas d'utilisation\n\n1. **Modifier le nombre de doublons** : Modifiez le code \"Double sortie\" pour créer plus de variations\n2. **Mettre à jour le nommage des fichiers** : Changez le modèle de nommage dans le nœud de téléchargement Google Drive\n3. **Ajuster la taille des lots** : Modifiez les paramètres du nœud Boucle pour vos limites d'API\n4. **Ajouter des paramètres d'image** : Améliorez la demande HTTP avec des paramètres Freepik supplémentaires (taille, style, etc.)\n\n### Étape 7 : Tester le flux de travail\n\n1. Assurez-vous que votre feuille Google contient des données de test\n2. Cliquez sur **Exécuter le flux de travail** sur le déclencheur manuel\n3. Surveillez le flux d'exécution\n4. Vérifiez que les images sont générées et téléchargées sur Google Drive\n5. Vérifiez que les noms de fichiers correspondent à votre modèle attendu\n\n### Étape 8 : Déploiement en production\n\n1. Configurez la gestion des erreurs pour les échecs de l'API\n2. Configurez des tailles de lots appropriées en fonction de vos limites d'API Freepik\n3. Ajoutez des journaux pour les téléchargements réussis\n4. Envisagez des déclencheurs webhook pour une exécution automatisée\n5. Configurez la surveillance des exécutions échouées\n\n## Paramètres de l'API Freepik\n\n### Paramètres de base :\n- `prompt` : Votre description textuelle (obligatoire)\n- `negative_prompt` : Ce qu'il faut éviter dans l'image\n- `guidance_scale` : À quel point suivre l'invite (1-20)\n- `num_inference_steps` : Compromis qualité/vitesse (20-100)\n- `seed` : Pour des résultats reproductibles\n\n### Exemple de corps amélioré :\n```json\n{\n  \"prompt\": \"{{ $json.Prompt }}\",\n  \"negative_prompt\": \"flou, basse qualité\",\n  \"guidance_scale\": 7.5,\n  \"num_inference_steps\": 50,\n  \"num_images\": 1\n}\n```\n\n## Résumé du flux de travail\n\n1. **Démarrer** → Le déclencheur manuel initie le flux de travail\n2. **Lire la feuille** → Obtient les invites et les noms à partir de Google Sheets\n3. **Dupliquer** → Crée plusieurs exécutions pour des variations\n4. **Boucle** → Traite les éléments par lots\n5. **Générer** → L'API Freepik crée des images à partir des invites\n6. **Diviser** → Sépare plusieurs images de la réponse\n7. **Convertir** → Transforme le base64 en format de fichier binaire\n8. **Télécharger** → Enregistre les images sur Google Drive avec des noms organisés\n9. **Terminer** → Retourne à la boucle pour le prochain lot\n\n\n\n\n## Informations de contact\n\n**Robert A Ynteractive**\n\nPour le support, la personnalisation ou des questions concernant ce flux de travail :\n\n- 📧 Email : rbreen@ynteractive.com\n- 🌐 Site Web : https://ynteractive.com/\n- 💼 LinkedIn : https://www.linkedin.com/in/robert-breen-29429625/\n\n*Besoin d'aide pour mettre en œuvre ce flux de travail ou souhaitez des solutions d'automatisation personnalisées ? Contactez-nous pour des services de conseil professionnel n8n et de développement de flux de travail.*",
+  "workflow": {
+    "meta": {
+      "instanceId": "ad0113c344ee237399e44e9f11798b05baeb83a6196d514a9ae9d2ad71c3b5c9",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "1c13de38-0a50-44a4-b7b1-6d6ff00757d7",
+        "name": "Start Workflow",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -1680,
+          736
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "cc6edc5b-5b6e-4de9-9437-6fd38c050ff5",
+        "name": "Convert to File",
+        "type": "n8n-nodes-base.convertToFile",
+        "position": [
+          -160,
+          640
+        ],
+        "parameters": {
+          "options": {},
+          "operation": "toBinary",
+          "sourceProperty": "base64"
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "b0070e99-0397-4ead-a28e-9457c1fa8770",
+        "name": "Create Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -672,
+          640
+        ],
+        "parameters": {
+          "url": "https://api.freepik.com/v1/ai/text-to-image",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "authentication": "genericCredentialType",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "prompt",
+                "value": "={{ $json.Prompt }}"
+              }
+            ]
+          },
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "MBOXm1HI3OHfvpZ7",
+            "name": "Header Auth account"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "c5880a1b-d473-4218-a313-465112afb793",
+        "name": "Split Responses",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          -400,
+          640
+        ],
+        "parameters": {
+          "options": {},
+          "fieldToSplitOut": "data"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fc353193-177e-4f63-8056-b7e3a7c00dc5",
+        "name": "Upload Image to Google Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          96,
+          688
+        ],
+        "parameters": {
+          "name": "=Image - {{ $('Get Prompt from Google Sheet').item.json.Name }} - {{ $('Double Output').item.json.run }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive",
+            "cachedResultName": "My Drive"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1TnDibwPPPUm3VbmETiqWDVhtaUTLJ6mn",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1TnDibwPPPUm3VbmETiqWDVhtaUTLJ6mn",
+            "cachedResultName": "n8n workflows"
+          }
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "pl7bkYVKthXr65dR",
+            "name": "Google Drive account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "55e34b0d-31ab-4f88-b5b5-b1f8ea9c819f",
+        "name": "Get Prompt from Google Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -1488,
+          608
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_u9IxEZINcwKQB15Rfx7C1hM71zeDST58Fz3nRHTCUY/edit#gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1_u9IxEZINcwKQB15Rfx7C1hM71zeDST58Fz3nRHTCUY",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_u9IxEZINcwKQB15Rfx7C1hM71zeDST58Fz3nRHTCUY/edit?usp=drivesdk",
+            "cachedResultName": "freepik prompts"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "HlBW2puZbuCCq8jJ",
+            "name": "Google Sheets account 3"
+          }
+        },
+        "typeVersion": 4.7
+      },
+      {
+        "id": "46ebdba5-bacd-4726-8837-0ebf6a45c25d",
+        "name": "Double Output",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          -1312,
+          752
+        ],
+        "parameters": {
+          "jsCode": "const original = items[0].json;\n\nreturn [\n  { json: { ...original, run: 1 } },\n  { json: { ...original, run: 2 } },\n];\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "80e8b545-92ba-493d-a3ce-55a2ee886b6b",
+        "name": "Loop",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          -992,
+          656
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "a35010e4-19cc-44f9-b918-7ed8e5504c80",
+        "name": "Sticky Note16",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1744,
+          -128
+        ],
+        "parameters": {
+          "width": 2032,
+          "content": "## 📬 Need Help or Want to Customize This?\n📧 [robert@ynteractive.com](mailto:robert@ynteractive.com)  \n🔗 [LinkedIn](https://www.linkedin.com/in/robert-breen-29429625/)"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "422257a0-78a4-4d23-ab5b-3f06859de59c",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1744,
+          48
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 600,
+          "height": 860,
+          "content": "\n#### Node Configuration Details:\n\n##### Start Workflow (Manual Trigger)\n- No configuration needed\n- Used to manually start the workflow\n\n##### Get Prompt from Google Sheet (Google Sheets)\n- **Document ID**: Your Google Sheet ID (from Step 3)\n- **Sheet Name**: `Sheet1` (or your sheet name)\n- **Operation**: Read\n- **Credentials**: Select your \"Google Sheets account\"\n\n##### Double Output (Code Node)\n- **Purpose**: Creates multiple variations of each prompt\n- **JavaScript Code**:\n```javascript\nconst original = items[0].json;\n\nreturn [\n  { json: { ...original, run: 1 } },\n  { json: { ...original, run: 2 } },\n];\n```\nGoogle sheet to copy: https://docs.google.com/spreadsheets/d/1_u9IxEZINcwKQB15Rfx7C1hM71zeDST58Fz3nRHTCUY/edit?usp=sharing"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a7497ee2-35ea-417d-a36d-70c5680f46ef",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1120,
+          48
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 1400,
+          "height": 860,
+          "content": "##### Create Image (HTTP Request)\n- **Method**: `POST`\n- **URL**: `https://api.freepik.com/v1/ai/text-to-image`\n- **Authentication**: Generic → HTTP Header Auth\n- **Credentials**: Select your \"Header Auth account\"\n- **Send Body**: `true`\n- **Body Parameters**:\n  - **Name**: `prompt`\n  - **Value**: `={{ $json.Prompt }}`\n\n##### Split Responses (Split Out)\n- **Field to Split Out**: `data`\n- **Purpose**: Separates multiple images from API response\n\n##### Convert to File (Convert to File)\n- **Operation**: `toBinary`\n- **Source Property**: `base64`\n- **Purpose**: Converts base64 image data to file format\n\n##### Upload Image to Google Drive (Google Drive)\n- **Operation**: Upload\n- **Name**: `=Image - {{ $('Get Prompt from Google Sheet').item.json.Name }} - {{ $('Double Output').item.json.run }}`\n- **Drive ID**: `My Drive`\n- **Folder ID**: Your Google Drive folder ID (from Step 4)\n- **Credentials**: Select your \"Google Drive account\""
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Loop": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Create Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Image": {
+        "main": [
+          [
+            {
+              "node": "Split Responses",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Double Output": {
+        "main": [
+          [
+            {
+              "node": "Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get Prompt from Google Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Upload Image to Google Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Responses": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Prompt from Google Sheet": {
+        "main": [
+          [
+            {
+              "node": "Double Output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload Image to Google Drive": {
+        "main": [
+          [
+            {
+              "node": "Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 3
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      },
+      "n8n-nodes-base.convertToFile": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Robert Breen",
+    "username": "rbreen",
+    "bio": "Professional services consultant with over 10 years of experience solving complex business problems across industries. I specialize in n8n and process automation—designing custom workflows that integrate tools like Google Calendar, Airtable, GPT, and internal systems. Whether you need to automate scheduling, sync data, or streamline operations, I build solutions that save time and drive results.",
+    "verified": true,
+    "links": [
+      "https://ynteractive.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/15bb5ad97bad47ca2079e1fa123a8287000c72c86498c90043f70ec2adab05f3?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1234,
+      "icon": "file:convertToFile.svg",
+      "name": "n8n-nodes-base.convertToFile",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "Excel",
+            "xls",
+            "xlsx",
+            "ods",
+            "tabular",
+            "encode",
+            "encoding",
+            "Move Binary Data",
+            "Binary",
+            "File",
+            "JSON",
+            "HTML",
+            "ICS",
+            "iCal",
+            "RTF",
+            "64",
+            "Base64"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.converttofile/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Convertir en fichier"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzLjc2MTkgMkMxMy4yNDM3IDIgMTIuODIzNiAyLjQyMDA5IDEyLjgyMzYgMi45MzgzMVYxNS4yNTI2QzEzLjMxOTkgMTUuNDY0MyAxMy43ODUxIDE1Ljc3MiAxNC4xOTEgMTYuMTc1N0wyMS4yMjgzIDIzLjE3MzlDMjIuMDU0OCAyMy45OTU4IDIyLjUxOTUgMjUuMTEzMiAyMi41MTk1IDI2LjI3ODhDMjIuNTE5NSAyNy40NDQzIDIyLjA1NDggMjguNTYxOCAyMS4yMjgzIDI5LjM4MzdMMTQuMTkxIDM2LjM4MTlDMTMuNzg1IDM2Ljc4NTYgMTMuMzE5OSAzNy4wOTMyIDEyLjgyMzYgMzcuMzA1VjM3LjM1MjdDMTIuODIzNiAzNy44NzA5IDEzLjI0MzcgMzguMjkxIDEzLjc2MTkgMzguMjkxSDM5LjA2MTdDMzkuNTc5OSAzOC4yOTEgNDAgMzcuODcwOSA0MCAzNy4zNTI3TDQwIDE1Ljc5NEgyNy4xNDQzQzI2LjYyNjEgMTUuNzk0IDI2LjIwNiAxNS4zNzM5IDI2LjIwNiAxNC44NTU3VjJIMTMuNzYxOVoiIGZpbGw9IiMzQTQyRTkiLz4KPHBhdGggZD0iTTI4Ljg2NDUgMkMyOC43NzgxIDIgMjguNzA4MSAyLjA3MDAyIDI4LjcwODEgMi4xNTYzOVYxMi44MjI3QzI4LjcwODEgMTMuMDgxOCAyOC45MTgyIDEzLjI5MTkgMjkuMTc3MyAxMy4yOTE5SDM5Ljg0MzZDMzkuOTMgMTMuMjkxOSA0MCAxMy4yMjE5IDQwIDEzLjEzNTVMNDAgMTIuNjI2M0M0MCAxMi4zNzc4IDM5LjkwMTQgMTIuMTM5NSAzOS43MjYgMTEuOTYzNkwzMC4wNjEgMi4yNzU2MUMyOS44ODUgMi4wOTkxNiAyOS42NDYgMiAyOS4zOTY3IDJIMjguODY0NVoiIGZpbGw9IiMzQTQyRTkiLz4KPHBhdGggZD0iTTkuNzcyNjggMzQuNjAwM0M5LjA0MTg2IDMzLjg2NTQgOS4wNDUxNyAzMi42NzcyIDkuNzgwMDcgMzEuOTQ2NEwxMy42MzE1IDI4LjExNjNMMC45MzgzMTEgMjguMTE2M0MwLjQyMDA5NiAyOC4xMTYzIC0yLjI2NTE5ZS0wOCAyNy42OTYyIDAgMjcuMTc4TDguMjAyOTdlLTA4IDI1LjMwMTRDMS4wNDY4MmUtMDcgMjQuNzgzMiAwLjQyMDA5NSAyNC4zNjMxIDAuOTM4MzExIDI0LjM2MzFIMTMuNTUyOUw5Ljc4MDA3IDIwLjYxMTJDOS4wNDUxNyAxOS44ODA0IDkuMDQxODYgMTguNjkyMiA5Ljc3MjY4IDE3Ljk1NzNDMTAuNTAzNSAxNy4yMjI0IDExLjY5MTcgMTcuMjE5MSAxMi40MjY2IDE3Ljk0OTlMMTkuNDYzOSAyNC45NDgxQzE5LjgxODEgMjUuMzAwNCAyMC4wMTczIDI1Ljc3OTMgMjAuMDE3MyAyNi4yNzg4QzIwLjAxNzMgMjYuNzc4MyAxOS44MTgxIDI3LjI1NzIgMTkuNDYzOSAyNy42MDk1TDEyLjQyNjYgMzQuNjA3N0MxMS42OTE3IDM1LjMzODUgMTAuNTAzNSAzNS4zMzUyIDkuNzcyNjggMzQuNjAwM1oiIGZpbGw9IiMzQTQyRTkiLz4KPC9zdmc+Cg=="
+      },
+      "displayName": "Convert to File",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Diviser en sortie"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

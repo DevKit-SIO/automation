@@ -1,0 +1,570 @@
+{
+  "id": 7181,
+  "name": "Créer des plans de régime personnalisés à partir de rapports de santé avec Ollama AI et automatisation par e-mail",
+  "views": 177,
+  "recentViews": 1,
+  "totalViews": 177,
+  "createdAt": "2025-08-08T14:00:13.343Z",
+  "description": "Ce workflow n8n transforme les détails de santé ou les rapports de laboratoire téléchargés reçus par e-mail en un plan de régime personnalisé grâce à une analyse AI, puis renvoie le plan à l'utilisateur par e-mail, optimisant la nutrition en fonction des données de santé individuelles.\n\n## Pourquoi l'utiliser\n\nCe workflow automatise la création de plans de régime personnalisés à partir de données de santé, économisant du temps pour les nutritionnistes, améliorant les résultats des patients grâce à des insights basés sur l'IA, et fournissant un système de livraison par e-mail pratique pour les utilisateurs.\n\n## Comment l'importer\n\n1. **Téléchargez le fichier JSON du workflow** : Obtenez le fichier de workflow à partir du modèle n8n ou créez-le en fonction de ce document.\n2. **Importez dans n8n** : Dans votre instance n8n, allez dans \"Workflows,\" cliquez sur les trois points, sélectionnez \"Importer depuis un fichier,\" et téléchargez le JSON.\n3. **Configurez les identifiants** : Configurez l'e-mail (par exemple, IMAP pour la réception, SMTP pour l'envoi), le modèle AI, et les identifiants Google Sheets optionnels dans n8n.\n4. **Exécutez le workflow** : Testez avec un e-mail d'exemple contenant des données de santé et vérifiez la livraison du plan de régime.\n\n## Architecture du système\n\n- **Pipeline d'entrée de données** :\n  - **Déclencheur d'e-mail** : Lance le workflow lorsqu'un e-mail de rapport de santé est reçu.\n  - **Extraire les données de santé** : Analyse les détails de santé téléchargés ou les rapports de laboratoire à partir de l'e-mail.\n- **Flux d'analyse AI** :\n  - **Envoyer au modèle AI** : Analyse les données de santé à l'aide d'un modèle AI.\n  - **Générer le plan de régime** : Crée un plan de régime personnalisé basé sur la sortie de l'IA.\n- **Flux de livraison** :\n  - **Préparer le contenu de l'e-mail** : Formate le plan de régime pour la livraison par e-mail.\n  - **Envoyer l'e-mail du plan de régime** : Envoie le plan à l'utilisateur via SMTP.\n  - **Mettre à jour le journal (optionnel)** : Enregistre le processus dans une feuille Google.\n\n## Structure de la feuille Google\n- **Colonnes** :\n  - `timestamp` : Date et heure de la génération du plan de régime.\n  - `user_email` : Adresse e-mail de l'utilisateur pour recevoir le plan.\n  - `health_data` : Métriques de santé extraites ou résumé du rapport de laboratoire.\n  - `condition` : Condition de santé identifiée par l'IA.\n  - `diet_plan` : Résumé du plan de régime généré.\n  - `sent_status` : Statut de la livraison de l'e-mail (par exemple, Envoyé, Échoué).\n\n## Personnalisation\n- **Ajouter des alertes SMS** : Intégrer Twilio ou WhatsApp pour des notifications supplémentaires.\n- **Améliorer l'IA** : Former le modèle AI avec plus de données nutritionnelles pour de meilleurs plans.\n- **Inclure des recettes** : Ajouter un nœud pour suggérer des recettes en fonction du plan de régime.\n- **Support multilingue** : Adapter le contenu de l'e-mail pour différentes langues.\n- **Intégration avec des applications** : Connecter des applications de fitness (par exemple, MyFitnessPal) pour le suivi.\n\n## Exigences\n- **Service de messagerie** : IMAP (par exemple, Gmail) pour recevoir des e-mails de données de santé et SMTP pour envoyer des plans de régime.\n- **Modèle AI** : Ollama ou similaire pour l'analyse de santé et la génération de plans de régime (nécessite un accès API).\n- **Instance n8n** : Avec des connecteurs d'e-mail (IMAP/SMTP) et AI configurés.\n- **Connexion Internet** : Pour accéder aux e-mails et aux API AI.\n- **Compte Google Sheets optionnel** : Pour enregistrer les données de santé et les plans de régime.\n- **Consentement de l'utilisateur** : Assurer la conformité avec les lois sur la confidentialité des données (par exemple, HIPAA) pour les données de santé.\n\nVous souhaitez un workflow sur mesure pour votre entreprise ? Nos experts peuvent le créer rapidement [Contactez notre équipe](https://www.oneclickitsolution.com/contact-us/)\n\n",
+  "workflow": {
+    "id": "gKJQLzRtCyqGBHs9",
+    "meta": {
+      "instanceId": "dd69efaf8212c74ad206700d104739d3329588a6f3f8381a46a481f34c9cc281",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Personalized Diet Plan Creator from Medical History",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "813c1495-0676-4e00-8d4b-74e9cccf5d3e",
+        "name": "Receive Health Report Email",
+        "type": "n8n-nodes-base.emailReadImap",
+        "position": [
+          0,
+          -260
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "credentials": {
+          "imap": {
+            "id": "zTEGYssr7MSVeCs3",
+            "name": "IMAP-test"
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "00ef51df-aa58-4a7d-ab4f-6d0f9012e626",
+        "name": "Process Report with AI Nutrition Engine",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          220,
+          -260
+        ],
+        "parameters": {
+          "batching": {},
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=Analyze the following health details or lab report data and generate a personalized diet plan tailored to the user's medical history, dietary restrictions, and nutritional needs:\\n\\n{{json.content}}\\n\\nProvide a detailed diet plan including daily meal suggestions, portion sizes, and nutritional goals."
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.7
+      },
+      {
+        "id": "88f3646d-3e16-427d-b278-4b123aff9122",
+        "name": "AI Nutrition Model",
+        "type": "@n8n/n8n-nodes-langchain.lmOllama",
+        "position": [
+          308,
+          -40
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "credentials": {
+          "ollamaApi": {
+            "id": "7td3WzXCW2wNhraP",
+            "name": "Ollama - test"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a88117ab-a714-4b50-a32a-00ad830feee6",
+        "name": "Wait Before Sending Plan ",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          596,
+          -260
+        ],
+        "webhookId": "e7d9de4a-ff91-4b46-98eb-781ec764e324",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "f53c5ed4-ab80-49d7-b955-37b232fc89e7",
+        "name": "Send Personalized Diet Plan ",
+        "type": "n8n-nodes-base.emailSend",
+        "notes": "Sends the PDF diet plan to the user via email",
+        "position": [
+          816,
+          -260
+        ],
+        "parameters": {
+          "text": "Dear User,\n\nAttached is your personalized diet plan based on your health details.\n\nBest regards,\nYour Nutrition Team",
+          "options": {},
+          "subject": "Your Personalized Diet Plan",
+          "toEmail": "{{$node['Webhook'].json['userEmail']}}",
+          "fromEmail": "your-email@domain.com",
+          "attachments": "{{$node['Generate PDF'].json['filePath']}}"
+        },
+        "credentials": {
+          "smtp": {
+            "id": "G1kyF8cSWTZ4vouN",
+            "name": "SMTP -test"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "15ab3a4e-3879-4e4b-8789-f97b71594d27",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -120,
+          -620
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 820,
+          "height": 240,
+          "content": "## Node Details\n- **Email Trigger**: Triggers the workflow when a new email with health data or lab reports is received via IMAP.\n- **Extract Health Data**: Extracts key health metrics (e.g., cholesterol, glucose) from the email attachment or body.\n- **Send to AI Model**: Sends health data to an AI model (e.g., Ollama) for diet plan generation.\n- **Generate Diet Plan**: Processes AI output to create a personalized diet plan.\n- **Prepare Email Content**: Formats the diet plan into an email-friendly structure.\n- **Send Diet Plan Email**: Sends the diet plan to the user’s email via SMTP.\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "62f85c75-21e4-466d-8afc-d5e80cc36645",
+    "connections": {
+      "AI Nutrition Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Process Report with AI Nutrition Engine",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait Before Sending Plan ": {
+        "main": [
+          [
+            {
+              "node": "Send Personalized Diet Plan ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Receive Health Report Email": {
+        "main": [
+          [
+            {
+              "node": "Process Report with AI Nutrition Engine",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Process Report with AI Nutrition Engine": {
+        "main": [
+          [
+            {
+              "node": "Wait Before Sending Plan ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.emailSend": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.emailReadImap": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmOllama": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Oneclick AI Squad",
+    "username": "oneclick-ai",
+    "bio": "The AI Squad Initiative is a pioneering effort to build, automate and scale AI-powered workflows using n8n.io. Our mission is to help individuals and businesses integrate AI agents seamlessly into their daily operations  from automating tasks and enhancing productivity to creating innovative, intelligent solutions. We design modular, reusable AI workflow templates that empower creators, developers and teams to supercharge their automation with minimal effort and maximum impact.",
+    "verified": true,
+    "links": [
+      "https://www.oneclickitsolution.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/848fca91367142f65f9e5c55d64e5c9952b160d7b060d103b52aa343c6bc7b3d?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 10,
+      "icon": "fa:inbox",
+      "name": "n8n-nodes-base.emailReadImap",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.emailimap/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/imap/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur d'e-mail (IMAP)",
+        "color": "#44AA22"
+      },
+      "iconData": {
+        "icon": "inbox",
+        "type": "icon"
+      },
+      "displayName": "Email Trigger (IMAP)",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "icon": "fa:envelope",
+      "name": "n8n-nodes-base.emailSend",
+      "codex": {
+        "data": {
+          "alias": [
+            "SMTP",
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.sendemail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/credentials/sendemail/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Envoyer un e-mail",
+        "color": "#00bb88"
+      },
+      "iconData": {
+        "icon": "envelope",
+        "type": "icon"
+      },
+      "displayName": "Send Email",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chaîne LLM de base",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1159,
+      "icon": "file:ollama.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmOllama",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmollama/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Text Completion Models"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle Ollama"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDEuMzMzIiBoZWlnaHQ9IjM0MS4zMzMiIHZlcnNpb249IjEuMCIgdmlld0JveD0iMCAwIDE4MSAyNTYiPjxnIGZpbGw9IiM3RDdEODciPjxwYXRoIGQ9Ik0zNy43IDE5LjVjLTUuMiAxLjgtOC4zIDQuOS0xMS43IDExLjYtNC41IDguOS02LjIgMTkuMi01LjggMzUuNWwuMyAxNC4yLTUuOCA2LjFjLTE0LjggMTUuNS0xOC41IDM4LjctOS4yIDU3LjRsMy40IDYuOS0yIDQuNGMtMy40IDguMi01IDE2LjQtNSAyNi4zIDAgMTAuOCAxLjggMTkgNS44IDI2LjJsMi42IDQuOC0yLjEgNC45Yy0xLjIgMi43LTIuNiA3LjEtMy4yIDkuOC0xLjQgNi4yLTEuNSAyMi4xLS4xIDI1LjcgMSAyLjYgMS40IDIuNyA3LjYgMi43IDcuMyAwIDcgLjQgNS4zLTguNi0xLjUtOC4yLjItMTguOCA0LjItMjYuNiAzLjctNyAzLjgtMTAuNC41LTE0LjgtNC43LTYuNC02LjgtMTMuNi02LjktMjQtLjEtMTAuMyAxLjQtMTYgNi42LTI2LjEgMy4xLTYuMSAyLjktOC43LTEtMTIuMi0xLjEtMS0zLjEtNC4yLTQuMy03LTEuOS00LjItMi40LTYuOS0yLjMtMTQuMiAwLTExLjQgMi41LTE4LjMgOS41LTI2IDctNy42IDE0LjItMTEgMjMuOS0xMS4yIDQuMSAwIDcuOC0uMiA4LjItLjIuNC0uMSAxLjctMi4yIDIuOS00LjcgMy01LjkgOS42LTExLjkgMTYuNy0xNS4yIDQuOS0yLjMgNy0yLjcgMTQuNy0yLjcgNy45IDAgOS43LjQgMTQuOSAyLjkgNi44IDMuMyAxMy4zIDkuNCAxNS45IDE0LjggMSAyIDIuMyA0LjEgMyA0LjUuNi40IDQuNi44IDguNy44IDYuNy4xIDguMy41IDE0IDMuNiAxMi4zIDYuOCAxOS4zIDE4LjcgMTkuMyAzMy40LjEgNi43LS40IDktMi43IDE0LjItMS42IDMuNS0zLjUgNi44LTQuMyA3LjUtMy40IDIuOC0zLjUgNS44LS41IDExLjcgNS4yIDEwLjEgNi43IDE1LjggNi42IDI2LjEtLjEgMTAuNC0yLjIgMTcuNi02LjkgMjQtMy4zIDQuNC0zLjIgNy44LjUgMTQuOCA0IDcuOCA1LjcgMTguNCA0LjIgMjYuNi0xLjcgOS0yIDguNiA1LjMgOC42IDYuMiAwIDYuNi0uMSA3LjYtMi43IDEuNC0zLjYgMS4zLTE5LjUtLjEtMjUuNy0uNi0yLjctMi03LjEtMy4yLTkuOGwtMi4xLTQuOSAyLjYtNC44YzcuNi0xMy45IDcuOS0zNS45LjYtNTIuOGwtMi00LjcgMi41LTQuNmM5LjktMTguMyA2LjQtNDMuOS04LjEtNTkuMWwtNS44LTYuMS4zLTE0LjJjLjQtMTYuNC0xLjMtMjYuNi01LjgtMzUuNy02LjQtMTIuNi0xNy4yLTE1LjktMjYuMy03LjktNS40IDQuNy05LjIgMTMuOC0xMi4zIDI5LjgtLjMgMS40LTEgMi4yLTEuNyAxLjgtMTguMi04LTI5LjctOC41LTQ0LjMtMi4xTDY1IDU0LjlsLS40LTIuMkM2MSAzNC4yIDU2LjEgMjQuMiA0OSAyMC41Yy00LjMtMi4xLTcuNC0yLjQtMTEuMy0xbTcuNyAxNi44YzQuMiA3LjEgOC4xIDMwLjEgNS43IDMzLjYtLjUuOC0zLjEgMS42LTUuOCAxLjgtMi42LjItNi4yLjgtOCAxLjNsLTMuMS44LS43LTQuOWMtLjgtNS45LjItMTcuMiAyLjItMjQuOEMzNy4xIDM4LjQgNDAuNSAzMiA0MiAzMmMuNSAwIDIgMS45IDMuNCA0LjNtOTYuNS0xYzQgNi41IDYuOSAyMy45IDUuNiAzMy42bC0uNyA0LjktMy4xLS44Yy0xLjgtLjUtNS40LTEuMS04LTEuMy0yLjctLjItNS4zLTEtNS44LTEuOC0xLjItMS43LS4zLTE0LjEgMS43LTIyLjkgMS41LTYuNCA1LjctMTUgNy40LTE1IC40IDAgMS44IDEuNSAyLjkgMy4zIi8+PHBhdGggZD0iTTc3LjggMTE5LjljLTcuMyAyLjQtMTEuNiA1LjEtMTYuNSAxMC40LTUuNSA2LTcuNiAxMi03LjEgMjAuMS41IDcuNiAzLjUgMTIuOSAxMC42IDE4LjMgNi4yIDQuNyAxMi43IDYuMyAyNS43IDYuMyAxNy4yIDAgMjUuOC0zLjYgMzIuOS0xMy44IDQuMi01LjkgNC44LTE1LjUgMS42LTIzLTIuOS02LjgtMTEuMS0xNC4zLTE4LjgtMTcuMy04LTMuMS0yMC43LTMuNi0yOC40LTFtMjUuNyAxMGMxNi4xIDcuMSAxOS40IDIzLjIgNi42IDMxLjgtNC45IDMuMy05LjQgNC4zLTE5LjYgNC4zcy0xNC43LTEtMTkuNi00LjNjLTE3LjgtMTItMy4yLTM1LjYgMjEuMS0zNC4zIDMuOS4yIDguNiAxLjIgMTEuNSAyLjUiLz48cGF0aCBkPSJNODMuOCAxNDAuMWMtMi41IDEuNC0yLjIgNC40LjcgNi43IDIgMS42IDIuNCAyLjYgMS45IDQuOS0uNyAzLjYgMS41IDUuOCA1LjEgNC45IDIuMS0uNSAyLjUtMS4yIDIuNS00LjYgMC0yLjkuNS00LjIgMi01IDIuNy0xLjUgMi43LTYuNiAwLTcuNS0xLS4zLTIuOC0uMS00IC41LTEuNC43LTIuNi44LTMuOSAwLTIuMy0xLjItMi4yLTEuMi00LjMuMW0tNDQuMS0xOC45Yy0uOS43LTIuMyAzLTMuMiA1LTIuMSA1LjMtLjEgMTAuMyA0LjcgMTEuNiA0LjMgMS4xIDYgLjYgOS4yLTIuNyA0LTQuMSA0LjMtOC4xIDEuMS0xMS45LTIuMS0yLjUtMy40LTMuMi02LjQtMy4yLTIgMC00LjUuNi01LjQgMS4ybTg5LjggMmMtMy4yIDMuOC0yLjkgNy44IDEuMSAxMS45IDMuMiAzLjMgNC45IDMuOCA5LjIgMi43IDQuOS0xLjMgNi44LTYuMiA0LjYtMTEuOC0xLjktNC43LTMuOC02LTguNy02LTIuNyAwLTQuMS43LTYuMiAzLjIiLz48L2c+PC9zdmc+"
+      },
+      "displayName": "Ollama Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de documents"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

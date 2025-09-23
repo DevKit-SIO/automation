@@ -1,0 +1,679 @@
+{
+  "id": 8496,
+  "name": "Analyse et Évaluez les CV avec PDF Vector AI",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-09-12T06:33:00.399Z",
+  "description": "## Aperçu\nLes départements RH et les recruteurs passent d'innombrables heures à examiner manuellement les CV, manquant souvent des candidats qualifiés en raison de contraintes de temps. Ce flux de travail automatise l'ensemble du processus de sélection des CV en extrayant des données structurées à partir de CV dans n'importe quel format (PDF, documents Word ou même images de CV photographiées/scannées), en calculant des scores d'expérience et en créant des profils de candidats complets prêts pour votre système ATS.\n\n## Ce Que Vous Pouvez Faire\nCe flux de travail récupère automatiquement les CV depuis Google Drive et utilise l'IA pour extraire toutes les informations pertinentes sur les candidats, y compris les détails personnels, l'expérience professionnelle avec les dates, l'éducation, les compétences et les certifications. Il gère intelligemment divers formats de CV, y compris les PDF, les documents Word et même les CV scannés ou photographiés à l'aide de l'OCR. Le flux de travail calcule le nombre total d'années d'expérience, suit l'expérience spécifique aux compétences, génère des scores de compétence pour chaque compétence et fournit une évaluation alimentée par l'IA des forces et de l'adéquation des candidats pour différents rôles.\n\n## Pour Qui C'est\nParfait pour les départements RH traitant un grand volume de candidatures, les agences de recrutement gérant plusieurs clients, les équipes d'acquisition de talents cherchant à améliorer la qualité des candidats, et les responsables du recrutement qui souhaitent des informations basées sur des données pour la prise de décision. Idéal pour les organisations qui doivent maintenir des normes d'évaluation cohérentes entre différents examinateurs et qui souhaitent réduire le temps de recrutement tout en améliorant la qualité de l'adéquation des candidats.\n\n## Le Problème Qu'il Résout\nLa sélection manuelle des CV est inefficace et incohérente. Différents examinateurs peuvent évaluer le même CV de manière différente, entraînant des occasions manquées et des biais. Ce flux de travail standardise le processus d'extraction, calcule automatiquement les années d'expérience pour chaque compétence et fournit des métriques de notation objectives pour aider à identifier les meilleurs candidats plus rapidement tout en réduisant le biais humain dans le processus de sélection initial.\n\n## Instructions de Configuration\n1. Configurez les identifiants Google Drive dans n8n\n2. Installez le nœud communautaire PDF Vector depuis le marché n8n\n3. Configurez vos identifiants API PDF Vector\n4. Configurez votre stockage de données préféré (base de données ou feuille de calcul)\n5. Personnalisez les catégories de compétences pour votre secteur\n6. Configurez l'algorithme de notation en fonction de vos exigences\n7. Connectez-vous à votre système ATS existant si nécessaire\n\n## Caractéristiques Clés\n- **Récupération Automatique des CV** : Récupérez automatiquement les CV des dossiers Google Drive\n- **Support de Format Universel** : Traitez les PDF, les documents Word et les CV photographiés\n- **Capacités OCR** : Extraire du texte à partir de documents scannés ou photographiés\n- **Calcul d'Expérience** : Calculez automatiquement l'expérience totale et spécifique aux compétences\n- **Notation de Compétence** : Générez des évaluations objectives de compétence\n- **Évaluation par IA** : Obtenez des informations intelligentes sur l'adéquation et les forces des candidats\n- **Support Multilingue** : Gérez les CV dans diverses langues\n- **Intégration ATS** : Produisez des données structurées compatibles avec les principaux systèmes ATS\n\n## Options de Personnalisation\nDéfinissez des catégories de compétences personnalisées pertinentes pour votre secteur, ajustez les poids de notation pour différents types d'expérience, ajoutez des champs d'extraction spécifiques pour votre organisation, mettez en œuvre un appariement de mots-clés pour les exigences de poste, configurez des systèmes de classement automatisés des candidats, créez des critères d'évaluation spécifiques aux rôles et intégrez-vous à LinkedIn ou à d'autres réseaux professionnels pour des informations améliorées sur les candidats.\n\n**Remarque :** Ce flux de travail utilise le nœud communautaire PDF Vector. Assurez-vous de l'installer depuis la collection de nœuds communautaires n8n avant d'utiliser ce modèle.",
+  "workflow": {
+    "meta": {
+      "instanceId": "placeholder"
+    },
+    "nodes": [
+      {
+        "id": "overview-note",
+        "name": "System Overview",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          50,
+          50
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 350,
+          "height": 180,
+          "content": "## 👥 AI Resume Processing System\n\nAutomated recruitment workflow:\n• **Collects** resumes from multiple sources\n• **Extracts** skills, experience, education\n• **Matches** against job requirements\n• **Scores** candidates objectively\n• **Integrates** with your ATS"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "setup-note",
+        "name": "Setup Required",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          50,
+          250
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 280,
+          "height": 150,
+          "content": "## ⚙️ Configure First\n\n1. Set job requirements JSON\n2. Adjust scoring weights\n3. Add PDF Vector API key\n4. Connect ATS database\n5. Set up notifications"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "input-note",
+        "name": "Input Formats",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          450,
+          450
+        ],
+        "parameters": {
+          "width": 250,
+          "height": 150,
+          "content": "## 📄 Resume Input\n\nAccepts multiple formats:\n• PDF resumes\n• Word documents\n• LinkedIn exports\n• Text files\n\n💡 Bulk processing capable"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "extract-note",
+        "name": "Data Extraction",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          750,
+          450
+        ],
+        "parameters": {
+          "width": 260,
+          "height": 180,
+          "content": "## 🤖 AI Extraction\n\nPDF Vector extracts:\n• Personal info\n• Work experience\n• Education details\n• Skills & technologies\n• Certifications\n\n✨ Structured JSON output"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "scoring-note",
+        "name": "Candidate Scoring",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1050,
+          450
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 260,
+          "height": 180,
+          "content": "## 📊 Scoring Engine\n\n**Weighted scoring:**\n• Skills match: 40%\n• Experience: 30%\n• Education: 20%\n• Certifications: 10%\n\n🎯 Customizable weights"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "manual-trigger",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "notes": "Start resume parsing",
+        "position": [
+          250,
+          300
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "google-drive",
+        "name": "Get Resume from Google Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "notes": "Download resume from Google Drive",
+        "position": [
+          450,
+          300
+        ],
+        "parameters": {
+          "fileId": "={{ $json.fileId }}",
+          "operation": "download"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "pdfvector-parse",
+        "name": "PDF Vector - Parse Resume",
+        "type": "n8n-nodes-pdfvector.pdfVector",
+        "notes": "Extract candidate information",
+        "position": [
+          650,
+          300
+        ],
+        "parameters": {
+          "prompt": "Extract all relevant information from this resume document or image including personal details, work experience with dates and achievements, education, all technical and soft skills, certifications, and languages. Handle both digital documents and scanned/photographed resumes. Pay special attention to dates for calculating experience.",
+          "schema": "{\"type\":\"object\",\"properties\":{\"personalInfo\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"phone\":{\"type\":\"string\"},\"location\":{\"type\":\"string\"},\"linkedIn\":{\"type\":\"string\"},\"summary\":{\"type\":\"string\"}}},\"workExperience\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"company\":{\"type\":\"string\"},\"position\":{\"type\":\"string\"},\"startDate\":{\"type\":\"string\"},\"endDate\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"achievements\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"technologies\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}}}},\"education\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"institution\":{\"type\":\"string\"},\"degree\":{\"type\":\"string\"},\"field\":{\"type\":\"string\"},\"graduationDate\":{\"type\":\"string\"},\"gpa\":{\"type\":\"string\"}}}},\"skills\":{\"type\":\"object\",\"properties\":{\"technical\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"soft\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"languages\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"language\":{\"type\":\"string\"},\"proficiency\":{\"type\":\"string\"}}}}}},\"certifications\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"issuer\":{\"type\":\"string\"},\"date\":{\"type\":\"string\"},\"expiryDate\":{\"type\":\"string\"}}}}},\"required\":[\"personalInfo\"],\"additionalProperties\":false}",
+          "resource": "document",
+          "inputType": "file",
+          "operation": "extract",
+          "binaryPropertyName": "data"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "calculate-metrics",
+        "name": "Calculate Experience Metrics",
+        "type": "n8n-nodes-base.code",
+        "notes": "Calculate experience and skill scores",
+        "position": [
+          850,
+          300
+        ],
+        "parameters": {
+          "jsCode": "// Calculate experience and skill metrics\nconst resume = $input.first().json.data;\nconst currentDate = new Date();\n\n// Calculate total years of experience\nlet totalExperience = 0;\nlet skillExperience = {};\n\nif (resume.workExperience) {\n  resume.workExperience.forEach(job => {\n    const startDate = new Date(job.startDate);\n    const endDate = job.endDate === 'Present' ? currentDate : new Date(job.endDate);\n    const years = (endDate - startDate) / (1000 * 60 * 60 * 24 * 365);\n    totalExperience += years;\n    \n    // Track experience per technology\n    if (job.technologies) {\n      job.technologies.forEach(tech => {\n        skillExperience[tech] = (skillExperience[tech] || 0) + years;\n      });\n    }\n  });\n}\n\n// Create skill proficiency scores\nconst skillScores = {};\nif (resume.skills?.technical) {\n  resume.skills.technical.forEach(skill => {\n    const experience = skillExperience[skill] || 0;\n    let score = 0;\n    if (experience >= 5) score = 5;\n    else if (experience >= 3) score = 4;\n    else if (experience >= 1) score = 3;\n    else if (experience > 0) score = 2;\n    else score = 1;\n    \n    skillScores[skill] = {\n      yearsExperience: Math.round(experience * 10) / 10,\n      proficiencyScore: score\n    };\n  });\n}\n\nreturn [{\n  json: {\n    candidateProfile: resume,\n    metrics: {\n      totalYearsExperience: Math.round(totalExperience * 10) / 10,\n      skillScores: skillScores,\n      educationLevel: resume.education?.[0]?.degree || 'Not specified',\n      certificationCount: resume.certifications?.length || 0,\n      languageCount: resume.skills?.languages?.length || 0\n    },\n    processedAt: new Date().toISOString()\n  }\n}];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "pdfvector-assess",
+        "name": "PDF Vector - AI Assessment",
+        "type": "n8n-nodes-pdfvector.pdfVector",
+        "notes": "Get AI assessment",
+        "position": [
+          1050,
+          300
+        ],
+        "parameters": {
+          "prompt": "Based on this resume document or image, provide a brief assessment of the candidate's strengths, potential roles they would fit, and any notable achievements. Also suggest their seniority level (Junior/Mid/Senior/Lead).",
+          "resource": "document",
+          "inputType": "file",
+          "operation": "ask",
+          "binaryPropertyName": "data"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "create-profile",
+        "name": "Create Candidate Profile",
+        "type": "n8n-nodes-base.set",
+        "notes": "Combine all data",
+        "position": [
+          1250,
+          300
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "assignment1",
+                "name": "profile",
+                "type": "object",
+                "value": "={{ $node['Calculate Experience Metrics'].json.candidateProfile }}"
+              },
+              {
+                "id": "assignment2",
+                "name": "metrics",
+                "type": "object",
+                "value": "={{ $node['Calculate Experience Metrics'].json.metrics }}"
+              },
+              {
+                "id": "assignment3",
+                "name": "aiAssessment",
+                "type": "string",
+                "value": "={{ $json.answer }}"
+              },
+              {
+                "id": "assignment4",
+                "name": "atsReady",
+                "type": "boolean",
+                "value": "true"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3
+      }
+    ],
+    "connections": {
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Resume from Google Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF Vector - Parse Resume": {
+        "main": [
+          [
+            {
+              "node": "Calculate Experience Metrics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF Vector - AI Assessment": {
+        "main": [
+          [
+            {
+              "node": "Create Candidate Profile",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculate Experience Metrics": {
+        "main": [
+          [
+            {
+              "node": "PDF Vector - AI Assessment",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Resume from Google Drive": {
+        "main": [
+          [
+            {
+              "node": "PDF Vector - Parse Resume",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 5
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-pdfvector.pdfVector": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "PDF Vector",
+    "username": "pdfvector",
+    "bio": "A fully featured PDF APIs for developers - Parse any PDF or Word document, extract structured data, and access millions of academic papers - all through simple APIs.",
+    "verified": true,
+    "links": [
+      "https://www.pdfvector.com"
+    ],
+    "avatar": "https://gravatar.com/avatar/c3284f6b75ccb280de2edf5a173c7f761f64ea1b1f9114ff2ef4c4b72f980675?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les Champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 17,
+      "name": "RH"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": []
+}
