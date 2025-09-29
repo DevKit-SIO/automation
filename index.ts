@@ -2,42 +2,42 @@ import url from "url";
 import qs from "qs";
 import type {ApiWorkflowsParams, Category, Workflow} from "./src/_models.ts";
 import figlet from "figlet";
-import {readdirSync, readJSONSync, readFileSync} from "fs-extra";
+import {readdirSync, readFileSync, readJSONSync} from "fs-extra";
 import {join, resolve} from "node:path";
 import {openapiSpec} from "./src/openapi.ts";
 import swaggerDist from "swagger-ui-dist";
 
-// if (!process.browser){
-//     const {parseArgs} = require('util')
-//     const {values} = parseArgs({
-//         args: Bun.argv,
-//         options: {
-//             dev: {
-//                 type: 'boolean',
-//                 default: false,
-//             },
-//             port: {
-//                 type: 'string',
-//                 default: '3000',
-//                 short: 'p'
-//             },
-//             host: {
-//                 type: 'string',
-//                 default: '127.0.0.1',
-//                 short: 'h'
-//             },
-//         },
-//         strict: true,
-//         allowPositionals: true,
-//     });
-// }
-// else {
-    const values = {
-        dev: false,
-        hostname: 'locahost',
-        port: 3000,
-    }
-// }
+let cli_params = {
+    dev: false,
+    host: 'localhost',
+    port: 3000,
+}
+
+if (!process.browser) {
+    const {parseArgs} = require('util')
+    const {values} = parseArgs({
+        args: Bun.argv,
+        options: {
+            dev: {
+                type: 'boolean',
+                default: false,
+            },
+            port: {
+                type: 'string',
+                default: '3000',
+                short: 'p'
+            },
+            host: {
+                type: 'string',
+                default: '127.0.0.1',
+                short: 'h'
+            },
+        },
+        strict: true,
+        allowPositionals: true,
+    });
+    cli_params = values
+}
 const locals = ["en-US", "fr-FR"]; // "es-ES", "pt-PT", "de-DE", "it-IT", "ar-MA"
 const workflowsDir = "automation";
 const localDir = join(workflowsDir, 'i18n');
@@ -199,9 +199,9 @@ const server = Bun.serve({
     // Enable development mode for:
     // - Detailed error messages
     // - Hot reloading (Bun v1.2.3+ required)
-    development: values?.dev,
-    hostname: values?.host,
-    port: values?.port,
+    development: cli_params?.dev,
+    hostname: cli_params?.host,
+    port: cli_params?.port,
     idleTimeout: 255,
     async fetch(req) {
         const url = new URL(req.url);
