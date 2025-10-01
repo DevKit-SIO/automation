@@ -46,6 +46,7 @@ const defaultPagination = {
     items: 25,
 }
 
+
 const server = Bun.serve({
     routes: {
         "/api/workflows/": {
@@ -240,3 +241,5 @@ const unitalk = figlet.textSync("Unitalk AI");
 console.log(unitalk)
 
 console.log(`Listening on http://${server.hostname}:${server.port} in "${server?.development ? 'development' : 'production'}" mode ...`);
+
+export default server

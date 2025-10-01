@@ -1,0 +1,562 @@
+{
+  "id": 6394,
+  "name": "Scrape Amazon Keyboard Products with ScrapeGraphAI to Google Sheets",
+  "views": 272,
+  "recentViews": 1,
+  "totalViews": 272,
+  "createdAt": "2025-07-24T18:33:11.111Z",
+  "description": "# Scraper de Produits de Claviers Amazon avec Intégration AI et Google Sheets\n\n## 🎯 Public Cible\n- Analystes et chercheurs en e-commerce\n- Chefs de produits suivant les claviers concurrents\n- Analystes de données surveillant les tendances du marché des claviers Amazon\n- Propriétaires d'entreprises menant des recherches de marché\n- Développeurs construisant des outils de comparaison de produits\n\n## 🚀 Énoncé du Problème\nLa surveillance manuelle des produits de claviers Amazon est chronophage et sujette aux erreurs. Ce modèle résout le défi de la collecte, de la structuration et du stockage automatiques des données des produits de claviers pour l'analyse, permettant une prise de décision basée sur les données dans le marché concurrentiel des claviers.\n\n## 🔧 Comment ça Marche\n\nCe flux de travail scrappe automatiquement les produits de claviers Amazon en utilisant le scraping web alimenté par l'IA et les stocke dans Google Sheets pour une analyse et un suivi complets.\n\n### Composants Clés\n\n1. **Déclencheur Programmé** - Exécute le flux de travail à des intervalles spécifiés pour garder les données fraîches et à jour\n2. **Scraping Alimenté par l'IA** - Utilise ScrapeGraphAI pour extraire intelligemment les informations sur les produits à partir des résultats de recherche Amazon avec le traitement du langage naturel\n3. **Traitement des Données** - Transforme et structure les données scrappées pour une compatibilité optimale avec les feuilles de calcul\n4. **Intégration Google Sheets** - Enregistre automatiquement les données des produits dans votre feuille de calcul avec un mappage de colonnes approprié\n\n## 📊 Spécifications des Colonnes Google Sheets\n\nLe modèle crée les colonnes suivantes dans vos Google Sheets :\n\n| Colonne | Type de Donnée | Description | Exemple |\n|---------|----------------|-------------|---------|\n| **title** | Chaîne | Nom et modèle du produit | \"Clavier sans fil Logitech MX Keys Advanced éclairé\" |\n| **url** | URL | Lien direct vers la page produit Amazon | \"https://www.amazon.com/dp/B07S92QBCX\" |\n| **category** | Chaîne | Classification de la catégorie de produit | \"Électronique\" |\n\n## 🛠️ Instructions de Configuration\n\n**Temps de configuration estimé : 10-15 minutes**\n\n### Prérequis\n- Instance n8n avec nœuds communautaires activés\n- Compte et identifiants API ScrapeGraphAI\n- Compte Google Sheets avec accès API\n\n### Configuration Étape par Étape\n\n#### 1. Installer les Nœuds Communautaires\n```bash\n# Installer le nœud communautaire ScrapeGraphAI\nnpm install n8n-nodes-scrapegraphai\n```\n\n#### 2. Configurer les Identifiants ScrapeGraphAI\n- Naviguez vers Identifiants dans votre instance n8n\n- Ajoutez de nouveaux identifiants API ScrapeGraphAI\n- Entrez votre clé API depuis le tableau de bord ScrapeGraphAI\n- Testez la connexion pour vous assurer qu'elle fonctionne\n\n#### 3. Configurer la Connexion Google Sheets\n- Ajoutez des identifiants OAuth2 Google Sheets\n- Accordez les autorisations nécessaires pour l'accès à la feuille de calcul\n- Sélectionnez ou créez une feuille de calcul cible pour le stockage des données\n- Configurez le nom de la feuille (par défaut : \"Feuille1\")\n\n#### 4. Personnaliser les Paramètres de Recherche Amazon\n- Mettez à jour le paramètre `websiteUrl` dans le nœud ScrapeGraphAI\n- Modifiez les termes de recherche, les filtres ou les catégories selon les besoins\n- Ajustez l'invite utilisateur pour extraire des champs supplémentaires si nécessaire\n\n#### 5. Configurer le Déclencheur de Planification\n- Définissez votre fréquence d'exécution préférée (quotidienne, hebdomadaire, etc.)\n- Choisissez les fuseaux horaires appropriés pour vos heures d'ouverture\n- Tenez compte des limites de taux d'Amazon lors de la définition de la fréquence\n\n#### 6. Tester et Valider\n- Exécutez le flux de travail manuellement pour vérifier toutes les connexions\n- Vérifiez Google Sheets pour un formatage correct des données\n- Validez que tous les champs requis sont capturés\n\n## 🔄 Options de Personnalisation du Flux de Travail\n\n### Modifier les Critères de Recherche\n- Changez l'URL Amazon pour cibler des catégories de claviers spécifiques\n- Ajoutez des filtres de prix, des filtres de marque ou des exigences de notation\n- Mettez à jour les termes de recherche pour différents types de produits\n\n### Étendre la Collecte de Données\n- Modifiez l'invite utilisateur pour extraire des champs supplémentaires (prix, notation, avis)\n- Ajoutez des nœuds de traitement des données pour des analyses avancées\n- Intégrez d'autres sources de données pour une analyse de marché complète\n\n### Personnalisation de la Sortie\n- Changez l'opération Google Sheets de \"ajouter\" à \"upsert\" pour la dé-duplication\n- Ajoutez des étapes de validation et de nettoyage des données\n- Implémentez la gestion des erreurs et la logique de réessai\n\n## 📈 Cas d'Utilisation\n\n- **Analyse Concurrentielle** : Suivez les prix et les caractéristiques des claviers concurrents\n- **Recherche de Marché** : Surveillez les produits et catégories de claviers tendance\n- **Gestion des Stocks** : Gardez une trace des options de claviers disponibles\n- **Surveillance des Prix** : Suivez les changements de prix au fil du temps\n- **Développement de Produits** : Recherchez les lacunes et les opportunités du marché\n\n## 🚨 Notes Importantes\n\n- Respectez les conditions de service et les limites de taux d'Amazon\n- Envisagez d'implémenter des délais entre les requêtes pour de grands ensembles de données\n- Révisez et mettez régulièrement à jour vos paramètres de scraping\n- Surveillez l'utilisation de l'API pour gérer les coûts efficacement\n- Gardez vos identifiants sécurisés et faites-les tourner régulièrement\n\n## 🔧 Dépannage\n\n**Problèmes Courants :**\n- Erreurs de connexion ScrapeGraphAI : Vérifiez la clé API et l'état du compte\n- Erreurs de permission Google Sheets : Vérifiez la portée et les permissions OAuth2\n- Problèmes de formatage des données : Révisez la logique JavaScript du nœud Code\n- Limitation de taux : Ajustez la fréquence de planification et implémentez des délais\n\n**Ressources de Support :**\n- Documentation et référence API de ScrapeGraphAI\n- Forums communautaires n8n pour l'assistance au flux de travail\n- Documentation API Google Sheets pour des configurations avancées\n",
+  "workflow": {
+    "id": "JpP0OwP6cBEOvIgP",
+    "meta": {
+      "instanceId": "521567c5f495f323b77849c4cfd0c9f4f2396c986e324e0e66c8425b6f124744",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Amazon Keyboard Product Scraper with AI and Google Sheets",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "69b249d2-cc60-42c5-9e26-a9a739fb82a9",
+        "name": "Automated Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          700,
+          820
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "3f475331-5783-4b67-bfa3-99333f53255d",
+        "name": "AI-Powered Amazon Product Scraper",
+        "type": "n8n-nodes-scrapegraphai.scrapegraphAi",
+        "position": [
+          1380,
+          820
+        ],
+        "parameters": {
+          "userPrompt": "Extract all the products from this site. Use the following schema for response { \"title\": \"Logitech MX Keys Advanced Wireless Illuminated Keyboard\", \"url\": \"https://www.amazon.com/dp/B07S92QBCX\", \"category\": \"Electronics\" }",
+          "websiteUrl": "https://www.amazon.com/s?k=keyboard&crid=2FI5OSSH1T0Q8&sprefix=keyboar%2Caps%2C191&ref=nb_sb_ss_p13n-pd-dpltr-ranker_ci_hl-bn-left_1_7"
+        },
+        "credentials": {
+          "scrapegraphAIApi": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "07915798-e59c-46af-b333-a9270e8dd2d8",
+        "name": "Google Sheets Data Storage",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          2980,
+          820
+        ],
+        "parameters": {
+          "columns": {
+            "value": {},
+            "schema": [
+              {
+                "id": "title",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "url",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "url",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "category",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "category",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "autoMapInputData",
+            "matchingColumns": []
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 4.5
+      },
+      {
+        "id": "bdc19893-aa0b-4e30-89cb-3fccc2d2d0ae",
+        "name": "Data Formatting and Processing",
+        "type": "n8n-nodes-base.code",
+        "notes": "Hey this is where \nyou \nformat results ",
+        "position": [
+          2140,
+          820
+        ],
+        "parameters": {
+          "jsCode": "// Get the input data\nconst inputData = $input.all()[0].json;\n\n// Extract products array from result\nconst products = inputData.result.products;\n\n// Map each product and return only title, url, category\nreturn products.map(product => ({\n  json: {\n    title: product.title,\n    url: product.url,\n    category: product.category\n  }\n}));"
+        },
+        "notesInFlow": true,
+        "typeVersion": 2
+      },
+      {
+        "id": "36debe48-6a09-4036-af3f-5465aad6386e",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1180,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 2: AI-Powered Amazon Product Scraper 🤖\n\nThis is the core node which uses ScrapeGraphAI to intelligently extract product information from Amazon.\n\n## How to Use\n- Configure the Amazon search URL\n- Use natural language to describe what data to extract\n- The AI will automatically parse and structure the results\n\n## Configuration\n- **Website URL**: Amazon search results page for keyboards\n- **User Prompt**: Natural language instructions for data extraction\n- **API Credentials**: ScrapeGraphAI API key required\n\n## Example\n- **Website**: Amazon keyboard search results\n- **Instruction**: \"Extract product titles, URLs, and categories\"\n\n⚠️ **Note**: This is a community node requiring self-hosting"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "127e5d40-1c71-4752-97b4-6a25a00921d1",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1920,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 3: Data Formatting and Processing 🧱\n\nThis node transforms and structures the scraped data for optimal Google Sheets compatibility.\n\n## What it does\n- Extracts products array from ScrapeGraphAI response\n- Maps each product to standardized format\n- Ensures data consistency and structure\n- Prepares clean data for spreadsheet storage\n\n## Data Structure\n- **title**: Product name and model\n- **url**: Direct Amazon product link\n- **category**: Product classification\n\n## Customization\n- Modify the JavaScript code to extract additional fields\n- Add data validation and cleaning logic\n- Implement error handling for malformed data"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "43a90a8b-c1b8-4129-8090-cc1e4110cc72",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          460,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 1: Automated Schedule Trigger ⏱️\n\nThis trigger automatically invokes the workflow at specified intervals to keep data fresh and up-to-date.\n\n## Configuration Options\n- **Frequency**: Daily, weekly, or custom intervals\n- **Time Zone**: Configure for your business hours\n- **Execution Time**: Choose optimal times for data collection\n\n## Best Practices\n- Set appropriate intervals to respect rate limits\n- Consider Amazon's peak hours for better data quality\n- Monitor execution logs for any issues\n- Adjust frequency based on your analysis needs"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "554bbdbe-1292-4947-8427-c29f817479be",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2680,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 4: Google Sheets Data Storage 📊\n\nThis node securely stores the processed keyboard product data in your Google Sheets for analysis and tracking.\n\n## What it does\n- Connects to your Google Sheets account via OAuth2\n- Appends new product data as rows\n- Maintains historical data for trend analysis\n- Provides structured data for business intelligence\n\n## Configuration\n- **Spreadsheet**: Select or create target Google Sheets document\n- **Sheet Name**: Configure worksheet (default: Sheet1)\n- **Operation**: Append mode for continuous data collection\n- **Column Mapping**: Automatic mapping of title, url, category fields\n\n## Data Management\n- Each execution adds new product entries\n- Historical data preserved for analysis\n- Easy export and sharing capabilities\n- Built-in Google Sheets analytics and filtering"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "a36e4f30-7663-4b7e-be9b-3e2a06cd58d1",
+    "connections": {
+      "Automated Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "AI-Powered Amazon Product Scraper",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Data Formatting and Processing": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets Data Storage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI-Powered Amazon Product Scraper": {
+        "main": [
+          [
+            {
+              "node": "Data Formatting and Processing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 8,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-scrapegraphai.scrapegraphAi": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "vinci-king-01",
+    "username": "vinci-king-01",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/d939eeef03a5fcb5df08bee8196f12ccb248c38209487414e419032004f0c014?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de Marché"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    }
+  ],
+  "image": []
+}

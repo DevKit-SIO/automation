@@ -1,0 +1,818 @@
+{
+  "id": 2691,
+  "name": "Flux de travail de conversion de devises",
+  "views": 937,
+  "recentViews": 0,
+  "totalViews": 937,
+  "createdAt": "2025-01-02T18:21:14.460Z",
+  "description": "**Objectif :** Ce flux de travail illustre un mécanisme sophistiqué mais pragmatique pour automatiser les conversions de devises en s'appuyant sur de simples requêtes HTTP acheminées via un webhook. En interceptant les demandes des utilisateurs, en obtenant des données de taux de change en temps réel via les résultats de recherche Google et en formatant les données en réponses exploitables, il élimine la dépendance aux API tierces. Cette efficacité en fait un instrument indispensable pour diverses applications, y compris les stratégies de tarification dynamique pour les systèmes alimentés par l'IA, l'automatisation des données financières et le calcul de devises en temps réel au sein de flux de travail complexes. La simplicité architecturale du flux de travail garantit une intégration fluide dans les domaines professionnel et académique, optimisant à la fois l'évolutivité et la fiabilité.\n\n**Étapes du flux de travail :**\n1. **Capturer la requête de conversion :**\n   - Le flux de travail commence par intercepter l'entrée de l'utilisateur livrée sous forme de requête GET via un webhook configuré. Les entrées doivent respecter une syntaxe structurée, telle que `5usd to mxn`, pour garantir un traitement sans faille.\n   - *Conseil de test :* Utilisez des outils comme Postman ou un navigateur pour tester les requêtes GET et vérifier que le Webhook reçoit les entrées correctement.\n2. **Récupérer le taux de change :**\n   - En utilisant le nœud de requête HTTP, une requête de recherche Google est exécutée pour récupérer les données actuelles des taux de change. Cette méthode garantit que le flux de travail reste économique et adaptable tout en contournant les dépendances aux API.\n3. **Extraire les données de conversion :**\n   - En traitant le HTML retourné des résultats de recherche de Google, ce nœud extrait des chiffres de taux de change précis et des informations contextuelles critiques pour des conversions exactes.\n   - *Gestion des erreurs :* Si l'extraction échoue, vérifiez que le format d'entrée est correct et mettez à jour les sélecteurs CSS pour refléter tout changement dans la structure HTML de Google.\n4. **Formater la réponse de conversion :**\n   - Les données extraites subissent un affinage et sont formatées en une chaîne structurée et conviviale qui transmet les résultats de conversion avec clarté et précision.\n5. **Envoyer la réponse de conversion :**\n   - Le flux de travail se termine par l'envoi de la réponse formatée au point d'origine de la demande, complétant la boucle avec efficacité et fiabilité.\n\n**Configuration requise :**\n- Configurez le nœud Webhook pour accueillir les requêtes GET. Les paramètres de requête doivent suivre le format : `https://your-webhook-url/currency-converter?q=5usd+to+mxn`.\n- Les entrées doivent strictement respecter la syntaxe prédéfinie (par exemple, `5usd to mxn`). Les écarts peuvent induire des erreurs de traitement ou produire des résultats erronés.\n\n**Options de personnalisation :**\n- Les sélecteurs CSS du nœud **Extraire les données de conversion** peuvent être ajustés pour s'aligner sur les modifications de la structure HTML de Google, garantissant une opérabilité à long terme.\n- Des ajustements au nœud **Formater la réponse de conversion** permettent un formatage de sortie sur mesure, incorporant des métadonnées supplémentaires ou modifiant la structure de la réponse pour répondre à des exigences spécifiques du projet.\n\n**Fonctionnalités avancées :**\n- La conception modulaire de ce flux de travail prend en charge une intégration fluide dans des systèmes vastes. Par exemple, une plateforme de commerce électronique pourrait l'utiliser pour localiser dynamiquement les prix des produits en fonction de la géolocalisation de l'utilisateur.\n- Une fonctionnalité améliorée peut être obtenue en ajoutant des nœuds pour enregistrer les conversions, surveiller les indicateurs de performance ou déclencher des flux de travail auxiliaires conditionnés par les résultats de conversion.\n\n**Résultats attendus :**\n- Pour une requête comme `5usd to mxn`, le flux de travail génère une réponse formatée comme : `5 USD = 95 MXN`. Cette sortie est optimisée pour la lisibilité et l'application pratique.\n\n**Exemples de cas d'utilisation :**\n- **Intégration de l'IA :** Permet aux agents d'intelligence artificielle de traiter efficacement les conversions de prix en temps réel à travers diverses devises, améliorant leurs capacités de calcul.\n- **Opérations financières :** Automatise les conversions de devises précises pour les rapports d'entreprise, les transactions internationales et l'analyse de marché.\n- **Planification financière personnelle :** Aide les utilisateurs à calculer les conversions de devises pour des décisions d'investissement ou la budgétisation de voyages avec un effort manuel minimal.\n- **Applications de commerce électronique :** Facilite les ajustements de prix dynamiques sur les places de marché en ligne, affichant des prix localisés pour améliorer l'expérience utilisateur et les taux de conversion.\n- **Intégration de flux de travail :** S'intègre parfaitement dans des systèmes plus vastes, tels que les CRM ou les ERP, pour rationaliser les opérations financières et améliorer l'interopérabilité.\n\n**Avantages clés :**\n- **Pas de dépendance à l'API :** En s'appuyant sur des données publiquement disponibles de Google, le flux de travail élimine les complexités et les coûts associés à l'intégration d'API, réduisant les frais généraux et améliorant l'accessibilité.\n- **Précision et actualité :** Garantit des résultats précis et en temps réel en interrogeant directement Google.\n- **Flexibilité :** Conçu pour s'adapter à divers contextes opérationnels et formats d'entrée, en faisant un atout polyvalent dans les applications computationnelles et commerciales.\n\n**Tags :**\n- `conversion de devises`, `automatisation`, `webhook`, `extraction de données`, `intégration de l'IA`, `automatisation financière`, `commerce électronique`, `données en temps réel`, `flux de travail évolutifs`.",
+  "workflow": {
+    "id": "pDDOf7oK0FAxGLtm",
+    "meta": {
+      "instanceId": "92786e96ce436aecd3a1d62d818a74e51ca684bb36c805928bef93a3b46549ad"
+    },
+    "tags": [],
+    "nodes": [
+      {
+        "id": "6346b221-a6ca-4938-a37e-7e564b43735b",
+        "name": "Fetch Exchange Rate",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -100,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 4.2
+      },
+      {
+        "id": "a07c206e-b044-4acb-b50c-c81406370355",
+        "name": "Extract Conversion Data",
+        "type": "n8n-nodes-base.html",
+        "position": [
+          220,
+          160
+        ],
+        "parameters": {},
+        "executeOnce": true,
+        "retryOnFail": false,
+        "typeVersion": 1.2,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "b07c69c6-f956-423b-8457-d706139f94e2",
+        "name": "Format Currency Response",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          560,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 3.4
+      },
+      {
+        "id": "23a66449-3d22-40f9-b3c3-22fa4daf5c39",
+        "name": "Capture Conversion Query",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          -420,
+          160
+        ],
+        "webhookId": "974e55e6-7898-41ec-8981-d265fb814213",
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "f017000a-1fd0-4041-925d-1086c00727d7",
+        "name": "Send Conversion Response",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          920,
+          160
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "44529e37-f945-45ca-8364-abb1f7c890f1",
+        "name": "Note - Webhook",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -480,
+          20
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "f3cca102-159c-4062-90d8-c0c753a7bff9",
+        "name": "Note - HTTP Request",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -160,
+          20
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "507cbf79-be3c-4d2e-b16f-74342a0ac51d",
+        "name": "Note - HTML Extract",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          160,
+          20
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "484992d6-3aad-4190-8894-7d8c360c12f6",
+        "name": "Note - Format Response",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          520,
+          20
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "029a1ab8-2005-46d9-b1c4-01299a17ea12",
+        "name": "Note - Send Response",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          880,
+          20
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "11e4c097-dfb8-4c1d-8851-3988751c9927",
+    "connections": {
+      "Fetch Exchange Rate": {
+        "main": [
+          [
+            {
+              "node": "Extract Conversion Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Conversion Data": {
+        "main": [
+          [
+            {
+              "node": "Format Currency Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Capture Conversion Query": {
+        "main": [
+          [
+            {
+              "node": "Fetch Exchange Rate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Currency Response": {
+        "main": [
+          [
+            {
+              "node": "Send Conversion Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 16,
+  "workflowInfo": {
+    "nodeCount": 10,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.html": {
+        "count": 1
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 5
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.respondToWebhook": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Mauricio Perera",
+    "username": "rckflr",
+    "bio": "Automation consultant with over 10 years of experience specializing in AI, no-code, and workflow optimization. I’ve delivered tailored AI and NLP solutions across real estate, healthcare, and more, enhancing efficiency and customer experiences. Proficient in tools like Make, Airtable, and Zapier, I also integrate GPT models to create scalable, innovative automations. Contact me to discuss custom n8n workflows or advanced automations to streamline your processes.",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/mauricioperera/"
+    ],
+    "avatar": "https://gravatar.com/avatar/a6414920fb4353a63c1bf6af3e78e0b1387fa77adcf7610f9a7ff6e6d39ee757?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 535,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.respondToWebhook",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Répondre au Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Respond to Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 842,
+      "icon": "file:html.svg",
+      "name": "n8n-nodes-base.html",
+      "codex": {
+        "data": {
+          "alias": [
+            "extract",
+            "template",
+            "table"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.html/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "HTML"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguNjQwNjIgMEgxMC40Mzc1VjEuNzgxMjVIMTIuMDkzN1YwSDEzLjg5MDZWNS4zOTA2MkgxMi4wOTM3VjMuNTkzNzVIMTAuNDUzMVY1LjM5MDYySDguNjQwNjJNMTYuMjY1NiAxLjc5Njg3SDE0LjY3OTdWMEgxOS42NTYyVjEuNzk2ODdIMTguMDYyNVY1LjM5MDYySDE2LjI2NTZNMjAuNDQ1MyAwSDIyLjMyODFMMjMuNDg0NCAxLjg5ODQ0TDI0LjY0MDYgMEgyNi41MjM0VjUuMzkwNjJIMjQuNzI2NlYyLjcxODc1TDIzLjQ2ODcgNC42NTYyNUwyMi4yMTA5IDIuNzE4NzVWNS4zOTA2MkgyMC40NDUzTTI3LjQxNDEgMEgyOS4yMTA5VjMuNjA5MzdIMzEuNzU3OFY1LjM5MDYySDI3LjQxNDEiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik04LjU3ODEyIDM2Ljc5NjlMNiA3Ljg1OTM4SDM0LjM0MzdMMzEuNzY1NiAzNi43ODEyTDIwLjE0ODQgNDAiIGZpbGw9IiNFNDREMjYiLz4KPHBhdGggZD0iTTIwLjE3MTkgMzcuNTM5MVYxMC4yMzQ0SDMxLjc1NzhMMjkuNTQ2OSAzNC45MjE5IiBmaWxsPSIjRjE2NTI5Ii8+CjxwYXRoIGQ9Ik0xMS4yNjU2IDEzLjc3MzRIMjAuMTcxOVYxNy4zMjAzSDE1LjE1NjJMMTUuNDg0NCAyMC45NTMxSDIwLjE3MTlWMjQuNDkyMkgxMi4yMzQ0TTEyLjM5MDYgMjYuMjczNEgxNS45NTMxTDE2LjIwMzEgMjkuMTA5NEwyMC4xNzE5IDMwLjE3MTlWMzMuODc1TDEyLjg5MDYgMzEuODQzNyIgZmlsbD0iI0VCRUJFQiIvPgo8cGF0aCBkPSJNMjkuMDQ2OSAxMy43NzM0SDIwLjE1NjJWMTcuMzIwM0gyOC43MTg3TTI4LjM5ODQgMjAuOTUzMUgyMC4xNTYyVjI0LjVIMjQuNTMxMkwyNC4xMTcyIDI5LjEwOTRMMjAuMTU2MiAzMC4xNzE5VjMzLjg1OTRMMjcuNDIxOSAzMS44NDM3IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K"
+      },
+      "displayName": "HTML",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 44,
+      "name": "Trading de crypto-monnaies"
+    }
+  ],
+  "image": []
+}

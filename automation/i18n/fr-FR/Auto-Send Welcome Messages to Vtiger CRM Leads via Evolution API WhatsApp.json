@@ -1,0 +1,610 @@
+{
+  "id": 6502,
+  "name": "Envoi automatique de messages de bienvenue aux prospects Vtiger CRM via l'API Evolution WhatsApp",
+  "views": 622,
+  "recentViews": 2,
+  "totalViews": 622,
+  "createdAt": "2025-07-26T23:33:23.239Z",
+  "description": "## Un de mes meilleurs ! Envoyez des salutations WhatsApp aux nouveaux prospects Vtiger automatiquement 💪😍\n\n## ⚠️ Ce workflow nécessite des nœuds communautaires et une instance n8n auto-hébergée\n\n&gt; Ce modèle utilise deux **nœuds communautaires** personnalisés :\n&gt; * `n8n-nodes-vtiger-crm`\n&gt; * `n8n-nodes-evolution-api`\n&gt; Vous devez exécuter **n8n auto-hébergé** avec **les nœuds communautaires activés**.\n\n### 🔧 Comment installer les nœuds communautaires\n\n1. Allez dans `Paramètres` → `Nœuds communautaires`\n2. Cliquez sur **Installer le nœud**\n3. Ajoutez :\n\n```bash\nn8n-nodes-vtiger-crm\nn8n-nodes-evolution-api\n```\n\n4. Redémarrez n8n si cela est demandé.\n\n---\n\n## 💬 Envoi automatique de messages de bienvenue WhatsApp aux nouveaux prospects dans Vtiger CRM\n\n### Aperçu\n\nCe workflow envoie un **message de bienvenue WhatsApp personnalisé** aux prospects nouvellement créés dans Vtiger CRM — en utilisant **l'API Evolution** — et met à jour l'enregistrement CRM pour s'assurer que le message n'est pas envoyé à nouveau.\n\nIl est idéal pour les équipes qui souhaitent **accueillir instantanément de nouveaux prospects**, réduire l'effort manuel et automatiser le premier point de contact du processus de vente.\n\n---\n\n### 🔄 Ce que fait ce workflow\n\n* ⏱ S'exécute toutes les 1 minute via un déclencheur de planification\n* 📥 Récupère le dernier prospect non contacté de Vtiger (`cf_1090 != 1`)\n* 💬 Envoie un message WhatsApp personnalisé en utilisant l'API Evolution\n* ✅ Marque le prospect comme “contacté” en mettant à jour un champ personnalisé\n\n---\n\n### 📸 Aperçu visuel\n\n#### 🧩 Toile de workflow\n\n![workflowwhatsapp.jpeg](fileId:1872)\n\n&gt; Disposition complète du flux d'automatisation dans n8n\n\n#### 💬 Serveur API Evolution\n\n![EvolutionAPI server.jpeg](fileId:1873)\n\n&gt; Exemple du message de bienvenue que le prospect reçoit :\n\n```\nSalut Ahmed Saadawi 😊,\n\nNous avons reçu votre intérêt pour nos services et nous vous contacterons bientôt.\n\nBonne journée 🙏💐\n```\n\n---\n\n## 🛠️ Instructions de configuration\n\n### 1. Configuration de Vtiger CRM\n\n* Ajoutez un **champ personnalisé** (par exemple `cf_1090`) pour suivre si un message a déjà été envoyé\n* Assurez-vous que les enregistrements de prospects contiennent :\n\n  * `prenom`, `nom`, `telephone`\n* Connectez vos **identifiants API Vtiger CRM**\n\n### 2. Configuration de l'API Evolution\n\n* Installez ou connectez-vous à votre **instance API Evolution**\n* Configurez :\n\n  * `instanceName`\n  * `remoteJid` (du téléphone du prospect Vtiger)\n  * Modèle de message (modifiez si nécessaire)\n* Ajoutez vos **identifiants API Evolution**\n\n### 3. Personnalisez le message\n\nModifiez le message dans le nœud Evolution pour correspondre au ton de votre marque.\n\n---\n\n## 👥 Pour qui est-ce ?\n\n* Équipes de vente ayant besoin de suivis instantanés de CRM à WhatsApp\n* Entreprises automatisant le premier contact avec les prospects\n* Utilisateurs de Vtiger CRM à la recherche d'outils d'engagement WhatsApp\n\n---\n\n## 🔐 Identifiants requis\n\n* ✅ API Vtiger CRM\n* ✅ API Evolution (auto-hébergée ou SaaS)\n\n---\n\n## 🏷 Étiquettes\n\n```\nvtiger, automatisation whatsapp, api evolution, suivi crm, automatisation des ventes, message de bienvenue,\nintégration crm whatsapp, onboarding des prospects, automatisation sans code, modèle n8n, n8n auto-hébergé,\nautomatisation crm vtiger, nœuds communautaires, workflow de message whatsapp\n```\n",
+  "workflow": {
+    "id": "ykXuNTlTy4GTDjOE",
+    "meta": {
+      "instanceId": "ea2b41532677d34614d95d13d7d2ccb694657be482144baf71e7140df3b2a853",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Auto-Send Welcome WhatsApp Message to new Vtiger Leads",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "9eb3438a-721e-47b1-b05d-fbeb6e6a53f0",
+        "name": "Schedule Trigger Every n Minutes",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -816,
+          -208
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 1
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "7d90f8b4-a984-4532-8378-3188d80d4ebe",
+        "name": "If there's a data returned",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -368,
+          -208
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "1a4121a1-3315-48c6-b319-be947242e291",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.result[0].id }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "48a1a508-3e84-4875-b34e-f5bc4a1ec6a3",
+        "name": "No Operation, do nothing",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          -80,
+          -16
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "63514400-625b-4bd6-bbb3-8892e671d671",
+        "name": "Enviar texto",
+        "type": "n8n-nodes-evolution-api.evolutionApi",
+        "position": [
+          128,
+          -352
+        ],
+        "parameters": {
+          "resource": "messages-api",
+          "remoteJid": "={{ $json.result[0].phone }}",
+          "messageText": "=Hi {{ $json.result[0].firstname }} {{ $json.result[0].lastname }} 😊,\n\nWe have received your interest with our services and we well contact you soon.\n\nHave a nice day 🙏💐",
+          "instanceName": "Ahmed560",
+          "options_message": {}
+        },
+        "credentials": {
+          "evolutionApi": {
+            "id": "OfCJPxnswdkJBefM",
+            "name": "Evolution account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7c73ab05-6c59-4f93-b354-940a2ad0e05d",
+        "name": "VtigerCRM get Latest Lead",
+        "type": "n8n-nodes-vtiger-crm.vtigerNode",
+        "position": [
+          -592,
+          -208
+        ],
+        "parameters": {
+          "query_field": "select * from Leads where cf_1090!=1 order by id desc limit 1;"
+        },
+        "credentials": {
+          "vtigerApi": {
+            "id": "GDVMGSZb4YFb0cMz",
+            "name": "SaadeddinTestCRM"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "cecfb193-03b1-47ff-8849-d4c00a3f0bc6",
+        "name": "VtigerCRM Update Lead to  Mark as Whatsapp Sent",
+        "type": "n8n-nodes-vtiger-crm.vtigerNode",
+        "position": [
+          128,
+          -176
+        ],
+        "parameters": {
+          "operation": "update",
+          "element_field": "={\n  \"cf_1090\": \"1\"\n}",
+          "webservice_id_field": "={{ $json.result[0].id }}"
+        },
+        "credentials": {
+          "vtigerApi": {
+            "id": "GDVMGSZb4YFb0cMz",
+            "name": "SaadeddinTestCRM"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a68394bd-0580-4705-b8c8-0e5f0c033d78",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -784,
+          -528
+        ],
+        "parameters": {
+          "width": 592,
+          "height": 304,
+          "content": "### 🤖 Auto-Send Welcome WhatsApp Message to New Vtiger Leads  \n**(Vtiger CRM + Evolution API)**\nThis workflow runs **every 1 minute** to:\n- 📥 Get the latest lead from Vtiger CRM (not yet marked as contacted)\n- 💬 Send a **personalized welcome WhatsApp message** using Evolution API\n- ✅ Update the lead record with a custom field to mark that the message was sent\n\n> 💡 Requires:\n> - Evolution API (self-hosted or cloud)\n> - Community vtiger-crm and evolution-api nodes (install via Community Nodes)\n\n> 📲 Ideal for sales or support teams who want to automatically greet new leads on WhatsApp and avoid duplicates."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "24911a81-1f5f-4358-af02-d6a399d9a5e0",
+    "connections": {
+      "VtigerCRM get Latest Lead": {
+        "main": [
+          [
+            {
+              "node": "If there's a data returned",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If there's a data returned": {
+        "main": [
+          [
+            {
+              "node": "VtigerCRM Update Lead to  Mark as Whatsapp Sent",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Enviar texto",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger Every n Minutes": {
+        "main": [
+          [
+            {
+              "node": "VtigerCRM get Latest Lead",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "VtigerCRM Update Lead to  Mark as Whatsapp Sent": {
+        "main": [
+          []
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 7,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.noOp": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-vtiger-crm.vtigerNode": {
+        "count": 2
+      },
+      "n8n-nodes-evolution-api.evolutionApi": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Ahmed Saadawi",
+    "username": "ahmedsaadawi",
+    "bio": "CRM consultant and automation expert with 15+ years of experience building AI-powered, no-code workflows for sales, support, and operations. Open to collaboration or custom solutions — let’s connect!",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/ahmed-saadawi13"
+    ],
+    "avatar": "https://gravatar.com/avatar/10c4e71b9e9fa82b438890cfd1593ba44d1a304b6dd5823720c781846364c66d?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "icon": "fa:arrow-right",
+      "name": "n8n-nodes-base.noOp",
+      "codex": {
+        "data": {
+          "alias": [
+            "nothing"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.noop/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Aucune opération, ne rien faire",
+        "color": "#b0b0b0"
+      },
+      "iconData": {
+        "icon": "arrow-right",
+        "type": "icon"
+      },
+      "displayName": "No Operation, do nothing",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 38,
+      "name": "Nurturing des prospects"
+    }
+  ],
+  "image": [
+    {
+      "id": 1872,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/workflow_whatsapp_9c15e9c87c.jpeg"
+    },
+    {
+      "id": 1873,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Evolution_API_server_fc085d7ba0.jpeg"
+    }
+  ]
+}

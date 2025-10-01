@@ -1,0 +1,1160 @@
+{
+  "id": 6171,
+  "name": "Téléchargement en masse de vidéos TikTok sans filigrane vers Google Drive avec suivi",
+  "views": 1068,
+  "recentViews": 2,
+  "totalViews": 1068,
+  "createdAt": "2025-07-19T11:00:24.495Z",
+  "description": "### 🎥 Téléchargement en masse de vidéos TikTok sans filigrane vers Google Drive\n\nCe flux de travail automatise le processus de téléchargement de vidéos TikTok et de téléchargement vers Google Drive. Il lit les URL TikTok à partir d'une feuille Google, télécharge la vidéo à l'aide du [Téléchargeur de vidéos TikTok](https://rapidapi.com/skdeveloper/api/tiktok-video-downloader23) — un outil pour **télécharger des vidéos TikTok sans filigrane en qualité HD** — les télécharge sur Drive, les rend publiques et met à jour la même feuille avec le lien Drive.\n\n---\n\n## 🔧 Ce qu'il fait\n\n1. ✅ **Déclenché manuellement** lorsque prêt à être exécuté.\n2. 📄 **Lit les URL TikTok** à partir d'une feuille Google.\n3. 🔁 **Parcourt chaque URL** une à la fois.\n4. 🌐 **Récupère les liens de téléchargement vidéo à l'aide du [Téléchargeur de vidéos TikTok](https://rapidapi.com/skdeveloper/api/tiktok-video-downloader23)** — un **téléchargeur de vidéos TikTok sans filigrane** fiable.\n5. ⬇️ **Télécharge chaque vidéo** en format **haute définition (HD)** à l'aide du lien média direct.\n6. ☁️ **Télécharge la vidéo sur Google Drive**.\n7. 🔓 **Définit les autorisations de partage public** pour la vidéo.\n8. ✏️ **Met à jour la feuille Google d'origine** avec l'URL publique de Drive.\n\n---\n## 📋 Exemple de feuille Google\n\nAssurez-vous que votre feuille contient au moins ces colonnes :\n\n| url                                 | drive_link (à remplir automatiquement) |\n|-------------------------------------|--------------------------------------|\n| https://www.tiktok.com/@user1...    | *(vide au départ)*                  |\n| https://www.tiktok.com/@user2...    | *(vide au départ)*                  |\n\n&gt; Le flux de travail lit à partir de `url` et remplit `drive_link` après le téléchargement.\n\n---\n\n## 🧩 Nœuds utilisés\n\n| Nom du nœud                     | Type              | Objectif                                               |\n|----------------------------------|-------------------|-------------------------------------------------------|\n| Lorsque vous cliquez sur ‘Exécuter’ | Déclencheur manuel | Démarre le flux de travail manuellement                |\n| Obtenir des données à partir de Google Sheets | Google Sheets      | Récupère les lignes (URL TikTok)                      |\n| Parcourir les éléments            | Diviser en lots   | Itère sur chaque ligne                                |\n| Appeler le téléchargeur TikTok    | Requête HTTP      | Obtient le lien de téléchargement vidéo à partir du [Téléchargeur de vidéos TikTok](https://rapidapi.com/skdeveloper/api/tiktok-video-downloader23) |\n| Attendre                          | Attendre          | Délai optionnel pour éviter la surcharge              |\n| Télécharger le fichier            | Requête HTTP      | Télécharge la vidéo HD à l'aide du lien média        |\n| Télécharger le fichier dans Google Drive | Google Drive       | Télécharge la vidéo sur Google Drive                  |\n| Définir les autorisations publiques | Google Drive       | Rend le fichier téléchargé accessible au public      |\n| Mettre à jour la ligne dans Google Sheet | Google Sheets      | Ajoute le lien Drive à la même ligne                  |\n| Dormir                           | Attendre          | Petit délai entre chaque itération                    |\n\n---\n\n## 📝 Exigences\n\n- ✅ Identifiants API Google (compte de service) avec accès à :\n  - Google Sheets\n  - Google Drive\n- 🔐 Clé RapidAPI pour le [Téléchargeur de vidéos TikTok](https://rapidapi.com/skdeveloper/api/tiktok-video-downloader23) – un **téléchargeur de vidéos TikTok sans filigrane (HD pris en charge)**\n- 🗂 Une feuille Google avec une colonne `url` contenant des URL de vidéos TikTok\n\n\n---\n\n## 🧩 Défis résolus\n\n| ❗ Défi | ✅ Solution |\n|---------|-------------|\n| Les URL de vidéos TikTok ont souvent des filigranes et une faible qualité | Utilisé l'API [Téléchargeur de vidéos TikTok](https://rapidapi.com/skdeveloper/api/tiktok-video-downloader23) pour des liens de téléchargement **HD + sans filigrane** |\n| Pas de moyen facile de télécharger en masse et d'organiser les TikToks | Récupération, téléchargement et téléchargement automatisés à l'aide de **n8n + Google Drive** |\n| La sauvegarde manuelle de vidéos et le re-téléchargement sur Drive prennent du temps | Éliminé toutes les étapes manuelles avec un flux de travail entièrement automatisé |\n| Suivi des vidéos déjà traitées | Met à jour automatiquement la ligne de la **feuille Google** avec le lien final de Drive |\n| Les fichiers Drive sont privés par défaut | Définit automatiquement les **autorisations de partage public** sur les vidéos téléchargées |\n| Risque de limites de taux d'API ou de throttling | Ajouté des **nœuds d'attente** et un traitement par lots pour éviter la surcharge |\n\n---\n\n## 🎁 Avantages\n\n| 🌟 Avantage | 💬 Description |\n|------------|----------------|\n| 🚀 Gagne du temps | Automatise entièrement un flux de travail précédemment manuel |\n| 🎥 Contenu de haute qualité | Les vidéos téléchargées sont **HD + sans filigrane** — prêtes à être réutilisées ou archivées |\n| 🔁 Configuration réutilisable | Peut traiter **un nombre illimité d'URL TikTok** via la feuille Google |\n| 📊 Sortie organisée | Suit l'URL source et le lien Drive téléchargé dans une seule feuille |\n| 🔐 Securisé mais partageable | Les liens Drive sont automatiquement partagés **publiquement** tout en restant sous votre contrôle |\n| 🔄 Évolutif | Peut être exécuté quotidiennement, hebdomadairement ou déclenché par de nouvelles lignes — complètement évolutif |\n| 💸 Rentable | Pas besoin d'outils payants ou de freelances manuels — fonctionne sur n8n + APIs gratuites |\n\n---\n\n\n## 💡 Cas d'utilisation\n\n- Curation de contenu à partir de TikTok\n- Archivage des TikToks soumis par les utilisateurs\n- Automatisation des flux de travail sociaux vers le cloud\n- Migration en masse de contenu vidéo\n- Sauvegarde de **vidéos TikTok en HD sans filigrane** pour le partage ou l'archivage\n\n---\n\n## 📌 Conseils\n\n- Remplacez le déclencheur manuel par Cron pour une automatisation complète.\n- Utilisez le [Téléchargeur de vidéos TikTok](https://rapidapi.com/skdeveloper/api/tiktok-video-downloader23) de manière responsable — vérifiez les limites de l'API.\n- Stockez les métadonnées (par exemple, téléchargeur, hashtags) dans des colonnes supplémentaires de la feuille Google.\n- Cet outil aide à garantir que vous téléchargez toujours des **vidéos TikTok de haute qualité sans filigrane**.\n\n---\n\n",
+  "workflow": {
+    "meta": {
+      "instanceId": "60c025075753afcab9f803964b4caaca9402f435deb4efafbb8e3b93b54d8752",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "d8e13620-5f29-402d-a816-5df35fd547f8",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          760,
+          -100
+        ],
+        "webhookId": "2e47d208-0316-420c-ba13-413830692e5c",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "f073c57a-a84e-4ccd-8659-26c5c93d4b71",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -280,
+          -120
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "4af76036-000e-4810-8f9c-9e2140e17e91",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          240,
+          -120
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "e3b8f1ff-2d24-4da8-87e5-488f00a29540",
+        "name": "Get Data From Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          0,
+          -120
+        ],
+        "parameters": {
+          "options": {},
+          "sheetName": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          },
+          "authentication": "serviceAccount"
+        },
+        "credentials": {
+          "googleApi": {
+            "id": "Rt0RWApx8PL9t0RF",
+            "name": "Google Docs account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "0720d3ae-e6ca-408b-a1dc-8e8849689362",
+        "name": "Update Row In Google Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1840,
+          240
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "url": "={{ $('Loop Over Items').item.json.url }}",
+              "driveurl": "={{ $('Upload File In Google Drive').item.json.webViewLink }}"
+            },
+            "schema": [
+              {
+                "id": "url",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "url",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "driveurl",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "driveurl",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "row_number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "url"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update",
+          "sheetName": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          },
+          "authentication": "serviceAccount"
+        },
+        "credentials": {
+          "googleApi": {
+            "id": "Rt0RWApx8PL9t0RF",
+            "name": "Google Docs account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "8ccbdb10-a104-4222-899b-3c933c3caa09",
+        "name": "Set Public Permission Google Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          1600,
+          -100
+        ],
+        "parameters": {
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "{{ $json.id }}"
+          },
+          "options": {},
+          "operation": "share",
+          "permissionsUi": {
+            "permissionsValues": {
+              "role": "writer",
+              "type": "anyone"
+            }
+          },
+          "authentication": "serviceAccount"
+        },
+        "credentials": {
+          "googleApi": {
+            "id": "Rt0RWApx8PL9t0RF",
+            "name": "Google Docs account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "2b0243db-ef2f-4dcc-b3ea-bd47a33b648c",
+        "name": "Upload File In Google Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          1300,
+          -100
+        ],
+        "parameters": {
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "root",
+            "cachedResultName": "/ (Root folder)"
+          },
+          "authentication": "serviceAccount"
+        },
+        "credentials": {
+          "googleApi": {
+            "id": "Rt0RWApx8PL9t0RF",
+            "name": "Google Docs account"
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "a144ebf4-7c58-460e-98fc-c4096af53a76",
+        "name": "Download File",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          1000,
+          -100
+        ],
+        "parameters": {
+          "url": "={{ $json.medias[1].url }}",
+          "options": {}
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "173c8163-89bb-4bee-bf2f-ada26ac54686",
+        "name": "Call TikTok Downloader",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          500,
+          -100
+        ],
+        "parameters": {
+          "url": "https://tiktok-video-downloader23.p.rapidapi.com/index.php",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "url",
+                "value": "={{ $json.url }}"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "x-rapidapi-host",
+                "value": "tiktok-video-downloader23.p.rapidapi.com"
+              },
+              {
+                "name": "x-rapidapi-key",
+                "value": "your key"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "f8802a61-f2bc-4253-aacb-b505305c366b",
+        "name": "Sleep",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          100,
+          180
+        ],
+        "webhookId": "45167751-8beb-42e3-8295-bcc5d9aa8379",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "c4525392-469c-48e4-aa1d-f8e48f8f5b1f",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1100,
+          -400
+        ],
+        "parameters": {
+          "width": 560,
+          "height": 1280,
+          "content": "# 📥 Bulk TikTok Video Downloader & Google Drive Uploader\n\n## 🔄 What This Flow Does\n> **Automatically downloads TikTok videos from a list of URLs in a Google Sheet, uploads them to Google Drive, makes the videos publicly accessible, and updates the Google Sheet with the new Google Drive links.**\n\n---\n\n## ✅ Benefits of This Flow\n\n- 🚀 **Fully automated**: No manual downloads, uploads, or updates.\n- 🧾 **Centralized tracking**: Keeps original TikTok URLs and uploaded Google Drive links in the same Google Sheet.\n- 🔁 **Batch processing**: Processes multiple videos with loop handling and delays.\n- 🔓 **Public access**: Files are automatically set to public in Google Drive.\n- ⏱️ **Time-saving**: Reduces hours of manual work to a few minutes.\n- 👥 **Team-friendly**: Any team member can add a link to the sheet and get a Drive URL back.\n\n---\n\n## 🛠️ Challenges Solved by This Workflow\n\n| ❌ Problem                              | ✅ Solution Provided by Flow                         |\n|----------------------------------------|------------------------------------------------------|\n| Manual TikTok video downloads          | Automated via external API                          |\n| Tedious Google Drive uploads           | Automated upload with public permission             |\n| No easy sharing of video files         | Google Drive shareable link generated and updated   |\n| Lack of tracking processed items       | Google Sheet updated with each Drive URL            |\n| High risk of human error               | Fully systemized with minimal manual touchpoints    |\n\n---\n\n## 🧩 Core Components \n\n- **Manual Trigger** – Starts the workflow manually.\n- **Get Data From Google Sheets** – Fetches TikTok URLs from a sheet.\n- **Loop Over Items** – Iterates over each URL one at a time.\n- **Call TikTok Downloader** – Uses an API to get the downloadable video link.\n- **Wait** – Adds delay before downloading to avoid rate limits.\n- **Download File** – Downloads the TikTok video file.\n- **Upload File In Google Drive** – Uploads the video to your Google Drive.\n- **Set Public Permission Google Drive** – Makes the uploaded file publicly accessible.\n- **Update Row In Google Sheet** – Updates the original sheet with the new Drive link.\n- **Sleep** – Adds delay between batches for reliability.\n\n---\n\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c16eae53-3bf3-4bb3-b597-48529db0eb66",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -340,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## 🟢 When clicking ‘Execute workflow’\nManually triggers the workflow for testing or running on-demand."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "74b004c2-cb7b-44ad-8f37-4b81035b0aef",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -80,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## 📄 Get Data From Google Sheets\nReads all rows from a specific Google Sheet containing TikTok video URLs."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2f07afba-7af0-4886-996a-3229220e97ac",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          180,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## 🔁 Loop Over Items\nProcesses each row from the sheet one-by-one (batch looping).\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6a2f0708-f5ea-4899-beaf-e9b1cb2eee2d",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          440,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## 🌐 Call TikTok Downloader\nSends each TikTok URL to the RapidAPI TikTok downloader to get a direct video download link."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "225452d1-8be6-4822-ba27-2f179c36a509",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          700,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## ⏳ Wait\nAdds a short pause before downloading the file (helps prevent rate-limiting)."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f7da773d-d280-4bc9-b9cd-a3359ec0853d",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          960,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## ⬇️ Download File\nDownloads the video from the `medias[1].url` provided by the TikTok downloader API."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d10bb3cd-edc4-4362-b053-ba3aa227ffda",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1220,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## ☁️ Upload File In Google Drive\nUploads the downloaded video to Google Drive in the root folder."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "769120e2-9a9e-46a1-a259-936c8825d6fb",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1480,
+          -260
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## 🔓 Set Public Permission Google Drive\nMakes the uploaded video file publicly accessible by setting sharing permissions.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bccf0a40-54df-4a80-9f55-3383d78e4d58",
+        "name": "Sticky Note9",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1780,
+          80
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "## ✏️ Update Row In Google Sheet\nUpdates the same row in the sheet by matching `url`, adding the new Drive `webViewLink` in the `driveurl` column.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f9278864-e0bf-4d6d-8841-3ce87c2e1546",
+        "name": "Sticky Note10",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          80
+        ],
+        "parameters": {
+          "height": 260,
+          "content": "## 💤 Sleep\nPauses briefly and loops back to process the next TikTok URL in the list."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Download File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sleep": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download File": {
+        "main": [
+          [
+            {
+              "node": "Upload File In Google Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Call TikTok Downloader",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call TikTok Downloader": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Row In Google Sheet": {
+        "main": [
+          [
+            {
+              "node": "Sleep",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Data From Google Sheets": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload File In Google Drive": {
+        "main": [
+          [
+            {
+              "node": "Set Public Permission Google Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Public Permission Google Drive": {
+        "main": [
+          [
+            {
+              "node": "Update Row In Google Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Get Data From Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 21,
+    "nodeTypes": {
+      "n8n-nodes-base.wait": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 11
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 2
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Sk developer ",
+    "username": "skdeveloper",
+    "bio": "",
+    "verified": true,
+    "links": [],
+    "avatar": "https://gravatar.com/avatar/7bf02c699a607d2c89059d2526fe64a51680957736b27ce1478acdf9b1e553ba?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Parcourir les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 36,
+      "name": "Gestion de fichiers"
+    }
+  ],
+  "image": []
+}

@@ -1,0 +1,721 @@
+{
+  "id": 6113,
+  "name": "Générer des brise-glaces pour les candidatures d'emploi avec GPT-4 et les données d'Indeed à partir de Google Sheets",
+  "views": 263,
+  "recentViews": 0,
+  "totalViews": 263,
+  "createdAt": "2025-07-18T04:06:55.531Z",
+  "description": "La deuxième partie du scraper d'emploi Indeed, du filtre et du flux de travail d'enrichissement, ce flux de travail prend des informations sur les offres d'emploi extraites et filtrées sur Indeed via Apify, qui sont stockées dans Google Sheets pour générer un brise-glace par e-mail personnalisé de cinq lignes qui implique que le reste du brise-glace est personnalisé. IJSFE personnalisé (Indeed Job Scraper For Enrichment). ++ Je suis étudiant en ingénierie, donc j'adore mes acronymes.\n\n### Avantages\n\nGénération instantanée de brise-glaces - Convertissez des heures de recherche, de rédaction et de personnalisation en secondes automatiquement\nIntégration en direct - Générez et envoyez des brise-glaces personnalisés où que vous soyez\nAutomatisation presque complète - De la recherche sur l'entreprise et la description de l'emploi à la réponse personnalisée avec la solution IA, ce flux de travail le fait en un clic.\nPrésentation professionnelle - Parce que le chatbot a le contexte sur l'entreprise et l'offre d'emploi, il génère un brise-glace qui fait penser au lecteur qu'il y a eu des recherches effectuées\n\n\n#### Comment ça fonctionne\n\n1. Recherche dans Google Sheets :\n\n- Le nœud Google Sheets récupère toutes les lignes où la colonne de brise-glace est vide\n- Chaque ligne est un élément retourné contenant des informations sur l'entreprise et l'offre d'emploi\n\n2. Personnalisation IA :\n\n- Utilise un prompting sophistiqué de GPT-4\n- Convertit un ensemble d'informations sur une offre d'emploi et une entreprise en un brise-glace par e-mail personnalisé de cinq lignes\n- Applique automatiquement un ton cohérent et décontracté pour sembler plus écrit par un humain\n\n3. Mise à jour de la base de données :\n\n- Met à jour toutes les lignes récupérées dans la recherche et met à jour uniquement la colonne de brise-glace avec le nouveau brise-glace personnalisé\n- Chaque élément est retourné sous forme de ligne contenant des informations sur l'entreprise, l'offre d'emploi et le brise-glace\n\n### Configuration du modèle requise\n\nModèle Google Sheets : Créez une feuille Google avec ces variables :\n\njobUrl - Identifiant unique pour les offres d'emploi\ntitle - Titre du poste\ndescriptionText - Description de l'offre d'emploi\nhiringDemand/isHighVolumeHiring - Embauchent-ils en grande quantité ?\nhiringDemand/isUrgentHire - Embauchent-ils de manière urgente ?\nisRemote - Ce poste est-il à distance ?\njobType/0 - Type de poste : En personne, À distance, Temps partiel, etc.\ncompanyCeo/name - Nom du PDG collecté à partir de la recherche de Tavily\nicebreaker - Brise-glaces générés par l'IA pour chaque offre d'emploi\nscrapedCeo - Nom du PDG collecté à partir du scraper Apify\nemail - Email indiqué pour l'offre d'emploi\ncompanyName - Nom de l'entreprise qui a publié l'offre d'emploi\ncompanyDescription - Description de l'entreprise qui a publié l'offre d'emploi\ncompanyLinks/corporateWebsite - Site web de l'entreprise qui a publié l'offre d'emploi\ncompanyNumEmployees - Nombre d'employés que l'entreprise a déclaré avoir\nlocation/country - Lieu où le poste doit avoir lieu\nsalary/salaryText - Salaire indiqué dans l'offre d'emploi\n\nInstructions de configuration :\n\nConfiguration de la recherche et de la mise à jour de Google Sheets :\n\nCréez une nouvelle feuille Google avec ces en-têtes de colonne dans la première ligne\nNommez la feuille comme bon vous semble\nConnectez vos identifiants OAuth Google Sheets dans n8n\nMettez à jour l'ID du document dans les nœuds de flux de travail\n\nLa logique de recherche dans le premier nœud Google Sheets repose sur la colonne ID pour la génération de brise-glaces, donc cette structure est essentielle pour que le flux de travail fonctionne correctement.\nN'hésitez pas à me contacter pour toute aide ou clarification supplémentaire à mon Gmail : terflix45@gmail.com, et je vous répondrai dès que possible.\n\n\nConfiguration de la génération de brise-glaces IA :\n\nConfigurez l'API OpenAI pour une rédaction de propositions sophistiquée\nMettez en œuvre un entraînement basé sur des exemples avec entrée/sortie pour des résultats plus spécifiques\nConfigurez le formatage JSON pour la structure (Personnellement, je pense que le JSON est plus facile à gérer en tant que sortie)\n\n\n### Étapes de configuration :\n\n1. Configuration de la recherche et de la récupération des lignes\n\n- Créez une base de données Google Sheets avec la structure de colonne fournie\n- Connectez les identifiants OAuth Google Sheets\n- Configurez le filtre sur le nœud de récupération des lignes pour n'inclure que les colonnes de brise-glaces vides\n\n2. Configurez la personnalisation IA\n\n- Ajoutez les identifiants de l'API OpenAI pour la génération de brise-glaces personnalisés\n- Personnalisez les invites IA pour votre niche, vos exigences ou vos intérêts spécifiques\n\n3. Configuration de la mise à jour de Google Sheets\n\n- N'oubliez pas de mapper tous les éléments à leurs colonnes respectives en fonction du numéro de ligne\n- Tous les champs dans le nœud de mise à jour des feuilles doivent avoir la même valeur que le premier nœud de feuilles, et le champ de brise-glace doit prendre la sortie de ChatGPT comme sa valeur",
+  "workflow": {
+    "id": "CsAeAdjSA8YRn8rh",
+    "meta": {
+      "instanceId": "b9a4810a9a51f2cd27d6d88b2b57f7ecf9f947c4f003311c8382943a4b6c6dc4",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Personalize IJSHI",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "d50c5e29-8a78-4453-b0e2-d7d4f557c759",
+        "name": "When clicking ‘Execute workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -380,
+          -60
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "11a807b9-b215-4167-8839-cd4151ce7caf",
+        "name": "Get row(s) in sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -160,
+          -60
+        ],
+        "parameters": {
+          "options": {},
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "icebreaker"
+              }
+            ]
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1558745101,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pQVwVFZ99hCjktMy-YDF3nYmZLL4yheF10OR5-7Apbw/edit#gid=1558745101",
+            "cachedResultName": "Copy of Indeed JSHI"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1pQVwVFZ99hCjktMy-YDF3nYmZLL4yheF10OR5-7Apbw",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pQVwVFZ99hCjktMy-YDF3nYmZLL4yheF10OR5-7Apbw/edit?usp=drivesdk",
+            "cachedResultName": "Leads Gen DB i1"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ZNhzq0SNfiyKVdwv",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "836d33ad-9455-4d92-b9b7-7eb49c1b6e80",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -440,
+          -160
+        ],
+        "parameters": {
+          "width": 1160,
+          "height": 300,
+          "content": "## AI Personal Icebreaker generation"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "67b2cce9-9289-426f-8cd3-89b7e65aad85",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          720,
+          -300
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 440,
+          "height": 240,
+          "content": "## Note \nPart two of the Indeed Job Scraper, Filter and Enrichment workflow, this workflow takes information about the scraped and filtered job listings on Indeed via Apify, which is stored in Google Sheets to generate a customized, five-line email icebreaker to imply that the rest of the icebreaker is personalized. Personalized IJSFE (Indeed Job Scraper For Enrichment).\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8c36adcd-c521-4f0e-a184-1075ca8695d8",
+        "name": "Personalization",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "position": [
+          60,
+          -60
+        ],
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini",
+            "cachedResultName": "GPT-4.1-MINI"
+          },
+          "options": {
+            "temperature": 0.8
+          },
+          "messages": {
+            "values": [
+              {
+                "role": "system",
+                "content": "You're a helpful, intelligent writing assistant."
+              },
+              {
+                "content": "=Your task is to take, as input, a bunch of information about a job posting and company, and then generate a customized, five-line email icebreaker to imply that the rest of your comunique is personalized.\n\nYou'll return your icebreakers in the following JSON format:\n\n{\"icebreaker\":\"Hey {Name}, Love {thingaboutcompany}--also a fan of {otherinterestingthingaboutjobdescription}. Wanted to run something by you.\n\nI put something interesting together a few months ago that works well. To make a long story short, it’s {solutiontojob} that uses AI to {dowhatjobdescriptionwants}. Costs just a few cents to run.\"}\n\nRules:\n- Write in a Spartan/laconic tone of voice.\n- Keep things short\n- Try to imply familiarity slightly--i.e if you see an opportunity to imply that I like the same things, believe the same things, or want the same things they do, don't go overboard, keep it light and subtle.\n- Make sure to use the above formula when constructing your icebreakers.\n- Make use of acronyms, shorten the company name, locations, etc, where possible (say, \"XYZ\" instead of \"XYZ Agency\", \"AMS\" instead of \"AMS Professional Services\", \"Wellington\" instead of \"The Wellington Agency\", \"San Fran\" instead of \"San Francisco\", \"BC\" instead of \"British Columbia\"). Do so whenever possible.\n- After \"Hey {firstName},\" always insert \"\\n\\n\"."
+              },
+              {
+                "content": "={\n“firstName”:“{{ $json['companyCeo/name'] }}”,\n“jobTitle”:“{{ $json.title }}”,\n“jobdescription”:“{{ $json.descriptionText }}”,\n“companyName”:“{{ $json.companyName }}”,\n“companyDescription”:“{{ $json.companyDescription }}”\n}"
+              }
+            ]
+          },
+          "jsonOutput": true
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "MtyWU7dmmlnc6YXW",
+            "name": "OpenAi account"
+          }
+        },
+        "notesInFlow": false,
+        "typeVersion": 1.8
+      },
+      {
+        "id": "eff4a4a2-958a-4d39-a4d0-dfed7ea76140",
+        "name": "Update row in sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          460,
+          -60
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "email": "={{ $('Get row(s) in sheet').item.json.email }}",
+              "title": "={{ $('Get row(s) in sheet').item.json.title }}",
+              "jobUrl": "={{ $('Get row(s) in sheet').item.json.jobUrl }}",
+              "isRemote": "={{ $('Get row(s) in sheet').item.json.isRemote }}",
+              "jobType/0": "={{ $('Get row(s) in sheet').item.json['jobType/0'] }}",
+              "icebreaker": "={{ $json.message.content.icebreaker }}",
+              "row_number": "={{ $('Get row(s) in sheet').item.json.row_number }}",
+              "scrapedCeo": "={{ $('Get row(s) in sheet').item.json.scrapedCeo }}",
+              "companyName": "={{ $('Get row(s) in sheet').item.json.companyName }}",
+              "companyCeo/name": "={{ $('Get row(s) in sheet').item.json['companyCeo/name'] }}",
+              "descriptionText": "={{ $('Get row(s) in sheet').item.json.descriptionText }}",
+              "location/country": "={{ $('Get row(s) in sheet').item.json['location/country'] }}",
+              "salary/salaryText": "={{ $('Get row(s) in sheet').item.json['salary/salaryText'] }}",
+              "companyDescription": "={{ $('Get row(s) in sheet').item.json.companyDescription }}",
+              "companyNumEmployees": "={{ $('Get row(s) in sheet').item.json.companyNumEmployees }}",
+              "hiringDemand/isUrgentHire": "={{ $('Get row(s) in sheet').item.json['hiringDemand/isHighVolumeHiring'] }}",
+              "companyLinks/corporateWebsite": "={{ $('Get row(s) in sheet').item.json['companyLinks/corporateWebsite'] }}",
+              "hiringDemand/isHighVolumeHiring": "={{ $('Get row(s) in sheet').item.json['hiringDemand/isHighVolumeHiring'] }}"
+            },
+            "schema": [
+              {
+                "id": "jobUrl",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "jobUrl",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "title",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "descriptionText",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "descriptionText",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "hiringDemand/isHighVolumeHiring",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "hiringDemand/isHighVolumeHiring",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "hiringDemand/isUrgentHire",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "hiringDemand/isUrgentHire",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "isRemote",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "isRemote",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "jobType/0",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "jobType/0",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "companyCeo/name",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "companyCeo/name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "icebreaker",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "icebreaker",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "scrapedCeo",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "scrapedCeo",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "email",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "email",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "companyName",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "companyName",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "companyDescription",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "companyDescription",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "companyLinks/corporateWebsite",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "companyLinks/corporateWebsite",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "companyNumEmployees",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "companyNumEmployees",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "location/country",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "location/country",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "salary/salaryText",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "salary/salaryText",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "row_number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "row_number"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1558745101,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pQVwVFZ99hCjktMy-YDF3nYmZLL4yheF10OR5-7Apbw/edit#gid=1558745101",
+            "cachedResultName": "Copy of Indeed JSHI"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1pQVwVFZ99hCjktMy-YDF3nYmZLL4yheF10OR5-7Apbw",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pQVwVFZ99hCjktMy-YDF3nYmZLL4yheF10OR5-7Apbw/edit?usp=drivesdk",
+            "cachedResultName": "Leads Gen DB i1"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "ZNhzq0SNfiyKVdwv",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "b70ebe04-1243-46d8-9267-e014dbc3c088",
+    "connections": {
+      "Personalization": {
+        "main": [
+          [
+            {
+              "node": "Update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet": {
+        "main": [
+          [
+            {
+              "node": "Personalization",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.openAi": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Adrian Bent",
+    "username": "adrian-bent",
+    "bio": "Hey I'm Adrian. I got into automation to help me better understand and build systems. If you have any questions about my n8n templates/builds, feel free to ask, and I'll be happy to respond via email at terrflix45@gmail.com. Thanks for the time!",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/6e2c398d3a836e3d72d2fcccb33e772d8fa39682f95df1e602b0f4a107d06479?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1250,
+      "icon": "file:openAi.svg",
+      "name": "@n8n/n8n-nodes-langchain.openAi",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "ChatGPT",
+            "DallE",
+            "whisper",
+            "audio",
+            "transcribe",
+            "tts",
+            "assistant"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Miscellaneous",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg1IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NiAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MSA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K"
+      },
+      "displayName": "OpenAI",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 38,
+      "name": "Nurturing des prospects"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

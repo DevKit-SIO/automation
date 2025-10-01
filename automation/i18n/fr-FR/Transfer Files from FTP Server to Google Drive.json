@@ -1,0 +1,747 @@
+{
+  "id": 6244,
+  "name": "Transférer des fichiers du serveur FTP vers Google Drive",
+  "views": 202,
+  "recentViews": 0,
+  "totalViews": 202,
+  "createdAt": "2025-07-21T22:48:05.046Z",
+  "description": "# Modèle de transfert FTP vers Google Drive\n\n## Ce que fait ce modèle\n\nCe flux de travail transfère automatiquement des fichiers d'un serveur FTP vers Google Drive. Il est parfait pour :\n- Sauvegarder des fichiers depuis des serveurs distants\n- Migrer des données du FTP vers le stockage cloud\n- Automatiser des tâches de synchronisation de fichiers\n- Créer des sauvegardes programmées du contenu du serveur\n\n## Comment ça fonctionne\n\nLe flux de travail suit ces étapes :\n\n1. **Déclencheur manuel** - Vous commencez le processus en cliquant sur \"Exécuter\"\n2. **Liste le répertoire FTP** - Scanne le dossier FTP spécifié pour tous les éléments\n3. **Filtre uniquement les fichiers** - Sépare les fichiers réels des répertoires (dossiers)\n4. **Télécharge les fichiers** - Récupère chaque fichier sous forme de données binaires depuis le serveur FTP\n5. **Télécharge sur Google Drive** - Stocke tous les fichiers téléchargés dans le dossier Google Drive spécifié\n\n## Exigences\n\nAvant d'utiliser ce modèle, vous aurez besoin de :\n\n- **Accès au serveur FTP** : Adresse du serveur, nom d'utilisateur et mot de passe\n- **Compte Google Drive** : Avec l'authentification OAuth2 configurée dans n8n\n- **Instance n8n** : Version auto-hébergée ou cloud\n\n## Instructions de configuration\n\n### Étape 1 : Configurer les identifiants FTP\n\n1. Dans n8n, allez dans **Paramètres** → **Identifiants**\n2. Créez un nouvel identifiant **FTP**\n3. Entrez les détails de votre serveur FTP :\n   - **Hôte** : L'adresse de votre serveur FTP\n   - **Port** : Généralement 21 pour FTP\n   - **Nom d'utilisateur** : Votre nom d'utilisateur FTP\n   - **Mot de passe** : Votre mot de passe FTP\n4. Testez la connexion et enregistrez\n\n### Étape 2 : Configurer l'authentification Google Drive\n\n1. Créez un nouvel identifiant **Google Drive OAuth2**\n2. Suivez le guide de configuration Google Drive de n8n :\n   - Créez un projet Google Cloud\n   - Activez l'API Google Drive\n   - Créez des identifiants OAuth2\n   - Ajoutez votre URL de rappel n8n\n3. Autorisez la connexion dans n8n\n\n### Étape 3 : Configurer le flux de travail\n\n1. **Mettre à jour le chemin FTP** : \n   - Ouvrez le nœud \"Lister le répertoire FTP\"\n   - Changez le paramètre `path` de `/_instalki` vers votre dossier FTP souhaité\n\n2. **Définir le dossier Google Drive** :\n   - Ouvrez le nœud \"Télécharger sur Google Drive\"\n   - Remplacez le `folderId` par l'ID de votre dossier Google Drive cible\n   - Pour trouver l'ID du dossier : Ouvrez le dossier dans Google Drive et copiez l'ID de l'URL\n\n3. **Attribuer des identifiants** :\n   - Assurez-vous que les deux nœuds FTP utilisent votre identifiant FTP\n   - Attribuez votre identifiant Google Drive au nœud de téléchargement\n\n## Comment utiliser\n\n1. **Testez d'abord** : Exécutez le flux de travail manuellement avec quelques fichiers de test\n2. **Surveillez l'exécution** : Vérifiez le journal d'exécution pour toute erreur\n3. **Vérifiez le téléchargement** : Confirmez que les fichiers apparaissent dans votre dossier Google Drive\n4. **Planifiez (optionnel)** : Ajoutez un déclencheur de planification si vous souhaitez des exécutions automatiques\n\n## Options de personnalisation\n\n### Filtrer des types de fichiers spécifiques\nAjoutez une condition après \"Filtrer uniquement les fichiers\" pour traiter uniquement certaines extensions de fichiers :\n```\n{{ $json.name.endsWith('.pdf') || $json.name.endsWith('.jpg') }}\n```\n\n### Ajouter une gestion des erreurs\nInsérez des nœuds de gestion des erreurs pour gérer les téléchargements ou les téléchargements échoués avec grâce.\n\n### Organiser par date\nModifiez le téléchargement Google Drive pour créer automatiquement des dossiers basés sur la date.\n\n### Limites de taille de fichier\nAjoutez des vérifications pour la taille des fichiers avant d'essayer de télécharger (Google Drive a des limites).\n\n## Dépannage\n\n**Problèmes courants :**\n\n- **Échec de la connexion FTP** : Vérifiez l'adresse du serveur, le port et les identifiants\n- **Erreur de téléchargement Google Drive** : Vérifiez la configuration OAuth2 et les autorisations de dossier\n- **Fichiers introuvables** : Assurez-vous que le chemin FTP existe et contient des fichiers\n- **Fichiers volumineux** : Tenez compte des limitations de taille de fichier de Google Drive (15 Go pour les comptes gratuits)\n\n**Conseils :**\n- Testez d'abord avec de petits fichiers\n- Vérifiez les journaux d'exécution de n8n pour des messages d'erreur détaillés\n- Assurez-vous que votre Google Drive dispose d'un espace de stockage suffisant\n- Vérifiez que le serveur FTP permet plusieurs connexions simultanées\n\n## Notes de sécurité\n\n- Ne jamais coder en dur les identifiants dans le flux de travail\n- Utilisez le système d'identifiants de n8n pour toute authentification\n- Envisagez d'utiliser SFTP au lieu de FTP pour une meilleure sécurité\n- Changez régulièrement vos mots de passe FTP\n- Vérifiez les autorisations de partage de Google Drive\n\n## Prochaines étapes\n\nUne fois que vous avez ce transfert de base fonctionnant, vous voudrez peut-être :\n- Ajouter des notifications par e-mail pour les transferts réussis/échoués\n- Mettre en œuvre des vérifications de dé-duplication de fichiers\n- Créer des journaux des fichiers transférés\n- Configurer un nettoyage automatique des anciens fichiers\n- Ajouter une compression de fichiers avant le téléchargement",
+  "workflow": {
+    "id": "V5SaH2SZzVTyn829",
+    "meta": {
+      "instanceId": "d577bb7ef0d4aecc419892e166746cbc334912494e75dd71e05bcd85fd68e5bb",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "FTP 2 Google Drive",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "3733da7c-f05d-4679-9f47-8e72295dcc77",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -1184,
+          -192
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "b7223fcd-e5f9-4be6-b645-409a91017373",
+        "name": "Workflow Documentation",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1184,
+          -512
+        ],
+        "parameters": {
+          "width": 389,
+          "height": 233,
+          "content": "## FTP to Google Drive Transfer Workflow\n\nThis workflow:\n1. **Manually triggered** - Click Execute to start\n2. **Lists FTP directory** - Gets all files from specified folder\n3. **Downloads files** - Retrieves each file as binary data\n4. **Uploads to Google Drive** - Stores files in specified Drive folder\n\n**Configuration needed:**\n- FTP credentials (server, username, password)\n- Google Drive OAuth2 credentials\n- Target directory paths"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "916ae8dc-799a-4c80-ab59-22f2c9d16044",
+        "name": "List FTP Directory",
+        "type": "n8n-nodes-base.ftp",
+        "position": [
+          -960,
+          -192
+        ],
+        "parameters": {
+          "path": "/",
+          "operation": "list"
+        },
+        "credentials": {
+          "ftp": {
+            "id": "t4MWeiBq6luzXIGz",
+            "name": "FTP account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d47ccf08-31bc-4d12-bac9-3fdb2be4a6e0",
+        "name": "Processing Notes",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -736,
+          -496
+        ],
+        "parameters": {
+          "width": 320,
+          "content": "## File Processing\n\nThis section processes each file found in the FTP directory:\n- Filters for actual files (not directories)\n- Downloads binary content\n- Prepares for Google Drive upload\n\n**Note:** Adjust file filtering logic as needed for your use case."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "09ce1608-37d2-40ee-a535-b2104d92747b",
+        "name": "Filter Files Only",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -736,
+          -192
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 1,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "condition-1",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "rightType": "string"
+                },
+                "leftValue": "={{ $json.type }}",
+                "rightValue": "-"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "6c9a1d63-79bc-4ebd-899d-709accd50191",
+        "name": "Download File from FTP",
+        "type": "n8n-nodes-base.ftp",
+        "position": [
+          -512,
+          -288
+        ],
+        "parameters": {
+          "path": "={{ $json.path }}",
+          "binaryPropertyName": "={{ $json.name }}"
+        },
+        "credentials": {
+          "ftp": {
+            "id": "t4MWeiBq6luzXIGz",
+            "name": "FTP account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3a715a9f-7b50-4cf3-9e6f-dfb70760f739",
+        "name": "Upload to Google Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          -288,
+          -288
+        ],
+        "parameters": {
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "options": {},
+          "folderId": "1ABCdefGHIjklMNOpqrSTUvwxyz"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "032523ae-cdac-43ac-9a4c-8b4ac2277be5",
+        "name": "No Operation, do nothing",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          -512,
+          -96
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "87566e32-5b20-4aeb-abe6-61cbf2c98c1d",
+        "name": "No Operation, do nothing1",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          -64,
+          -288
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "93f753aa-891f-4e66-a34e-e36e99405ce8",
+    "connections": {
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "List FTP Directory",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Files Only": {
+        "main": [
+          [
+            {
+              "node": "Download File from FTP",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "List FTP Directory": {
+        "main": [
+          [
+            {
+              "node": "Filter Files Only",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download File from FTP": {
+        "main": [
+          [
+            {
+              "node": "Upload to Google Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload to Google Drive": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 9,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.ftp": {
+        "count": 2
+      },
+      "n8n-nodes-base.noOp": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Dariusz Koryto",
+    "username": "dako",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/dariuszkoryto/"
+    ],
+    "avatar": "https://gravatar.com/avatar/1242bd3bd2da35688dc9222b7f5d223967fae429e52c7645677f2fc63349dd0f?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "icon": "fa:arrow-right",
+      "name": "n8n-nodes-base.noOp",
+      "codex": {
+        "data": {
+          "alias": [
+            "nothing"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.noop/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Aucune opération, ne rien faire",
+        "color": "#b0b0b0"
+      },
+      "iconData": {
+        "icon": "arrow-right",
+        "type": "icon"
+      },
+      "displayName": "No Operation, do nothing",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 350,
+      "icon": "fa:server",
+      "name": "n8n-nodes-base.ftp",
+      "codex": {
+        "data": {
+          "alias": [
+            "SFTP",
+            "FTP",
+            "Binary",
+            "File",
+            "Transfer"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.ftp/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/ftp/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Data & Storage",
+            "Development",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Files",
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "FTP",
+        "color": "#303050"
+      },
+      "iconData": {
+        "icon": "server",
+        "type": "icon"
+      },
+      "displayName": "FTP",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 36,
+      "name": "Gestion des fichiers"
+    }
+  ],
+  "image": []
+}

@@ -1,0 +1,585 @@
+{
+  "id": 6257,
+  "name": "Automatiser la génération de leads et les demandes de connexion LinkedIn avec Browserflow",
+  "views": 599,
+  "recentViews": 1,
+  "totalViews": 599,
+  "createdAt": "2025-07-22T06:55:54.825Z",
+  "description": "# **Auto trouver et inviter des leads LinkedIn**\nCe modèle n8n automatise la génération de leads LinkedIn en extrayant des profils, en filtrant les connexions existantes et en envoyant des demandes de connexion — le tout dans un flux de travail contrôlé et en boucle. Idéal pour les campagnes de sensibilisation, le recrutement ou les efforts de génération de leads.\n![Screenshot 20250724 at 18.09.50.png](fileId:1859)\n\n## ⚠️ **Avertissement – Avis sur le nœud communautaire**\nCe modèle utilise un nœud communautaire vérifié disponible dans l'environnement cloud n8n.\nPour l'utiliser, allez dans \"Nœuds\" → recherchez :\n\n*Browserflow pour Linkedin*\n\n… et cliquez sur Installer.\nIl est officiellement vérifié et accessible directement depuis le cloud n8n.\n\nDans le cas où vous souhaitez exécuter ce modèle localement, vous devez aller dans les paramètres, cliquer sur les nœuds communautaires et rechercher *n8n-nodes-browserflow*. Ensuite, après l'installation, vous pouvez commencer à utiliser les actions dans ce nœud.\n\n## **🛠️ Comment utiliser**\n\n###### Déclencheur : Démarrage manuel\nInitie le flux de travail manuellement via le bouton “Tester le flux de travail”, vous donnant un contrôle total.\n\n###### Extraire des profils LinkedIn\nUtilise l'automatisation Browserflow pour extraire des liens de profils à partir d'une recherche LinkedIn ou d'une requête par mot-clé.\n\n###### Séparer les résultats\nConvertit la liste de profils en éléments individuels pour un traitement de profil unique.\n\n###### Parcourir chaque profil\nS'assure que chaque profil LinkedIn est traité un à la fois, évitant les actions simultanées.\n\n###### Vérifier la connexion existante\nVérifie si vous êtes déjà connecté avec le lead sur LinkedIn.\n\n###### Logique conditionnelle\n\n✅ Déjà connecté → Passer au profil suivant\n\n❌ Pas connecté → Continuer à l'étape suivante\n\n###### Envoyer une invitation de connexion\nEnvoie une demande de connexion LinkedIn, éventuellement avec un message personnalisé.\n\n## 📦 Exigences\n- n8n (cloud ou auto-hébergé)\n\n- Nœud communautaire installé : Browserflow pour Linkedin\n\n- Compte LinkedIn\n\n- Compte Browserflow valide (vous pouvez configurer un essai gratuit de 7 jours sur [https://browserflow.io](https://browserflow.io/n8n))\n\n## **⚙️ Instructions de configuration**\n###### Installer le nœud communautaire Browserflow\nRecherchez “Browserflow pour Linkedin” &gt; Installer.\n\n###### **Obtenez votre clé API**\nObtenez votre clé API sur [https://browserflow.io](https://browserflow.io/n8n)\n\n###### **Configurez votre compte Browserflow**\nAprès vous être inscrit, configurez votre Browserflow et connectez-vous avec LinkedIn en utilisant l'assistant à [https://browserflow.io](https://browserflow.io/n8n)\n\n###### **Connectez-vous à Browserflow en créant un identifiant**\nCliquez sur les actions Browserflow pour configurer une connexion avec Browserflow en ajoutant votre clé API à un identifiant.\n\n## **🧩 Conseils de personnalisation**\nCiblage : Ajustez les actions Browserflow pour extraire des rôles, des secteurs ou des emplacements spécifiques.\n\nMessagerie : Vous pouvez ajouter un message à l'invitation de connexion mais rappelez-vous que LinkedIn limite le nombre de messages pouvant être envoyés chaque mois. Utilisez des variables dans le message pour la personnalisation (par exemple, {firstName}).\n\nDéclencheur : Remplacez le déclencheur manuel par un nœud cron pour une sensibilisation programmée.\n\nIntégration : Combinez avec des outils CRM (par exemple, HubSpot, Notion, Airtable) pour synchroniser les leads ou intégrez avec des agents IA.",
+  "workflow": {
+    "id": "lK0J8tz7PLZUwg6e",
+    "meta": {
+      "instanceId": "6d98388133fed6ffc94a735d2fbc577b6a7f07745674eec7e26c77528a1f030e"
+    },
+    "name": "My workflow",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "7189a1d6-61f0-4c5d-9744-c0d66506ffd6",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "a92e299a-282f-4dbf-b3fe-50a078d1a098",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          672,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "batchSize": "=1"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "ee95db18-73bc-4655-b197-9e5068107280",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          448,
+          0
+        ],
+        "parameters": {
+          "options": {},
+          "fieldToSplitOut": "data"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c312a13e-2176-4c50-b1d6-f172213f2ec2",
+        "name": "Check if person is a connection",
+        "type": "n8n-nodes-browserflow.browserflow",
+        "position": [
+          928,
+          48
+        ],
+        "parameters": {
+          "requestOptions": {}
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "bee26d5d-ed98-43e7-8ec3-c3cb23f1cd42",
+        "name": "Send Connection invite",
+        "type": "n8n-nodes-browserflow.browserflow",
+        "position": [
+          1344,
+          112
+        ],
+        "parameters": {
+          "requestOptions": {}
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "79dca4f2-e677-4344-ab3c-f56ff4dd628e",
+        "name": "Scrape profiles from a linked in search",
+        "type": "n8n-nodes-browserflow.browserflow",
+        "position": [
+          208,
+          0
+        ],
+        "parameters": {
+          "city": "Amsterdam",
+          "country": "Netherlands",
+          "operation": "scrapeProfilesFromSearch",
+          "searchTerm": "Content Marketeer",
+          "requestOptions": {}
+        },
+        "credentials": {
+          "browserflowApi": {
+            "id": "DfEhoqnEWZNQvzLo",
+            "name": "Browserflow account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c89f0d55-7cf9-4862-8590-99c6ded8d9ba",
+        "name": "Check Connection Status",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1136,
+          80
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "70827b04-15cf-4415-bcd8-51dad92f200e",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.is_connection }}",
+                "rightValue": "true"
+              },
+              {
+                "id": "b9632671-e23e-4873-8308-486d2fda9a7e",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.is_pending }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "ea5acef1-e5b2-41e5-b31e-e28a2a9ea257",
+    "connections": {
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Check if person is a connection",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Connection invite": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Connection Status": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send Connection invite",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check if person is a connection": {
+        "main": [
+          [
+            {
+              "node": "Check Connection Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Scrape profiles from a linked in search",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scrape profiles from a linked in search": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 7,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.manualTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-browserflow.browserflow": {
+        "count": 3
+      }
+    }
+  },
+  "user": {
+    "name": "Kees Bosch - Browserflow",
+    "username": "browserflow",
+    "bio": "",
+    "verified": false,
+    "links": [
+      "https://browserflow.io"
+    ],
+    "avatar": "https://gravatar.com/avatar/c32fea5b7645007ebe65913effe00f998a187be910a0491b5f8e30502df61cc8?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 838,
+      "icon": "fa:mouse-pointer",
+      "name": "n8n-nodes-base.manualTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque vous cliquez sur ‘Exécuter le flux de travail’",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "mouse-pointer",
+        "type": "icon"
+      },
+      "displayName": "Manual Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Séparer"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de leads"
+    }
+  ],
+  "image": [
+    {
+      "id": 1859,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_07_24_at_18_09_50_83fe8ba88f.png"
+    }
+  ]
+}

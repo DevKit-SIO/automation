@@ -1,0 +1,762 @@
+{
+  "id": 6265,
+  "name": "Alertes de seuil de prix de l'or automatisées via LINE avec web scraping",
+  "views": 401,
+  "recentViews": 1,
+  "totalViews": 401,
+  "createdAt": "2025-07-22T10:19:11.757Z",
+  "description": "## Alerte de prix de l'or\nCe modèle de flux de travail, \"Alerte de prix de l'or,\" est conçu pour surveiller les prix de l'or à intervalles réguliers et envoyer des notifications en temps réel via LINE lorsque le prix dépasse un seuil spécifié. En tirant parti de la puissance du web scraping et des alertes automatisées, ce modèle vous permet de rester informé des changements significatifs des prix de l'or sans intervention manuelle.\n\nQue vous soyez un investisseur, un trader ou simplement quelqu'un d'intéressé par le suivi des prix de l'or, ce flux de travail fournit une solution fiable et personnalisable pour rester à jour.\n\n## Pour Qui Est Ce Modèle ?\n- Investisseurs & Traders : Qui souhaitent surveiller les prix de l'or et recevoir des alertes lorsque le prix atteint un seuil spécifique.\n- Analystes Financiers : À la recherche d'outils automatisés pour suivre les prix des matières premières.\n- Entreprises : Opérant dans des secteurs où les prix de l'or impactent les opérations ou la rentabilité.\n- Passionnés d'Automatisation : Cherchant à construire des flux de travail qui combinent web scraping, traitement de données et plateformes de messagerie.\n\n## Quel Problème Ce Flux de Travail Résout-Il ?\nSuivre les prix de l'or manuellement peut être chronophage et sujet à des erreurs, surtout si vous surveillez plusieurs sources ou avez besoin d'alertes pour des seuils spécifiques.\n\n## Ce flux de travail résout ce problème en :\n\n- Vérifiant automatiquement les prix de l'or toutes les 6 heures à l'aide d'un déclencheur de planification.\n- Extraire le dernier prix d'une source fiable (par exemple, l'Association des Commerçants d'Or).\n- Envoyant des notifications instantanées via LINE lorsque le prix dépasse un seuil prédéfini (par exemple, 52 300 THB).\n- Réduisant le besoin de vérifications manuelles constantes tout en garantissant des mises à jour en temps opportun.\n\n## Ce Que Fait Ce Flux de Travail\n1) Déclencheur Planifié :\nLe flux de travail est déclenché toutes les 6 heures pour vérifier le prix actuel de l'or.\n2) Récupérer le Contenu de la Page Web :\nIl récupère le contenu HTML de la page web affichant les derniers prix de l'or.\n3) Extraire les Données de Prix :\nÀ l'aide de sélecteurs CSS, le flux de travail extrait les données de prix pertinentes (par exemple, prix d'achat) du contenu HTML.\n4) Filtrer les Prix :\nLe prix extrait est converti en format numérique et comparé à un seuil prédéfini (par exemple, 52 300 THB). Les alertes ne sont envoyées que si le prix dépasse cette valeur.\n5) Envoyer une Notification via LINE :\nSi la condition est remplie, le flux de travail envoie une notification à votre compte LINE avec le prix actuel de l'or.\n\n## Guide de Configuration\nPré-requis\n- Accès à la Console des Développeurs LINE pour configurer votre jeton d'accès API\n- Connaissances de base en HTML et sélecteurs CSS pour extraire des données des pages web.\n- Familiarité avec les flux de travail n8n et le formatage JSON.\n\nÉtapes de Configuration\n1) Configurer le Déclencheur de Planification :\nDéfinissez l'intervalle à 6 heures ou ajustez-le en fonction de vos préférences.\n2) Configurer la Récupération de la Page Web :\nMettez à jour l'URL dans le nœud de requête HTTP pour pointer vers la page web contenant les données de prix de l'or.\n3) Extraire les Données de Prix :\nUtilisez le nœud Extracteur HTML pour spécifier le sélecteur CSS pour l'élément de prix (par exemple, #DetailPlace_uc_goldprices1_lblBLBuy).\n4) Définir le Seuil de Prix :\nModifiez la valeur du seuil dans le nœud If pour correspondre à votre niveau d'alerte souhaité (par exemple, 52 300 THB).\n5) Configurer l'API Push de LINE :\nRemplacez le champ de remplacement dans le nœud Envoyer un Message LINE par votre ID utilisateur LINE pour garantir que les notifications sont envoyées au bon compte.\n\nTester le Flux de Travail :\n- Exécutez le flux de travail manuellement pour vérifier qu'il récupère le prix, évalue la condition et envoie les notifications correctement.\n\n## Comment Personnaliser Ce Flux de Travail Selon Vos Besoins\n- Changer l'Intervalle : Ajustez le déclencheur de planification pour vérifier les prix plus ou moins fréquemment (par exemple, toutes les heures ou quotidiennement).\n- Surveiller Plusieurs Prix : Étendez le flux de travail pour extraire et comparer d'autres points de prix (par exemple, prix de vente, taux internationaux).\n- Intégrer D'autres Plateformes : Remplacez la notification LINE par des intégrations pour Telegram, email ou SMS.\n- Élargir les Cas d'Utilisation : Adaptez le flux de travail pour suivre d'autres matières premières ou indicateurs financiers en modifiant l'URL de la page web et les sélecteurs CSS.\n\n## Pourquoi Utiliser Ce Modèle ?\n- Alertes en Temps Réel : Restez informé des changements significatifs des prix de l'or sans intervention manuelle.\n- Seuils Personnalisables : Définissez vos propres seuils de prix pour recevoir des alertes adaptées à vos besoins.\n- Intégration Facile : S'intègre facilement avec LINE pour une configuration rapide et un entretien minimal.\n- Évolutif : Étendez facilement le flux de travail pour surveiller plusieurs points de données ou intégrer d'autres plateformes.",
+  "workflow": {
+    "id": "CQ33IAKSfdDbLzmK",
+    "meta": {
+      "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    },
+    "name": "Gold Price Alert",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "771277db-5553-4d8f-8519-a27e25107178",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -480,
+          20
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 6
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "cf148eee-50dc-41a7-9555-a906676bbc81",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          360,
+          20
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "6decc8be-9041-4975-b700-16f8360578b5",
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                },
+                "leftValue": "={{ parseFloat($json['#DetailPlace_uc_goldprices1_lblBLBuy'].replace(/[^\\d.]/g, '')) }}",
+                "rightValue": 52300
+              },
+              {
+                "id": "553a009d-a08a-4746-b546-d1a43352b07f",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "f98523e4-4dbc-486c-9a7e-babb024aa907",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -560,
+          -80
+        ],
+        "parameters": {
+          "width": 260,
+          "height": 260,
+          "content": "Schedule to check every 6 hours to see the current gold price"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "62bd43cd-755c-44b7-b30d-27416d61f9a5",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -280,
+          -80
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 260,
+          "height": 260,
+          "content": "To get normal webpage, we can use HTTP request without any authoriation and the output will be HTML code"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e6d39001-667e-4632-9b46-2890e2c9aa60",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          -80
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 260,
+          "height": 260,
+          "content": "We would specify what we want from the HTML code earlier eg. Price -- You can find the element by right click > inspect "
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "ec2e7f8b-1867-436a-8537-af9c69d9c726",
+        "name": "Get Webpage",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -200,
+          20
+        ],
+        "parameters": {
+          "url": "https://www.goldtraders.or.th/",
+          "options": {}
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "35f7cac8-ce35-4ba8-893d-aa69e0ea5141",
+        "name": "Extract Price",
+        "type": "n8n-nodes-base.html",
+        "position": [
+          80,
+          20
+        ],
+        "parameters": {
+          "options": {},
+          "operation": "extractHtmlContent",
+          "extractionValues": {
+            "values": [
+              {
+                "key": "#DetailPlace_uc_goldprices1_lblBLBuy",
+                "cssSelector": "#DetailPlace_uc_goldprices1_lblBLBuy"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "a8f8d4ed-124d-4921-a03a-25459a015100",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          280,
+          -140
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 260,
+          "height": 320,
+          "content": "We do not want all the alerts. Thus, we only filter to alert once the price is more than the given number.\n\nIn order to compare, we also need to convert the text to number as well."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1a3cce75-f2d0-4934-b0c9-7c7f8b4e5681",
+        "name": "Send Line Message",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          660,
+          -120
+        ],
+        "parameters": {
+          "url": "https://api.line.me/v2/bot/message/push",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n    \"to\": \"Ue9cc622e33e5333e3784298412ec9aed\",\n    \"messages\":[\n        {\n            \"type\":\"text\",\n            \"text\":\"ราคาทองวันนี้  {{ $json['#DetailPlace_uc_goldprices1_lblBLBuy'] }}\"\n        }\n    ]\n}",
+          "sendBody": true,
+          "specifyBody": "json",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "lKd3b2nc8uNJ148Z",
+            "name": "Line @271dudsw MiniBear"
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "b979a549-4717-49f1-8678-e3b699682dc9",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          580,
+          -220
+        ],
+        "parameters": {
+          "width": 260,
+          "height": 260,
+          "content": "When the condition is met, it'll send the message via line. This can be other platform such as telegram or email"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "ac7f75f8-6820-4ec3-9934-0fbcc45cfad3",
+    "connections": {
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Send Line Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Webpage": {
+        "main": [
+          [
+            {
+              "node": "Extract Price",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Price": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Webpage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 10,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.html": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 5
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "lin@davoy.tech",
+    "username": "linlinmhee",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/4e38af5bc6715cea4e86e60c03e21e287cea3cdb5ceba78b3003e6404743fd32?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 842,
+      "icon": "file:html.svg",
+      "name": "n8n-nodes-base.html",
+      "codex": {
+        "data": {
+          "alias": [
+            "extract",
+            "template",
+            "table"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.html/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "HTML"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguNjQwNjIgMEgxMC40Mzc1VjEuNzgxMjVIMTIuMDkzN1YwSDEzLjg5MDZWNS4zOTA2MkgxMi4wOTM3VjMuNTkzNzVIMTAuNDUzMVY1LjM5MDYySDguNjQwNjJNMTYuMjY1NiAxLjc5Njg3SDE0LjY3OTdWMEgxOS42NTYyVjEuNzk2ODdIMTguMDYyNVY1LjM5MDYySDE2LjI2NTZNMjAuNDQ1MyAwSDIyLjMyODFMMjMuNDg0NCAxLjg5ODQ0TDI0LjY0MDYgMEgyNi41MjM0VjUuMzkwNjJIMjQuNzI2NlYyLjcxODc1TDIzLjQ2ODcgNC42NTYyNUwyMi4yMTA5IDIuNzE4NzVWNS4zOTA2MkgyMC40NDUzTTI3LjQxNDEgMEgyOS4yMTA5VjMuNjA5MzdIMzEuNzU3OFY1LjM5MDYySDI3LjQxNDEiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik04LjU3ODEyIDM2Ljc5NjlMNiA3Ljg1OTM4SDM0LjM0MzdMMzEuNzY1NiAzNi43ODEyTDIwLjE0ODQgNDAiIGZpbGw9IiNFNDREMjYiLz4KPHBhdGggZD0iTTIwLjE3MTkgMzcuNTM5MVYxMC4yMzQ0SDMxLjc1NzhMMjkuNTQ2OSAzNC45MjE5IiBmaWxsPSIjRjE2NTI5Ii8+CjxwYXRoIGQ9Ik0xMS4yNjU2IDEzLjc3MzRIMjAuMTcxOVYxNy4zMjAzSDE1LjE1NjJMMTUuNDg0NCAyMC45NTMxSDIwLjE3MTlWMjQuNDkyMkgxMi4yMzQ0TTEyLjM5MDYgMjYuMjczNEgxNS45NTMxTDE2LjIwMzEgMjkuMTA5NEwyMC4xNzE5IDMwLjE3MTlWMzMuODc1TDEyLjg5MDYgMzEuODQzNyIgZmlsbD0iI0VCRUJFQiIvPgo8cGF0aCBkPSJNMjkuMDQ2OSAxMy43NzM0SDIwLjE1NjJWMTcuMzIwM0gyOC43MTg3TTI4LjM5ODQgMjAuOTUzMUgyMC4xNTYyVjI0LjVIMjQuNTMxMkwyNC4xMTcyIDI5LjEwOTRMMjAuMTU2MiAzMC4xNzE5VjMzLjg1OTRMMjcuNDIxOSAzMS44NDM3IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K"
+      },
+      "displayName": "HTML",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 44,
+      "name": "Trading Crypto"
+    }
+  ],
+  "image": []
+}

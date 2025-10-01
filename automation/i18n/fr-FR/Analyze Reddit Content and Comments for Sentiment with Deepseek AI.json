@@ -1,0 +1,854 @@
+{
+  "id": 6477,
+  "name": "Analyser le contenu et les commentaires de Reddit pour le sentiment avec Deepseek AI",
+  "views": 35,
+  "recentViews": 0,
+  "totalViews": 35,
+  "createdAt": "2025-07-26T06:18:13.460Z",
+  "description": "# Analyse de sentiment sur Reddit avec des insights alimentés par l'IA\n\n**Analysez automatiquement les publications et les commentaires de Reddit pour extraire le sentiment, le ton émotionnel et des insights communautaires exploitables grâce à l'IA.**\n\nCe puissant workflow n8n combine l'API de Reddit avec une analyse de sentiment avancée par IA pour aider les gestionnaires de communauté, les chercheurs et les entreprises à comprendre l'opinion publique et les modèles d'engagement sur Reddit. Obtenez des insights structurés incluant des scores de sentiment, des niveaux de toxicité, des préoccupations tendance et des recommandations de modération.\n\n## Caractéristiques\n\n- **Analyse de sentiment complète** : Catégorise le contenu comme Positif, Négatif ou Neutre avec des scores de confiance\n- **Intelligence émotionnelle** : Détecte des tons émotionnels comme l'excitation, la frustration, l'inquiétude ou le sarcasme\n- **Catégorisation du contenu** : Identifie les types de discussion (questions, plaintes, éloges, débats)\n- **Détection de toxicité** : Signale le contenu potentiellement nuisible avec des niveaux de gravité\n- **Insights communautaires** : Analyse la qualité de l'engagement et les préoccupations tendance\n- **Intelligence exploitable** : Fournit des recommandations de modération et des niveaux d'urgence de réponse\n- **Traitement par lots** : Traite efficacement plusieurs publications et leurs commentaires\n- **Sortie JSON structurée** : Renvoie des données organisées prêtes pour une analyse ou une intégration ultérieure\n\n## Comment ça fonctionne\n\nLe workflow suit un processus en deux étapes :\n\n1. **Collecte de données** : Récupère les publications récentes des subreddits spécifiés ainsi que leurs commentaires\n2. **Analyse IA** : Traite le contenu via DeepSeek AI pour générer des insights de sentiment et contextuels complets\n\n## Cas d'utilisation\n\n- **Gestion de communauté** : Surveillez les tendances de sentiment et identifiez les publications nécessitant l'attention d'un modérateur\n- **Surveillance de marque** : Suivez l'opinion publique sur vos produits ou services sur Reddit\n- **Recherche de marché** : Comprenez le sentiment et les préoccupations des clients dans les communautés pertinentes\n- **Stratégie de contenu** : Identifiez quel type de contenu résonne positivement avec votre audience\n- **Gestion de crise** : Détectez rapidement et répondez aux pics de sentiment négatif\n\n## Identifiants requis\n\nAvant de configurer ce workflow, vous devrez obtenir les identifiants suivants :\n\n### API Reddit OAuth2\n1. Allez sur [Préférences d'application Reddit](https://www.reddit.com/prefs/apps)\n2. Cliquez sur \"Créer une application\" ou \"Créer une autre application\"\n3. Choisissez \"application web\" comme type d'application\n4. Remplissez les champs requis :\n   - **Nom** : Le nom de votre application\n   - **Description** : Brève description de votre application\n   - **URI de redirection** : `http://localhost:8080/oauth/callback` (ou l'URL de votre instance n8n + `/oauth/callback`)\n5. Notez votre **ID client** et **Secret client**\n\n### API OpenRouter\n1. Visitez [OpenRouter](https://openrouter.ai/)\n2. Inscrivez-vous pour un compte\n3. Accédez à votre section Clés API\n4. Générez une nouvelle clé API\n5. Copiez la clé API pour l'utiliser dans n8n\n\n## Instructions de configuration étape par étape\n\n### Étape 1 : Importer le workflow\n1. Copiez le JSON du workflow à partir de ce modèle\n2. Dans votre instance n8n, cliquez sur le bouton \"+\" pour créer un nouveau workflow\n3. Sélectionnez \"Importer depuis l'URL\" ou \"Importer depuis le presse-papiers\"\n4. Collez le JSON du workflow et cliquez sur \"Importer\"\n\n### Étape 2 : Configurer les identifiants Reddit\n1. Cliquez sur n'importe quel nœud Reddit (par exemple, \"Obtenir plusieurs publications\")\n2. Dans le menu déroulant des identifiants, cliquez sur \"Créer nouveau\"\n3. Sélectionnez \"API Reddit OAuth2\"\n4. Entrez vos identifiants d'application Reddit :\n   - **ID client** : Votre ID client d'application Reddit\n   - **Secret client** : Votre secret client d'application Reddit\n   - **URI d'authentification** : `https://www.reddit.com/api/v1/authorize`\n   - **URI de jeton d'accès** : `https://www.reddit.com/api/v1/access_token`\n5. Cliquez sur \"Connecter mon compte\" et autorisez l'application\n6. Enregistrez les identifiants\n\n### Étape 3 : Configurer les identifiants OpenRouter\n1. Cliquez sur le nœud \"OpenRouter Chat Model1\"\n2. Dans le menu déroulant des identifiants, cliquez sur \"Créer nouveau\"\n3. Sélectionnez \"API OpenRouter\"\n4. Entrez votre clé API OpenRouter\n5. Enregistrez les identifiants\n\n### Étape 4 : Tester le Webhook\n1. Cliquez sur le nœud \"Webhook\"\n2. Copiez l'URL du webhook (elle ressemblera à : `https://your-n8n-instance.com/webhook/reddit-sentiment`)\n3. Testez le webhook à l'aide d'un outil comme Postman ou curl avec cette charge utile d'exemple :\n\n```json\n{\n  \"subreddit\": \"technology\",\n  \"query\": \"IA\",\n  \"limit\": 5\n}\n```\n\n### Étape 5 : Personnaliser l'analyse\n1. **Modifier l'invite du générateur de données structurées** : Éditez l'invite dans le nœud \"Générateur de données structurées\" pour ajuster les critères d'analyse ou le format de sortie\n2. **Changer le modèle IA** : Dans le nœud \"OpenRouter Chat Model1\", vous pouvez passer à différents modèles comme `anthropic/claude-3-haiku` ou `openai/gpt-4` en fonction de vos préférences et de votre budget\n3. **Ajuster les limites de publication** : Modifiez le paramètre `limit` dans les nœuds \"Obtenir plusieurs publications\" et \"Obtenir plusieurs commentaires dans une publication\" pour contrôler la quantité de données que vous traitez\n\n## Instructions d'utilisation\n\n### Effectuer des appels API\n\nEnvoyez une requête POST à votre URL de webhook avec les paramètres suivants :\n\n**Paramètres requis :**\n- `subreddit` : Le nom du subreddit (sans r/)\n- `limit` : Nombre de publications à analyser (recommandé : 5-15)\n\n**Paramètres optionnels :**\n- `query` : Terme de recherche pour filtrer les publications (optionnel)\n\n**Exemple de requête :**\n```bash\ncurl -X POST https://your-n8n-instance.com/webhook/reddit-sentiment \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"subreddit\": \"ServiceClient\",\n    \"limit\": 10\n  }'\n```\n\n### Comprendre la sortie\n\nLe workflow renvoie un tableau JSON avec une analyse détaillée pour chaque publication :\n\n```json\n[\n  {\n    \"sentiment_analysis\": {\n      \"overall_sentiment\": {\n        \"category\": \"Négatif\",\n        \"confidence_score\": 8\n      },\n      \"emotional_tone\": [\"frustré\", \"préoccupé\"],\n      \"intensity_level\": \"Élevé\"\n    },\n    \"content_categorization\": {\n      \"discussion_type\": \"Plainte\",\n      \"key_themes\": [\"problèmes de facturation\", \"service client\"],\n      \"toxicity_level\": {\n        \"level\": \"Faible\",\n        \"indicators\": \"Aucun langage offensant détecté\"\n      }\n    },\n    \"contextual_insights\": {\n      \"community_engagement_quality\": \"Constructif\",\n      \"potential_issues_flagged\": [\"interruption de service\"],\n      \"trending_concerns\": [\"temps de réponse\", \"processus de résolution\"]\n    },\n    \"actionable_intelligence\": {\n      \"moderator_attention_needed\": {\n        \"required\": \"Oui\",\n        \"reason\": \"Plainte client nécessitant une réponse de l'entreprise\"\n      },\n      \"response_urgency\": \"Élevée\",\n      \"suggested_follow_up_actions\": [\n        \"Escalader à l'équipe de service client\",\n        \"Surveiller les plaintes similaires\"\n      ]\n    }\n  }\n]\n```\n\n## Explication des nœuds du workflow\n\n### Nœuds de collecte de données\n- **Webhook** : Reçoit les requêtes API avec subreddit et paramètres d'analyse\n- **Obtenir plusieurs publications** : Récupère les publications récentes du subreddit spécifié\n- **Diviser** : Traite les publications individuelles pour l'analyse\n- **Obtenir plusieurs commentaires dans une publication** : Récupère les commentaires pour chaque publication\n\n### Nœuds de traitement\n- **Boucle sur les éléments** : Gère le traitement par lots de plusieurs publications\n- **Analyseur de sentiment** : Nœud principal d'analyse IA qui traite le contenu\n- **Générateur de données structurées** : Formate la sortie de l'IA en JSON structuré\n- **Code** : Analyse et nettoie la réponse de l'IA\n- **Répondre au Webhook** : Renvoie les résultats d'analyse finaux\n\n## Options de personnalisation\n\n### Ajuster la profondeur de l'analyse\n- Modifiez les paramètres `limit` pour analyser plus ou moins de publications/commentaires\n- Mettez à jour les invites IA pour vous concentrer sur des aspects spécifiques (par exemple, mentions de produits, analyse de concurrents)\n\n### Ajouter un stockage de données\n- Connectez des nœuds de base de données pour stocker les résultats d'analyse pour un suivi historique\n- Ajoutez des notifications par e-mail pour les résultats prioritaires\n\n### Intégration avec d'autres outils\n- Connectez-vous à Slack/Discord pour des alertes en temps réel\n- Liez à Google Sheets pour une visualisation facile des données\n- Intégrez avec des systèmes CRM pour le suivi des retours clients\n\n## Conseils pour de meilleurs résultats\n\n1. **Choisissez des subreddits pertinents** : Concentrez-vous sur les communautés où votre public cible est actif\n2. **Surveillez régulièrement** : Configurez des exécutions programmées pour suivre les tendances de sentiment au fil du temps\n3. **Personnalisez les invites** : Adaptez les invites de l'IA à votre secteur ou cas d'utilisation spécifique\n4. **Respectez les limites de taux** : L'API Reddit a des limites de taux, évitez donc les requêtes excessives\n5. **Examinez la sortie de l'IA** : Vérifiez périodiquement l'exactitude de l'analyse de l'IA et ajustez les invites si nécessaire\n\n## Dépannage\n\n### Problèmes courants\n\n**\"Échec de l'authentification de l'API Reddit\"**\n- Vérifiez que vos identifiants d'application Reddit sont corrects\n- Assurez-vous que votre URI de redirection correspond à votre instance n8n\n- Vérifiez que votre application Reddit est définie comme type \"application web\"\n\n**\"Erreur de l'API OpenRouter\"**\n- Confirmez que votre clé API est valide et dispose de crédits suffisants\n- Vérifiez que le modèle sélectionné est disponible\n- Assurez-vous que votre compte a accès au modèle choisi\n\n**\"Webhook ne répond pas\"**\n- Assurez-vous que le workflow est activé\n- Vérifiez que l'URL du webhook est correcte\n- Vérifiez que le format de la charge utile de la requête correspond à la structure attendue\n\n**\"L'analyse IA renvoie des erreurs\"**\n- Vérifiez le format de l'invite dans le Générateur de données structurées\n- Vérifiez si le modèle IA sélectionné prend en charge les fonctionnalités requises\n- Assurez-vous que les données d'entrée ne sont pas vides ou mal formées\n\n## Considérations de performance\n\n- **Limites de taux** : Reddit autorise 60 requêtes par minute pour les applications OAuth\n- **Coûts de l'IA** : Surveillez votre utilisation d'OpenRouter pour gérer les coûts\n- **Temps de traitement** : Les lots plus importants prendront plus de temps à traiter\n- **Utilisation de la mémoire** : Tenez compte des ressources de l'instance n8n lors du traitement de grands ensembles de données\n\n## Contribution\n\nCe workflow peut être étendu et amélioré. Envisagez d'ajouter :\n- Support pour plusieurs subreddits dans une seule requête\n- Suivi historique du sentiment et analyse des tendances\n- Intégration avec des outils de visualisation\n- Modèles de classification personnalisés pour une analyse spécifique à l'industrie\n\n---\n\n**Prêt à commencer à analyser le sentiment sur Reddit ?** Importez ce workflow et commencez à obtenir des insights précieux sur les discussions des communautés en ligne !",
+  "workflow": {
+    "id": "TEMPLATE_WORKFLOW_ID",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Reddit Sentiment Analysis",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "b38ce2cf-0db8-448f-9447-41fa2ad7deb0",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -440,
+          -140
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "22a4c3e7-7013-4628-8df1-2398aad3ff80",
+        "name": "Get many comments in a post",
+        "type": "n8n-nodes-base.reddit",
+        "position": [
+          100,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "83bb326b-ad7e-4c30-bad3-f2a2a2a51300",
+        "name": "Get many posts",
+        "type": "n8n-nodes-base.reddit",
+        "position": [
+          -240,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "1d211962-4178-4454-8c80-1c00bbdd13e8",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          -400,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "5c8e928b-1eb7-4e81-8d8c-6adc79914c5c",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "position": [
+          -60,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "6f00526d-b220-44a2-8cca-8c2284b7d097",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          280,
+          80
+        ],
+        "parameters": {},
+        "typeVersion": 3
+      },
+      {
+        "id": "41d1795e-14e4-4a20-8852-c432d875833d",
+        "name": "OpenRouter Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "position": [
+          720,
+          260
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "dc60016c-55bd-48b1-b368-abe79c939055",
+        "name": "Structured Data Generator",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          820,
+          100
+        ],
+        "parameters": {},
+        "typeVersion": 1.7
+      },
+      {
+        "id": "69a475a7-631d-41c9-aeb5-4ac09ebf5536",
+        "name": "Code",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1120,
+          100
+        ],
+        "parameters": {},
+        "typeVersion": 2
+      },
+      {
+        "id": "29ed9837-4dca-4c7b-9110-6c118cf9d914",
+        "name": "Respond to Webhook",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          1260,
+          100
+        ],
+        "parameters": {},
+        "typeVersion": 1.4
+      },
+      {
+        "id": "9e595a99-ca1e-47f1-b3c1-a3acaea64546",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          480,
+          -140
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "400088ab-5276-4554-940e-1d98448eb0e9",
+        "name": "Sentiment Analyzer",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          500,
+          100
+        ],
+        "parameters": {},
+        "typeVersion": 1.7
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "NEW_VERSION_ID",
+    "connections": {
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get many posts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Get many comments in a post",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many posts": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Sentiment Analyzer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sentiment Analyzer": {
+        "main": [
+          [
+            {
+              "node": "Structured Data Generator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenRouter Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Structured Data Generator",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Sentiment Analyzer",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Data Generator": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many comments in a post": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 12,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.reddit": {
+        "count": 2
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitOut": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.respondToWebhook": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenRouter": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Gerald Denor",
+    "username": "dominixai",
+    "bio": "Gerald Akhidenor is an AI Automation Lead Creative with 5 years of experience in AI automation consultancy. He specializes in n8n and API integrations, driving innovative automation solutions. As founder of DominixAI, Gerald combines creative vision and technical expertise to streamline processes and boost efficiency through cutting-edge AI technologies.\nWebsite: https://dominixai.com\nJobMonkey: https://trafficabc.com/jobmonkey-application-generator/",
+    "verified": true,
+    "links": [
+      "https://jobmonkey.dev/services/"
+    ],
+    "avatar": "https://gravatar.com/avatar/79e4a836e52d91c1ec8122d4fb4204c8216e7685023e52b4a1f24d0795246658?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 445,
+      "icon": "file:reddit.svg",
+      "name": "n8n-nodes-base.reddit",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.reddit/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/reddit/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Reddit"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgNTEzIDUxNCI+PHVzZSB4bGluazpocmVmPSIjYSIgeD0iLjUiIHk9Ii41Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSJub25lIj48cGF0aCBmaWxsPSIjZmY0NTAwIiBkPSJNMCA3Ni44QzAgMzQuMjUzIDM0LjI1MyAwIDc2LjggMGgzNTguNEM0NzcuNzQ3IDAgNTEyIDM0LjI1MyA1MTIgNzYuOHYzNTguNGMwIDQyLjU0Ny0zNC4yNTMgNzYuOC03Ni44IDc2LjhINzYuOEMzNC4yNTMgNTEyIDAgNDc3Ljc0NyAwIDQzNS4yeiIvPjxwYXRoIGQ9Ik03OSAzMDVjMC02OC4xNDIgNzguOTQyLTEyMyAxNzctMTIzczE3NyA1NC44NTggMTc3IDEyMy03OC45NDIgMTIzLTE3NyAxMjNTNzkgMzczLjE0MiA3OSAzMDUiLz48ZyBmaWxsPSIjZmY0NTAwIj48cGF0aCBkPSJNMTk5IDM0N2MzNSAyOSA3OSAyOSAxMTQgMGwxMiAxMWMtNDIgMzUtOTYgMzUtMTM4IDB6Ii8+PHVzZSB4bGluazpocmVmPSIjYiIvPjx1c2UgeGxpbms6aHJlZj0iI2IiIHg9Ii0xMTgiLz48L2c+PC9nPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiI+PHVzZSB4bGluazpocmVmPSIjYiIgeD0iNzUiIHk9Ii0xNjAiIHN0cm9rZS13aWR0aD0iMjUiLz48cGF0aCBzdHJva2Utd2lkdGg9IjIyIiBkPSJNODcgMjgyYy00NS0yMi01LTkyIDQwLTUwbTI5OCA1MGM0NS0yMiA1LTkyLTQwLTUwbS0xMjctNDUgMjQtODMgODAgMTYiLz48L2c+PC9zeW1ib2w+PGRlZnM+PHBhdGggaWQ9ImIiIGQ9Ik0yODcgMjg1YTI3Ljk0IDI3Ljk0IDAgMSAxIDU2IDAgMjcuOTQgMjcuOTQgMCAxIDEtNTYgMCIvPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Reddit",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 535,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.respondToWebhook",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.respondtowebhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Utility"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Répondre au Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Respond to Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 7,
+          "name": "Utility"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chaîne LLM de base",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "icon": "file:splitOut.svg",
+      "name": "n8n-nodes-base.splitOut",
+      "codex": {
+        "data": {
+          "alias": [
+            "Split",
+            "Nested",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Diviser"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjOUI2REQ1IiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4MCAxNDhjMC02LjYyNy01LjM3My0xMi0xMi0xMkgzMjJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxNDZjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMCA5NmMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDMyMmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDE0NmM2LjYyNyAwIDEyLTUuMzczIDEyLTEyem0wIDk2YzAtNi42MjctNS4zNzMtMTItMTItMTJIMzIyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTQ2YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNNDM4IDc2YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtMTcuNjczIDAtMzIgMTQuMzI3LTMyIDMydjU2YzAgMjYuOTc4LTEwLjI3MiA1MS41NTctMjcuMTE5IDcwLjAzOS01LjA1NSA1LjU0NS01LjA1NSAxNC4zNzcgMCAxOS45MjIgMTYuODQ3IDE4LjQ4MiAyNy4xMTkgNDMuMDYxIDI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMgMTQuMzI3IDMyIDMyIDMySDQyNmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJIMzA5Ljc4M2MtNDQuMTgzIDAtODAtMzUuODE3LTgwLTgwdi01NmMwLTMwLjkyOC0yNS4wNzItNTYtNTYtNTZhNS43ODMgNS43ODMgMCAwIDEtNS43ODMtNS43ODN2LTM2LjQzNGE1Ljc4MyA1Ljc4MyAwIDAgMSA1Ljc4My01Ljc4M2MzMC45MjggMCA1Ni0yNS4wNzIgNTYtNTZ2LTU2YzAtNDQuMTgzIDM1LjgxNy04MCA4MC04MEg0MjZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMzYgMjQ0YzAtNi42MjctNS4zNzMtMTItMTItMTJIMTJjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJ2MjRjMCA2LjYyNyA1LjM3MyAxMiAxMiAxMmgxMTJjNi42MjcgMCAxMi01LjM3MyAxMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik01MTIgMEgwdjUxMmg1MTJ6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+"
+      },
+      "displayName": "Split Out",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1281,
+      "icon": "file:openrouter.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenrouter/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenRouter"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjOTRBM0I4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0aXRsZT5PcGVuUm91dGVyPC90aXRsZT48cGF0aCBkPSJNMTYuODA0IDEuOTU3bDcuMjIgNC4xMDV2LjA4N0wxNi43MyAxMC4yMWwuMDE3LTIuMTE3LS44MjEtLjAzYy0xLjA1OS0uMDI4LTEuNjExLjAwMi0yLjI2OC4xMS0xLjA2NC4xNzUtMi4wMzguNTc3LTMuMTQ3IDEuMzUyTDguMzQ1IDExLjAzYy0uMjg0LjE5NS0uNDk1LjMzNi0uNjguNDU1bC0uNTE1LjMyMi0uMzk3LjIzNC4zODUuMjMuNTMuMzM4Yy40NzYuMzE0IDEuMTcuNzk2IDIuNzAxIDEuODY2IDEuMTEuNzc1IDIuMDgzIDEuMTc3IDMuMTQ3IDEuMzUybC4zLjA0NWMuNjk0LjA5MSAxLjM3NS4wOTQgMi44MjUuMDMzbC4wMjItMi4xNTkgNy4yMiA0LjEwNXYuMDg3TDE2LjU4OSAyMmwuMDE0LTEuODYyLS42MzUuMDIyYy0xLjM4Ni4wNDItMi4xMzcuMDAyLTMuMTM4LS4xNjItMS42OTQtLjI4LTMuMjYtLjkyNi00Ljg4MS0yLjA1OWwtMi4xNTgtMS41YTIxLjk5NyAyMS45OTcgMCAwMC0uNzU1LS40OThsLS40NjctLjI4YTU1LjkyNyA1NS45MjcgMCAwMC0uNzYtLjQzQzIuOTA4IDE0LjczLjU2MyAxNC4xMTYgMCAxNC4xMTZWOS44ODhsLjE0LjAwNGMuNTY0LS4wMDcgMi45MS0uNjIyIDMuODA5LTEuMTI0bDEuMDE2LS41OC40MzgtLjI3NGMuNDI4LS4yOCAxLjA3Mi0uNzI2IDIuNjg2LTEuODUzIDEuNjIxLTEuMTMzIDMuMTg2LTEuNzggNC44ODEtMi4wNTkgMS4xNTItLjE5IDEuOTc0LS4yMTMgMy44MTQtLjEzOGwuMDItMS45MDd6Ij48L3BhdGg+PC9zdmc+Cg=="
+      },
+      "displayName": "OpenRouter Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de marché"
+    },
+    {
+      "id": 49,
+      "name": "Résumé IA"
+    }
+  ],
+  "image": []
+}

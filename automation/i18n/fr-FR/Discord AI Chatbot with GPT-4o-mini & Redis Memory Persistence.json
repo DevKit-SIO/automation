@@ -1,0 +1,763 @@
+{
+  "id": 5816,
+  "name": "Discord AI Chatbot avec GPT-4o-mini & Persistance de Mémoire Redis",
+  "views": 961,
+  "recentViews": 2,
+  "totalViews": 961,
+  "createdAt": "2025-07-09T10:01:50.431Z",
+  "description": "**Description :**\nCe workflow n8n automatise un bot Discord pour récupérer des messages d'un canal spécifié et envoyer des réponses générées par l'IA dans des fils de discussion. Il garantit un traitement et une interaction fluides des messages, ce qui le rend idéal pour gérer des discussions communautaires, le support client ou l'engagement basé sur l'IA. Ce workflow utilise Redis pour la persistance de la mémoire, garantissant que l'historique des conversations est maintenu même si le workflow redémarre, offrant une expérience utilisateur sans couture.\n\n## Comment ça fonctionne\n\n- Le bot écoute les nouveaux messages dans un canal Discord spécifié.\n- Il envoie les messages à un modèle d'IA pour la génération de réponses.\n- La réponse générée par l'IA est publiée en tant que fil sous le message original.\n- Le bot fonctionne sur un serveur Ubuntu et est géré à l'aide de PM2 pour la stabilité du temps de fonctionnement.\n- Le bot Discord (script Python) agit comme un pont, capturant les messages de Discord et les envoyant au webhook n8n. Le workflow n8n traite ensuite ces messages, interagit avec le modèle d'IA et renvoie la réponse de l'IA à Discord via le bot.\n\n## Prérequis pour héberger le Bot\n- Inscrivez-vous sur [Pella](https://www.pella.app/), qui est un service d'hébergement géré pour les bots Discord. (Configuration facile)\n- Une instance Redis pour la persistance de la mémoire. Redis est un magasin de structures de données en mémoire, utilisé ici pour stocker et récupérer l'historique des conversations, garantissant que l'IA peut maintenir le contexte à travers plusieurs interactions. Cela est crucial pour des conversations cohérentes et continues.\n\n## Étapes de configuration\n\n### **1️⃣ Créer un Bot Discord**\n\n1. Allez sur le [Portail des Développeurs Discord](https://discord.com/developers/applications).\n2. Cliquez sur **“Nouvelle Application”**, entrez un nom et créez-le.\n3. Accédez à **Bot** &gt; **Réinitialiser le Token**, puis copiez le **Token du Bot**.\n4. Activez **Intents de Passerelle Privilégiés** (Présence, Membres du Serveur, Contenu des Messages).\n5. Sous **OAuth2 &gt; Générateur d'URL**, sélectionnez le scope **bot** et les autorisations requises.\n6. Copiez l'URL générée, ouvrez-la dans un navigateur, sélectionnez votre serveur et cliquez sur **Autoriser**.\n\n### **2️⃣ Déployer le Bot sur Pella**\n\n1. Créez un nouveau dossier `discord-bot` et naviguez à l'intérieur :\n\n2. Créez et configurez un fichier `.env` pour stocker votre token de bot :\n\n3. Copiez le code dans .env : (Vous pouvez copier l'URL du webhook depuis le workflow n8n)\n    ```bash\n    TOKEN=your-bot-token-here\n    WEBHOOK_URL=[https://your-domain.tld/webhook/getmessage](https://your-domain.tld/webhook/getmessage) \n    ```\n4. Créez le fichier `main.py`, copiez le code ci-dessous et enregistrez-le :\n\n5. Copiez ce script Bot dans `main.py` :\n    ```py\n    import discord\n    import requests\n    import json\n    import os\n    from dotenv import load_dotenv\n    \n    # Charger les variables d'environnement depuis le fichier .env\n    load_dotenv()\n    TOKEN = os.getenv(\"TOKEN\")\n    WEBHOOK_URL = os.getenv(\"WEBHOOK_URL\")\n    \n    # Configuration du Bot\n    LISTEN_CHANNELS = [\"YOUR_CHANNEL_ID_1\", \"YOUR_CHANNEL_ID_2\"]  # Remplacez par vos ID de canal cibles\n    \n    # Configuration des Intents\n    intents = discord.Intents.default()\n    intents.messages = True  # Activer l'événement de message\n    intents.guilds = True\n    intents.message_content = True  # Nécessaire pour lire les messages\n    \n    client = discord.Client(intents=intents)\n\n    @client.event\n    async def on_ready():\n        print(f'Connecté en tant que {client.user}')\n    \n    @client.event\n    async def on_message(message):\n        if message.author == client.user:\n            return  # Ignorer les messages du bot lui-même\n    \n        if str(message.channel.id) in LISTEN_CHANNELS:\n            try:\n                fetched_message = await message.channel.fetch_message(message.id)  # Assurer un bon fetch\n                payload = {\n                    \"channel_id\": str(fetched_message.channel.id),  # Assurer que c'est une chaîne\n                    \"chat_message\": fetched_message.content,\n                    \"timestamp\": str(fetched_message.created_at),  # Assurer un formatage correct\n                    \"message_id\": str(fetched_message.id),  # Assurer que l'ID est une chaîne\n                    \"user_id\": str(fetched_message.author.id)  # Assurer que l'ID utilisateur est aussi une chaîne\n                }\n    \n                headers = {'Content-Type': 'application/json'}\n                response = requests.post(WEBHOOK_URL, data=json.dumps(payload), headers=headers)\n    \n                if response.status_code == 200:\n                    print(f\"Message envoyé avec succès : {payload}\")\n                else:\n                    print(f\"Échec de l'envoi du message : {response.status_code}, Réponse : {response.text}\")\n            except Exception as e:\n                print(f\"Erreur lors de la récupération du message : {e}\")\n    \n    client.run(TOKEN)\n    ```\n\n6. Créez `requirements.txt` et copiez :\n    ```bash\n    discord\n    python-dotenv\n    ```\n### **3️⃣ Suivez la vidéo pour configurer le bot qui fonctionnera 24/7**\n\n1. Tutoriel - https://www.youtube.com/watch?v=rNnK3XlUtYU\n\nRemarque : Le plan gratuit expirera après 24 heures, veuillez donc opter pour le plan payant sur Pella pour garder votre bot en fonctionnement.\n\n### **4️⃣ Configuration du Workflow n8n**\n\nLe workflow n8n se compose des nœuds suivants :\n\n-   **Obtenir les Messages Discord (Webhook) :** Ce nœud agit comme le point d'entrée pour les messages du bot Discord. Il reçoit le `channel_id`, `chat_message`, `timestamp`, `message_id`, et `user_id` de Discord lorsqu'un nouveau message est publié dans le canal configuré. Son chemin de webhook est `/getmessage` et il attend une requête POST.\n-   **Agent de Chat (Agent Langchain) :** Ce nœud traite le message Discord entrant (`chat_message`). Il est configuré comme un agent conversationnel, intégrant le modèle de langage et la mémoire pour générer une réponse appropriée. Il a également un prompt pour garder la réponse concise, sous 1800 caractères.\n-   **OpenAI -4o-mini (Modèle de Langage Langchain) :** Ce nœud se connecte à l'API OpenAI et utilise le modèle `gpt-4o-mini-2024-07-18` pour générer des réponses d'IA. C'est le composant IA central du workflow.\n-   **Historique des Messages (Mémoire de Chat Redis) :** Ce nœud gère l'historique des conversations en utilisant Redis. Il stocke et récupère les messages de chat, garantissant que l'`Agent de Chat` maintienne le contexte pour chaque utilisateur en fonction de leur `user_id`. Cela est critique pour des conversations multi-tours cohérentes.\n-   **Calculatrice (Outil Langchain) :** Ce nœud fournit un outil de calcul que l'agent IA peut utiliser si un calcul mathématique est nécessaire dans la conversation. Cela étend les capacités de l'IA au-delà de la simple génération de texte.\n-   **Réponse de l'IA (Discord) :** Ce nœud envoie la réponse générée par l'IA de retour au canal Discord. Il utilise les identifiants de l'API du Bot Discord et répond dans un fil sous le message original (`message_id`) dans le `channel_id` spécifié.\n-   **Note Collante1, Note Collante2, Note Collante3, Note Collante4, Note Collante5, Note Collante :** Ce sont des nœuds d'information au sein du workflow fournissant des instructions, des extraits de code pour le bot Discord, et des conseils de configuration pour l'utilisateur. Ces notes guident l'utilisateur sur la configuration du fichier `.env`, `requirements.txt`, le code du bot Python, et des recommandations générales pour la configuration des canaux et l'ajout d'outils.\n\n### **5️⃣ Configuration de Redis**\n\n1.  **Choisissez un Fournisseur d'Hébergement Redis :** Vous pouvez utiliser un fournisseur cloud comme Redis Labs, Aiven, ou configurer votre propre instance Redis sur un VPS.\n2.  **Obtenez les Détails de Connexion Redis :** Une fois votre instance Redis configurée, vous aurez besoin de l'hôte, du port et du mot de passe (si applicable).\n3.  **Configurer les Nœuds Redis n8n :** Dans votre workflow n8n, configurez le nœud \"Historique des Messages\" avec vos détails de connexion Redis. Assurez-vous que les identifiants Redis `✅ redis-for-n8n` sont correctement configurés avec les détails de votre instance Redis (hôte, port, mot de passe).\n\n### **6️⃣ Personnalisation du Modèle**\n\n-   **Modèle IA :** Vous pouvez facilement remplacer le nœud \"OpenAI -4o-mini\" par tout autre service IA pris en charge par n8n (par exemple, Cohere, Hugging Face) pour utiliser un modèle de langage différent. Assurez-vous que le nouveau nœud de modèle de langage est connecté à l'entrée `ai_languageModel` du nœud \"Agent de Chat\".\n-   **Prompt de l'Agent :** Modifiez le paramètre `text` dans le nœud \"Agent de Chat\" pour changer la personnalité de l'IA, fournir des instructions spécifiques, ou ajuster la longueur de la réponse.\n-   **Outils Supplémentaires :** Le nœud \"Calculatrice\" est un exemple d'outil IA. Vous pouvez ajouter d'autres nœuds d'outils Langchain (par exemple, recherche, recherche de données) et les connecter à l'entrée `ai_tool` du nœud \"Agent de Chat\" pour étendre les capacités de l'IA. Référez-vous à la \"Note Collante5\" dans le workflow pour un rappel.\n-   **Filtrage des Canaux :** Ajustez la liste `LISTEN_CHANNELS` dans le fichier `main.py` de votre bot Discord pour inclure ou exclure des ID de canaux Discord spécifiques où le bot doit écouter les messages.\n-   **Gestion des Fils :** Le nœud \"Réponse de l'IA\" peut être modifié pour changer la façon dont les fils sont créés ou gérés, ou pour envoyer des réponses directement au canal au lieu d'un fil. La configuration actuelle lie la réponse à l'ID du message original (`message_reference`).\n\n### **7️⃣ Instructions de Test**\n\n1.  **Démarrez le Bot Discord :** Assurez-vous que votre script `main.py` fonctionne sur Pella.\n2.  **Activez le Workflow n8n :** Assurez-vous que votre workflow n8n est actif et écoute les webhooks.\n3.  **Envoyez un Message dans Discord :** Allez dans l'un des `LISTEN_CHANNELS` de votre serveur Discord et envoyez un message.\n4.  **Vérifiez la Réponse :** Le bot devrait capturer le message, l'envoyer à n8n, recevoir une réponse générée par l'IA, et la publier en tant que fil sous votre message original.\n5.  **Vérifiez Redis :** Vérifiez que l'historique des conversations est stocké et mis à jour correctement dans votre instance Redis. Recherchez des clés liées aux ID utilisateurs.\n\n✅ **Maintenant votre bot fonctionne en arrière-plan !** 🚀",
+  "workflow": {
+    "meta": {
+      "instanceId": "88bf9d043fa4afdfb9ba1170aff0be979b18f135494b39a8b59f9dbeb5bf011c",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "1a8503cb-7d8f-4160-b9aa-bfe5c75f02e0",
+        "name": "Calculator",
+        "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+        "position": [
+          1000,
+          520
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "8dab1d16-0d0d-47fe-9675-017827a0188c",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -640,
+          40
+        ],
+        "parameters": {
+          "width": 953.4544277976706,
+          "content": "## .env for Discord bot\n```md\nTOKEN=your-bot-token-here\nWEBHOOK_URL=https://your-domain.tld/webhook/getmessage\n```"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b83c3a70-fe5e-4f90-8177-e6fbefc1af2a",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -640,
+          1220
+        ],
+        "parameters": {
+          "width": 949,
+          "height": 100,
+          "content": "## requirements.txt,txt\ndiscord\npython-dotenv"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8c4b3445-005e-4418-9ad0-e89c53b077b4",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -640,
+          220
+        ],
+        "parameters": {
+          "width": 953.7499545009089,
+          "height": 974.8320906053484,
+          "content": "## Discord Bot Code\n\n```py\nimport discord\nimport requests\nimport json\nimport os\nfrom dotenv import load_dotenv\n\n# Load environment variables from .env file\nload_dotenv()\nTOKEN = os.getenv(\"TOKEN\")\nWEBHOOK_URL = os.getenv(\"WEBHOOK_URL\")\n\n# Bot Configuration\nLISTEN_CHANNELS = [123456789012345678]  # Replace with your target channel IDs\n\n# Intents setup\nintents = discord.Intents.default()\nintents.messages = True  # Enable message event\nintents.guilds = True\nintents.message_content = True  # Required to read messages\n\nclient = discord.Client(intents=intents)\n\n@client.event\nasync def on_ready():\n    print(f'Logged in as {client.user}')\n\n@client.event\nasync def on_message(message):\n    if message.author == client.user:\n        return  # Ignore bot's own messages\n    \n    if message.channel.id in LISTEN_CHANNELS:\n        try:\n            fetched_message = await message.channel.fetch_message(message.id)  # Ensure correct fetching\n            payload = {\n                \"channel_id\": str(fetched_message.channel.id),  # Ensure it's string\n                \"chat_message\": fetched_message.content,\n                \"timestamp\": str(fetched_message.created_at),  # Ensure proper formatting\n                \"message_id\": str(fetched_message.id),  # Ensure ID is a string\n                \"user_id\": str(fetched_message.author.id)  # Ensure user ID is also string\n            }\n            \n            headers = {'Content-Type': 'application/json'}\n            response = requests.post(WEBHOOK_URL, data=json.dumps(payload), headers=headers)\n            \n            if response.status_code == 200:\n                print(f\"Message sent successfully: {payload}\")\n            else:\n                print(f\"Failed to send message: {response.status_code}, Response: {response.text}\")\n        except Exception as e:\n            print(f\"Error fetching message: {e}\")\n\nclient.run(TOKEN)\n\n```"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "1187dd59-d4d9-4916-8b91-49e5e0756cc1",
+        "name": "Response fromAI",
+        "type": "n8n-nodes-base.discord",
+        "position": [
+          1120,
+          220
+        ],
+        "webhookId": "735bc71f-14ae-48ff-b145-f2620466a3d0",
+        "parameters": {
+          "content": "={{ $json.output }}",
+          "guildId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "697416344865472593",
+            "cachedResultUrl": "https://discord.com/channels/697416344865472593",
+            "cachedResultName": "server"
+          },
+          "options": {
+            "message_reference": "={{ $('Get Discord Messages').item.json.body.message_id }}"
+          },
+          "resource": "message",
+          "channelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1336754177824653423",
+            "cachedResultUrl": "https://discord.com/channels/697416344865472593/1336754177824653423",
+            "cachedResultName": "assistant"
+          }
+        },
+        "credentials": {
+          "discordBotApi": {
+            "id": "uwNeLNyglDNBio3d",
+            "name": "✅ Discord Bot "
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "51199d60-0549-43a6-affd-e0056fba36f5",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          420,
+          120
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 220,
+          "height": 260,
+          "content": "Get the Production Webhook URL for .env"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "af7b7213-e586-4ca0-9caf-38ba91a74092",
+        "name": "OpenAI -4o-mini ",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          640,
+          520
+        ],
+        "parameters": {
+          "model": "gpt-4o-mini-2024-07-18",
+          "options": {
+            "maxTokens": 2000
+          }
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "KxBND1gbJ5KJAjd1",
+            "name": "✅ OpenAI Account - 06-03-2025"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0788c61b-ae58-446a-a5fe-06bf15b2c2f3",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1020,
+          120
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 300,
+          "height": 260,
+          "content": "Change the Channel According to you. \n( Recommend to make it Private if you are using it for personal Chat )"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6c2cc2e2-0123-45ac-ae8c-2f6f2d294c14",
+        "name": "Get Discord Messages",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          480,
+          220
+        ],
+        "webhookId": "4c80241d-69ca-4394-8e09-d1f72cd0878f",
+        "parameters": {
+          "path": "getmessage",
+          "options": {},
+          "httpMethod": "POST"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "874ba5fd-2d34-4621-a147-0a3f161fb9a1",
+        "name": "Message History",
+        "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+        "position": [
+          800,
+          520
+        ],
+        "parameters": {
+          "sessionKey": "={{ $('Get Discord Messages').item.json.body.user_id}}",
+          "sessionIdType": "customKey"
+        },
+        "credentials": {
+          "redis": {
+            "id": "RdrbcXBwK2E2LRDe",
+            "name": "✅ redis-for-n8n"
+          }
+        },
+        "typeVersion": 1.4
+      },
+      {
+        "id": "2f228d84-3ee6-4050-a7f3-3d0e6a70c4fc",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          940,
+          480
+        ],
+        "parameters": {
+          "width": 280,
+          "height": 220,
+          "content": "\n\n\n\n\n\n\n\n\n\n\n\nAdd additional necessary Tools based on you requirements."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b2dd03bf-e52e-4046-a94b-1020ccc3709d",
+        "name": "Chat Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          700,
+          220
+        ],
+        "parameters": {
+          "text": "={{ $json.body.chat_message }} \n\nKeep the Reply Max and under 1800 characters.",
+          "agent": "conversationalAgent",
+          "options": {},
+          "promptType": "define"
+        },
+        "typeVersion": 1.6
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Calculator": {
+        "ai_tool": [
+          [
+            {
+              "node": "Chat Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat Agent": {
+        "main": [
+          [
+            {
+              "node": "Response fromAI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message History": {
+        "ai_memory": [
+          [
+            {
+              "node": "Chat Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI -4o-mini ": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Chat Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Discord Messages": {
+        "main": [
+          [
+            {
+              "node": "Chat Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 12,
+    "nodeTypes": {
+      "n8n-nodes-base.discord": {
+        "count": 1
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 6
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.toolCalculator": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryRedisChat": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Dhruv Dalsaniya",
+    "username": "ddm21",
+    "bio": "IT Professional & Freelance Automation Consultant specializing in AI-driven automation and business process optimization",
+    "verified": true,
+    "links": [
+      "https://in.linkedin.com/in/dhruvdalsaniya21"
+    ],
+    "avatar": "https://gravatar.com/avatar/367111bb2fd90204e1ce6f05ef666d8e9e6b73829748584483278f1843c02060?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "icon": "file:discord.svg",
+      "name": "n8n-nodes-base.discord",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.discord/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/discord/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Discord"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTk5IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzU4NjVGMiIgZD0iTTIxNi44NTYgMTYuNTk3QTIwOC41IDIwOC41IDAgMCAwIDE2NC4wNDIgMGMtMi4yNzUgNC4xMTMtNC45MzMgOS42NDUtNi43NjYgMTQuMDQ2cS0yOS41MzgtNC40NDItNTguNTMzIDBjLTEuODMyLTQuNC00LjU1LTkuOTMzLTYuODQ2LTE0LjA0NmEyMDcuOCAyMDcuOCAwIDAgMC01Mi44NTUgMTYuNjM4QzUuNjE4IDY3LjE0Ny0zLjQ0MyAxMTYuNCAxLjA4NyAxNjQuOTU2YzIyLjE2OSAxNi41NTUgNDMuNjUzIDI2LjYxMiA2NC43NzUgMzMuMTkzQTE2MSAxNjEgMCAwIDAgNzkuNzM1IDE3NS4zYTEzNi40IDEzNi40IDAgMCAxLTIxLjg0Ni0xMC42MzIgMTA5IDEwOSAwIDAgMCA1LjM1Ni00LjIzN2M0Mi4xMjIgMTkuNzAyIDg3Ljg5IDE5LjcwMiAxMjkuNTEgMGExMzIgMTMyIDAgMCAwIDUuMzU1IDQuMjM3IDEzNiAxMzYgMCAwIDEtMjEuODg2IDEwLjY1M2M0LjAwNiA4LjAyIDguNjM4IDE1LjY3IDEzLjg3MyAyMi44NDggMjEuMTQyLTYuNTggNDIuNjQ2LTE2LjYzNyA2NC44MTUtMzMuMjEzIDUuMzE2LTU2LjI4OC05LjA4LTEwNS4wOS0zOC4wNTYtMTQ4LjM2TTg1LjQ3NCAxMzUuMDk1Yy0xMi42NDUgMC0yMy4wMTUtMTEuODA1LTIzLjAxNS0yNi4xOHMxMC4xNDktMjYuMiAyMy4wMTUtMjYuMiAyMy4yMzYgMTEuODA0IDIzLjAxNSAyNi4yYy4wMiAxNC4zNzUtMTAuMTQ4IDI2LjE4LTIzLjAxNSAyNi4xOG04NS4wNTEgMGMtMTIuNjQ1IDAtMjMuMDE0LTExLjgwNS0yMy4wMTQtMjYuMThzMTAuMTQ4LTI2LjIgMjMuMDE0LTI2LjJjMTIuODY3IDAgMjMuMjM2IDExLjgwNCAyMy4wMTUgMjYuMiAwIDE0LjM3NS0xMC4xNDggMjYuMTgtMjMuMDE1IDI2LjE4Ii8+PC9zdmc+"
+      },
+      "displayName": "Discord",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1167,
+      "icon": "file:redis.svg",
+      "name": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memoryredischat/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "Other memories"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire de Chat Redis"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiNBNDFFMTEiIGQ9Ik01Ny42NTYgNDMuOTljLTMuMjAxIDEuNjgzLTE5Ljc4NyA4LjU2MS0yMy4zMTggMTAuNDE3cy01LjQ5NCAxLjgzOC04LjI4My40OTRjLTIuNzktMS4zNDMtMjAuNDQ5LTguNTM1LTIzLjYyOS0xMC4wNjdDLjgzNCA0NC4wNjYuMDAyIDQzLjQyMi4wMDIgNDIuODExdi02LjExN3MyMi45OC01LjA0NSAyNi42OS02LjM4OCA0Ljk5NS0xLjM5IDguMTU0LS4yMjVjMy4xNiAxLjE2NSAyMi4wMzUgNC42MDMgMjUuMTU0IDUuNzU2djYuMDMyYzAgLjYwNS0uNzIgMS4yODMtMi4zNSAyLjEyNHoiLz48cGF0aCBmaWxsPSIjRDgyQzIwIiBkPSJNNTcuNjU2IDM3Ljg3MmMtMy4yMDEgMS42ODUtMTkuNzg3IDguNTYtMjMuMzE4IDEwLjQxN3MtNS40OTQgMS44MzgtOC4yODMuNDk0Yy0yLjc5LTEuMzQzLTIwLjQ0OS04LjUzNC0yMy42My0xMC4wNjhzLTMuMjQzLTIuNTg4LS4xMjItMy44MmwyNC4zODgtOS41MmMzLjcxLTEuMzQgNC45OTQtMS4zOSA4LjE1My0uMjI1czE5LjY0MyA3Ljc4IDIyLjc0NyA4Ljk1MWMzLjEwMyAxLjE3IDMuMjQgMi4wODYuMDM3IDMuNzg2eiIvPjxwYXRoIGZpbGw9IiNBNDFFMTEiIGQ9Ik01Ny42NTYgMzQuMDE1Yy0zLjIwMSAxLjY4My0xOS43ODcgOC41NjEtMjMuMzE4IDEwLjQxN3MtNS40OTQgMS44MzgtOC4yODMuNDk1Yy0yLjc5LTEuMzQ0LTIwLjQ0OS04LjUzNi0yMy42MjktMTAuMDY3Qy44MzQgMzQuMDkyLjAwMiAzMy40NDcuMDAyIDMyLjgzNlYyNi43MnMyMi45OC01LjA0NSAyNi42OS02LjM4N2MzLjcxMS0xLjM0MyA0Ljk5NS0xLjM5IDguMTU0LS4yMjUgMy4xNiAxLjE2NSAyMi4wMzUgNC42MDIgMjUuMTU0IDUuNzU2djYuMDMyYzAgLjYwNS0uNzIgMS4yODMtMi4zNSAyLjEyM3oiLz48cGF0aCBmaWxsPSIjRDgyQzIwIiBkPSJNNTcuNjU2IDI3Ljg5OGMtMy4yMDEgMS42ODUtMTkuNzg3IDguNTYxLTIzLjMxOCAxMC40MTdzLTUuNDk0IDEuODM4LTguMjgzLjQ5NWMtMi43OS0xLjM0NC0yMC40NDktOC41MzQtMjMuNjMtMTAuMDY3LTMuMTgtMS41MzQtMy4yNDMtMi41ODgtLjEyMi0zLjgybDI0LjM4OC05LjUyYzMuNzEtMS4zNDMgNC45OTQtMS4zOSA4LjE1My0uMjI1IDMuMTYgMS4xNjYgMTkuNjQ0IDcuNzg1IDIyLjc2NSA4LjkzNXMzLjI0IDIuMDg1LjAzOCAzLjc4NXoiLz48cGF0aCBmaWxsPSIjQTQxRTExIiBkPSJNNTcuNjU2IDIzLjY3MWMtMy4yMDEgMS42ODMtMTkuNzg3IDguNTYxLTIzLjMxOCAxMC40MTlzLTUuNDk0IDEuODM4LTguMjgzLjQ5NWMtMi43OS0xLjM0NC0yMC40NDktOC41MzUtMjMuNjI5LTEwLjA2OS0xLjU5Mi0uNzY1LTIuNDI0LTEuNDExLTIuNDI0LTIuMDJ2LTYuMTFzMjIuOTgtNS4wNDUgMjYuNjktNi4zODggNC45OTUtMS4zOSA4LjE1NC0uMjI1YzMuMTYgMS4xNjUgMjIuMDM1IDQuNTkxIDI1LjE1NCA1Ljc0NXY2LjAzMmMwIC42MDUtLjcyIDEuMjgzLTIuMzUgMi4xMjN6Ii8+PHBhdGggZmlsbD0iI0Q4MkMyMCIgZD0iTTU3LjY1NiAxNy41NTNjLTMuMjAxIDEuNjg1LTE5Ljc4NyA4LjU2MS0yMy4zMTggMTAuNDE3cy01LjQ5NCAxLjgzOC04LjI4My40OTVjLTIuNzktMS4zNDQtMjAuNDQ5LTguNTM0LTIzLjYzLTEwLjA2OHMtMy4yNDMtMi41ODctLjEyMi0zLjgybDI0LjM4OC05LjUyYzMuNzEtMS4zNDMgNC45OTQtMS4zOSA4LjE1My0uMjI2IDMuMTYgMS4xNjUgMTkuNjQzIDcuNzg1IDIyLjc2NSA4LjkzNnMzLjI0IDIuMDg1LjAzOCAzLjc4NXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJtMzEuNDk3IDE1LjAzMi0xLjg4LTMuMTUzLTYuMDAyLS41NDUgNC40OC0xLjYzTDI2Ljc1IDcuMmw0LjE5MiAxLjY1MyAzLjk1NS0xLjMwNS0xLjA3IDIuNTg2IDQuMDMyIDEuNTI0LTUuMTk4LjU0NnptLTEwLjAxNCA2LjI3NSAxMy45MDMtMi4xNTMtNC4yIDYuMjExem0tMTEuMTctNS4xNjdjMC0xLjYxIDMuMzE0LTIuOTA2IDcuNDMxLTIuOTA2IDQuMTE4IDAgNy40MzIgMS4yOTYgNy40MzIgMi45MDZzLTMuMzE0IDIuOTA1LTcuNDMyIDIuOTA1Yy00LjExNyAwLTcuNDMxLTEuMjk1LTcuNDMxLTIuOTA1Ii8+PHBhdGggZmlsbD0iIzdBMEMwMCIgZD0ibTUyLjIzMyAxNS43MTQtOC4yMjQgMy4yNzYtLjAwNy02LjU1NnoiLz48cGF0aCBmaWxsPSIjQUQyMTE1IiBkPSJtNDQuMDEgMTguOTkxLS44OS4zNTMtOC4yMTctMy4yNzYgOS4wOTQtMy42M3oiLz48L2c+PC9zdmc+"
+      },
+      "displayName": "Redis Chat Memory",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1195,
+      "icon": "fa:calculator",
+      "name": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolcalculator/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Other Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Calculatrice"
+      },
+      "iconData": {
+        "icon": "calculator",
+        "type": "icon"
+      },
+      "displayName": "Calculator",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 40,
+      "name": "Chatbot de Support"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot IA"
+    }
+  ],
+  "image": []
+}

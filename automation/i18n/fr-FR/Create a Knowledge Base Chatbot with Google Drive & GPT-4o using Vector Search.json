@@ -1,0 +1,1878 @@
+{
+  "id": 6250,
+  "name": "Créer un chatbot de base de connaissances avec Google Drive et GPT-4o utilisant la recherche vectorielle",
+  "views": 1009,
+  "recentViews": 2,
+  "totalViews": 1009,
+  "createdAt": "2025-07-22T02:20:00.507Z",
+  "description": "# Modèle : Créer un chatbot de base de connaissances AI avec Google Drive et OpenAI GPT (Venio/Salesbear)\n\n## 📋 Aperçu du modèle\n\nCe modèle de workflow n8n complet crée un chatbot AI intelligent qui transforme automatiquement vos documents Google Drive en une base de connaissances consultable. Le chatbot utilise les modèles GPT d'OpenAI pour fournir des réponses précises et contextuelles basées exclusivement sur vos documents téléchargés, ce qui le rend parfait pour le support client, la documentation interne et les systèmes de gestion des connaissances.\n\n## 🎯 Ce que fait ce modèle\n\n### Traitement automatisé des connaissances\n- **Surveillance des documents en temps réel** : Détecte automatiquement lorsque des fichiers sont ajoutés ou mis à jour dans votre dossier Google Drive désigné\n- **Traitement intelligent des documents** : Convertit les PDF, fichiers texte et autres documents en embeddings vectoriels consultables\n- **Découpage de texte intelligent** : Divise de grands documents en morceaux de taille optimale pour une meilleure compréhension par l'IA\n- **Stockage vectoriel** : Crée une base de connaissances consultable que l'IA peut interroger pour des informations pertinentes\n\n### Interface de chat alimentée par l'IA\n- **Intégration Webhook** : Reçoit des questions via des requêtes HTTP depuis n'importe quelle plateforme externe (Venio/Salesbear)\n- **Réponses contextuelles** : Maintient l'historique des conversations pour des interactions naturelles et fluides\n- **Réponses basées sur la source** : Fournit des réponses strictement basées sur le contenu de vos documents, empêchant les hallucinations\n- **Support multi-plateforme** : Fonctionne avec n'importe quelle plateforme de chat capable d'envoyer des requêtes HTTP\n\n## 🔧 Conditions préalables et exigences\n\n### Comptes API et autorisations requis\n\n**1. Accès à l'API Google Drive**\n- Compte Google Cloud Platform\n- API Google Drive activée\n- Identifiants OAuth2 configurés\n- Accès en lecture à votre dossier Google Drive cible\n\n**2. Compte API OpenAI**\n- Compte OpenAI actif avec accès à l'API\n- Crédits API suffisants pour les embeddings et les complétions de chat\n- Clé API avec les autorisations appropriées\n\n**3. Instance n8n**\n- Compte n8n cloud ou instance auto-hébergée\n- Fonctionnalité Webhook activée\n- Capacité à installer des nœuds communautaires (nœuds LangChain)\n\n**4. Plateforme de chat cible (facultatif)**\n- Identifiants API pour votre plateforme de chat choisie\n- Capacité Webhook ou points de terminaison API pour l'envoi de messages\n\n### Autorisations requises\n- **Google Drive** : Accès en lecture au contenu des dossiers et téléchargements de fichiers\n- **OpenAI** : Accès API pour les modèles text-embedding-ada-002 et gpt-4o-mini\n- **Plateforme externe** : Accès API pour l'envoi/réception de messages (si intégration avec des systèmes de chat existants)\n\n## 🚀 Fonctionnement détaillé du workflow\n\n### Phase 1 : Création de la base de connaissances\n\n1. **Surveillance des fichiers** : Deux nœuds de déclenchement surveillent en continu votre dossier Google Drive pour de nouveaux fichiers ou mises à jour\n2. **Découverte de documents** : Lorsque des changements sont détectés, le workflow recherche et identifie les fichiers modifiés\n3. **Extraction de contenu** : Télécharge le contenu réel du fichier depuis Google Drive\n4. **Traitement de texte** : Utilise le chargeur de documents de LangChain pour extraire du texte de divers formats de fichiers\n5. **Découpage intelligent** : Divise les documents en morceaux qui se chevauchent (taille configurable) pour un traitement optimal par l'IA\n6. **Génération de vecteurs** : Crée des embeddings en utilisant le modèle text-embedding-ada-002 d'OpenAI\n7. **Stockage** : Stocke les vecteurs dans un magasin de vecteurs en mémoire pour une récupération instantanée\n\n### Phase 2 : Interaction de chat\n\n1. **Réception de questions** : Le Webhook reçoit les questions des utilisateurs au format JSON\n2. **Extraction de données** : Analyse les données entrantes pour extraire le contenu du chat et les informations de session\n3. **Traitement par l'IA** : L'agent IA analyse la question et détermine le contexte pertinent\n4. **Récupération de connaissances** : Recherche dans le magasin de vecteurs les sections de documents les plus pertinentes\n5. **Génération de réponses** : OpenAI génère des réponses basées sur le contenu trouvé et l'historique de la conversation\n6. **Authentification** : Valide la demande en utilisant une authentification basée sur des jetons\n7. **Livraison de la réponse** : Envoie la réponse à la plateforme d'origine\n\n## 📚 Instructions d'utilisation après configuration\n\n### Ajout de documents à votre base de connaissances\n\n1. **Télécharger des fichiers** : Il suffit de glisser-déposer des documents dans votre dossier Google Drive configuré\n2. **Formats pris en charge** : PDF, TXT, DOC, DOCX et autres formats basés sur du texte\n3. **Traitement automatique** : Le workflow détectera et traitera automatiquement les nouveaux fichiers en quelques minutes\n4. **Mises à jour** : Modifiez les fichiers existants, et la base de connaissances se mettra automatiquement à jour\n\n### Intégration avec votre plateforme de chat\n\n**URL Webhook** : Utilisez l'URL Webhook générée pour envoyer des questions\n```\nPOST https://your-n8n-domain/webhook/your-custom-path\nContent-Type: application/json\n\n{\n\"body\": {\n\"Data\": {\n\"ChatMessage\": {\n\"Content\": \"Quels sont vos horaires d'ouverture ?\",\n\"RoomId\": \"user-123-session\",\n\"Platform\": \"web\",\n\"User\": {\n\"CompanyId\": \"company-456\"\n}\n}\n}\n}\n}\n```\n\n**Format de réponse** : Le chatbot renvoie des réponses structurées que votre plateforme peut afficher\n\n### Test de votre chatbot\n\n1. **Test initial** : Envoyez une question simple sur un contenu que vous savez exister dans vos documents\n2. **Test de contexte** : Posez des questions de suivi pour tester la mémoire de la conversation\n3. **Cas limites** : Essayez des questions sur des sujets non présents dans vos documents pour vérifier les réponses appropriées\n4. **Performance** : Surveillez les temps de réponse et la précision\n\n## 🎨 Options de personnalisation\n\n### Personnalisation du message système\nModifiez le message système de l'agent IA pour correspondre à votre marque et à votre cas d'utilisation :\n\n```\nVous êtes un spécialiste du support client [VOTRE_MARQUE]. Vous fournissez des informations utiles et précises basées sur notre documentation. Maintenez toujours un ton [TON] et [DIRECTIVES_SPÉCIFIQUES].\n```\n\n### Personnalisation du comportement de réponse\n- **Ton et voix** : Ajustez de professionnel à décontracté, formel à amical\n- **Longueur de réponse** : Configurez pour des réponses brèves ou des explications détaillées\n- **Messages de secours** : Personnalisez ce que le bot dit lorsqu'il ne peut pas trouver d'informations pertinentes\n- **Support linguistique** : Adaptez pour différentes langues ou terminologies techniques\n\n### Options de configuration technique\n\n**Traitement des documents**\n- **Taille des morceaux** : Ajustez de 1000 à 4000 caractères en fonction de la complexité de votre document\n- **Chevauchement** : Modifiez le pourcentage de chevauchement pour une meilleure préservation du contexte\n- **Types de fichiers** : Ajoutez le support pour des formats de documents supplémentaires\n\n**Configuration du modèle IA**\n- **Sélection du modèle** : Alternez entre gpt-4o-mini (économique) et gpt-4 (qualité supérieure)\n- **Température** : Ajustez la créativité par rapport à l'exactitude factuelle (0.0 à 1.0)\n- **Max Tokens** : Contrôlez les limites de longueur de réponse\n\n**Mémoire et contexte**\n- **Fenêtre de conversation** : Ajustez combien de messages précédents se souvenir\n- **Gestion de session** : Configurez le délai d'expiration de la session et l'identification de l'utilisateur\n- **Récupération de contexte** : Réglez combien de morceaux de documents considérer par requête\n\n### Personnalisation de l'intégration\n\n**Méthodes d'authentification**\n- **Basé sur des jetons** : Mise en œuvre par défaut avec des jetons porteurs\n- **Clé API** : Validation simple de la clé API\n- **OAuth** : Mise en œuvre complète d'OAuth2 pour un accès sécurisé\n- **En-têtes personnalisés** : Validez des en-têtes ou signatures spécifiques\n\n**Formatage de réponse**\n- **Structure JSON** : Personnalisez le format de réponse pour votre plateforme\n- **Support Markdown** : Activez le formatage de texte enrichi dans les réponses\n- **Gestion des erreurs** : Définissez des messages et codes d'erreur personnalisés\n\n## 🎯 Exemples d'utilisation spécifiques\n\n### Chatbot de support client\n**Scénario** : Entreprise de commerce électronique avec documentation produit, politiques de retour et documents FAQ\n**Configuration** : Téléchargez des manuels de produits, des documents de politique et des questions courantes sur Google Drive\n**Personnalisation** : Ton professionnel, réponses concises, déclencheurs d'escalade pour des problèmes complexes\n**Intégration** : Widget de chat sur le site Web, application mobile ou portail client\n\n### Base de connaissances RH interne\n**Scénario** : Département RH d'une entreprise avec manuel de l'employé, politiques et procédures\n**Configuration** : Téléchargez des politiques RH, des informations sur les avantages et des documents procéduraux\n**Personnalisation** : Ton amical mais professionnel, explications détaillées des politiques\n**Intégration** : Bot Slack interne, portail des employés ou système de tickets RH\n\n### Assistant de documentation technique\n**Scénario** : Entreprise de logiciels avec documentation API, guides d'utilisateur et documents de dépannage\n**Configuration** : Téléchargez des documents API, des manuels d'utilisateur et des spécifications techniques\n**Personnalisation** : Ton technique, exemples de code, instructions étape par étape\n**Intégration** : Portail développeur, système de tickets de support ou site Web de documentation\n\n### Assistant de contenu éducatif\n**Scénario** : Établissement éducatif avec matériel de cours, politiques et ressources pour les étudiants\n**Configuration** : Téléchargez des programmes, du contenu de cours, des politiques académiques et des guides pour les étudiants\n**Personnalisation** : Ton utile et encourageant, explications détaillées\n**Intégration** : Système de gestion de l'apprentissage, portail étudiant ou application mobile\n\n### Assistant d'information sur la santé\n**Scénario** : Pratique médicale avec informations pour les patients, procédures et documents de politique\n**Configuration** : Téléchargez des directives pour les patients, des explications de procédures et des politiques de pratique\n**Personnalisation** : Ton compatissant, explications médicales claires, messages de non-responsabilité\n**Intégration** : Portail patient, système de rendez-vous ou application de santé mobile\n\n## 🔧 Exemples de personnalisation avancée\n\n### Support multilingue\n```javascript\n// Dans le nœud Edit Fields, détectez la langue et dirigez en conséquence\nconst language = $json.body.Data.ChatMessage.Language || 'en';\nconst systemMessage = {\n'en': 'Vous êtes un assistant de support client utile...',\n'es': 'Eres un asistente de soporte al cliente útil...',\n'fr': 'Vous êtes un assistant de support client utile...'\n};\n```\n\n### Routage spécifique au département\n```javascript\n// Routez les questions vers différentes bases de connaissances en fonction du département\nconst department = $json.body.Data.ChatMessage.Department;\nconst vectorStoreKey = `vector_store_${department}`;\n```\n\n### Intégration d'analytique avancée\n```javascript\n// Suivez les métriques de conversation\nconst analytics = {\nuserId: $json.body.Data.ChatMessage.User.Id,\ntimestamp: new Date().toISOString(),\nquestion: $json.body.Data.ChatMessage.Content,\nresponse: $json.response,\nresponseTime: $json.processingTime\n};\n```\n\n## 📊 Conseils d'optimisation des performances\n\n### Gestion des documents\n- **Taille de fichier optimale** : Gardez les documents en dessous de 10 Mo pour un traitement plus rapide\n- **Structure claire** : Utilisez des en-têtes et des sections pour un meilleur découpage\n- **Mises à jour régulières** : Supprimez les documents obsolètes pour maintenir l'exactitude\n- **Organisation logique** : Regroupez les documents connexes dans des sous-dossiers\n\n### Qualité des réponses\n- **Affinement du message système** : Mettez régulièrement à jour en fonction des retours des utilisateurs\n- **Ajustement du contexte** : Ajustez la taille des morceaux et le chevauchement pour votre contenu spécifique\n- **Cadre de test** : Mettez en œuvre des tests systématiques pour l'exactitude des réponses\n- **Boucle de rétroaction des utilisateurs** : Collectez et analysez les données de satisfaction des utilisateurs\n\n### Gestion des coûts\n- **Sélection du modèle** : Utilisez gpt-4o-mini pour des réponses économiques\n- **Stratégie de mise en cache** : Mettez en œuvre la mise en cache des réponses pour les questions fréquemment posées\n- **Surveillance de l'utilisation** : Suivez l'utilisation de l'API et configurez des alertes\n- **Traitement par lots** : Traitez plusieurs documents efficacement\n\n## 🛡️ Sécurité et conformité\n\n### Protection des données\n- **Sécurité des documents** : Assurez-vous que les documents sensibles sont correctement sécurisés\n- **Contrôle d'accès** : Mettez en œuvre une authentification et une autorisation appropriées\n- **Conservation des données** : Configurez des politiques de conservation des données appropriées\n- **Journalisation des audits** : Suivez toutes les interactions pour la conformité\n\n### Considérations de confidentialité\n- **Données utilisateur** : Minimisez la collecte et le stockage d'informations personnelles\n- **Gestion de session** : Mettez en œuvre une gestion sécurisée des sessions\n- **Conformité** : Assurez-vous de respecter les réglementations de confidentialité pertinentes\n- **Chiffrement** : Utilisez HTTPS pour toutes les communications\n\n## 🚀 Déploiement et mise à l'échelle\n\n### Préparation à la production\n- **Variables d'environnement** : Utilisez des variables d'environnement pour les configurations sensibles\n- **Gestion des erreurs** : Mettez en œuvre une gestion des erreurs et une journalisation complètes\n- **Surveillance** : Configurez la surveillance de la santé et des performances du workflow\n- **Stratégie de sauvegarde** : Assurez-vous des sauvegardes de documents et de configurations\n\n### Considérations de mise à l'échelle\n- **Tests de charge** : Testez avec les volumes d'utilisateurs attendus\n- **Limitation de taux** : Mettez en œuvre une limitation de taux appropriée\n- **Mise à l'échelle de la base de données** : Envisagez une base de données vectorielle externe pour des déploiements à grande échelle\n- **Multi-instance** : Configurez pour plusieurs instances n8n si nécessaire\n\n## 📈 Métriques de succès et KPI\n\n### Métriques quantitatives\n- **Précision des réponses** : Pourcentage de réponses correctes\n- **Temps de réponse** : Temps moyen de la question à la réponse\n- **Satisfaction des utilisateurs** : Scores de notation et retours\n- **Volume d'utilisation** : Questions par jour/semaine/mois\n- **Efficacité des coûts** : Coût par interaction\n\n### Métriques qualitatives\n- **Retour des utilisateurs** : Retours qualitatifs sur la qualité des réponses\n- **Couverture des cas d'utilisation** : Pourcentage des besoins des utilisateurs couverts\n- **Lacunes de connaissances** : Identification des informations manquantes\n- **Qualité de la conversation** : Flux naturel et compréhension du contexte\n\n![image.png](fileId:1818)",
+  "workflow": {
+    "meta": {
+      "instanceId": "0f4ab867ceb8faa35a96b3ba8bfe372ed23fd9289fb2f308ae76570118367d6d"
+    },
+    "name": "My workflow",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "3c701a7e-738e-44d4-af9b-c3629d0e471e",
+        "name": "Recursive Character Text Splitter",
+        "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+        "position": [
+          760,
+          920
+        ],
+        "parameters": {
+          "options": {},
+          "chunkOverlap": 100
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "51a61f7f-610b-4cda-8405-11983fec7c8a",
+        "name": "Default Data Loader",
+        "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+        "position": [
+          780,
+          740
+        ],
+        "parameters": {
+          "options": {},
+          "dataType": "binary",
+          "binaryMode": "specificField"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "805a12e8-2d85-4951-929c-76df85ad4e0f",
+        "name": "Simple Vector Store",
+        "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+        "position": [
+          700,
+          540
+        ],
+        "parameters": {
+          "mode": "insert",
+          "memoryKey": {
+            "__rl": true,
+            "mode": "list",
+            "value": "vector_store_key"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "c17de454-87ab-4a69-b129-bf77a5afbb66",
+        "name": "Embeddings OpenAI",
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "position": [
+          620,
+          740
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "14c2ff00-618f-4ea3-aeb8-212aa76d28ef",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          1400,
+          680
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "318ca8eb-0e06-4ba9-bcc2-c57b65254794",
+        "name": "Answer questions with a vector store",
+        "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+        "position": [
+          1700,
+          640
+        ],
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "286f2e2b-1a70-48c8-a619-1e01cacf8cee",
+        "name": "Simple Vector Store2",
+        "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+        "position": [
+          1560,
+          840
+        ],
+        "parameters": {
+          "memoryKey": {
+            "__rl": true,
+            "mode": "list",
+            "value": "vector_store_key"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "1603e15d-db26-4174-bb32-0d8f429d3fca",
+        "name": "Embeddings OpenAI1",
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "position": [
+          1540,
+          980
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "c6623fd4-2ccc-4a15-9b10-07024c916eeb",
+        "name": "OpenAI Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          1840,
+          840
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "e7c3e7a9-5d38-4dd4-983f-1f4a104f4fe9",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3200,
+          1020
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 620,
+          "height": 920,
+          "content": "## Google Drive Connection\nTo set up Google Drive OAuth2 credentials in n8n (using the recommended OAuth2 method), follow these steps:\n\n1. Create a Google Cloud Project:\n - Go to the Google Cloud Console.\n - Create a new project or select an existing one.\n\n2. Enable the Google Drive API:\n - In your project, navigate to “APIs & Services” > “Library”.\n - Search for “Google Drive API” and enable it.\n\n3. Configure OAuth Consent Screen:\n - Go to “APIs & Services” > “OAuth consent screen”.\n - Fill in the required fields (app name, user support email, etc.).\n - Add the necessary scopes (for Google Drive, typically https://www.googleapis.com/auth/drive).\n\n4. Create OAuth2 Credentials:\n - Go to “APIs & Services” > “Credentials”.\n - Click “Create Credentials” > “OAuth client ID”.\n - Choose “Web application”.\n - Add the following to “Authorized redirect URIs”:\n - https://<your-n8n-domain>/rest/oauth2-credential/callback\n - If running locally: http://localhost:5678/rest/oauth2-credential/callback\n\n5. Copy the Client ID and Client Secret.\n \n6. In n8n:\n - Go to “Credentials” and create new credentials for “Google Drive OAuth2 API”.\n - Enter the Client ID and Client Secret you copied from Google Cloud.\n - Set the appropriate scopes (e.g., https://www.googleapis.com/auth/drive).\n - Save and connect the credentials.\n\nAfter this, your Google Drive OAuth2 credentials should be set up and ready to use in your n8n workflows.\n\nNote: If you get 403:access denied you need to go back to Google cloud.\n - Go to Audience\n - Add your Email in Test users"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fac8b33c-f829-4d39-8eee-c773c93980e6",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3200,
+          0
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 620,
+          "height": 980,
+          "content": "## 🛠️ Configuration Guide After Importing the Template\n\nOnce you download and import the chatbot template into your n8n instance, follow these steps to configure it properly:\n\n---\n\n### 🔑 1. **Set Up Google Drive Credentials**\n\n- Go to **Credentials** in n8n.\n- Create new credentials for **Google Drive OAuth2 API**.\n- Add your **Client ID** and **Client Secret** from Google Cloud Console \n(Follow the Google drive connection guide on the next green note).\n- Make sure to add the redirect URL:\n ```\n https://<your-n8n-domain>/rest/oauth2-credential/callback\n ```\n- Use the created credential in all `Google Drive` nodes.\n---\n\n### 📁 2. **Set the File or Folder to Load from Google Drive**\n\n- All the `Google Drive` node (except Download Files node):\n - Set the file name or folder name to search for.\n- In the `Google Drive Download Files` node:\n - Map the file ID from the search result using expressions like:\n ```\n {{$json[\"id\"]}}\n ```\n---\n\n### 🔐 3. **Connect Your OpenAI Credentials**\n\n- Create a new credential in n8n for **OpenAI API**.\n- Paste your OpenAI API key.\n- Use this credential in:\n - `Embeddings OpenAI` node\n - `OpenAI Chat Model` node\n - `Answer questions with a vector store`\n\n---"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "6bbd55eb-29bb-4322-83a8-ebb46292802b",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2540,
+          0
+        ],
+        "parameters": {
+          "width": 620,
+          "height": 520,
+          "content": "# 🤖 Simple AI Chatbot Using Google Drive Knowledge in n8n\n\nThis guide explains how to use an **AI chatbot powered by OpenAI**, where the knowledge comes from files (like PDFs, text, etc.) stored in **Google Drive**. No coding needed!\n\n---\n\n## 📌 What This Workflow Does\n\n- Automatic file updates from Google Drive \n- Converts it into a searchable knowledge base (vector store)\n- Allows users to chat and ask questions about that file\n- AI replies based **only** on the content in your file!\n\n---"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3a3ff629-4664-4b11-8de0-56eeb236044e",
+        "name": "Download Files",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          500,
+          540
+        ],
+        "parameters": {
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.id }}"
+          },
+          "options": {},
+          "operation": "download"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "79414561-32d3-4d1c-924f-341ce16aeb76",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 1080,
+          "height": 1160,
+          "content": "\n### 🧩 PART 1: **File Upload and Knowledge Preparation**\n\n| Node | What It Does |\n|----------------------------------------------|--------------------------------------------------------------|\n| 📂 File created in the Folder | Triggered when a new file is uploaded to Google Drive |\n|----------------------------------------------|--------------------------------------------------------------|\n| 📂 File updated in the Folder | Triggered when an existing file is updated |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🔍 Search Files in your Google Drive | Finds the new or updated file |\n|----------------------------------------------|--------------------------------------------------------------|\n| ⬇️ Download Files | Downloads the actual content of the file |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🧠 Embeddings OpenAI | Converts file into searchable AI vectors |\n|----------------------------------------------|--------------------------------------------------------------|\n| 📄 Default Data Loader | Loads document into chunks |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🔁 Recursive Character Text Splitter | Splits large documents into clean text blocks |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🧊 Simple Vector Store | Stores the vectors for AI retrieval later |\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d64086c3-31bb-4876-8652-df1c287f4a53",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1120,
+          0
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 1380,
+          "height": 1160,
+          "content": "### 🧠 PART 2: **AI Chatbot for Question Answering**\n\n| Node | What It Does |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🌐 Webhook | Receives incoming question requests from external apps |\n|----------------------------------------------|--------------------------------------------------------------|\n| 📝 Edit Fields | Maps and formats incoming user data |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🤖 AI Agent | Core logic and decision-making engine |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🔁 Window Buffer Memory | Maintains conversation memory |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🧊 Simple Vector Store2 | Retrieves stored file knowledge |\n|----------------------------------------------|--------------------------------------------------------------|\n| 📚 Answer questions with vector store | Searches relevant parts of the uploaded file |\n|----------------------------------------------|--------------------------------------------------------------|\n| 💬 OpenAI Chat Model(s) | Generates AI response |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🔎 Is AI Agent output exist? | Conditional check to ensure a valid reply |\n|----------------------------------------------|--------------------------------------------------------------|\n| 🔐 Token Authentication | Validates that the request is authorized |\n|----------------------------------------------|--------------------------------------------------------------|\n| 📤 Send to Chat App | Sends response back to user via external platform |\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0eeeddda-95e7-46a2-8c0a-d09b1da5ecf1",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          1160,
+          440
+        ],
+        "webhookId": "bfb0e32d-659b-4fc5-a7a3-695c55137855",
+        "parameters": {
+          "path": "bfb0e32d-659b-4fc5-a7a3-695c55137855",
+          "options": {},
+          "httpMethod": "POST"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "6428ae4e-6702-4776-9430-6c808b1588df",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1340,
+          440
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "e2a61b06-dc33-4c30-8197-cf6de3dc4a5d",
+                "name": "chatInput",
+                "type": "string",
+                "value": "={{ $json.body.Data.ChatMessage.Content }}"
+              },
+              {
+                "id": "fc96dfe9-cc87-4004-b812-cb1fa84e7f67",
+                "name": "sessionId",
+                "type": "string",
+                "value": "={{ $json.body.Data.ChatMessage.RoomId }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "5bb23164-475f-45ee-a1c7-59ca9600a07a",
+        "name": "Is AI Agent output exist?",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1860,
+          440
+        ],
+        "parameters": {
+          "jsCode": "const ai = items.find(i => i.json.output);\nconst fallback = \"Sorry, I didn’t understand your message. Please try again or send a text.\";\n\nreturn [\n {\n json: {\n content: ai?.json.output || fallback\n }\n }\n];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "bb54bb65-8bf0-440f-9479-da920e2a8da3",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          1520,
+          440
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "You are a friendly and well-informed customer support specialist for Venio, a third-party multichannel messaging platform. Stay factual. You must answer the user's question using only the information provided in the document content below. Do not invent or guess information outside the context. Remember to ensure the answer is correct refer to the file.\n\nYour task is to answer customer questions clearly, patiently, and in a warm, supportive tone.\n\nDo not to say feel free to ask or something like that"
+          }
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "4b847538-28d1-4e61-ba01-89d46e74fc24",
+        "name": "Token Authentication",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          2080,
+          440
+        ],
+        "parameters": {
+          "url": "<Your-Token-Url>",
+          "method": "POST",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          },
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "grant_type",
+                "value": "client_credentials"
+              },
+              {
+                "name": "client_id",
+                "value": "<Your-Client-Id>"
+              },
+              {
+                "name": "client_secret",
+                "value": "<Your-Client-Secret>"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Ocp-Apim-Subscription-Key",
+                "value": "<Your-Subscription-Key>"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "1aa5a0b5-304f-43ac-9119-13938c815010",
+        "name": "Send to Chat App",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          2300,
+          440
+        ],
+        "parameters": {
+          "url": "<Your-Chat-Url>",
+          "method": "POST",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "roomId",
+                "value": "={{ $('Webhook').item.json.body.Data.ChatMessage.RoomId }}"
+              },
+              {
+                "name": "content",
+                "value": "={{ $('Is AI Agent output exist?').item.json.content }}"
+              },
+              {
+                "name": "type",
+                "value": "message"
+              },
+              {
+                "name": "platform",
+                "value": "={{ $('Webhook').item.json.body.Data.ChatMessage.Platform }}"
+              },
+              {
+                "name": "companyId",
+                "value": "={{ $('Webhook').item.json.body.Data.ChatMessage.User.CompanyId }}"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $json.access_token }}"
+              },
+              {
+                "name": "Ocp-Apim-Subscription-Key",
+                "value": "<Your-Subscription-Key>"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "01d71fdf-4979-4478-a480-a0d15de8dab5",
+        "name": "File created in the Folder",
+        "type": "n8n-nodes-base.googleDriveTrigger",
+        "position": [
+          80,
+          460
+        ],
+        "parameters": {
+          "event": "fileCreated",
+          "options": {},
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "triggerOn": "specificFolder",
+          "folderToWatch": {
+            "__rl": true,
+            "mode": "list",
+            "value": "<INSERT-YOUR-FOLDER-ID>.",
+            "cachedResultUrl": "",
+            "cachedResultName": ""
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "a2cf29ab-fa4d-4185-9a0d-eb22e04bf836",
+        "name": "File updated in the Folder",
+        "type": "n8n-nodes-base.googleDriveTrigger",
+        "position": [
+          80,
+          660
+        ],
+        "parameters": {
+          "event": "fileUpdated",
+          "options": {},
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "triggerOn": "specificFolder",
+          "folderToWatch": {
+            "__rl": true,
+            "mode": "list",
+            "value": "<INSERT-YOUR-FOLDER-ID>.",
+            "cachedResultUrl": "",
+            "cachedResultName": ""
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f8c00b8a-13da-451a-855c-ccc424fd56c1",
+        "name": "Search Files in your Google Drive Folder",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          300,
+          540
+        ],
+        "parameters": {
+          "filter": {
+            "driveId": {
+              "__rl": true,
+              "mode": "list",
+              "value": "My Drive",
+              "cachedResultUrl": "",
+              "cachedResultName": ""
+            },
+            "folderId": {
+              "__rl": true,
+              "mode": "list",
+              "value": "<INSERT-YOUR-FOLDER-ID>.",
+              "cachedResultUrl": "",
+              "cachedResultName": ""
+            }
+          },
+          "options": {},
+          "resource": "fileFolder"
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "a4f972ff-d5cb-4ac0-ad79-a7a582b2d4c3",
+        "name": "Window Buffer Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          1560,
+          680
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "0df89f09-5e2b-4242-a276-10c48df7f1c5",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2540,
+          560
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 620,
+          "height": 1380,
+          "content": "---\n\n### 🌐 Webhook URL Customization (Important)\n\nWhen you create a **Webhook node** in n8n, it automatically generates a unique URL for receiving data.\n\n✅ **You do not need to delete or manually change this URL**, but you can customize the **path** if needed.\n\nFor example:\n```\nhttps://your-n8n-domain/webhook/my-ai-chatbot\n```\n\n📌 You can:\n- Click on the **Webhook node**\n- Set a **Custom Path** in the **HTTP Method + Path** section\n- Use this custom URL in external tools, forms, or apps to send questions to the chatbot\n\nThis makes integration more user-friendly and consistent with your platform naming.\n\n> ✨ Tip: Keep the path short and meaningful, like `/webhook/ask-ai` or `/webhook/hr-bot`.\n\n---\n---\n\n### 🔐 Token Authentication & Send to Chat App – URL Notes\n\nIn the following nodes, you also have to deal with URLs that should be customized for your system:\n\n---\n#### ✅ Token Authentication Node\n\n- This node is used to **verify incoming requests** to ensure only authorized apps/users can interact with the chatbot.\n- Typically, you'll compare a token (e.g., from headers or body) against a stored secret or environment variable.\n- You **do not need to hardcode the webhook URL** inside this node, but you can **define expected token values** per integration.\n\n> ✨ If you're calling the chatbot from external services, make sure they **include the token** in the correct format.\n---\n\n#### 📤 Send to Chat App Node\n\n- This is the final step where the chatbot sends the answer back to your front-end, bot, or chat system.\n- **Make sure to customize the target URL** where the answer should be posted.\n\nFor example:\n```\nhttps://your-frontend.com/api/chat-response\n```\n\n✅ Best Practice:\n- Use an environment variable or a `Set` node to define the target base URL.\n- This makes it easy to update without modifying the entire workflow.\n\n> 💡 You can also dynamically route messages using user ID or channel info in the webhook payload.\n\n---\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "",
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Is AI Agent output exist?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Files": {
+        "main": [
+          [
+            {
+              "node": "Simple Vector Store",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Simple Vector Store",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI1": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Simple Vector Store2",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Answer questions with a vector store",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Default Data Loader": {
+        "ai_document": [
+          [
+            {
+              "node": "Simple Vector Store",
+              "type": "ai_document",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Vector Store2": {
+        "ai_vectorStore": [
+          [
+            {
+              "node": "Answer questions with a vector store",
+              "type": "ai_vectorStore",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Token Authentication": {
+        "main": [
+          [
+            {
+              "node": "Send to Chat App",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Window Buffer Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is AI Agent output exist?": {
+        "main": [
+          [
+            {
+              "node": "Token Authentication",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "File created in the Folder": {
+        "main": [
+          [
+            {
+              "node": "Search Files in your Google Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "File updated in the Folder": {
+        "main": [
+          [
+            {
+              "node": "Search Files in your Google Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recursive Character Text Splitter": {
+        "ai_textSplitter": [
+          [
+            {
+              "node": "Default Data Loader",
+              "type": "ai_textSplitter",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Answer questions with a vector store": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Files in your Google Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Download Files",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 51,
+  "workflowInfo": {
+    "nodeCount": 26,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 6
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 2
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleDriveTrigger": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.toolVectorStore": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.embeddingsOpenAi": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.vectorStoreInMemory": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.documentDefaultDataLoader": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Gofive",
+    "username": "gofive",
+    "bio": "We create word-class software experience. Our offering includes \"Venio\" a highly innovative mobile-first CRM for B2B solution. \"empeo\" the complete HR solution for a multi-generational workplace and \"eTaxGo\" electronic tax invoice for organization.",
+    "verified": false,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/2193eaff1e10939b53fe80984579ccc9e6e386a0e61b00dbf3077d3141a939f2?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Requête HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 531,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDriveTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.googledrivetrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1141,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.embeddingsopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Embeddings"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Embeddings OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "Embeddings OpenAI",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1191,
+      "icon": "fa:grip-lines-vertical",
+      "name": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.textsplitterrecursivecharactertextsplitter/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Text Splitters"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Diviseur de texte de caractère récursif"
+      },
+      "iconData": {
+        "icon": "grip-lines-vertical",
+        "type": "icon"
+      },
+      "displayName": "Recursive Character Text Splitter",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1209,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.vectorstoreinmemory/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Vector Stores",
+              "Tools",
+              "Root Nodes"
+            ],
+            "Tools": [
+              "Other Tools"
+            ],
+            "Vector Stores": [
+              "For Beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Magasin de vecteurs simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Vector Store",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1243,
+      "icon": "file:binary.svg",
+      "name": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.documentdefaultdataloader/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Document Loaders"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chargeur de données par défaut"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NjgiIGhlaWdodD0iMTAyNCI+PHBhdGggZmlsbD0iIzdEN0Q4NyIgZD0iTTAgOTYwVjY0aDU3NmwxOTIgMTkydjcwNHptNzA0LTY0MEw1MTIgMTI4SDY0djc2OGg2NDB6TTMyMCA1MTJIMTI4VjI1NmgxOTJ6bS02NC0xOTJoLTY0djEyOGg2NHptMCA0NDhoNjR2NjRIMTI4di02NGg2NFY2NDBoLTY0di02NGgxMjh6bTI1Ni0zMjBoNjR2NjRIMzg0di02NGg2NFYzMjBoLTY0di02NGgxMjh6bTY0IDM4NEgzODRWNTc2aDE5MnptLTY0LTE5MmgtNjR2MTI4aDY0eiIvPjwvc3ZnPg=="
+      },
+      "displayName": "Default Data Loader",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1269,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolvectorstore/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Tools"
+            ],
+            "Tools": [
+              "Other Tools"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Répondre aux questions avec un magasin de vecteurs"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Vector Store Question Answer Tool",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 40,
+      "name": "Chatbot de support"
+    },
+    {
+      "id": 48,
+      "name": "IA RAG"
+    }
+  ],
+  "image": [
+    {
+      "id": 1818,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/image_c6d4311659.png"
+    }
+  ]
+}

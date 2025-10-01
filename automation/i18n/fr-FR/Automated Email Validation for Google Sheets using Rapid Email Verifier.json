@@ -1,0 +1,957 @@
+{
+  "id": 6521,
+  "name": "Validation automatisée des e-mails pour Google Sheets utilisant Rapid Email Verifier",
+  "views": 102,
+  "recentViews": 0,
+  "totalViews": 102,
+  "createdAt": "2025-07-27T07:25:12.737Z",
+  "description": "# **Vérification automatisée des e-mails pour Google Sheets**\n\nCe modèle n8n démontre comment valider automatiquement les adresses e-mail de vos Google Sheets en utilisant une API de vérification d'e-mail fiable. Parfait pour nettoyer les listes de contacts, valider les prospects et garantir la délivrabilité des e-mails avant les campagnes marketing.\n\nLes cas d'utilisation sont nombreux : Qualification des prospects pour les équipes de vente, nettoyage des listes de contacts pour le marketing, validation des abonnés pour les newsletters, ou maintenance de l'hygiène des données CRM !\n\n## **Bon à savoir**\n- L'API rapid-email-verifier est gratuite pour jusqu'à 1 000 vérifications par mois\n- Chaque vérification d'e-mail prend généralement moins de 500 ms à compléter\n- Le flux de travail s'exécute automatiquement chaque heure, vérifiant les nouvelles entrées\n- Ne traite que les e-mails qui n'ont pas encore été vérifiés, évitant les appels API en double\n\n## **Comment ça fonctionne**\n1. **Surveiller Google Sheets** : Le déclencheur surveille votre feuille de calcul pour de nouvelles entrées d'e-mail chaque heure\n2. **Filtrage intelligent** : Seuls les e-mails avec des colonnes \"E-mail vérifié\" vides sont traités pour éviter les doublons\n3. **Traitement par lots** : Les e-mails sont traités un par un pour respecter les limites de taux de l'API et garantir la fiabilité\n4. **Vérification API** : Chaque e-mail est envoyé au service rapid-email-verifier qui renvoie le statut de validation\n5. **Mise à jour des résultats** : La feuille originale est mise à jour avec les résultats de vérification (valide/invalid/unknown) en utilisant le numéro de série comme clé de correspondance\n\nL'exactitude de la vérification est constamment supérieure à 95 % et montre une excellente détection des adresses e-mail invalides, jetables et risquées !\n\n## **Comment utiliser**\n1. Le déclencheur Google Sheets surveille automatiquement votre feuille de calcul, mais vous pouvez également tester manuellement\n2. Ajoutez simplement de nouvelles lignes avec des adresses e-mail à votre Google Sheet connecté\n3. Laissez la colonne \"E-mail vérifié\" vide pour les nouvelles entrées\n4. Le flux de travail traitera et mettra automatiquement à jour le statut de vérification\n\nTechniquement, vous pouvez traiter un nombre illimité d'e-mails, mais tenez compte des limites de taux de l'API et des coûts pour de grands lots.\n\n## **Exigences**\n- **Compte Google Sheets** avec une feuille de calcul contenant les colonnes : SrNo, Nom, E-mail, E-mail vérifié\n- **Identifiants Google Sheets** configurés dans n8n pour les opérations de déclenchement et de mise à jour\n- **Connexion Internet** pour l'accès à l'API (aucune clé API supplémentaire requise pour rapid-email-verifier)\n\n## **Personnalisation de ce flux de travail**\nLa vérification des e-mails peut être améliorée pour de nombreux cas d'utilisation :\n- **Ajouter un déclencheur webhook** pour une vérification en temps réel lors de la capture de prospects\n- **Se connecter aux systèmes CRM** comme HubSpot ou Salesforce pour une intégration directe  \n- **Ajouter une catégorisation des e-mails** pour séparer les e-mails personnels des e-mails professionnels\n- **Inclure la détection de rebonds** en se connectant à votre fournisseur de services de messagerie\n- **Configurer des notifications** pour alerter lorsque des e-mails invalides sont détectés dans des listes importantes\n\nCe modèle est parfait pour les responsables marketing, les professionnels de la vente, les analystes de données et quiconque gérant des bases de données de contacts qui a besoin d'une validation d'e-mail fiable !",
+  "workflow": {
+    "id": "O9e1SfXnhax8YZal",
+    "meta": {
+      "instanceId": "f080fafc9937b6b383f471ad8cc35ad1727032832bd16212f900e0577db46644"
+    },
+    "name": "My workflow 2",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "13f98fdb-07fc-49a9-9362-1eb1bab2e1ee",
+        "name": "Monitor New Email Entries",
+        "type": "n8n-nodes-base.googleSheetsTrigger",
+        "position": [
+          112,
+          544
+        ],
+        "parameters": {
+          "event": "rowAdded",
+          "options": {},
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyHour"
+              }
+            ]
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "",
+            "cachedResultUrl": "",
+            "cachedResultName": "Your Email Verification Spreadsheet"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "28e1409f-e4ef-46aa-b035-a8227d5d6646",
+        "name": "Update Verification Results",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1584,
+          544
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "SrNo": "={{ $('Filter Unverified Emails').item.json.SrNo }}",
+              "Email Verified": "={{ $json.status }}"
+            },
+            "schema": [
+              {
+                "id": "SrNo",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "SrNo",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Name",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Email",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "Email",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Email Verified",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Email Verified",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "SrNo"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "appendOrUpdate",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "",
+            "cachedResultUrl": "",
+            "cachedResultName": "Your Email Verification Spreadsheet"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "XruFPA2NpYd9OmBT",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "2ee35cec-c0a0-476e-b91e-ee18e586f989",
+        "name": "Workflow Overview",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 416,
+          "height": 192,
+          "content": "📧 AUTOMATED EMAIL VERIFICATION SYSTEM\n════════════════════════════════════════════════════════════\n✨ Automatically validates email addresses from Google Sheets\n⚡ Real-time verification using rapid-email-verifier API\n📊 Updates spreadsheet with verification status\n🔄 Continuous monitoring with hourly checks\n\n🎯 USE CASES: Lead qualification | Contact list cleaning | Email marketing prep\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "601194a5-7ddf-48e4-814d-7f8be5a4cb99",
+        "name": "Setup Instructions",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          496,
+          0
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 416,
+          "height": 208,
+          "content": "⚙️ QUICK SETUP GUIDE\n═══════════════════════════════════════\n1️⃣ Create Google Sheet with columns:\n   • SrNo | Name | Email | Email Verified\n\n2️⃣ Connect your Google Sheets account\n   \n3️⃣ Update Sheet ID in trigger and update nodes\n\n4️⃣ Test with sample data\n\n💡 TIP: Test with a sample email first!\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "99d920b4-a489-4215-8757-0f123f6351e8",
+        "name": "Trigger Explanation",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -64,
+          272
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 352,
+          "height": 192,
+          "content": "🚀 MONITORING TRIGGER\n───────────────────────\n• Checks every hour for new rows\n• Only processes newly added entries\n• Automatically handles multiple entries\n• Uses efficient polling to avoid rate limits\n• Connects to your Google Sheets document\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0f7b061a-3410-48a6-bc71-39d93595ff6d",
+        "name": "Filter Unverified Emails",
+        "type": "n8n-nodes-base.filter",
+        "position": [
+          528,
+          544
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "80aa56a4-b365-448f-9214-71f0ba758947",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json['Email Verified'] }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "0af226e1-ded6-4fb4-b5af-296b02be9c63",
+        "name": "Process Emails in Batches",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          832,
+          544
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "92f176f5-6cef-4b7f-abd7-0a8bd6b9eda2",
+        "name": "Verify Email Address",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          1216,
+          544
+        ],
+        "parameters": {
+          "url": "https://rapid-email-verifier.fly.dev/api/validate",
+          "options": {},
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "email",
+                "value": "={{ $json.Email }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "7513234f-b1a3-4fe8-b167-410bb8a6921e",
+        "name": "Filter Logic",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          352,
+          256
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 352,
+          "height": 192,
+          "content": "🔍 SMART FILTERING\n─────────────────────\nOnly processes emails that haven't been verified yet\n• Checks if \"Email Verified\" column is empty\n• Prevents duplicate API calls\n• Saves processing time and API credits\n• Ensures efficient workflow execution\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d45072c3-7be3-423a-8afc-f787fc484772",
+        "name": "Batch Processing",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          752,
+          256
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 256,
+          "height": 224,
+          "content": "⚙️ BATCH PROCESSING\n─────────────────────\nProcesses emails one by one to:\n• Respect API rate limits\n• Handle errors gracefully  \n• Ensure reliable verification\n• Track progress per item\n• Maintain data consistency\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e8d919ee-92d1-41b8-8862-6c12e8bff6d5",
+        "name": "API Details",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1072,
+          256
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 352,
+          "height": 224,
+          "content": "🌐 EMAIL VALIDATION API\n────────────────────────\nrapid-email-verifier.fly.dev\n• Real-time email verification\n• Returns: valid/invalid/unknown\n• Fast response times (<500ms)\n• No authentication required\n• Free tier: 1000 verifications/month\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "dc571bb2-e2f0-4a5d-870b-62f388c7609f",
+        "name": "Results Update",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1472,
+          256
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 352,
+          "height": 224,
+          "content": "✅ RESULTS UPDATE\n──────────────────\nUpdates the original sheet with:\n• Verification status (valid/invalid)\n• Matches by Serial Number\n• Preserves original data\n• Creates audit trail\n• Enables easy filtering\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "8e1eeaaf-823b-468b-90c4-6bd03c068a34",
+        "name": "Performance Metrics",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          992,
+          0
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 416,
+          "height": 224,
+          "content": "📈 WORKFLOW PERFORMANCE  \n────────────────────────────\n• Processes: ~60 emails/hour\n• API Response: <500ms average\n• Accuracy: 95%+ verification rate\n• Cost: Free tier supports 1000/month\n• Memory efficient batch processing\n\n💡 PRO TIP: Use webhook trigger for real-time verification\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "a5ff6180-438a-4e77-98ea-372bf7177dc8",
+    "connections": {
+      "Verify Email Address": {
+        "main": [
+          [
+            {
+              "node": "Update Verification Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Unverified Emails": {
+        "main": [
+          [
+            {
+              "node": "Process Emails in Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Monitor New Email Entries": {
+        "main": [
+          [
+            {
+              "node": "Filter Unverified Emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Process Emails in Batches": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Verify Email Address",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Verification Results": {
+        "main": [
+          [
+            {
+              "node": "Process Emails in Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 13,
+    "nodeTypes": {
+      "n8n-nodes-base.filter": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 8
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheetsTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Gaurav Ramse",
+    "username": "ramse",
+    "bio": "AI Enthusiast | Automation Creator | Lifelong Learner\nHey there! 👋 I'm Gaurav, a Generative AI Specialist with a passion for making complex technology simple and accessible. Originally from India, I spent two amazing years in Rome earning my Master's in Data Science, where I fell in love with the intersection of AI, automation, and creative problem-solving.",
+    "verified": false,
+    "links": [
+      "https://www.linkedin.com/in/gaurav-ramse"
+    ],
+    "avatar": "https://gravatar.com/avatar/262e2b43309137391bf3c2938f5c3724dcde9ffbc13ba60ff1ea6a79996664ad?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 841,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheetsTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.googlesheetstrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 844,
+      "icon": "fa:filter",
+      "name": "n8n-nodes-base.filter",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The Filter node can be used to filter items based on a condition. If the condition is met, the item will be passed on to the next node. If the condition is not met, the item will be omitted. Conditions can be combined together by AND(meet all conditions), or OR(meet at least one condition).",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.filter/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Filtre",
+        "color": "#229eff"
+      },
+      "iconData": {
+        "icon": "filter",
+        "type": "icon"
+      },
+      "displayName": "Filter",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 37,
+      "name": "Génération de prospects"
+    }
+  ],
+  "image": []
+}

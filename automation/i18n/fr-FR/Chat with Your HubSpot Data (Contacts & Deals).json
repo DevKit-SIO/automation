@@ -1,0 +1,455 @@
+{
+  "id": 8971,
+  "name": "Discutez avec vos données HubSpot (Contacts et Offres)",
+  "views": 26,
+  "recentViews": 26,
+  "totalViews": 26,
+  "createdAt": "2025-09-26T16:03:26.575Z",
+  "description": "Ce modèle n8n vous offre un assistant de style chat qui peut rechercher votre CRM HubSpot à la demande. Posez des questions en langage naturel comme « montrez-moi les prospects en Allemagne » ou « quelles offres se clôturent le mois prochain », et l'agent traduit votre demande en recherches précises sur HubSpot—puis répond en anglais simple.\n\nIdéal pour les fondateurs, les AE et les personnes des opérations qui souhaitent des réponses rapides sans naviguer dans le CRM.\n\n---\n\n## Comment ça fonctionne\n\n* **Déclencheur de chat** démarre une session depuis votre interface utilisateur de chat n8n ou intégrée.\n* **Agent IA (Gemini 2.5 Pro)** interprète le message et :\n\n  * Choisit la bonne **recherche HubSpot** (contacts ou offres).\n  * Remplit la **propriété** de filtre, **opérateur** (EQ, NEQ, GT, GTE, LT, LTE, BETWEEN, IN, NOT\\_IN) et **valeur(s)**.\n  * Demande des propriétés spécifiques (email, nom, stade de cycle de vie, propriétaire, horodatages d'activité, etc.).\n* **Outils HubSpot** exécutent des requêtes en direct :\n\n  * **Contacts** : filtre de propriété flexible + `query` en texte libre.\n  * **Offres** : filtres par propriétaire et champs d'offre principaux (stade, montant, pipeline, date de clôture).\n* **Mémoire tampon** garde les derniers échanges afin que vous puissiez dire « maintenant, montrez uniquement les gagnés fermés de plus de 10k » et l'agent comprend le contexte.\n\n---\n\n## Comment utiliser\n\n1. **Connecter les identifiants**\n\n   * OAuth HubSpot sur les deux nœuds d'outil HubSpot.\n   * Clé API Google Gemini sur le **Modèle de Chat Gemini**.\n2. **Ouvrir le chat** (le nœud « Lorsque le message de chat est reçu »).\n3. Posez des questions comme :\n\n   * « Trouvez des contacts nommés **Hans** créés **après le 1er septembre**. »\n   * « Offres **possédées par moi** dans **Proposition** avec **montant &gt; 10 000**. »\n   * « Contacts avec **statut de lead = Nouveau** et **aucune réponse par email** au cours des 14 derniers jours. »\n4. Affinez avec des suivis :\n\n   * « Trier par dernier contact. »\n   * « Seulement l'Allemagne. »\n   * « Montrer les 5 premiers avec des emails. »\n\n---\n\n## Exigences\n\n* **HubSpot** (OAuth2)\n* **Google Gemini** (clé API)\n\n---\n\n## Remarques et personnalisation\n\n* **Contrôle de propriété/opérateur :** Le nœud de recherche de contact permet à l'agent de définir à la fois la propriété (par exemple, `email`, `lifecyclestage`, `hs_lead_status`) et l'opérateur (EQ, IN, BETWEEN en ms d'époque pour les dates, etc.).\n* **Filtrage par propriétaire pour les offres :** Utilise `hs_all_owner_ids` ; échangez ou étendez pour filtrer par plages de pipeline/stade.\n* **Garde-fous :** Ajoutez des listes autorisées pour les propriétés recherchables ou limitez le nombre de résultats pour éviter des réponses bruyantes.\n* **Format d'affichage :** Faites en sorte que l'agent renvoie des tableaux concis (nom, email, stade, dernière activité, CTA).\n* **Transferts :** Ajoutez des actions Slack/Email—par exemple, « publier cette liste sur #sales » ou « exporter au format CSV. »\n* **Télémetrie :** Enregistrez les requêtes pour des tableaux de bord ultérieurs (recherches courantes, lacunes de couverture).\n\n---\n\n## Dépannage\n\n* **Pas de résultats ?** Assouplissez les opérateurs (utilisez des listes `IN`, élargissez les dates) ou incluez une `query` en texte libre.\n* **Filtres de date :** Fournissez des ms d'époque pour GT/GTE/LT/LTE/BETWEEN sur les champs temporels (l'agent gère cela ; gardez l'heure système en UTC).\n* **Trop bavard ?** Réduisez la fenêtre de mémoire ou demandez à l'agent de résumer en points clés.",
+  "workflow": {
+    "meta": {
+      "instanceId": "09423a3357ff64bdcc082268b9d577001317edbe377a3ccfb0b131ffb9554b30",
+      "templateCredsSetupCompleted": true
+    },
+    "nodes": [
+      {
+        "id": "3be8d3e0-a672-4c85-95fb-9e21a1efe1b0",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          0,
+          0
+        ],
+        "webhookId": "2a0ed9f6-848a-4e48-ac72-4365da573b9f",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "f81e185d-07b4-4cd5-8442-9bea79577e70",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          208,
+          0
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "67431632-01f6-4601-92ff-d731ea8ca9ac",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          80,
+          208
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-2.5-pro"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "KYY7pVULIl0PdDp3",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "308d44ba-3d87-4405-900e-f5c6fb41c919",
+        "name": "Search contacts in HubSpot",
+        "type": "n8n-nodes-base.hubspotTool",
+        "position": [
+          432,
+          208
+        ],
+        "parameters": {
+          "operation": "search",
+          "authentication": "oAuth2",
+          "filterGroupsUi": {
+            "filterGroupsValues": [
+              {
+                "filtersUi": {
+                  "filterValues": [
+                    {
+                      "value": "={{ $fromAI('filterGroupsValues0_filterValues0_Value', ``, 'string') }}",
+                      "operator": "={{ $fromAI('operator', `Choose a valid HubSpot CRM Search operator — EQ (equal; exact match), NEQ (not equal), GT (greater than; numbers/timestamps in ms), GTE (>=), LT (<), LTE (<=), BETWEEN (inclusive range; supply values: [startMs,endMs]), IN (equals any; supply values: [\"A\",\"B\",...]), NOT_IN (not in list). Note: date/time filters use epoch ms (UTC)`, 'string') }}",
+                      "propertyName": "={{ $fromAI('property_name', `Choose an appropirate hubspot property name - email,firstname,lastname,createdate,lifecyclestage,hs_lead_status,country,state,hs_email_last_open_date,hs_email_last_reply_date,hs_sequences_is_enrolled,hs_sequences_enrolled_count,jobtitle,hubspot_owner_id,hs_sa_first_engagement_date,hs_last_sales_activity_timestamp`, 'string') }}"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "additionalFields": {
+            "query": "hans",
+            "properties": "={{ [\"email\",\"firstname\",\"lastname\",\"createdate\",\"lifecyclestage\",\"hs_lead_status\",\"country\",\"state\",\"hs_email_last_open_date\",\"hs_email_last_reply_date\",\"hs_sequences_is_enrolled\",\"hs_sequences_enrolled_count\",\"jobtitle\",\"hubspot_owner_id\",\"hs_sa_first_engagement_date\",\"hs_last_sales_activity_timestamp\"] }}"
+          }
+        },
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "Vxqd8oQJmbtNmpRz",
+            "name": "HubSpot account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "f7fa3e15-296a-41d9-9e0c-4bf92d7cec1e",
+        "name": "Search for deals in HubSpot",
+        "type": "n8n-nodes-base.hubspotTool",
+        "position": [
+          608,
+          208
+        ],
+        "parameters": {
+          "resource": "deal",
+          "operation": "search",
+          "authentication": "oAuth2",
+          "filterGroupsUi": {
+            "filterGroupsValues": [
+              {
+                "filtersUi": {
+                  "filterValues": [
+                    {
+                      "value": "=",
+                      "propertyName": "hs_all_owner_ids"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "additionalFields": {
+            "properties": [
+              "dealname",
+              "amount",
+              "dealstage",
+              "pipeline",
+              "closedate",
+              "createdate",
+              "hubspot_owner_id",
+              "hs_lastmodifieddate"
+            ]
+          }
+        },
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "Vxqd8oQJmbtNmpRz",
+            "name": "HubSpot account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "7ce28fb1-809f-4d6b-be7d-2707dece9fed",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          224,
+          208
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search contacts in HubSpot": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search for deals in HubSpot": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 51,
+  "workflowInfo": {
+    "nodeCount": 6,
+    "nodeTypes": {
+      "n8n-nodes-base.hubspotTool": {
+        "count": 2
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Miha",
+    "username": "miha",
+    "bio": "Template Engineer @ n8n",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/5625246747ddc04957e7b87ec2ee8d90a9c5622762cbb9f5ac1a35fe24220dde?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agent IA",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Mémoire Simple"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Lorsque le message de chat est reçu"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de Chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 39,
+      "name": "CRM"
+    },
+    {
+      "id": 49,
+      "name": "Résumé IA"
+    }
+  ],
+  "image": []
+}

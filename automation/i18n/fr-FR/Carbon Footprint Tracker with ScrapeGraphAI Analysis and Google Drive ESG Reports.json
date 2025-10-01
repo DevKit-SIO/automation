@@ -1,0 +1,662 @@
+{
+  "id": 6643,
+  "name": "Suivi de l'empreinte carbone avec l'analyse ScrapeGraphAI et les rapports ESG Google Drive",
+  "views": 154,
+  "recentViews": 0,
+  "totalViews": 154,
+  "createdAt": "2025-07-29T14:04:39.065Z",
+  "description": "# Suivi de l'empreinte carbone avec l'analyse ScrapeGraphAI et l'automatisation des rapports ESG\n\n## 🎯 Public Cible\n- Responsables de la durabilité et agents ESG\n- Équipes de conformité environnementale\n- Responsables de la responsabilité sociale des entreprises (RSE)\n- Responsables de l'énergie et des installations\n- Coordinateurs de durabilité de la chaîne d'approvisionnement\n- Consultants environnementaux\n- Équipes de certification de bâtiments écologiques\n- Coordinateurs de plans d'action climatique\n- Agents de conformité réglementaire\n- Équipes de reporting et de divulgation d'entreprise\n\n## 🚀 Énoncé du Problème\nLe calcul manuel de l'empreinte carbone et le reporting ESG sont complexes, chronophages et souvent inexacts en raison de sources de données fragmentées et de facteurs d'émission obsolètes. Ce modèle résout le défi de la collecte automatique des données environnementales, du calcul d'empreintes carbone précises, de l'identification des opportunités de réduction et de la génération de rapports ESG complets en utilisant la collecte de données alimentée par l'IA et des flux de travail de durabilité automatisés.\n\n## 🔧 Comment ça Marche\n\nCe flux de travail collecte automatiquement des données sur l'énergie et le transport en utilisant ScrapeGraphAI, calcule des empreintes carbone complètes sur les trois scopes, identifie des opportunités de réduction et génère des rapports ESG automatisés pour la conformité et le reporting en matière de durabilité.\n\n### Composants Clés\n\n1. **Déclencheur de Planification** - S'exécute automatiquement chaque jour à 8h00 pour collecter des données environnementales\n2. **Extracteur de Données Énergétiques** - Utilise ScrapeGraphAI pour extraire des données de consommation d'énergie et des facteurs d'émission\n3. **Extracteur de Données de Transport** - Collecte des facteurs d'émission de transport et des données d'efficacité énergétique\n4. **Calculateur d'Empreinte** - Calcule l'empreinte carbone complète sur les émissions des scopes 1, 2 et 3\n5. **Chercheur d'Opportunités de Réduction** - Identifie des opportunités de réduction de carbone rentables\n6. **Tableau de Bord de Durabilité** - Crée des indicateurs et des métriques de durabilité complets\n7. **Générateur de Rapports ESG** - Génère automatiquement des rapports de conformité ESG\n8. **Créer un Dossier de Rapports** - Organise les rapports dans Google Drive\n9. **Enregistrer le Rapport sur Drive** - Stocke les rapports finaux pour l'accès des parties prenantes\n\n## 📊 Spécifications de l'Analyse de l'Empreinte Carbone\n\nLe modèle calcule et suit les catégories d'émission suivantes :\n\n| Portée d'Émission | Catégorie | Sources de Données | Méthode de Calcul | Exemple de Résultat |\n|----------------|----------|--------------|-------------------|----------------|\n| **Scope 1 (Direct)** | Gaz Naturel | Facteurs d'émission de l'EPA | Consommation × 11,7 lbs CO2/therm | 23 400 lbs CO2 |\n| **Scope 1 (Direct)** | Carburant de Flotte | Données d'économie de carburant de l'EPA | Miles ÷ MPG × 19,6 lbs CO2/gallon | 11 574 lbs CO2 |\n| **Scope 2 (Électricité)** | Électricité du Réseau | Facteurs d'émission de l'EPA | kWh × 0,92 lbs CO2/kWh | 46 000 lbs CO2 |\n| **Scope 3 (Indirect)** | Trajet des Employés | Données de transport de l'EPA | Miles × 0,77 lbs CO2/mile | 19 250 lbs CO2 |\n| **Scope 3 (Indirect)** | Voyage Aérien | Facteurs d'aviation de l'EPA | Miles × 0,53 lbs CO2/mile | 26 500 lbs CO2 |\n| **Scope 3 (Indirect)** | Chaîne d'Approvisionnement | Facteurs estimés | Électricité × 0,1 multiplicateur | 4 600 lbs CO2 |\n\n## 🛠️ Instructions de Configuration\n\n**Temps de configuration estimé : 25-30 minutes**\n\n### Prérequis\n- Instance n8n avec nœuds communautaires activés\n- Compte et identifiants API ScrapeGraphAI\n- Accès à l'API Google Drive pour le stockage des rapports\n- Données organisationnelles sur l'énergie et le transport\n- Exigences et normes de reporting ESG\n\n### Configuration Étape par Étape\n\n#### 1. Installer les Nœuds Communautaires\n```bash\n# Installer les nœuds communautaires requis\nnpm install n8n-nodes-scrapegraphai\n```\n\n#### 2. Configurer les Identifiants ScrapeGraphAI\n- Naviguez vers les Identifiants dans votre instance n8n\n- Ajoutez de nouveaux identifiants API ScrapeGraphAI\n- Entrez votre clé API depuis le tableau de bord ScrapeGraphAI\n- Testez la connexion pour vous assurer qu'elle fonctionne\n\n#### 3. Configurer le Déclencheur de Planification\n- Configurez le calendrier quotidien (par défaut : 8h00 UTC)\n- Ajustez le fuseau horaire pour correspondre à vos heures de travail\n- Définissez la fréquence appropriée pour vos besoins de reporting\n\n#### 4. Configurer les Sources de Données\n- Mettez à jour l'Extracteur de Données Énergétiques avec vos sources de consommation d'énergie\n- Configurez l'Extracteur de Données de Transport avec vos données de transport\n- Configurez les entrées de données organisationnelles (employés, consommation, etc.)\n- Personnalisez les facteurs d'émission pour votre région et votre secteur\n\n#### 5. Personnaliser les Calculs de Carbone\n- Mettez à jour le Calculateur d'Empreinte avec vos données organisationnelles\n- Configurez les limites de portée et les méthodologies de calcul\n- Mettez en place des facteurs d'émission spécifiques à l'industrie\n- Ajustez pour les énergies renouvelables et les programmes de compensation\n\n#### 6. Configurer l'Analyse de Réduction\n- Mettez à jour le Chercheur d'Opportunités de Réduction avec vos critères d'investissement\n- Configurez les paramètres d'analyse coût-bénéfice\n- Configurez les algorithmes de notation de priorité\n- Définissez les délais de mise en œuvre et les niveaux d'effort\n\n#### 7. Configurer la Génération de Rapports\n- Configurez l'intégration Google Drive pour le stockage des rapports\n- Mettez en place des modèles et formats de rapports ESG\n- Définissez l'accès et les autorisations des parties prenantes\n- Testez la génération et la livraison des rapports\n\n#### 8. Tester et Valider\n- Exécutez le flux de travail manuellement avec des données de test\n- Vérifiez que toutes les étapes de calcul se terminent avec succès\n- Vérifiez l'exactitude des données et la validité des facteurs d'émission\n- Validez la conformité et le formatage des rapports ESG\n\n## 🔄 Options de Personnalisation du Flux de Travail\n\n### Modifier la Collecte de Données\n- Ajoutez plus de sources de données énergétiques (renouvelables, déchets, etc.)\n- Incluez des modes de transport supplémentaires (rail, expédition, etc.)\n- Intégrez des systèmes de gestion de bâtiment\n- Ajoutez des sources de données de surveillance en temps réel et IoT\n\n### Étendre le Cadre de Calcul\n- Ajoutez plus de catégories Scope 3 (déchets, eau, etc.)\n- Mettez en œuvre des méthodologies de calcul spécifiques à l'industrie\n- Incluez le suivi des compensations et des crédits carbone\n- Ajoutez des capacités d'évaluation du cycle de vie (ACV)\n\n### Personnaliser l'Analyse de Réduction\n- Ajoutez des calculs de ROI plus sophistiqués\n- Mettez en œuvre la modélisation de scénarios et les prévisions\n- Incluez le suivi de la conformité réglementaire\n- Ajoutez des métriques d'engagement des parties prenantes\n\n### Personnalisation de la Sortie\n- Ajoutez une intégration avec des plateformes de reporting de durabilité\n- Mettez en œuvre des notifications automatisées pour les parties prenantes\n- Créez des tableaux de bord exécutifs et des visualisations\n- Ajoutez des systèmes de surveillance de conformité et d'alerte\n\n## 📈 Cas d'Utilisation\n\n- **Reporting de Conformité ESG** : Automatisez les exigences de divulgation en matière de durabilité\n- **Planification de Réduction de Carbone** : Identifiez et priorisez les opportunités de réduction\n- **Conformité Réglementaire** : Répondez aux mandats de reporting environnemental\n- **Communication avec les Parties Prenantes** : Générez des rapports de durabilité transparents\n- **Diligence Raisonnée pour Investissements** : Fournissez des données ESG pour les investisseurs et les prêteurs\n- **Durabilité de la Chaîne d'Approvisionnement** : Suivez et rapportez les émissions Scope 3\n\n## 🚨 Notes Importantes\n\n- Respectez les conditions de service et les limites de taux des sources de données\n- Mettez en œuvre des délais appropriés entre les demandes pour éviter le limitation de taux\n- Révisez et mettez régulièrement à jour les facteurs d'émission pour garantir leur exactitude\n- Surveillez l'utilisation de l'API pour gérer les coûts efficacement\n- Gardez vos identifiants sécurisés et faites-les tourner régulièrement\n- Assurez-vous de respecter les réglementations locales en matière de reporting environnemental\n- Validez les calculs par rapport aux normes et méthodologies de l'industrie\n- Maintenez une documentation appropriée pour les audits et les vérifications\n\n## 🔧 Dépannage\n\n**Problèmes Courants :**\n- Erreurs de connexion ScrapeGraphAI : Vérifiez la clé API et l'état du compte\n- Problèmes d'accès aux sources de données : Vérifiez l'accessibilité du site Web et les limites de taux\n- Erreurs de calcul : Vérifiez les facteurs d'émission et les données organisationnelles\n- Échecs de génération de rapports : Vérifiez les autorisations et les quotas de Google Drive\n- Échecs de déclencheur de planification : Vérifiez le fuseau horaire et l'expression cron\n- Problèmes d'exactitude des données : Validez par rapport aux calculs manuels et aux références de l'industrie\n\n**Ressources de Support :**\n- Documentation et référence API de ScrapeGraphAI\n- Forums communautaires n8n pour l'assistance aux flux de travail\n- Bases de données et méthodologies des facteurs d'émission de l'EPA\n- Normes et directives de calcul du Protocole GES\n- Cadres de reporting ESG et exigences de conformité\n- Meilleures pratiques et normes de reporting de durabilité\n",
+  "workflow": {
+    "id": "CarbonFootprintTracker2025",
+    "meta": {
+      "instanceId": "carbon-tracker-sustainability-workflow-n8n",
+      "templateCredsSetupCompleted": false
+    },
+    "name": "Carbon Footprint Tracker",
+    "tags": [
+      "sustainability",
+      "esg",
+      "carbon-footprint",
+      "environmental",
+      "reporting"
+    ],
+    "nodes": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          300,
+          800
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 8 * * *"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "b2c3d4e5-f6g7-8901-bcde-f23456789012",
+        "name": "Energy Data Scraper",
+        "type": "n8n-nodes-scrapegraphai.scrapegraphAi",
+        "position": [
+          600,
+          700
+        ],
+        "parameters": {
+          "userPrompt": "Extract energy consumption data and carbon emission factors. Use this schema: { \"energy_type\": \"electricity\", \"consumption_value\": \"1000\", \"unit\": \"kWh\", \"carbon_factor\": \"0.92\", \"emission_unit\": \"lbs CO2/kWh\", \"source\": \"EPA\", \"last_updated\": \"2024-01-15\" }",
+          "websiteUrl": "https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator"
+        },
+        "credentials": {
+          "scrapegraphAIApi": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c3d4e5f6-g7h8-9012-cdef-345678901234",
+        "name": "Transport Data Scraper",
+        "type": "n8n-nodes-scrapegraphai.scrapegraphAi",
+        "position": [
+          600,
+          900
+        ],
+        "parameters": {
+          "userPrompt": "Extract transportation emission factors and fuel efficiency data. Use this schema: { \"vehicle_type\": \"passenger_car\", \"fuel_type\": \"gasoline\", \"mpg\": \"25.4\", \"co2_per_gallon\": \"19.6\", \"co2_per_mile\": \"0.77\", \"unit\": \"lbs CO2\", \"source\": \"EPA\", \"category\": \"transport\" }",
+          "websiteUrl": "https://www.fueleconomy.gov/feg/co2.jsp"
+        },
+        "credentials": {
+          "scrapegraphAIApi": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d4e5f6g7-h8i9-0123-defg-456789012345",
+        "name": "Footprint Calculator",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1000,
+          800
+        ],
+        "parameters": {
+          "jsCode": "// Carbon Footprint Calculator\nconst energyData = $input.item(0).json;\nconst transportData = $input.item(1).json;\n\n// Sample organizational data (in real scenario, this would come from your systems)\nconst organizationData = {\n  electricity_consumption: 50000, // kWh/month\n  natural_gas: 2000, // therms/month\n  fleet_miles: 15000, // miles/month\n  employee_commute: 25000, // miles/month\n  air_travel: 50000, // miles/month\n  employees: 100\n};\n\nfunction calculateCarbonFootprint(energyFactors, transportFactors, orgData) {\n  const calculations = {\n    scope1: {\n      natural_gas: orgData.natural_gas * 11.7, // lbs CO2 per therm\n      fleet_fuel: (orgData.fleet_miles / 25.4) * 19.6 // assuming 25.4 mpg\n    },\n    scope2: {\n      electricity: orgData.electricity_consumption * 0.92 // lbs CO2 per kWh\n    },\n    scope3: {\n      employee_commute: orgData.employee_commute * 0.77, // lbs CO2 per mile\n      air_travel: orgData.air_travel * 0.53, // lbs CO2 per mile\n      supply_chain: orgData.electricity_consumption * 0.1 // estimated\n    }\n  };\n\n  const totalScope1 = Object.values(calculations.scope1).reduce((a, b) => a + b, 0);\n  const totalScope2 = Object.values(calculations.scope2).reduce((a, b) => a + b, 0);\n  const totalScope3 = Object.values(calculations.scope3).reduce((a, b) => a + b, 0);\n  \n  const totalEmissions = totalScope1 + totalScope2 + totalScope3;\n  const emissionsPerEmployee = totalEmissions / orgData.employees;\n  \n  return {\n    timestamp: new Date().toISOString(),\n    total_emissions_lbs: Math.round(totalEmissions),\n    total_emissions_tons: Math.round(totalEmissions / 2000 * 100) / 100,\n    emissions_per_employee: Math.round(emissionsPerEmployee * 100) / 100,\n    scope1_total: Math.round(totalScope1),\n    scope2_total: Math.round(totalScope2),\n    scope3_total: Math.round(totalScope3),\n    breakdown: calculations,\n    baseline_data: orgData\n  };\n}\n\nconst footprintResults = calculateCarbonFootprint(\n  energyData.result || energyData,\n  transportData.result || transportData,\n  organizationData\n);\n\nreturn [{ json: footprintResults }];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "e5f6g7h8-i9j0-1234-efgh-567890123456",
+        "name": "Reduction Opportunity Finder",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1400,
+          800
+        ],
+        "parameters": {
+          "jsCode": "// Reduction Opportunity Finder\nconst footprintData = $input.first().json;\n\nfunction findReductionOpportunities(data) {\n  const opportunities = [];\n  const currentEmissions = data.total_emissions_tons;\n  \n  // Energy efficiency opportunities\n  if (data.scope2_total > data.scope1_total * 0.5) {\n    opportunities.push({\n      category: 'Energy Efficiency',\n      opportunity: 'LED lighting upgrade',\n      potential_reduction_tons: Math.round(currentEmissions * 0.08 * 100) / 100,\n      investment_required: '$25,000',\n      payback_period: '2.5 years',\n      priority: 'High',\n      implementation_effort: 'Medium'\n    });\n    \n    opportunities.push({\n      category: 'Renewable Energy',\n      opportunity: 'Solar panel installation',\n      potential_reduction_tons: Math.round(currentEmissions * 0.25 * 100) / 100,\n      investment_required: '$150,000',\n      payback_period: '7 years',\n      priority: 'High',\n      implementation_effort: 'High'\n    });\n  }\n  \n  // Transportation opportunities\n  if (data.breakdown.scope3.employee_commute > 5000) {\n    opportunities.push({\n      category: 'Transportation',\n      opportunity: 'Remote work policy (3 days/week)',\n      potential_reduction_tons: Math.round(currentEmissions * 0.12 * 100) / 100,\n      investment_required: '$10,000',\n      payback_period: '6 months',\n      priority: 'High',\n      implementation_effort: 'Low'\n    });\n    \n    opportunities.push({\n      category: 'Transportation',\n      opportunity: 'Electric vehicle fleet transition',\n      potential_reduction_tons: Math.round(currentEmissions * 0.15 * 100) / 100,\n      investment_required: '$200,000',\n      payback_period: '5 years',\n      priority: 'Medium',\n      implementation_effort: 'High'\n    });\n  }\n  \n  // Office efficiency\n  opportunities.push({\n    category: 'Office Operations',\n    opportunity: 'Smart HVAC system',\n    potential_reduction_tons: Math.round(currentEmissions * 0.06 * 100) / 100,\n    investment_required: '$40,000',\n    payback_period: '4 years',\n    priority: 'Medium',\n    implementation_effort: 'Medium'\n  });\n  \n  const totalPotentialReduction = opportunities.reduce(\n    (sum, opp) => sum + opp.potential_reduction_tons, 0\n  );\n  \n  return {\n    current_footprint: data,\n    opportunities: opportunities,\n    total_potential_reduction_tons: Math.round(totalPotentialReduction * 100) / 100,\n    potential_reduction_percentage: Math.round((totalPotentialReduction / currentEmissions) * 100),\n    analysis_date: new Date().toISOString()\n  };\n}\n\nconst reductionAnalysis = findReductionOpportunities(footprintData);\n\nreturn [{ json: reductionAnalysis }];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "f6g7h8i9-j0k1-2345-fghi-678901234567",
+        "name": "Sustainability Dashboard",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1800,
+          800
+        ],
+        "parameters": {
+          "jsCode": "// Sustainability Dashboard Data Formatter\nconst analysisData = $input.first().json;\n\nfunction createDashboardData(data) {\n  const footprint = data.current_footprint;\n  const opportunities = data.opportunities;\n  \n  // KPI Cards Data\n  const kpis = {\n    total_emissions: {\n      value: footprint.total_emissions_tons,\n      unit: 'tons CO2e',\n      trend: '+5.2%', // This would be calculated from historical data\n      status: footprint.total_emissions_tons > 100 ? 'warning' : 'good'\n    },\n    emissions_per_employee: {\n      value: footprint.emissions_per_employee,\n      unit: 'lbs CO2e/employee',\n      trend: '+2.1%',\n      status: 'improving'\n    },\n    reduction_potential: {\n      value: data.potential_reduction_percentage,\n      unit: '%',\n      trend: 'new',\n      status: 'opportunity'\n    },\n    cost_savings_potential: {\n      value: Math.round(data.total_potential_reduction_tons * 50), // $50 per ton estimate\n      unit: '$/year',\n      trend: 'projected',\n      status: 'positive'\n    }\n  };\n  \n  // Scope Breakdown for Charts\n  const scopeBreakdown = {\n    labels: ['Scope 1 (Direct)', 'Scope 2 (Electricity)', 'Scope 3 (Indirect)'],\n    data: [footprint.scope1_total, footprint.scope2_total, footprint.scope3_total],\n    colors: ['#FF6B6B', '#4ECDC4', '#45B7D1']\n  };\n  \n  // Monthly Trend (simulated - would be from historical data)\n  const monthlyTrend = {\n    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],\n    emissions: [85, 78, 92, 88, 95, footprint.total_emissions_tons],\n    target: [80, 80, 80, 80, 80, 80]\n  };\n  \n  // Top Opportunities for Action Items\n  const topOpportunities = opportunities\n    .sort((a, b) => b.potential_reduction_tons - a.potential_reduction_tons)\n    .slice(0, 5)\n    .map(opp => ({\n      ...opp,\n      impact_score: Math.round((opp.potential_reduction_tons / data.total_potential_reduction_tons) * 100)\n    }));\n  \n  return {\n    dashboard_data: {\n      kpis: kpis,\n      scope_breakdown: scopeBreakdown,\n      monthly_trend: monthlyTrend,\n      top_opportunities: topOpportunities,\n      last_updated: new Date().toISOString(),\n      next_update: new Date(Date.now() + 24*60*60*1000).toISOString()\n    },\n    raw_analysis: data\n  };\n}\n\nconst dashboardData = createDashboardData(analysisData);\n\nreturn [{ json: dashboardData }];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "g7h8i9j0-k1l2-3456-ghij-789012345678",
+        "name": "ESG Report Generator",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          2200,
+          800
+        ],
+        "parameters": {
+          "jsCode": "// ESG Report Generator\nconst dashboardData = $input.first().json;\nconst data = dashboardData.raw_analysis;\nconst kpis = dashboardData.dashboard_data.kpis;\n\nfunction generateESGReport(analysisData, kpiData) {\n  const reportDate = new Date().toLocaleDateString('en-US', {\n    year: 'numeric',\n    month: 'long',\n    day: 'numeric'\n  });\n  \n  const executiveSummary = `\n**EXECUTIVE SUMMARY**\n\nOur organization's current carbon footprint stands at ${analysisData.current_footprint.total_emissions_tons} tons CO2e, with emissions per employee at ${analysisData.current_footprint.emissions_per_employee} lbs CO2e. \n\nWe have identified ${analysisData.opportunities.length} key reduction opportunities that could decrease our emissions by ${analysisData.potential_reduction_percentage}% (${analysisData.total_potential_reduction_tons} tons CO2e annually).\n\n**KEY FINDINGS:**\n• Scope 2 emissions (electricity) represent ${Math.round((analysisData.current_footprint.scope2_total / analysisData.current_footprint.total_emissions_lbs) * 100)}% of total emissions\n• Transportation accounts for ${Math.round(((analysisData.current_footprint.breakdown.scope3.employee_commute + analysisData.current_footprint.breakdown.scope1.fleet_fuel) / analysisData.current_footprint.total_emissions_lbs) * 100)}% of our footprint\n• High-impact, low-cost opportunities exist in remote work policies and energy efficiency\n  `;\n  \n  const emissionsBreakdown = `\n**EMISSIONS BREAKDOWN**\n\n**Scope 1 (Direct Emissions): ${Math.round(analysisData.current_footprint.scope1_total/2000*100)/100} tons CO2e**\n• Natural Gas: ${Math.round(analysisData.current_footprint.breakdown.scope1.natural_gas)} lbs CO2e\n• Fleet Vehicles: ${Math.round(analysisData.current_footprint.breakdown.scope1.fleet_fuel)} lbs CO2e\n\n**Scope 2 (Indirect - Electricity): ${Math.round(analysisData.current_footprint.scope2_total/2000*100)/100} tons CO2e**\n• Purchased Electricity: ${Math.round(analysisData.current_footprint.breakdown.scope2.electricity)} lbs CO2e\n\n**Scope 3 (Other Indirect): ${Math.round(analysisData.current_footprint.scope3_total/2000*100)/100} tons CO2e**\n• Employee Commuting: ${Math.round(analysisData.current_footprint.breakdown.scope3.employee_commute)} lbs CO2e\n• Business Travel: ${Math.round(analysisData.current_footprint.breakdown.scope3.air_travel)} lbs CO2e\n• Supply Chain: ${Math.round(analysisData.current_footprint.breakdown.scope3.supply_chain)} lbs CO2e\n  `;\n  \n  const opportunitiesSection = analysisData.opportunities.map(opp => \n    `• **${opp.opportunity}** (${opp.category})\\n  Reduction: ${opp.potential_reduction_tons} tons CO2e | Investment: ${opp.investment_required} | Priority: ${opp.priority}`\n  ).join('\\n\\n');\n  \n  const recommendations = `\n**STRATEGIC RECOMMENDATIONS**\n\n**Immediate Actions (0-6 months):**\n1. Implement remote work policy (3 days/week) - High impact, low cost\n2. Upgrade to LED lighting across all facilities\n3. Establish employee sustainability awareness program\n\n**Medium-term Goals (6-18 months):**\n1. Install smart HVAC systems with automated controls\n2. Conduct comprehensive energy audit of all facilities\n3. Develop supplier sustainability scorecard\n\n**Long-term Commitments (1-3 years):**\n1. Transition to renewable energy sources (solar installation)\n2. Electrify vehicle fleet where feasible\n3. Achieve carbon neutrality through verified offsets\n\n**Financial Impact:**\nTotal estimated annual savings from all initiatives: $${Math.round(analysisData.total_potential_reduction_tons * 50).toLocaleString()}\nPayback period for major investments: 3-7 years\n  `;\n  \n  const fullReport = `\n# 🌱 CARBON FOOTPRINT & ESG REPORT\n**Generated: ${reportDate}**\n**Reporting Period: Current Month**\n**Organization: [Company Name]**\n\n${executiveSummary}\n\n${emissionsBreakdown}\n\n**REDUCTION OPPORTUNITIES**\n\n${opportunitiesSection}\n\n${recommendations}\n\n**COMPLIANCE & BENCHMARKING**\n• Current emissions intensity: ${analysisData.current_footprint.emissions_per_employee} lbs CO2e per employee\n• Industry benchmark: 1,200-1,800 lbs CO2e per employee (service sector)\n• Science-based target alignment: Reduction pathway defined for 1.5°C scenario\n\n**NEXT STEPS**\n1. Present findings to executive leadership\n2. Allocate budget for priority initiatives\n3. Establish monthly monitoring and reporting cadence\n4. Engage employees in sustainability initiatives\n\n---\n*This report was automatically generated using real-time data collection and analysis. For questions or detailed implementation planning, contact the Sustainability Team.*\n  `;\n  \n  return {\n    report_text: fullReport,\n    report_date: reportDate,\n    report_type: 'Carbon Footprint & ESG Analysis',\n    key_metrics: {\n      total_emissions: analysisData.current_footprint.total_emissions_tons,\n      reduction_potential: analysisData.potential_reduction_percentage,\n      cost_savings_potential: Math.round(analysisData.total_potential_reduction_tons * 50),\n      opportunities_count: analysisData.opportunities.length\n    },\n    file_name: `Carbon_Footprint_Report_${new Date().toISOString().split('T')[0]}.md`\n  };\n}\n\nconst esgReport = generateESGReport(data, kpis);\n\nreturn [{ json: esgReport }];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "h8i9j0k1-l2m3-4567-hijk-890123456789",
+        "name": "Create Reports Folder",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2600,
+          700
+        ],
+        "parameters": {
+          "name": "ESG_Reports",
+          "options": {},
+          "resource": "folder",
+          "operation": "create"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "i9j0k1l2-m3n4-5678-ijkl-901234567890",
+        "name": "Save Report to Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2600,
+          900
+        ],
+        "parameters": {
+          "name": "={{ $json.file_name }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $node['Create Reports Folder'].json.id }}"
+          },
+          "options": {
+            "parents": [
+              "={{ $node['Create Reports Folder'].json.id }}"
+            ]
+          },
+          "operation": "upload",
+          "binaryData": false,
+          "fileContent": "={{ $json.report_text }}"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 3
+      },
+      {
+        "id": "sticky1-abcd-efgh-ijkl-mnop12345678",
+        "name": "Trigger Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          100,
+          450
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 520,
+          "height": 580,
+          "content": "# Step 1: Daily Trigger ⏰\n\nThis trigger runs the carbon footprint analysis daily at 8:00 AM.\n\n## Configuration Options\n- **Schedule**: Daily at 8:00 AM (customizable)\n- **Alternative**: Manual trigger for on-demand analysis\n- **Timezone**: Adjustable based on your location\n\n## Purpose\n- Ensures consistent daily monitoring\n- Captures real-time data changes\n- Maintains historical tracking"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "sticky2-bcde-fghi-jklm-nopq23456789",
+        "name": "Data Collection Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          400,
+          450
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 520,
+          "height": 580,
+          "content": "# Step 2: Data Collection 🌐\n\n**Energy Data Scraper** and **Transport Data Scraper** work in parallel to gather emission factors.\n\n## What it does\n- Scrapes EPA energy consumption data\n- Collects transportation emission factors\n- Gathers fuel efficiency metrics\n- Updates carbon conversion factors\n\n## Data Sources\n- EPA Greenhouse Gas Calculator\n- FuelEconomy.gov\n- Energy.gov databases"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "sticky3-cdef-ghij-klmn-opqr34567890",
+        "name": "Calculator Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          800,
+          450
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 520,
+          "height": 580,
+          "content": "# Step 3: Footprint Calculator 🧮\n\nCalculates comprehensive carbon footprint across all scopes.\n\n## Calculations Include\n- **Scope 1**: Direct emissions (gas, fleet)\n- **Scope 2**: Electricity consumption\n- **Scope 3**: Commuting, travel, supply chain\n- **Per-employee metrics**\n- **Monthly comparisons**\n\n## Output\n- Total emissions in tons CO2e\n- Detailed breakdown by source\n- Baseline data for tracking"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "sticky4-defg-hijk-lmno-pqrs45678901",
+        "name": "Opportunities Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1200,
+          450
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 520,
+          "height": 580,
+          "content": "# Step 4: Opportunity Analysis 🎯\n\nIdentifies specific reduction opportunities with ROI analysis.\n\n## Analysis Areas\n- **Energy Efficiency**: LED, HVAC, smart systems\n- **Renewable Energy**: Solar, wind options\n- **Transportation**: Remote work, EV fleet\n- **Operations**: Process improvements\n\n## For Each Opportunity\n- Potential CO2 reduction\n- Investment required\n- Payback period\n- Implementation difficulty"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "sticky5-efgh-ijkl-mnop-qrst56789012",
+        "name": "Dashboard Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1600,
+          450
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 520,
+          "height": 580,
+          "content": "# Step 5: Dashboard Preparation 📊\n\nFormats data for sustainability dashboard visualization.\n\n## Dashboard Elements\n- **KPI Cards**: Key metrics with trends\n- **Scope Breakdown**: Pie charts by emission source\n- **Monthly Trends**: Historical progress tracking\n- **Action Items**: Priority opportunities\n\n## Data Outputs\n- Chart-ready JSON data\n- KPI summaries\n- Status indicators\n- Performance trends"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "sticky6-fghi-jklm-nopq-rstu67890123",
+        "name": "ESG Report Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2000,
+          450
+        ],
+        "parameters": {
+          "color": 1,
+          "width": 520,
+          "height": 580,
+          "content": "# Step 6: ESG Report Generation 📋\n\nCreates comprehensive ESG compliance report.\n\n## Report Sections\n- **Executive Summary**: Key findings\n- **Emissions Breakdown**: Detailed analysis\n- **Reduction Opportunities**: Prioritized list\n- **Strategic Recommendations**: Action plan\n- **Financial Impact**: Cost-benefit analysis\n\n## Compliance Features\n- Science-based targets alignment\n- Industry benchmarking\n- Regulatory compliance tracking"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "sticky7-ghij-klmn-opqr-stuv78901234",
+        "name": "Storage Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2400,
+          450
+        ],
+        "parameters": {
+          "color": 7,
+          "width": 520,
+          "height": 580,
+          "content": "# Step 7: Report Storage 💾\n\nSaves generated reports to Google Drive for team access.\n\n## Storage Features\n- **Organized Folders**: ESG_Reports directory\n- **Version Control**: Date-stamped files\n- **Team Access**: Shared drive integration\n- **Format**: Markdown for easy reading\n\n## File Management\n- Automatic folder creation\n- Standardized naming convention\n- Historical report retention\n- Easy sharing and collaboration"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "carbon-footprint-v1-2025-001",
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Energy Data Scraper",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Transport Data Scraper",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Energy Data Scraper": {
+        "main": [
+          [
+            {
+              "node": "Footprint Calculator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ESG Report Generator": {
+        "main": [
+          [
+            {
+              "node": "Create Reports Folder",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Save Report to Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Footprint Calculator": {
+        "main": [
+          [
+            {
+              "node": "Reduction Opportunity Finder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Report to Drive": {
+        "main": [
+          []
+        ]
+      },
+      "Create Reports Folder": {
+        "main": [
+          [
+            {
+              "node": "Save Report to Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Transport Data Scraper": {
+        "main": [
+          [
+            {
+              "node": "Footprint Calculator",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Sustainability Dashboard": {
+        "main": [
+          [
+            {
+              "node": "ESG Report Generator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reduction Opportunity Finder": {
+        "main": [
+          [
+            {
+              "node": "Sustainability Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 16,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 4
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 7
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 2
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-scrapegraphai.scrapegraphAi": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "vinci-king-01",
+    "username": "vinci-king-01",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/d939eeef03a5fcb5df08bee8196f12ccb248c38209487414e419032004f0c014?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de Documents"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    }
+  ],
+  "image": []
+}

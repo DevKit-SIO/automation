@@ -1,0 +1,879 @@
+{
+  "id": 4832,
+  "name": "Traduction Automatisée de Documents avec Straker, Google Drive & Slack",
+  "views": 307,
+  "recentViews": 0,
+  "totalViews": 307,
+  "createdAt": "2025-06-10T03:19:14.179Z",
+  "description": "**Automatisez la traduction de documents et assurez l'exactitude de la traduction en utilisant Straker Verify, Google Drive et Slack.**\n\n**Comment ça fonctionne ? **\nUne étape de workflow est configurée pour \"surveiller\" un dossier Google Drive. Lorsque vos membres d'équipe placent de nouveaux fichiers dans ce dossier, ils sont téléchargés. Straker Verify les traduit ensuite et fournit un score de qualité.\n\nUne fois que Straker Verify a terminé cela, les informations sur le travail sont récupérées, la traduction est enregistrée dans un dossier de sortie et vous êtes notifié via Slack.\n\n**Quel problème cela résout-il ?**\nLorsque vous utilisez l'IA pour traduire des documents, vous n'avez aucune idée de la qualité et de l'exactitude de la sortie. Ce modèle répond à la question « Quelle est la qualité de ma traduction ? » afin que vous ayez un haut niveau de confiance avant de publier.\n\n**Pour qui est-ce ?**\nCe modèle de workflow est conçu pour les entreprises ayant besoin de traduction et de localisation de documents tels que des documents texte, des présentations, des pages web, des transcriptions, des sous-titres vidéo et d'autres. Utilisez-le pour créer des workflows qui localisent votre contenu à grande échelle tout en maintenant la qualité, l'exactitude et la conformité de la traduction.\n\n**Instructions de configuration**\n\n**Intégration Straker Verify avec n8n**\n\n**Connectez-vous à Straker Verify : Obtenez votre clé API\nInscription/Connexion :**\nVisitez [https://verify.straker.ai/](https://verify.straker.ai/) pour créer un compte ou vous connecter.\n**Naviguez vers les Clés API :** Allez à `Verify → Paramètres → Clés API.`\n**Copiez votre clé :** Trouvez et copiez votre clé API.\n**Ajoutez la clé à n8n :** Dans n8n, allez à `Paramètres → Identifiants → Straker Verify.`\n\n**Configurez les Identifiants pour le Nœud Straker Verify**\n1. Ouvrez n8n et allez à \"Identifiants\".\n2. Dans la barre latérale gauche, cliquez sur \"Identifiants\".\n3. Recherchez \"Straker Verify\" et sélectionnez \"Straker Verify API\" dans le menu déroulant.\n4. Collez le jeton d'accès copié de l'application Verify et enregistrez-le.\n\n**Assignez les Identifiants au Nœud**\n1. Allez à votre workflow et ouvrez le nœud Straker Verify.\n2. Sélectionnez les identifiants \"Straker Verify API\" que vous venez de créer dans le menu déroulant (Identifiants à connecter), et enregistrez.\n\n✅ Vous êtes maintenant prêt à utiliser le workflow.\n\n**Étapes du Workflow**\n\n**Étape 1 : Initier le Workflow – Télécharger des Fichiers sur Google Drive**\n1. Téléchargez un ou plusieurs fichiers dans le dossier Google Drive désigné.\n Cela déclenche le nœud \"Nouveau Fichier dans Google Drive\" dans n8n.\n\n**Étape 2 : Vérifier le Solde de Jetons**\nLe workflow vérifie votre solde de jetons via :\n- `Obtenir le Solde de l'Utilisateur Actuel`\n- `L'Utilisateur a-t-il Assez de Jetons ?`\n- `Pas assez de jetons ?`\n Vous recevrez un message Slack :\n*Pas assez de jetons*\n Veuillez recharger et re-télécharger vos fichiers.\n\n**Étape 3 : Sélectionner le Workflow**\nLe système récupère les workflows disponibles via :\n`Récupérer Tous les Workflows des Utilisateurs`\nAucun workflow correspondant trouvé ?\n Vous serez notifié via Slack :\n **Aucun workflow trouvé**\n\n**Étape 4 : Créer un Projet dans Straker Verify**\nLes étapes suivantes sont gérées automatiquement :\nRécupérer les options de langue/projet\nTélécharger des fichiers depuis Google Drive\nCréer un nouveau projet en utilisant :\n`Créer un Projet Straker`\n✅ Vous recevrez une confirmation Slack : &gt; \"Projet créé – ID : `xxxxxx`\"\n\n**Étape 5 : Achèvement du Traitement & Retour de Fichiers**\nUne fois les fichiers traités par Straker :\nLe webhook `Résultat de Traduction Entrante` est déclenché.\nLe workflow :\nTélécharge les fichiers traités : `Obtenir le Contenu du Fichier depuis Straker` - Les télécharge sur Google Drive : `Télécharger le Fichier sur Google Drive`\n\n**Étape 6 : Confirmation - Workflow Complet**\nVous recevrez un message Slack final :\n&gt; \"Workflow complet – Les fichiers sont maintenant disponibles dans Google Drive\"\n\n![image.png](fileId:2309)",
+  "workflow": {
+    "id": "UlhQJ6EtKLNQ0D0B",
+    "meta": {
+      "instanceId": "80505302fd25f9874da713d840f99df997e6fbacf51f09d5b5fa57decd258ea9",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Simple Workflow",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "3686255e-4eee-41aa-9046-76ef2d0159f5",
+        "name": "Flatten",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          200,
+          740
+        ],
+        "parameters": {
+          "jsCode": "/**\n * n8n “Function” node — Run Once for All Items\n * ──> emits one item per target-file URL, with\n *      • filename tagged <base>_<site_shortname>.<ext>\n *      • original language_uuid preserved\n */\nreturn items.flatMap(({ json: { data } }) => {\n  if (!data?.source_files) {\n    throw new Error('No source_files array found in job payload');\n  }\n\n  // uuid → site_shortname\n  const shortCode = Object.fromEntries(\n    (data.target_languages ?? []).map(l => [\n      l.uuid.toLowerCase(),\n      l.site_shortname ?? l.code,\n    ]),\n  );\n\n  return data.source_files.flatMap(sf =>\n    (sf.target_files ?? []).map(tf => {\n      const short = shortCode[tf.language_uuid.toLowerCase()] || tf.language_uuid;\n      const [name, ext = ''] = sf.filename.split(/(?=\\.[^\\.]+$)/); // split at last dot\n\n      return {\n        json: {\n          url: tf.url,\n          filename: `${name}_${short}${ext}`,\n          source_file_uuid: sf.file_uuid,\n          target_file_uuid: tf.target_file_uuid,\n          language_uuid: tf.language_uuid,\n          status: tf.status,\n        },\n      };\n    }),\n  );\n});\n"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "f8a3825e-2091-4359-ad1a-9ac9ed4423a0",
+        "name": "Watch Input Folder",
+        "type": "n8n-nodes-base.googleDriveTrigger",
+        "position": [
+          -240,
+          480
+        ],
+        "parameters": {
+          "event": "fileCreated",
+          "options": {},
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "triggerOn": "specificFolder",
+          "folderToWatch": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1jS3LMLVuHbsKFmtTRiRmUPUBO-CKqsfb",
+            "cachedResultUrl": "",
+            "cachedResultName": ""
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "53ab19cd-4abc-463c-9c98-00e4fe843ef1",
+        "name": "Download Files",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          -20,
+          480
+        ],
+        "parameters": {
+          "fileId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.id }}"
+          },
+          "options": {},
+          "operation": "download"
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "on4yFmHCAe4A3uke",
+            "name": "Google Drive account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "a29304d4-4d30-4d36-9db1-0c0412c946a9",
+        "name": "Wait for Completion",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          -240,
+          740
+        ],
+        "webhookId": "6540f764-161d-4627-b7c2-a78a992daf1d",
+        "parameters": {
+          "path": "6540f764-161d-4627-b7c2-a78a992daf1d",
+          "options": {},
+          "httpMethod": "POST"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "0e4c0d6c-db2d-4625-9f57-235342ce791e",
+        "name": "Save to Output Folder",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          640,
+          740
+        ],
+        "parameters": {
+          "name": "={{ $('Flatten').item.json.filename }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "options": {},
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "16Ke3E8wSbTVfuOUXrex-ueNLuyIRhK95",
+            "cachedResultUrl": "",
+            "cachedResultName": ""
+          }
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "on4yFmHCAe4A3uke",
+            "name": "Google Drive account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 3
+      },
+      {
+        "id": "5152a976-9ea9-48f6-bbe1-3bbbff90f13b",
+        "name": "Notify",
+        "type": "n8n-nodes-base.slack",
+        "position": [
+          1080,
+          740
+        ],
+        "webhookId": "516ba7f2-c441-4cf9-a045-ef8842b273fb",
+        "parameters": {
+          "text": "={{ $('Fetch Job Info').first().json.data.title }} {{ $('Fetch Job Info').first().json.data.status }}",
+          "select": "channel",
+          "channelId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "C08NJCEJS8Y",
+            "cachedResultName": "slack-bots"
+          },
+          "otherOptions": {}
+        },
+        "notesInFlow": true,
+        "typeVersion": 2.3
+      },
+      {
+        "id": "e9cac943-64d4-4a3e-99cb-e4f1ac8cbfaf",
+        "name": "Aggregate",
+        "type": "n8n-nodes-base.aggregate",
+        "position": [
+          860,
+          740
+        ],
+        "parameters": {
+          "options": {},
+          "aggregate": "aggregateAllItemData"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "21827824-54e7-458a-bab7-8fb3f83421ab",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1100,
+          260
+        ],
+        "parameters": {
+          "width": 720,
+          "height": 840,
+          "content": "# Straker Verify n8n Node\n\nThis node allows you to interact with the Straker Verify API to manage translation projects, API keys, user information, and files directly within your n8n workflows.\n\n## Configuration\n\n**Credentials**: Connect your Straker Verify account by creating a new credential in n8n using your Straker Verify API Key. You can find more information on obtaining an API key in the [Straker Verify API documentation](https://api-verify.straker.ai/docs).\n\n## How It's Used\n\n### Workflow 1: Submit for Translation\n\n1.  **Trigger (e.g., `Watch Input Folder` on Google Drive)**: Detects new files.\n2.  **Download File (e.g., `Download Files` from Google Drive)**: Fetches the file content.\n3.  **`Start Translation` (Straker Verify Node - Project: Create)**: Sends the file to Straker Verify to begin the translation process. This step involves specifying target languages, a Straker workflow, and a project title.\n\n### Workflow 2: Retrieve Translation\n\n1.  **Trigger (e.g., `Wait for Completion` via Webhook)**: Listens for a notification from Straker Verify (if a callback URL was configured) that the translation is ready.\n2.  **`Fetch Job Info` (Straker Verify Node - Project: Get)**: Retrieves details about the completed translation job using its ID.\n3.  **`Grab Translation` (Straker Verify Node - File: Get)**: Downloads the translated file(s) from Straker Verify.\n4.  **Save & Notify (e.g., `Save to Output Folder` on Google Drive & `Notify` via Slack)**: Stores the translated file and informs users.\n\nThis node helps automate your translation tasks by connecting Straker Verify with other services in n8n."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5f4e70ca-2db9-4f52-94b3-f65c2c67bbe5",
+        "name": "Fetch Job Info",
+        "type": "n8n-nodes-straker-verify.strakerVerify",
+        "position": [
+          -20,
+          740
+        ],
+        "parameters": {
+          "operation": "get",
+          "projectId": "={{ $json.body.job_uuid }}"
+        },
+        "credentials": {
+          "strakerVerifyApi": {
+            "id": "iRfa1PqR7RY6GKtJ",
+            "name": "Straker Verify account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "180231a6-563a-4843-a450-98f67cda6215",
+        "name": "Grab Translation",
+        "type": "n8n-nodes-straker-verify.strakerVerify",
+        "position": [
+          420,
+          740
+        ],
+        "parameters": {
+          "fileId": "={{ $json.target_file_uuid }}",
+          "resource": "file"
+        },
+        "credentials": {
+          "strakerVerifyApi": {
+            "id": "iRfa1PqR7RY6GKtJ",
+            "name": "Straker Verify account"
+          }
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      },
+      {
+        "id": "b0cd4ece-949b-43d1-8229-2c6988dac15e",
+        "name": "Start Translation",
+        "type": "n8n-nodes-straker-verify.strakerVerify",
+        "position": [
+          200,
+          480
+        ],
+        "parameters": {
+          "title": "TEST 12",
+          "languages": [],
+          "operation": "create",
+          "workflowId": "78ed818e-3655-4bd2-b347-dcce14e58c1c"
+        },
+        "notesInFlow": true,
+        "typeVersion": 1
+      }
+    ],
+    "active": true,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "173445a9-d8f0-4f31-a46d-8671eabf98a8",
+    "connections": {
+      "Flatten": {
+        "main": [
+          [
+            {
+              "node": "Grab Translation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Notify",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Files": {
+        "main": [
+          [
+            {
+              "node": "Start Translation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Job Info": {
+        "main": [
+          [
+            {
+              "node": "Flatten",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Grab Translation": {
+        "main": [
+          [
+            {
+              "node": "Save to Output Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Watch Input Folder": {
+        "main": [
+          [
+            {
+              "node": "Download Files",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait for Completion": {
+        "main": [
+          [
+            {
+              "node": "Fetch Job Info",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save to Output Folder": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.slack": {
+        "count": 1
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.aggregate": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleDrive": {
+        "count": 2
+      },
+      "n8n-nodes-base.googleDriveTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-straker-verify.strakerVerify": {
+        "count": 3
+      }
+    }
+  },
+  "user": {
+    "name": "Vijayeta Sinel",
+    "username": "vijayeta",
+    "bio": "",
+    "verified": false,
+    "links": [],
+    "avatar": "https://gravatar.com/avatar/2cf1a4f3f2d70574236a7204b0611bd0623a249b350ad36ddd487866c80e9d03?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 40,
+      "icon": "file:slack.svg",
+      "name": "n8n-nodes-base.slack",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/slack/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Slack"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgMTUwLjg1MiAxNTAuODUyIj48dXNlIHhsaW5rOmhyZWY9IiNhIiB4PSIuOTI2IiB5PSIuOTI2Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZS13aWR0aD0iMS44NTIiPjxwYXRoIGZpbGw9IiNlMDFlNWEiIHN0cm9rZT0iI2UwMWU1YSIgZD0iTTQwLjc0MSA5My41NWMwLTguNzM1IDYuNjA3LTE1Ljc3MiAxNC44MTUtMTUuNzcyczE0LjgxNSA3LjAzNyAxNC44MTUgMTUuNzcydjM4LjgyNGMwIDguNzM3LTYuNjA3IDE1Ljc3NC0xNC44MTUgMTUuNzc0cy0xNC44MTUtNy4wMzctMTQuODE1LTE1Ljc3MnoiLz48cGF0aCBmaWxsPSIjZWNiMjJkIiBzdHJva2U9IiNlY2IyMmQiIGQ9Ik05My41NSAxMDcuNDA4Yy04LjczNSAwLTE1Ljc3Mi02LjYwNy0xNS43NzItMTQuODE1czcuMDM3LTE0LjgxNSAxNS43NzItMTQuODE1aDM4LjgyNmM4LjczNSAwIDE1Ljc3MiA2LjYwNyAxNS43NzIgMTQuODE1cy03LjAzNyAxNC44MTUtMTUuNzcyIDE0LjgxNXoiLz48cGF0aCBmaWxsPSIjMmZiNjdjIiBzdHJva2U9IiMyZmI2N2MiIGQ9Ik03Ny43NzggMTUuNzcyQzc3Ljc3OCA3LjAzNyA4NC4zODUgMCA5Mi41OTMgMHMxNC44MTUgNy4wMzcgMTQuODE1IDE1Ljc3MnYzOC44MjZjMCA4LjczNS02LjYwNyAxNS43NzItMTQuODE1IDE1Ljc3MnMtMTQuODE1LTcuMDM3LTE0LjgxNS0xNS43NzJ6Ii8+PHBhdGggZmlsbD0iIzM2YzVmMSIgc3Ryb2tlPSIjMzZjNWYxIiBkPSJNMTUuNzcyIDcwLjM3MUM3LjAzNyA3MC4zNzEgMCA2My43NjMgMCA1NS41NTZzNy4wMzctMTQuODE1IDE1Ljc3Mi0xNC44MTVoMzguODI2YzguNzM1IDAgMTUuNzcyIDYuNjA3IDE1Ljc3MiAxNC44MTVzLTcuMDM3IDE0LjgxNS0xNS43NzIgMTQuODE1eiIvPjxnIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiPjxwYXRoIGZpbGw9IiNlY2IyMmQiIHN0cm9rZT0iI2VjYjIyZCIgZD0iTTc3Ljc3OCAxMzMuMzMzYzAgOC4yMDggNi42MDcgMTQuODE1IDE0LjgxNSAxNC44MTVzMTQuODE1LTYuNjA3IDE0LjgxNS0xNC44MTUtNi42MDctMTQuODE1LTE0LjgxNS0xNC44MTVINzcuNzc4eiIvPjxwYXRoIGZpbGw9IiMyZmI2N2MiIHN0cm9rZT0iIzJmYjY3YyIgZD0iTTEzMy4zMzQgNzAuMzcxaC0xNC44MTVWNTUuNTU2YzAtOC4yMDcgNi42MDctMTQuODE1IDE0LjgxNS0xNC44MTVzMTQuODE1IDYuNjA3IDE0LjgxNSAxNC44MTUtNi42MDcgMTQuODE1LTE0LjgxNSAxNC44MTV6Ii8+PHBhdGggZmlsbD0iI2UwMWU1YSIgc3Ryb2tlPSIjZTAxZTVhIiBkPSJNMTQuODE1IDc3Ljc3OEgyOS42M3YxNC44MTVjMCA4LjIwNy02LjYwNyAxNC44MTUtMTQuODE1IDE0LjgxNVMwIDEwMC44IDAgOTIuNTkzczYuNjA3LTE0LjgxNSAxNC44MTUtMTQuODE1eiIvPjxwYXRoIGZpbGw9IiMzNmM1ZjEiIHN0cm9rZT0iIzM2YzVmMSIgZD0iTTcwLjM3MSAxNC44MTVWMjkuNjNINTUuNTU2Yy04LjIwNyAwLTE0LjgxNS02LjYwNy0xNC44MTUtMTQuODE1UzQ3LjM0OCAwIDU1LjU1NiAwczE0LjgxNSA2LjYwNyAxNC44MTUgMTQuODE1eiIvPjwvZz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Slack",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDrive",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 531,
+      "icon": "file:googleDrive.svg",
+      "name": "n8n-nodes-base.googleDriveTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.googledrivetrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Google Drive"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgODEgNzMiPjx1c2UgeGxpbms6aHJlZj0iI2EiIHg9Ii41IiB5PSIuNSIvPjxzeW1ib2wgaWQ9ImEiIG92ZXJmbG93PSJ2aXNpYmxlIj48ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSI+PHBhdGggZmlsbD0iIzAwNjZkYSIgZD0ibTYuMDQ4IDYxLjI2IDMuNTI4IDYuMDk0Yy43MzMgMS4yODMgMS43ODcgMi4yOTEgMy4wMjQgMy4wMjRsMTIuNi0yMS44MUgwYTguMyA4LjMgMCAwIDAgMS4xIDQuMTI0eiIvPjxwYXRoIGZpbGw9IiMwMGFjNDciIGQ9Ik00MCAyMi45MSAyNy40IDEuMWMtMS4yMzcuNzMzLTIuMjkxIDEuNzQxLTMuMDI0IDMuMDI0TDEuMSA0NC40NDVBOC4zIDguMyAwIDAgMCAwIDQ4LjU2OGgyNS4yeiIvPjxwYXRoIGZpbGw9IiNlYTQzMzUiIGQ9Ik02Ny40IDcwLjM3OGMxLjIzNy0uNzMzIDIuMjkxLTEuNzQxIDMuMDI0LTMuMDI0bDEuNDY2LTIuNTIgNy4wMS0xMi4xNDJhOC4zIDguMyAwIDAgMCAxLjEtNC4xMjRINTQuNzk4bDUuMzYzIDEwLjUzOHoiLz48cGF0aCBmaWxsPSIjMDA4MzJkIiBkPSJNNDAgMjIuOTEgNTIuNiAxLjFDNTEuMzYzLjM2NyA0OS45NDMgMCA0OC40NzcgMEgzMS41MjRjLTEuNDY2IDAtMi44ODcuNDEyLTQuMTI0IDEuMXoiLz48cGF0aCBmaWxsPSIjMjY4NGZjIiBkPSJNNTQuNzk5IDQ4LjU2OEgyNS4ybC0xMi42IDIxLjgxYzEuMjM3LjczMyAyLjY1NyAxLjEgNC4xMjQgMS4xaDQ2LjU1MmMxLjQ2NiAwIDIuODg3LS40MTIgNC4xMjQtMS4xeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDAiIGQ9Ik02Ny4yNjIgMjQuMjg0IDU1LjYyNCA0LjEyNEM1NC44OTEgMi44NDEgNTMuODM3IDEuODMzIDUyLjYgMS4xTDQwIDIyLjkxbDE0LjggMjUuNjU5aDI1LjE1NWE4LjMgOC4zIDAgMCAwLTEuMS00LjEyNHoiLz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Google Drive Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1236,
+      "icon": "file:aggregate.svg",
+      "name": "n8n-nodes-base.aggregate",
+      "codex": {
+        "data": {
+          "alias": [
+            "Aggregate",
+            "Combine",
+            "Flatten",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.aggregate/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Agrégat"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjRkY2RDVBIiBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMyIDE0OGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDE0NmM2LjYyNyAwIDEyIDUuMzczIDEyIDEydjI0YzAgNi42MjctNS4zNzMgMTItMTIgMTJINDRjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6bTAgOTZjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxNDZjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYyNGMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDQ0Yy02LjYyNyAwLTEyLTUuMzczLTEyLTEyem0wIDk2YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTQ2YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkg0NGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik03NCA3NmMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDExNi4yMTdjMTcuNjczIDAgMzIgMTQuMzI3IDMyIDMydjU2YzAgMjYuOTc4IDEwLjI3MiA1MS41NTcgMjcuMTE5IDcwLjAzOSA1LjA1NSA1LjU0NSA1LjA1NSAxNC4zNzcgMCAxOS45MjItMTYuODQ3IDE4LjQ4Mi0yNy4xMTkgNDMuMDYxLTI3LjExOSA3MC4wMzl2NTZjMCAxNy42NzMtMTQuMzI3IDMyLTMyIDMySDg2Yy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoMTE2LjIxN2M0NC4xODMgMCA4MC0zNS44MTcgODAtODB2LTU2YzAtMzAuOTI4IDI1LjA3Mi01NiA1Ni01NmE1Ljc4MyA1Ljc4MyAwIDAgMCA1Ljc4My01Ljc4M3YtMzYuNDM0YTUuNzgzIDUuNzgzIDAgMCAwLTUuNzgzLTUuNzgzYy0zMC45MjggMC01Ni0yNS4wNzItNTYtNTZ2LTU2YzAtNDQuMTgzLTM1LjgxNy04MC04MC04MEg4NmMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNzYgMjQ0YzAtNi42MjcgNS4zNzMtMTIgMTItMTJoMTEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjRjMCA2LjYyNy01LjM3MyAxMi0xMiAxMkgzODhjLTYuNjI3IDAtMTItNS4zNzMtMTItMTJ6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L2c+PGRlZnM+PGNsaXBQYXRoIGlkPSJhIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDUxMnY1MTJIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4="
+      },
+      "displayName": "Aggregate",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de Documents"
+    },
+    {
+      "id": 51,
+      "name": "IA Multimodale"
+    }
+  ],
+  "image": [
+    {
+      "id": 2309,
+      "url": "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/image_ea3f80ebf6.png"
+    }
+  ]
+}

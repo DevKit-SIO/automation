@@ -1,0 +1,873 @@
+{
+  "id": 6237,
+  "name": "Envoyer des messages WhatsApp en masse depuis Google Sheets",
+  "views": 1883,
+  "recentViews": 4,
+  "totalViews": 1883,
+  "createdAt": "2025-07-21T15:11:22.292Z",
+  "description": "# Diffusion de messages WhatsApp en masse via Google Sheets (flux de travail n8n)\n\n## Cas d'utilisation\n\nCe flux de travail permet la diffusion automatisée de messages WhatsApp en masse en utilisant l'API WhatsApp Business Cloud. Il extrait les données des destinataires et des messages d'une feuille Google, envoie des messages modélisés (éventuellement avec des en-têtes d'image) et met à jour la feuille avec le statut des messages. Il est idéal pour les équipes marketing, les agents de support et les entreprises gérant des campagnes de sensibilisation à fort volume.\n\n---\n\n## Pour qui est-ce ?\n\n- Entreprises menant des campagnes de marketing ou de sensibilisation sur WhatsApp  \n- Équipes de support client ou de notification  \n- Administrateurs recherchant un système de distribution de messages automatisé et sans code utilisant Google Sheets  \n\n---\n\n## Ce que fait ce flux de travail\n\n- Se déclenche automatiquement chaque minute pour scanner les messages en attente  \n- Récupère les entrées non envoyées d'une feuille Google  \n- Limite le nombre de messages traités par exécution pour se conformer aux directives d'utilisation de l'API  \n- Assainit les numéros WhatsApp pour un formatage correct  \n- Envoie des messages en utilisant un modèle WhatsApp pré-approuvé (texte et image optionnelle)  \n- Marque la ligne comme \"Envoyé\" dans la feuille après une livraison réussie  \n\n---\n\n## Décomposition du flux de travail (nœud par nœud)\n\n### 1. Déclencheur toutes les 5 minutes  \nInitie le flux de travail chaque minute en utilisant un déclencheur programmé pour surveiller en continu les lignes en attente.\n\n### 2. Récupérer toutes les requêtes en attente pour l'envoi de messages  \nLit les lignes d'une feuille Google où la colonne `Statut` est vide, indiquant qu'elles n'ont pas encore été traitées.\n\n### 3. Limite  \nRestreint le traitement à 2 lignes par exécution pour gérer le débit de l'API.\n\n### 4. Boucle sur les éléments  \nUtilise `SplitInBatches` pour itérer à travers chaque ligne individuellement.\n\n### 5. Nettoyer le numéro WhatsApp  \nUn nœud de code qui supprime les caractères non numériques du champ `WhatsApp No`, garantissant que le format est valide pour l'API.\n\n### 6. Envoyer un message à 300 numéros de téléphone  \nEnvoie un message WhatsApp en utilisant l'API Cloud WhatsApp et un modèle pré-approuvé.  \nLe modèle comprend :\n- Une image de la colonne `Image URL` (en tant qu'en-tête, optionnelle)  \n- Variables dynamiques pour les champs `Nom` et `Message` du destinataire  \n\nLes variables de modèle doivent être pré-définies et approuvées dans le Portail Développeur Meta, telles que `{{1}}`, `{{2}}`.\n\n### 7. Changer l'état des lignes dans Envoyé1  \nMet à jour la colonne `Statut` à `Envoyé` pour chaque ligne traitée avec succès en utilisant le numéro de ligne comme référence.\n\n---\n\n## Format de la feuille Google\n\nStructurez votre feuille Google comme indiqué ci-dessous :\n\n| WhatsApp No  | Nom        | Message                  | Image URL          | Statut |\n|--------------|------------|---------------------------|---------------------|--------|\n| +8801XXXXXXX | John Doe   | Bonjour, votre commande a été expédiée | https://.../img.jpg |        |\n\nLaissez la colonne `Statut` vide pour les lignes qui doivent être traitées.\n\n---\n\n## Exigences\n\n- Accès à l'API WhatsApp Business Cloud via [Meta pour les développeurs](https://developers.facebook.com/)\n- Une feuille Google correctement structurée comme décrit ci-dessus\n- Identifiants OAuth2 actifs configurés dans n8n pour :\n  - `googleSheetsOAuth2Api`\n  - `whatsAppApi`\n\n---\n\n## Options de personnalisation\n\n- Mettez à jour le nœud `Limite` pour contrôler combien de lignes sont traitées à chaque exécution  \n- Ajustez le calendrier de déclenchement (par exemple, changez à toutes les 5 minutes)  \n- Remplacez l'ID du modèle de message par le vôtre, pré-approuvé par Meta  \n- Ajoutez une logique de gestion des erreurs (par exemple, nœuds `IF` ou `Try/Catch`) pour enregistrer les échecs ou définir `Statut = Échoué`\n\n---\n\n## Modèle de feuille d'exemple\n\n[Voir la feuille Google d'exemple](https://docs.google.com/spreadsheets/d/1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc/edit?usp=drivesdk)\n\n---\n\n## Points forts du flux de travail\n\n- Exécution automatisée toutes les 1 minute  \n- Lit et traite uniquement les enregistrements en attente  \n- Vérifie les numéros WhatsApp et livre des messages modélisés  \n- Met à jour la feuille Google après chaque tentative\n\n---\n\n## Support & Communauté\n\nBesoin d'aide pour configurer ou personnaliser le flux de travail ?\n\n- WhatsApp : [Contacter le support](https://wa.me/8801322827799)  \n- Discord : [Rejoindre le serveur SpaGreen](https://discord.gg/SsCChWEP)  \n- Groupe Facebook : [Communauté SpaGreen](https://www.facebook.com/groups/spagreenbd)  \n- Site Web : [Visitez SpaGreen Creative](https://spagreen.net)\n",
+  "workflow": {
+    "id": "9KGiiRIN9IKHc7Ls",
+    "meta": {
+      "instanceId": "281fe883012e72eba57c771d5dbf7c3138ca3fe3633c5ba2adf6169821825dd4",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "WhatsApp Bulk Message Broadcast From Google Sheet",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "e76ca205-6342-48e8-baf2-dd46c7cd8524",
+        "name": "Fetch All Pending Queries for Messaging",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          128,
+          32
+        ],
+        "parameters": {
+          "options": {},
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Status"
+              }
+            ]
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc/edit#gid=0",
+            "cachedResultName": "message"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc/edit?usp=drivesdk",
+            "cachedResultName": "WhatsApp Message Broadcast"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "hIOzlTOST3U7PqR8",
+            "name": "Google Sheets account"
+          }
+        },
+        "notesInFlow": false,
+        "retryOnFail": false,
+        "typeVersion": 4.6
+      },
+      {
+        "id": "96e27292-9c80-4294-87da-7c16a3b1e5c2",
+        "name": "Limit",
+        "type": "n8n-nodes-base.limit",
+        "position": [
+          368,
+          32
+        ],
+        "parameters": {
+          "maxItems": 300
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "e9246a66-68d4-4159-b231-b9032f104ddf",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          640,
+          32
+        ],
+        "parameters": {
+          "options": {}
+        },
+        "executeOnce": false,
+        "typeVersion": 3
+      },
+      {
+        "id": "f3ba4b18-d324-4548-80e5-469354af27a9",
+        "name": "Change State of Rows in Sent1",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1072,
+          16
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Status": "Sent",
+              "row_number": "={{ $('Limit').item.json.row_number }}"
+            },
+            "schema": [
+              {
+                "id": "SL",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "SL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "WhatsApp No",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "WhatsApp No",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Name",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "Name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "Message",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image URL",
+                "type": "string",
+                "display": true,
+                "removed": true,
+                "required": false,
+                "displayName": "Image URL",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Status",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "type": "number",
+                "display": true,
+                "removed": false,
+                "readOnly": true,
+                "required": false,
+                "displayName": "row_number",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "row_number"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "update",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc/edit#gid=0",
+            "cachedResultName": "message"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc/edit?usp=drivesdk",
+            "cachedResultName": "WhatsApp Message Broadcast"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "hIOzlTOST3U7PqR8",
+            "name": "Google Sheets account"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "547f5f77-cf4a-4d50-897a-682b53389293",
+        "name": "Send Message to 100 Phone No1",
+        "type": "n8n-nodes-base.whatsApp",
+        "position": [
+          1072,
+          208
+        ],
+        "webhookId": "0a1149cd-db71-46f9-b95f-0ef3ffdf6bf8",
+        "parameters": {
+          "template": "n8n_broadcast_message|en",
+          "components": {
+            "component": [
+              {
+                "type": "header",
+                "headerParameters": {
+                  "parameter": [
+                    {
+                      "type": "image",
+                      "imageLink": "={{ $json['Image URL'] }}"
+                    }
+                  ]
+                }
+              },
+              {
+                "bodyParameters": {
+                  "parameter": [
+                    {
+                      "text": "={{ $json.Name }}"
+                    },
+                    {
+                      "text": "={{ $json.Message }}"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "phoneNumberId": "106689602303326",
+          "recipientPhoneNumber": "={{ String($json['WhatsApp No']) }}"
+        },
+        "credentials": {
+          "whatsAppApi": {
+            "id": "T2ie58mIhsaFCRN8",
+            "name": "SpaGreen WA"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d85bfed1-57d8-4889-834e-d0a3b0288cf1",
+        "name": "Clean WhatsApp Number",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          848,
+          208
+        ],
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst updatedItems = items.map((item) => {\n  const waNo = item?.json[\"WhatsApp No\"];\n  const waNoStr = typeof waNo === 'string' ? waNo : (waNo !== undefined && waNo !== null ? String(waNo) : \"\");\n  const cleanedNumber = waNoStr.replace(/\\D/g, \"\");\n  item.json[\"WhatsApp No\"] = cleanedNumber;\n  return item;\n});\nreturn updatedItems;"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "daafd591-1d05-4469-a727-2985f56081db",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -864,
+          -160
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 704,
+          "height": 2028,
+          "content": "# 📘 n8n Workflow: WhatsApp Bulk Message Broadcast via Google Sheets\n\n## 📌 Overview\n\nThis **n8n automation workflow** enables you to send **bulk WhatsApp messages** directly from a **Google Sheet** using the **WhatsApp Business Cloud API**. It ensures efficient delivery and status tracking of each message, making it ideal for marketing, updates, or client communication.\n\n---\n\n## 🔍 Key Features\n\n- 📥 Fetches live rows from a connected Google Sheet  \n- 📤 Sends personalized WhatsApp messages to each number  \n- 📝 Updates the message delivery status back to the sheet  \n- 🕒 Supports batching and delays to comply with rate limits\n\n---\n\n## 🧰 Requirements\n\nBefore setting up the workflow, ensure you have:\n\n- ✅ Access to the **WhatsApp Business Cloud API** (via Meta Developer account)  \n- ✅ Google Sheets integration configured in n8n  \n- ✅ A properly formatted Google Sheet (see below)  \n\n📄 [Sample Google Sheet Template](https://docs.google.com/spreadsheets/d/1nI-AwIR3Y1FYzV0lwjr9iK6Ia4WuD5eRtgJH819rIIc/edit?usp=sharing)\n\n---\n\n## 📄 Google Sheet Structure\n\n| WhatsApp No  | Message                     | Status  |\n|--------------|-----------------------------|---------|\n| +8801XXXXXXX | Hello, this is a test msg.  | (empty) |\n\n> ℹ️ Keep the `Status` column blank for rows that need to be processed.\n\n---\n\n## ⚙️ Workflow Configuration Steps\n\n### 1. 🔗 Connect to Google Sheets\n\n- Add the **Google Sheets** node  \n- Authenticate with your Google account  \n- Select the appropriate spreadsheet and worksheet  \n- Apply a filter: `Status is empty`\n\n### 2. 🔁 Loop Through Data in Batches\n\n- Use **SplitInBatches** or a **Code** node to process a defined number of rows (e.g., 5 per batch)  \n- Include a **Wait** node to delay (e.g., 0.1–0.5 seconds) between each request to avoid hitting rate limits\n\n### 3. 🛠 Configure WhatsApp Business API\n\n- Add an **HTTP Request** node  \n- Authenticate using your Meta (Facebook) developer credentials  \n- Use a pre-approved **message template ID**  \n- Map Google Sheet columns to dynamic variables in the message payload\n\n### 4. 📋 Update Message Status\n\n- After successfully sending each message, use the **Google Sheets Update** node  \n- Update the `Status` column to `Sent` or `Failed` based on the API response\n\n---\n\n## 🎯 WhatsApp Template Requirements\n\nMake sure your template:\n\n- ✅ Is approved by Meta  \n- ✅ Uses variables (e.g., `{{1}}`, `{{2}}`) for dynamic values  \n- ✅ Matches the message content format being sent\n\n---\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "37d1728b-89fe-4bf8-9c5e-e42d3e4e51ae",
+        "name": "Trigger Every 5 Minute",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          -80,
+          32
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "e5e04a32-bc80-4623-ac07-b00706d20adf",
+    "connections": {
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "Change State of Rows in Sent1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Clean WhatsApp Number",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean WhatsApp Number": {
+        "main": [
+          [
+            {
+              "node": "Send Message to 300 Phone No",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Trigger Every 5 Minute": {
+        "main": [
+          [
+            {
+              "node": "Fetch All Pending Queries for Messaging",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Message to 100 Phone No1": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch All Pending Queries for Messaging": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 8,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.limit": {
+        "count": 1
+      },
+      "n8n-nodes-base.whatsApp": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      },
+      "n8n-nodes-base.splitInBatches": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "SpaGreen Creative",
+    "username": "spagreen",
+    "bio": "SpaGreen Creative is a leading software company specializing in SaaS solutions, AI automation, and Laravel/Vue.js development. With 800+ eCommerce platforms and 8,000+ global clients, we deliver powerful tools for OTT, CRM, ERP, and WhatsApp marketing. We combine innovation and tech to build scalable digital products.",
+    "verified": true,
+    "links": [
+      "https://spagreen.net/"
+    ],
+    "avatar": "https://gravatar.com/avatar/9f81e10059c7190d2e02eb1ca9f9b47edf6ba60576a963a997783746762920f6?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "icon": "fa:sync",
+      "name": "n8n-nodes-base.splitInBatches",
+      "codex": {
+        "data": {
+          "alias": [
+            "Loop",
+            "Concatenate",
+            "Batch",
+            "Split",
+            "Split In Batches"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Boucle sur les éléments",
+        "color": "#007755"
+      },
+      "iconData": {
+        "icon": "sync",
+        "type": "icon"
+      },
+      "displayName": "Loop Over Items (Split in Batches)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 827,
+      "icon": "file:whatsapp.svg",
+      "name": "n8n-nodes-base.whatsApp",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.whatsapp/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/whatsapp/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "WhatsApp Business Cloud"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQuODY4IDQzLjMwMyAyLjY5NC05LjgzNWExOC45NCAxOC45NCAwIDAgMS0yLjUzNS05LjQ4OUM1LjAzMiAxMy41MTQgMTMuNTQ4IDUgMjQuMDE0IDVhMTguODcgMTguODcgMCAwIDEgMTMuNDMgNS41NjZBMTguODcgMTguODcgMCAwIDEgNDMgMjMuOTk0Yy0uMDA0IDEwLjQ2NS04LjUyMiAxOC45OC0xOC45ODYgMTguOThoLS4wMDhhMTkgMTkgMCAwIDEtOS4wNzMtMi4zMTF6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTQuODY4IDQzLjgwM2EuNS41IDAgMCAxLS40ODItLjYzMWwyLjYzOS05LjYzNmExOS41IDE5LjUgMCAwIDEtMi40OTctOS41NTZDNC41MzIgMTMuMjM4IDEzLjI3MyA0LjUgMjQuMDE0IDQuNWExOS4zNyAxOS4zNyAwIDAgMSAxMy43ODQgNS43MTNBMTkuMzYgMTkuMzYgMCAwIDEgNDMuNSAyMy45OTRjLS4wMDQgMTAuNzQxLTguNzQ2IDE5LjQ4LTE5LjQ4NiAxOS40OGExOS41NCAxOS41NCAwIDAgMS05LjE0NC0yLjI3N2wtOS44NzUgMi41ODlhLjUuNSAwIDAgMS0uMTI3LjAxNyIvPjxwYXRoIGZpbGw9IiNjZmQ4ZGMiIGQ9Ik0yNC4wMTQgNWExOC44NyAxOC44NyAwIDAgMSAxMy40MyA1LjU2NkExOC44NyAxOC44NyAwIDAgMSA0MyAyMy45OTRjLS4wMDQgMTAuNDY1LTguNTIyIDE4Ljk4LTE4Ljk4NiAxOC45OGgtLjAwOGExOSAxOSAwIDAgMS05LjA3My0yLjMxMWwtMTAuMDY1IDIuNjQgMi42OTQtOS44MzVhMTguOTQgMTguOTQgMCAwIDEtMi41MzUtOS40ODlDNS4wMzIgMTMuNTE0IDEzLjU0OCA1IDI0LjAxNCA1bTAtMUMxMi45OTggNCA0LjAzMiAxMi45NjIgNC4wMjcgMjMuOTc5YTIwIDIwIDAgMCAwIDIuNDYxIDkuNjIyTDMuOTAzIDQzLjA0YS45OTguOTk4IDAgMCAwIDEuMjE5IDEuMjMxbDkuNjg3LTIuNTRhMjAgMjAgMCAwIDAgOS4xOTcgMi4yNDRjMTEuMDI0IDAgMTkuOTktOC45NjMgMTkuOTk1LTE5Ljk4QTE5Ljg2IDE5Ljg2IDAgMCAwIDM4LjE1MyA5Ljg2IDE5Ljg3IDE5Ljg3IDAgMCAwIDI0LjAxNCA0Ii8+PHBhdGggZmlsbD0iIzQwYzM1MSIgZD0iTTM1LjE3NiAxMi44MzJhMTUuNjcgMTUuNjcgMCAwIDAtMTEuMTU3LTQuNjI2Yy04LjcwNCAwLTE1Ljc4MyA3LjA3Ni0xNS43ODcgMTUuNzc0YTE1Ljc0IDE1Ljc0IDAgMCAwIDIuNDEzIDguMzk2bC4zNzYuNTk3LTEuNTk1IDUuODIxIDUuOTczLTEuNTY2LjU3Ny4zNDJhMTUuNzUgMTUuNzUgMCAwIDAgOC4wMzIgMi4xOTloLjAwNmM4LjY5OCAwIDE1Ljc3Ny03LjA3NyAxNS43OC0xNS43NzZhMTUuNjggMTUuNjggMCAwIDAtNC42MTgtMTEuMTYxIi8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE5LjI2OCAxNi4wNDVjLS4zNTUtLjc5LS43MjktLjgwNi0xLjA2OC0uODItLjI3Ny0uMDEyLS41OTMtLjAxMS0uOTA5LS4wMTFzLS44My4xMTktMS4yNjUuNTk0LTEuNjYxIDEuNjIyLTEuNjYxIDMuOTU2IDEuNyA0LjU5IDEuOTM3IDQuOTA2IDMuMjgyIDUuMjU5IDguMTA0IDcuMTYxYzQuMDA3IDEuNTggNC44MjMgMS4yNjYgNS42OTMgMS4xODdzMi44MDctMS4xNDcgMy4yMDItMi4yNTUuMzk1LTIuMDU3LjI3Ny0yLjI1NWMtLjExOS0uMTk4LS40MzUtLjMxNi0uOTA5LS41NTRzLTIuODA3LTEuMzg1LTMuMjQyLTEuNTQzLS43NTEtLjIzNy0xLjA2OC4yMzhjLS4zMTYuNDc0LTEuMjI1IDEuNTQzLTEuNTAyIDEuODU5cy0uNTU0LjM1Ny0xLjAyOC4xMTktMi4wMDItLjczOC0zLjgxNS0yLjM1NGMtMS40MS0xLjI1Ny0yLjM2Mi0yLjgxLTIuNjM5LTMuMjg1LS4yNzctLjQ3NC0uMDMtLjczMS4yMDgtLjk2OC4yMTMtLjIxMy40NzQtLjU1NC43MTItLjgzMS4yMzctLjI3Ny4zMTYtLjQ3NS40NzQtLjc5MXMuMDc5LS41OTQtLjA0LS44MzFjLS4xMTctLjIzOC0xLjAzOS0yLjU4NC0xLjQ2MS0zLjUyMiIvPjwvc3ZnPg=="
+      },
+      "displayName": "WhatsApp Business Cloud",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur programmé",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1237,
+      "icon": "file:limit.svg",
+      "name": "n8n-nodes-base.limit",
+      "codex": {
+        "data": {
+          "alias": [
+            "Limit",
+            "Remove",
+            "Slice",
+            "Transform",
+            "Array",
+            "List",
+            "Item"
+          ],
+          "details": "",
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.limit/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Limite"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJub25lIj48ZyBmaWxsPSIjMkZCNjdDIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcGF0aD0idXJsKCNhKSIgY2xpcC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNNTEyIDQ1OGMwLTYuNjI3LTUuMzczLTEyLTEyLTEyaC02OGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDY4YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6bS0xNDAgMGMwLTYuNjI3LTUuMzczLTEyLTEyLTEyaC02OGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDY4YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6bS0xNDAgMGMwLTYuNjI3LTUuMzczLTEyLTEyLTEyaC02OGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnYyNGMwIDYuNjI3IDUuMzczIDEyIDEyIDEyaDY4YzYuNjI3IDAgMTItNS4zNzMgMTItMTJ6bS0xNDAgMGMwLTYuNjI3LTUuMzczLTEyLTEyLTEySDEyYy02LjYyNyAwLTEyIDUuMzczLTEyIDEydjI0YzAgNi42MjcgNS4zNzMgMTIgMTIgMTJoNjhjNi42MjcgMCAxMi01LjM3MyAxMi0xMnptMTUyLTIyMmMtNi42MjcgMC0xMi01LjM3My0xMi0xMlYzMGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDI0YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MTk0YzAgNi42MjctNS4zNzMgMTItMTIgMTJ6Ii8+PHBhdGggZD0iTTE0OS41NzcgMTQ2Ljk4MmM5LjM5OC05LjM0NiAyNC41OTQtOS4zMDQgMzMuOTQxLjA5NUwyNTYgMjE5Ljk2NGw3Mi40ODItNzIuODg3YzkuMzQ3LTkuMzk5IDI0LjU0My05LjQ0MSAzMy45NDEtLjA5NXM5LjQ0MSAyNC41NDMuMDk1IDMzLjk0MWwtODkuNSA5MGEyNCAyNCAwIDAgMS0zNC4wMzYgMGwtODkuNS05MGMtOS4zNDYtOS4zOTgtOS4zMDQtMjQuNTk0LjA5NS0zMy45NDFNMCAzNTBjMC02LjYyNyA1LjM3My0xMiAxMi0xMmg0ODhjNi42MjcgMCAxMiA1LjM3MyAxMiAxMnYyNGMwIDYuNjI3LTUuMzczIDEyLTEyIDEySDEyYy02LjYyNyAwLTEyLTUuMzczLTEyLTEyeiIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoNTEydjUxMkgweiIvPjwvY2xpcFBhdGg+PC9kZWZzPjwvc3ZnPg=="
+      },
+      "displayName": "Limit",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 33,
+      "name": "Médias sociaux"
+    }
+  ],
+  "image": []
+}

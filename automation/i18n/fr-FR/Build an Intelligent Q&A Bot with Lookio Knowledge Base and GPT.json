@@ -1,0 +1,508 @@
+{
+  "id": 8787,
+  "name": "Construisez un bot Q&A intelligent avec Lookio Knowledge Base et GPT",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-09-20T19:53:32.637Z",
+  "description": "Construisez un puissant chatbot IA qui fournit des réponses précises à partir de la base de connaissances de votre propre entreprise. Ce modèle fournit un agent IA intelligent qui se connecte à **Lookio**, une plateforme où vous pouvez facilement télécharger vos documents (de Notion, Jira, Slack, etc.) pour créer une source de connaissances dédiée.\n\nCe qui rend cet agent \"intelligent\", c'est son efficacité. Il est configuré pour gérer les salutations simples et les petites conversations par lui-même, n'utilisant son puissant outil de récupération de connaissances (et payant) que lorsqu'un utilisateur pose une question authentique. Cette logique d'économie de coûts le rend parfait pour construire des services d'assistance internes prêts pour la production, des bots de support client, ou toute application où vous avez besoin de réponses précises basées sur des sources.\n\n## **Pour qui est-ce ?**\n\n* **Équipes de support client :** Construisez des bots internes qui aident les agents à trouver des réponses instantanément à partir de votre documentation de support et de vos bases de connaissances.\n* **Équipes produit et ingénierie :** Créez un chatbot qui peut répondre à des questions techniques basées sur votre documentation produit ou vos wikis internes.\n* **Départements RH :** Déployez un assistant interne qui peut répondre aux questions des employés basées sur les manuels de l'entreprise, les politiques et les procédures.\n* **Toute entreprise avec une base de connaissances :** Fournissez un moyen interactif et conversationnel pour que les employés ou les clients accèdent à des informations enfermées dans vos documents.\n\n## **Quel problème cela résout-il ?**\n\n* **Fournit des réponses précises et fondées :** Assure que les réponses de l'agent IA sont basées sur vos documents privés et de confiance, et non sur l'internet ouvert, ce qui prévient les erreurs factuelles et les \"hallucinations.\"\n* **Rend votre connaissance accessible :** Transforme vos documents statiques et vos bases de connaissances en une ressource conversationnelle interactive, disponible 24/7.\n* **Optimise les coûts et l'efficacité :** L'agent est suffisamment intelligent pour gérer les petites conversations sans effectuer d'appels API inutiles à votre base de connaissances, vous faisant économiser des crédits et de l'argent.\n* **Simplifie la configuration RAG :** Fournit un modèle prêt à l'emploi pour un modèle RAG (Retrieval-Augmented Generation) commun, avec les complexités de la gestion et de la récupération des documents gérées par la plateforme Lookio.\n\n\n## **Comment ça fonctionne**\n\n1.  **Tout d'abord, construisez votre base de connaissances dans Lookio :** Le processus commence sur la plateforme [Lookio](https://www.lookio.app/). Vous téléchargez vos documents (de Notion, Jira, PDF, etc.) et créez un \"assistant\" qui devient votre base de connaissances sécurisée et interrogeable.\n2.  **Un utilisateur pose une question :** Le flux de travail n8n commence lorsqu'un utilisateur envoie un message via le **Chat Trigger**.\n3.  **L'agent prend une décision :** L'**Agent de Connaissances IA**, guidé par son invite système, analyse le message de l'utilisateur. Si c'est une simple salutation comme \"salut\", il répondra directement. Si c'est une question substantielle qui nécessite des connaissances spécifiques, il décide d'utiliser son outil \"Interroger la base de connaissances\".\n4.  **Interroger la base de connaissances Lookio :** L'agent transmet la question de l'utilisateur à l'**Outil de Requête HTTP**. Cet outil appelle en toute sécurité l'API Lookio avec votre ID d'Assistant spécifique et votre clé API.\n5.  **Fournir la réponse basée sur des faits :** Lookio recherche dans vos documents, synthétise une réponse précise et la renvoie au flux de travail. L'agent n8n présente ensuite cette réponse à l'utilisateur dans l'interface de chat.\n\n\n## **Configuration**\n\n1.  **Configurez votre assistant Lookio (Prérequis) :** Tout d'abord, allez sur [Lookio](https://www.lookio.app/), inscrivez-vous (vous obtenez 50 crédits gratuits), créez un assistant avec vos documents, et depuis vos paramètres, copiez votre **Clé API** et votre **ID d'Assistant**.\n2.  **Configurez l'outil Lookio :** Dans le nœud **Interroger la base de connaissances** (Outil de Requête HTTP) :\n    * Remplacez le `&lt;your-assistant-id&gt;` par votre ID d'Assistant réel.\n    * Remplacez le `&lt;your-lookio-api-key&gt;` par votre clé API réelle.\n3.  **Connectez votre modèle IA :** Dans le nœud **Modèle de Chat OpenAI**, connectez vos identifiants de fournisseur IA.\n4.  **Activez le flux de travail.** Votre agent de base de connaissances intelligent est maintenant en ligne et prêt à discuter !\n\n## **Aller plus loin**\n\n* **Ajustez la qualité de récupération :** Dans le nœud **Interroger la base de connaissances**, vous pouvez changer le `query_mode` de `flash` (le plus rapide) à `deep` pour une qualité supérieure mais des réponses légèrement plus lentes, selon vos besoins.\n* **Ajoutez plus d'outils :** Améliorez votre agent en lui donnant d'autres outils, comme une recherche web pour lorsque la base de connaissances interne n'a pas de réponse, ou une calculatrice pour effectuer des calculs.\n* **Déployez-le partout :** Remplacez le **Chat Trigger** par un déclencheur **Slack** ou **Discord** pour déployer votre agent là où votre équipe travaille.",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "f4ead8e8-e78b-490d-9cf0-03907fc6e16f",
+        "name": "When chat message received",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "position": [
+          -464,
+          16
+        ],
+        "webhookId": "eef2977c-81d7-4102-8edf-d771d9da2118",
+        "parameters": {
+          "options": {}
+        },
+        "typeVersion": 1.3
+      },
+      {
+        "id": "4cf321ba-b749-4223-aabd-e9a12e78caf5",
+        "name": "Simple Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "position": [
+          -80,
+          336
+        ],
+        "parameters": {},
+        "typeVersion": 1.3
+      },
+      {
+        "id": "fa2f423c-e98b-459d-8613-1d5c5a2db2ac",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          -368,
+          384
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "dMiSy27YCK6c6rra",
+            "name": "Duv's OpenAI"
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "7607267f-91b6-4a36-87bb-3e1d753bbd71",
+        "name": "AI Knowledge Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "position": [
+          -184,
+          16
+        ],
+        "parameters": {
+          "options": {
+            "systemMessage": "=You are a helpful assistant that answers the user based on a knowledge base.\n\nWhenever the user query requires specific knowledge (most queries except empty queries like \"hi\"), call the tool \"Query knowledge base\" with a question to have it output an answer based on the knowledge base.\n\nIf the output from the knowledge base tool indicates that the knowledge base doesn't contain enough insights to answer, communicate this to the user transparently."
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "2cde1ec6-7d21-4955-acbe-4434cfdb9c7c",
+        "name": "Query knowledge base",
+        "type": "n8n-nodes-base.httpRequestTool",
+        "position": [
+          240,
+          352
+        ],
+        "parameters": {
+          "url": "https://api.lookio.app/webhook/query",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "query",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `The query to the knowledge base, in the form of a question`, 'string') }}"
+              },
+              {
+                "name": "assistant_id",
+                "value": "<your-assistant-id>"
+              },
+              {
+                "name": "query_mode",
+                "value": "flash"
+              }
+            ]
+          },
+          "toolDescription": "Call this tool when the knowledge base is required to answer the user query.",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "api_key",
+                "value": "<your-lookio-api-key>"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "a79ec48e-1888-477f-b299-2fe05fe509c6",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          112,
+          320
+        ],
+        "parameters": {
+          "color": 6,
+          "width": 336,
+          "height": 400,
+          "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Lookio tool\n\nThe agent calls this tool to get answers based on the knowledge base you've built in Lookio.\n- Add your [Lookio](https://www.lookio.app/) API key\n- Specify the ID of the Lookio assistant to query"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f2b01dab-f1d3-4947-b6c1-7c8390aca275",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -512,
+          320
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 336,
+          "height": 400,
+          "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## AI model\n\nThe core AI model of your agent. Connect your OpenAI API key or switch to your favorite LLM provider."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fda124c2-4fd0-4682-b619-78139b0f4b8b",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -240,
+          -224
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 336,
+          "height": 400,
+          "content": "## The agent\n\nThis agent will distribute the relevant questions to Lookio via the \"Query knowledge base\" tool. Feel free to provide more context in its system message and add instructions when it comes to the format or style of responses?"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "54e7d0d6-2bec-4363-bdba-da6dadd72163",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1088,
+          -224
+        ],
+        "parameters": {
+          "width": 496,
+          "height": 944,
+          "content": "# AI Agent for Your Lookio Knowledge Base\n\nThis agent intelligently answers questions using a knowledge base you build in Lookio. It's configured to handle simple greetings on its own, and only queries your Lookio knowledge base for real questions to save API credits.\n\n## **How to use**\n\n1.  **Set up in Lookio:** First, create an assistant in **Lookio** with your company documents and get your **API Key** & **Assistant ID**.\n2.  **Configure the Tool:** In the `Query knowledge base` node, replace the placeholder `<your-lookio-api-key>` and `<your-assistant-id>` with your own.\n3.  **Connect your AI Model:** Add your credentials to the `OpenAI Chat Model` node.\n4.  **Activate & Chat!**\n\n\n*A template developed by Guillaume Duvernay*"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Knowledge Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Knowledge Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Query knowledge base": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Knowledge Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Knowledge Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 9,
+    "nodeTypes": {
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "@n8n/n8n-nodes-langchain.agent": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequestTool": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chatTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.memoryBufferWindow": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Guillaume Duvernay",
+    "username": "duv",
+    "bio": "AI and automation expert",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/guillaume-duvernay/"
+    ],
+    "avatar": "https://gravatar.com/avatar/1e93ed2388069da40b3202c5566318982166f1a0b4c4c35c4802c8ca4de79991?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Sticky Note",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1119,
+      "icon": "fa:robot",
+      "name": "@n8n/n8n-nodes-langchain.agent",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain",
+            "Chat",
+            "Conversational",
+            "Plan and Execute",
+            "ReAct",
+            "Tools"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Agents",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "AI Agent",
+        "color": "#404040"
+      },
+      "iconData": {
+        "icon": "robot",
+        "type": "icon"
+      },
+      "displayName": "AI Agent",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "OpenAI Chat Model"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1163,
+      "icon": "fa:database",
+      "name": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.memorybufferwindow/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Memory"
+            ],
+            "Memory": [
+              "For beginners"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Simple Memory"
+      },
+      "iconData": {
+        "icon": "database",
+        "type": "icon"
+      },
+      "displayName": "Simple Memory",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "icon": "fa:comments",
+      "name": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes",
+            "Langchain"
+          ]
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "When chat message received"
+      },
+      "iconData": {
+        "icon": "comments",
+        "type": "icon"
+      },
+      "displayName": "Chat Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Content Creation"
+    },
+    {
+      "id": 51,
+      "name": "Multimodal AI"
+    }
+  ],
+  "image": []
+}

@@ -1,0 +1,839 @@
+{
+  "id": 6695,
+  "name": "Déclencher des appels vocaux Vapi AI sortants à partir de nouvelles soumissions Jotform",
+  "views": 404,
+  "recentViews": 1,
+  "totalViews": 404,
+  "createdAt": "2025-07-30T11:08:25.698Z",
+  "description": "Ce flux de travail connecte les soumissions JotForm à **[Vapi AI](https://vapi.ai/?aff=onenode)**, déclenchant un appel sortant personnalisé via un assistant vocal AI immédiatement après qu'un utilisateur soumette votre formulaire.\n\n## Exigences\n\n### JotForm\n- Un **[compte JotForm](https://www.jotform.com/?partner=https://1node.ai)**\n- **Identifiants API JotForm** activés dans n8n\n- Un **formulaire JotForm publié** avec un champ de numéro de téléphone\n\n### Vapi\n- Un **[compte Vapi](https://vapi.ai/?aff=onenode)** avec crédit\n- Un **numéro de téléphone** connecté pour passer des appels\n- Un **assistant** créé et prêt pour les appels sortants\n- Votre **clé API Vapi**\n\n---\n\n## Étapes du flux de travail\n\n### 1. Déclencheur JotForm\n- Démarre le flux de travail lorsqu'une nouvelle soumission de formulaire est reçue.\n\n### 2. Extracteur d'informations\n- **Formate le numéro de téléphone** avec un `+`, le code pays et le numéro complet (par exemple, `+391234567890`) pour la compatibilité avec Vapi.\n\n### 4. Définir les champs pour Vapi\n- Configurez ces champs :\n    - `phone_number_id`: ID du numéro Vapi utilisé pour l'appel\n    - `assistant_id`: ID de l'assistant Vapi\n    - `api_key`: Votre clé API Vapi\n\n### 5. Démarrer l'appel sortant Vapi\n- Envoie une requête POST à `https://api.vapi.ai/call` avec :\n    - Le numéro de téléphone formaté\n    - Tous les champs Vapi requis\n    - Toute information supplémentaire mappée depuis le formulaire, pour la personnalisation\n\n---\n\n## Personnalisation\n\n- **Ajouter plus de champs de formulaire :** Inclure des données supplémentaires (comme le nom, l'heure du rendez-vous) et les ajouter à la charge utile Vapi.\n- **Logique conditionnelle :** Utilisez des nœuds de filtre n8n pour contrôler si/quand des appels sont passés.\n- **Sélection dynamique de l'assistant :** Dirigez les soumissions vers différents assistants ou numéros en fonction des réponses des utilisateurs.\n\n---\n\n## Remarques\n\n- Assurez-vous que les numéros de téléphone sont correctement formatés dans le nœud extracteur pour éviter les erreurs d'appel.\n- Tout champ de votre formulaire peut être passé dans la charge utile API et utilisé dans le script de l'assistant.\n\n---\n\n## Besoin d'aide ?\n\nPour des ressources supplémentaires ou de l'aide, visitez **[1 Node](https://1node.ai)**.\n",
+  "workflow": {
+    "id": "98aUzWGBxKfoUunX",
+    "meta": {
+      "instanceId": "9219ebc7795bea866f70aa3d977d54417fdf06c41944be95e20cfb60f992db19",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Trigger Outbound Vapi AI Voice Calls From New Jotform Submissions",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "913a4a9a-6b53-4540-ac8f-16d4b5eaf028",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          318,
+          -156
+        ],
+        "parameters": {
+          "width": 260,
+          "height": 396,
+          "content": "## Set Vapi fields\nYou must set the following fields that you can obtain inside your Vapi account \n- phone number id which will make the call\n- assistant id which will be enabled in the call\n- your Vapi api key"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "77909286-b9fa-4013-b287-32e3681a7997",
+        "name": "Start outbound Vapi call",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          624,
+          80
+        ],
+        "parameters": {
+          "url": "https://api.vapi.ai/call",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "={\n    \"assistantId\": \"{{ $json.vapiAssistantId }}\",\n    \"phoneNumberId\": \"{{ $json.vapiPhoneNumberId }}\",\n    \"customer\": {\n        \"number\": \"{{ $('Information Extractor').item.json.output.internationalPhone }}\"\n    }\n}\n",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $json.vapiApi }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "4c6ce81d-063e-4c20-99a9-5c1543768c66",
+        "name": "Set fields",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          400,
+          80
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f38947e1-c75a-44cc-88f9-c44fc80bada8",
+                "name": "vapiPhoneNumberId",
+                "type": "string",
+                "value": "insert-id"
+              },
+              {
+                "id": "463ed66e-e072-48dc-a75d-a3815fd07de0",
+                "name": "vapiAssistantId",
+                "type": "string",
+                "value": "insert-id"
+              },
+              {
+                "id": "93f058cd-e015-4b83-a16f-efceddafb128",
+                "name": "vapiApi",
+                "type": "string",
+                "value": "insert-api"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "4cdeccad-e186-4fb2-95e3-66b2256830aa",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -624,
+          -160
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 320,
+          "height": 440,
+          "content": "## Requirements \n### Jotform\n- [Jotform](https://www.jotform.com/?partner=https://1node.ai) account\n- Jotform API credentials enabled in n8n\n- A Jotform form published that includes a phone number field\n\n### Vapi\n- A [Vapi](https://vapi.ai/?aff=onenode) account with credit\n- A connected phone number which will make the calls\n- An assistant created and ready to make calls\n- Vapi api key \n\n### Useful link\n- [Vapi docs](https://docs.vapi.ai/api-reference/calls/create)\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5e756ae2-70d0-4fde-aa93-235815dded07",
+        "name": "JotForm Trigger",
+        "type": "n8n-nodes-base.jotFormTrigger",
+        "position": [
+          -224,
+          80
+        ],
+        "webhookId": "68d39036-7465-4816-b74f-d7e758c06194",
+        "parameters": {
+          "form": "252102909108349"
+        },
+        "credentials": {
+          "jotFormApi": {
+            "id": "uFr1Zxopb9WOlCT4",
+            "name": "JotForm account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "29868797-41e8-44d7-afe5-13b3a56214e7",
+        "name": "Information Extractor",
+        "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+        "position": [
+          0,
+          80
+        ],
+        "parameters": {
+          "text": "=- country: {{ $json['Phone Number'].country }} \n- area code: {{ $json['Phone Number'].area }}\n- phone: {{ $json['Phone Number'].phone }}",
+          "options": {},
+          "attributes": {
+            "attributes": [
+              {
+                "name": "internationalPhone",
+                "required": true,
+                "description": "international formatted phone number. Includes the + sign, followed by the country code and phone number, without spaces. Example: +1234567890"
+              }
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "a1be9c8b-715a-49f2-a252-8da8642d9c98",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          96,
+          304
+        ],
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1",
+            "cachedResultName": "gpt-4.1"
+          },
+          "options": {}
+        },
+        "credentials": {
+          "openAiApi": {
+            "id": "vupAk5StuhOafQcb",
+            "name": "OpenAi account"
+          }
+        },
+        "typeVersion": 1.2
+      }
+    ],
+    "active": true,
+    "pinData": {
+      "JotForm Trigger": [
+        {
+          "json": {
+            "E-mail": "",
+            "Address": {
+              "city": "Dover",
+              "state": "Delaware",
+              "postal": "19901",
+              "addr_line1": "8 The Green",
+              "addr_line2": "Ste A"
+            },
+            "Full Name": {
+              "last": "sad",
+              "first": "rick"
+            },
+            "Phone Number": {
+              "area": "123",
+              "phone": "345634",
+              "country": "1"
+            },
+            "Please Specify": "",
+            "Feedback about us:": "",
+            "How did you hear about us?": "Newspaper",
+            "Will you be willing to recommend us?": "",
+            "Suggestions if any for further improvement:": "",
+            "Please give reference of any two people whom you feel:": [
+              [
+                "",
+                "",
+                ""
+              ],
+              [
+                "",
+                "",
+                ""
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "8d0208e5-a730-4e86-992a-43a02118fc69",
+    "connections": {
+      "Set fields": {
+        "main": [
+          [
+            {
+              "node": "Start outbound Vapi call",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JotForm Trigger": {
+        "main": [
+          [
+            {
+              "node": "Information Extractor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Information Extractor",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Information Extractor": {
+        "main": [
+          [
+            {
+              "node": "Set fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 7,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 2
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.jotFormTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatOpenAi": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.informationExtractor": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Aitor | 1Node",
+    "username": "aitoralonso",
+    "bio": "Hi, I'm Aitor with 1 Node. We create practical AI solutions for businesses. Nothing fancy, just tools that solve real problems and help you scale. Always happy to have a conversation about how we might be able to help you grow",
+    "verified": true,
+    "links": [
+      "https://1node.ai"
+    ],
+    "avatar": "https://gravatar.com/avatar/2f850f7b4c218087a3e7d9775daf6bd8dad05b5eb5ea82242d4bfd1a97465455?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 227,
+      "icon": "file:jotform.png",
+      "name": "n8n-nodes-base.jotFormTrigger",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.jotformtrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/jotForm/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur JotForm"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAC/VBMVEUAAAD//////////////vz////////69fL////+/v76+vr////y8vL+/v7y8vL////////z8/P////////////////////////////////////////////////////////////////0hjL////3o1rtgzD1mU32nET////z8/Py8vL09PTx8fHy8vLzhjH2lEj09PTPcSjw8PD859v60bjVnIHJcjbFZwTEbSn09PTq0sf2nk7Jbyv//Pzy8vL4uo7Hbyz0j0DyhjP3pFvzhzT0oVr4oFe9bSzTkG/////y8vLx8fH//v7+/f3zhjP4+Pj29vb9/Pz09PTty7n6+vrZr5voxrXbsp31hzLEbCjszLzqyrrpyLfiuqbetaGlf272o1nHbyv7+/vnw7Hivargt6Ouinn0hS/uz77sybbUqJOohHOngXHyhTH89vPu7u7YrZjXq5bTpZCxkICjfGz2oVj3n0/JbynDWQD++vj47OX14df03M/vzLnkv63dtKCwjHuqhXT3pF73pFvJczfIbijHbCL78ez77+jl3drds57TrpvQp5TJo5HIn4y2l4m2jn2pgWynfmmkeWVjYF+dcV2cbllLTEyQXEP1mjr/kjbGcTPIcC/YeC7zgyzzgyQAAADw6+np6en36OD35tzw39jT09Pv0cHpzsHYyMG9vb3RwLrjwrPxyLDLsqa+p5+cm5r0uZG+mojAl4R6fHyrh3edeGmhe2ifdmX2p2T2pWL+rWD/p1zPhlxXV1f2n1X1kUD/kDTmfy/UdS7fei3OciskJCTEYgD18vHt6Ofj4+Pr5OHc3NzU1NT74dLf08/c0c3y18nx1cXLurX5zLCwsLDduKXvvZ/Bp5u7oJXNoY3eqIzGmYT3s4Lwr4K6lIL/vIDZnX50dHTSk3PlmW9vb2+DcmrvllufcVhMUVP1m1HsjU+2c06XZk7/pk3MfUv1lEdJRkRHQ0L/lz7zjT3GcTXAbC71lywrKyvLbh/JaADFZwDMYwDDXQCtWQDpOOnoAAAASXRSTlMA/fr3BQYCA5caPfz2F/qcVfz08+TXzsW4qYp7Yl9EQCIR+J34/fz8+dbFuKmdlmJfTBH+/f34+PPk5M7OnJyXl4uLe3tEIyMXxnip4AAABZxJREFUSMeNlwV0E0EQhpMLhAR3d3d3d5jkLp5CG2KlDZQWCpTi7u7u7u7u7u7u7m6P2Usv+5K7Nvx9fS+52y8z88/e3q5MSsmSBV5JkUL2X1ImVxK+aZNyjRqULduwcbkKzVIIl4MpOf6nSV+vVuHdu3Z9OjBz5swDc6rXrl+hOX8raaXAhFPWyczef7s7vnDRgkRF3N0OzfldM11KTCfJ5BHNlx0AKhUrXDh+0Ps2LXW6lodD3VWrDe4AXCmCJx5WKVPnQLQ4U3nGQJfL9bmNrr1Odyh0yODuVYozLBhKq3FQomHzZAQ5kwrYDTN2xg/ap0O4ZZFuoe7B3VcDa0mrgdTlcZi0U8pCAIwcOBi2o+vA+EFF2+gQPhg6ZPbQX0uA02s1aQ1QRokDJdgC2QCjArBwdsbAQS7X/rk6LHlOaLdZx/Z0ANag1WgypIWSFSlNWXUWUMh5Fi5/2xnv8mbd/gjC3TsBy5q0GlRqKJFGoGm9BZAF4OEed4rtcA18KWTtnt19ORg5JBPoin51o4XKbMgmwMNdXVGYNd+obu6h7p7AhWt9dEmln+dKWSFkBXjYmjXXNtx9NnfevDa6I+jXsUdYCvrlo8v4J52H2OyL3HbZctvqfrcev2o5b6gbGxUBRkC/BKWF8oj4klZnhFTgg3v2adsqJKKFdVTnB3u+/hj65Q82CkwUzmBIrUZICJwDGJALtAB3bNd5zJZJr2f9fIeNYjUI09ClEUroUj7w0yIC2wl829ll66S/nTEbI0XJz+hTIsabJcuOgYFqsTmsVetIAo/v0mX71ukjMGsLElQZoBSCfOCUQHKm6kVgh7VTu5sDnNuc09cRH/T+sEmDofnI6YARwX37IbzJiZGnnsDAgtm06roIYuFpMvtnDb3NYSERIxEe73TGTL9EArOmANhYI40sGf6lB7lfYLa32RZiH2ntOHaAM2ZK9HESmNP4wxm0kJ43XMVPLiruAsKRGHlTTIzzzQrCgm9y0mmm4juVNQDucdFsQ7Oto/vHRE8ZF87DejGclRiWPxMt2ftQLTPb+jpaWMcOiI6ZOgKMACK/SLMy5Uc4L5bsD7c12yIcLTrei94yZR2wLKBMAbDWIIe8COf2BqZwh7ZhrSL6tRjtGRA9aQFJmvpFYT0DuRHOBYoAuE9YiL1fi7HR/aeu8rI4OQPFKSAXwjkD4WHmsNaRDut4zwSPAb8SWQIDaxDKKe4UPs5RBB7tiXt+PoEFvahkhFRScM8oW99Ix8a4iTeMAmwSlUxgqbQXRdkiIq1x/SeSp8krkV9GkraUYYujWtntY+ImroXArKlYQMOkWtUrKsTu2OjxLCDzQ3KGaE3A8q2ik4TCre2j4iYIbWJFBWs1FsLklZqevUP62sd4xhm8sFGjDSBNerzB4PSUejB6m1s7xk04503agiwlETV4a1GQB0PcK27F2quj+l9nRVYR0pJgobdTgYsBC5bN0yY/3XYKP5E3Y0C6gpDAxUBYhiis3zztxfz15BOHVgmoSW/03uaFQGZchoQFkMKaJ3s/fliIboVjuUK64TxFAzOQTrz0Ihw7ee/8lfxiK6TrK5TCALj0ihZ9DhZOPvpQDxyWS9wlhYrFQHYERa8bDk5OO3oGLCatN11IRPkQE73oODiNboXTvoglx8E5EBK9YhFe+j0WYqm7YuHQjGqExC93I6y8ArF6oxRFrc6DiMS2goWlsUYOkpKCtEl6Q8MiGYTNpkRAeisVlM1SAIdLbuKCSI6sGgcnsn1MUqkYyFaAsuKNa5I2QyElZSW3zIlFlUPGPDgs6c06Q8PToBgVcqhlyhTBjgnoi4KRy32ggncyez4cEPSAki6zwBB508hMDyhBj0aqrJnAp0xZVenTkFv/eyhLnj9v7lw5VaqcuXLnzZ88+KFM+jhIr4j1D0bzMYIsXruBAAAAAElFTkSuQmCC"
+      },
+      "displayName": "JotForm Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1153,
+      "icon": "file:openAiLight.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatopenai/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat OpenAI"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM2Ljg2NzEgMTYuMzcxOEMzNy43NzQ2IDEzLjY0OCAzNy40NjIxIDEwLjY2NDIgMzYuMDEwOCA4LjE4NjYxQzMzLjgyODIgNC4zODY1MyAyOS40NDA3IDIuNDMxNDkgMjUuMTU1NiAzLjM1MTUxQzIzLjI0OTMgMS4yMDM5NiAyMC41MTA1IC0wLjAxNzMxNDggMTcuNjM5MiAwLjAwMDE4NTUzM0MxMy4yNTkxIC0wLjAwOTgxNDY4IDkuMzcyNzMgMi44MTAyNSA4LjAyNTIgNi45Nzc4M0M1LjIxMTM5IDcuNTU0MSAyLjc4MjU4IDkuMzE1MzggMS4zNjEzIDExLjgxMTdDLTAuODM3NDkzIDE1LjYwMTggLTAuMzM2MjMyIDIwLjM3OTQgMi42MDEzMyAyMy42Mjk0QzEuNjkzODEgMjYuMzUzMiAyLjAwNjMyIDI5LjMzNzEgMy40NTc2IDMxLjgxNDZDNS42NDAxNSAzNS42MTQ3IDEwLjAyNzcgMzcuNTY5NyAxNC4zMTI4IDM2LjY0OTdDMTYuMjE3OSAzOC43OTczIDE4Ljk1NzkgNDAuMDE4NSAyMS44MjkyIDM5Ljk5OThDMjYuMjExOCA0MC4wMTEgMzAuMDk5NCAzNy4xODg1IDMxLjQ0NjkgMzMuMDE3MUMzNC4yNjA4IDMyLjQ0MDkgMzYuNjg5NiAzMC42Nzk2IDM4LjExMDggMjguMTgzM0M0MC4zMDcxIDI0LjM5MzIgMzkuODA0NiAxOS42MTk0IDM2Ljg2ODMgMTYuMzY5M0wzNi44NjcxIDE2LjM3MThaTTIxLjgzMTcgMzcuMzg2QzIwLjA3OCAzNy4zODg1IDE4LjM3OTIgMzYuNzc0NyAxNy4wMzI5IDM1LjY1MDlDMTcuMDk0MSAzNS42MTg0IDE3LjIwMDQgMzUuNTU5NyAxNy4yNjkxIDM1LjUxNzJMMjUuMjM0MyAzMC45MTcxQzI1LjY0MTggMzAuNjg1OCAyNS44OTE4IDMwLjI1MjEgMjUuODg5MyAyOS43ODMzVjE4LjU1NDNMMjkuMjU1NyAyMC40OTgxQzI5LjI5MTkgMjAuNTE1NiAyOS4zMTU3IDIwLjU1MDYgMjkuMzIwNyAyMC41OTA2VjI5Ljg4OTZDMjkuMzE1NyAzNC4wMjQ3IDI1Ljk2NjggMzcuMzc3MiAyMS44MzE3IDM3LjM4NlpNNS43MjY0IDMwLjUwNzFDNC44NDc2MyAyOC45ODk2IDQuNTMxMzcgMjcuMjEwOCA0LjgzMjYzIDI1LjQ4NDVDNC44OTEzOCAyNS41MTk1IDQuOTk1MTMgMjUuNTgzMiA1LjA2ODg4IDI1LjYyNTdMMTMuMDM0MSAzMC4yMjU4QzEzLjQzNzggMzAuNDYyMSAxMy45Mzc4IDMwLjQ2MjEgMTQuMzQyOCAzMC4yMjU4TDI0LjA2NjggMjQuNjEwN1YyOC40OTgzQzI0LjA2OTMgMjguNTM4MyAyNC4wNTA1IDI4LjU3NyAyNC4wMTkzIDI4LjYwMkwxNS45Njc5IDMzLjI1MDlDMTIuMzgxNSAzNS4zMTU5IDcuODAxNDQgMzQuMDg4NCA1LjcyNzY1IDMwLjUwNzFINS43MjY0Wk0zLjYzMDEgMTMuMTIwNUM0LjUwNTEyIDExLjYwMDQgNS44ODY0IDEwLjQzNzkgNy41MzE0NCA5LjgzNDE1QzcuNTMxNDQgOS45MDI5IDcuNTI3NjkgMTAuMDI0MiA3LjUyNzY5IDEwLjEwOTJWMTkuMzEwNkM3LjUyNTE5IDE5Ljc3ODEgNy43NzUxOSAyMC4yMTE5IDguMTgxNDUgMjAuNDQzMUwxNy45MDU0IDI2LjA1N0wxNC41MzkxIDI4LjAwMDhDMTQuNTA1MyAyOC4wMjMzIDE0LjQ2MjggMjguMDI3IDE0LjQyNTMgMjguMDEwOEw2LjM3MjY2IDIzLjM1ODJDMi43OTM4MyAyMS4yODU2IDEuNTY2MzEgMTYuNzA2OCAzLjYyODg1IDEzLjEyMTdMMy42MzAxIDEzLjEyMDVaTTMxLjI4ODIgMTkuNTU2OUwyMS41NjQyIDEzLjk0MTdMMjQuOTMwNiAxMS45OTkyQzI0Ljk2NDMgMTEuOTc2NyAyNS4wMDY4IDExLjk3MjkgMjUuMDQ0MyAxMS45ODkyTDMzLjA5NyAxNi42MzhDMzYuNjgyMSAxOC43MDkzIDM3LjkxMDggMjMuMjk1NyAzNS44Mzk1IDI2Ljg4MDhDMzQuOTYzMyAyOC4zOTgzIDMzLjU4MzIgMjkuNTYwOCAzMS45Mzk1IDMwLjE2NThWMjAuNjg5NEMzMS45NDMyIDIwLjIyMTkgMzEuNjk0NSAxOS43ODk0IDMxLjI4OTQgMTkuNTU2OUgzMS4yODgyWk0zNC42MzgzIDE0LjUxNDJDMzQuNTc5NSAxNC40NzggMzQuNDc1OCAxNC40MTU1IDM0LjQwMiAxNC4zNzNMMjYuNDM2OCA5Ljc3Mjg5QzI2LjAzMzEgOS41MzY2NCAyNS41MzMxIDkuNTM2NjQgMjUuMTI4MSA5Ljc3Mjg5TDE1LjQwNDEgMTUuMzg4VjExLjUwMDRDMTUuNDAxNiAxMS40NjA0IDE1LjQyMDQgMTEuNDIxNyAxNS40NTE2IDExLjM5NjdMMjMuNTAzIDYuNzUxNThDMjcuMDg5NCA0LjY4Mjc5IDMxLjY3NDUgNS45MTQwNiAzMy43NDIgOS41MDE2NEMzNC42MTU4IDExLjAxNjcgMzQuOTMyIDEyLjc5MDUgMzQuNjM1OCAxNC41MTQySDM0LjYzODNaTTEzLjU3NDEgMjEuNDQzMUwxMC4yMDY1IDE5LjQ5OTRDMTAuMTcwMiAxOS40ODE5IDEwLjE0NjUgMTkuNDQ2OCAxMC4xNDE1IDE5LjQwNjhWMTAuMTA3OUMxMC4xNDQgNS45Njc4MSAxMy41MDI4IDIuNjEyNzQgMTcuNjQyOSAyLjYxNTI0QzE5LjM5NDIgMi42MTUyNCAyMS4wODkyIDMuMjMwMjUgMjIuNDM1NSA0LjM1MDI4QzIyLjM3NDMgNC4zODI3OCAyMi4yNjkzIDQuNDQxNTMgMjIuMTk5MiA0LjQ4NDAzTDE0LjIzNDEgOS4wODQxM0MxMy44MjY2IDkuMzE1MzggMTMuNTc2NiA5Ljc0Nzg5IDEzLjU3OTEgMTAuMjE2N0wxMy41NzQxIDIxLjQ0MDZWMjEuNDQzMVpNMTUuNDAyOSAxNy41MDA2TDE5LjczNDIgMTQuOTk5M0wyNC4wNjU1IDE3LjQ5OTNWMjIuNTAwN0wxOS43MzQyIDI1LjAwMDdMMTUuNDAyOSAyMi41MDA3VjE3LjUwMDZaIiBmaWxsPSIjN0Q3RDg3Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "OpenAI Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1273,
+      "icon": "fa:project-diagram",
+      "name": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "codex": {
+        "data": {
+          "alias": [
+            "NER",
+            "parse",
+            "parsing",
+            "JSON",
+            "data extraction",
+            "structured"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.information-extractor/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Extracteur d'informations"
+      },
+      "iconData": {
+        "icon": "project-diagram",
+        "type": "icon"
+      },
+      "displayName": "Information Extractor",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 38,
+      "name": "Nurturing des prospects"
+    },
+    {
+      "id": 47,
+      "name": "Chatbot AI"
+    }
+  ],
+  "image": []
+}

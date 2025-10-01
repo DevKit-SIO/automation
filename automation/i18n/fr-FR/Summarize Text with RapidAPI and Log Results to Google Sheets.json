@@ -1,0 +1,1423 @@
+{
+  "id": 6304,
+  "name": "Résumer le texte avec RapidAPI et enregistrer les résultats dans Google Sheets",
+  "views": 74,
+  "recentViews": 0,
+  "totalViews": 74,
+  "createdAt": "2025-07-23T06:00:14.905Z",
+  "description": "# ✨ Résumeur de texte AI avec journalisation dans Google Sheets\n\nRésumez de grands blocs de texte en sorties concises en utilisant l'[API de résumé de texte AI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai) et enregistrez automatiquement les résultats dans Google Sheets. Cette automatisation est idéale pour les créateurs de contenu, les marketeurs, les chercheurs et les équipes qui ont besoin d'une synthèse efficace et d'une tenue de dossiers—sans écrire une seule ligne de code.\n\n---\n\n## 🚀 Fonctionnalités\n\n| Fonctionnalité           | Description                                                                 |\n|--------------------------|-----------------------------------------------------------------------------|\n| **Déclencheur de formulaire Web** | Collecte le titre, le contenu, le mode (Paragraphe/Point) et les préférences de longueur.  |\n| **Intégration API**      | Envoie le contenu à l'[API de résumé de texte AI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai) via RapidAPI.              |\n| **Logique conditionnelle**| Achemine les cas de succès et d'erreur de manière appropriée.                               |\n| **Journalisation dans Google Sheets**| Stocke les résumés ou les messages d'erreur dans Google Sheets.                      |\n| **Gestion des erreurs**  | Capture les résumés échoués et garantit qu'aucune donnée n'est perdue.                      |\n\n---\n\n## 🧠 Problème résolu\n\nRésumer manuellement du contenu long est chronophage et répétitif. Stocker cette sortie dans des journaux structurés (comme Google Sheets) ajoute une couche supplémentaire d'effort manuel.\n\nCe flux de travail résout cela en :\n\n- 🔁 Automatisant la synthèse pilotée par l'IA en utilisant l'[API de résumé de texte AI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai).\n- 📊 Stockant les résultats (ou les erreurs de secours) directement dans une feuille Google.\n- ✅ Garantissant qu'aucune demande ne reste non enregistrée—même en cas d'échec de l'API.\n\n---\n\n## 🎯 Cas d'utilisation\n\n- 📝 **Rédacteurs de blogs** : Convertissez rapidement des articles en résumés pour des légendes sociales.\n- 📚 **Étudiants** : Décomposez le contenu des manuels ou des cours.\n- 🧠 **Gestion des connaissances** : Transformez des notes de réunion brutes en résumés concis.\n- 📢 **Équipes SEO** : Utilisez la sortie en points pour le balisage de schéma ou les descriptions méta.\n\n---\n\n## 🧩 Nœuds dans le flux\n\n| Nom du nœud            | Objectif                                                                 |\n|----------------------|-------------------------------------------------------------------------|\n| **À la soumission du formulaire** | Capture les entrées de l'utilisateur via le formulaire (titre, contenu, mode, longueur).           |\n| **Mapping**            | Formate l'entrée pour correspondre aux spécifications de l'[API de résumé de texte AI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai). |\n| **Demande HTTP**       | Envoie une requête POST à l'API de résumé sur [RapidAPI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai). |\n| **Si**                 | Valide si un `résumé` a été retourné.                            |\n| **Attendre**               | Ajoute un court délai avant d'écrire dans la feuille de calcul (succès).              |\n| **Google Sheets**      | Ajoute les données de résumé à Google Sheets.                                  |\n| **Attendre1**              | Ajoute un délai pour le chemin de gestion des erreurs.                                    |\n| **Google Sheets1**     | Enregistre l'échec avec un message « Une erreur s'est produite ».                         |\n\n---\n\n## ✅ Avantages\n\n- 🧠 **Alimenté par l'IA** : Utilise l'[API de résumé de texte AI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai) pour des résumés rapides et contextuels.\n- 📁 **Journaux organisés** : L'intégration de Google Sheets garantit un suivi et un audit faciles.\n- 🔐 **Fiable** : Capture toutes les soumissions, y compris celles échouées.\n- 🧩 **Personnalisable** : Adaptez facilement les entrées ou connectez-vous à d'autres outils comme Notion, Slack ou Airtable.\n\n---\n\n## 🛠️ Exigences\n\n- ✅ Compte n8n (Cloud ou auto-hébergé)\n- ✅ Accès à l'[API de résumé de texte AI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai)\n- ✅ Compte Google (pour l'intégration avec Sheets)\n- 🔑 Clé API de RapidAPI (utilisée dans le nœud de demande HTTP)\n\n---\n\n## 🔄 Aperçu du flux de travail\n\n1. L'utilisateur soumet du texte et des préférences (mode, longueur) via un formulaire.\n2. Le flux de travail se déclenche et transforme l'entrée.\n3. Les données formatées sont envoyées à l'[API de résumé de texte AI](https://rapidapi.com/PrineshPatel/api/text-summarizer-ai).\n4. Si un résumé valide est retourné :\n   - Enregistrez-le dans Google Sheets.\n5. Si l'API échoue :\n   - Enregistrez le message d'erreur à la place.\n\n---\n\n## 📥 Instructions d'importation\n\n- Ouvrez n8n et importez le JSON du flux de travail.\n- Remplacez le `x-rapidapi-key` dans le nœud HTTP par votre clé personnelle RapidAPI.\n- Configurez vos identifiants Google Sheets.\n- Déployez et testez. ✅\n\n---\n\n## 🔗 Extensions suggérées\n\n- 🟢 Journalisation de base de données Notion  \n- 🟣 Notification Slack/Discord pour chaque résumé  \n- 🔵 Téléchargement CSV ou synchronisation Airtable  \n \n\n---\n\n## 🏷 Tags\n\n`ai` `résumé` `traitement-de-texte` `rapidapi` `google-sheets` `automatisation` `markdown` `n8n` `API de résumé de texte AI`\n___\nCréez votre **compte n8n gratuit** et configurez le flux de travail en quelques minutes en utilisant le lien ci-dessous :\n\n👉 [Commencez à automatiser avec n8n](https://n8n.partnerlinks.io/7fuarh1e6dz5)\n\nGagnez du temps, restez cohérent et développez votre présence sur LinkedIn sans effort !",
+  "workflow": {
+    "meta": {
+      "instanceId": "60c025075753afcab9f803964b4caaca9402f435deb4efafbb8e3b93b54d8752"
+    },
+    "nodes": [
+      {
+        "id": "e13b8f01-08cd-4b3d-adf6-516e119072a0",
+        "name": "On form submission",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -360,
+          -40
+        ],
+        "webhookId": "ab29cc7f-74d7-41cf-9e85-a269f63237f2",
+        "parameters": {
+          "options": {},
+          "formTitle": "Text Summerizer",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "Title",
+                "placeholder": "Enter title here",
+                "requiredField": true
+              },
+              {
+                "fieldType": "textarea",
+                "fieldLabel": "Content",
+                "placeholder": " Lorem ipsum dolor sit amet consectetur...",
+                "requiredField": true
+              },
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "Mode",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Paragraph"
+                    },
+                    {
+                      "option": "Bullet"
+                    }
+                  ]
+                },
+                "requiredField": true
+              },
+              {
+                "fieldType": "dropdown",
+                "fieldLabel": "Length",
+                "fieldOptions": {
+                  "values": [
+                    {
+                      "option": "Short"
+                    },
+                    {
+                      "option": "Medium"
+                    },
+                    {
+                      "option": "Long"
+                    }
+                  ]
+                },
+                "requiredField": true
+              }
+            ]
+          },
+          "responseMode": "lastNode"
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "a6776021-3f9a-4b85-ae36-c1ead5801c91",
+        "name": "Mapping",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          -140,
+          -40
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "787925a1-0ab8-4125-9e69-6603affcde26",
+                "name": "Mode",
+                "type": "string",
+                "value": "={{ $json.Mode.toLowerCase() }}"
+              },
+              {
+                "id": "829bcccd-540e-49b8-bf06-275f541ce06e",
+                "name": "Length",
+                "type": "string",
+                "value": "={{ \n            $json.Length === 'Short' ? 1 : \n            $json.Length === 'Medium' ? 2 : \n            $json.Length === 'Long' ? 3 : \n            $json.Length \n          }}"
+              }
+            ]
+          },
+          "includeOtherFields": true
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "73f4a1b6-ab7c-4c97-a9cc-463fb37601c3",
+        "name": "HTTP Request",
+        "type": "n8n-nodes-base.httpRequest",
+        "onError": "continueErrorOutput",
+        "position": [
+          140,
+          -40
+        ],
+        "parameters": {
+          "url": "https://text-summarizer-ai.p.rapidapi.com/text-summarizer.php",
+          "method": "POST",
+          "options": {},
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "sendHeaders": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "text",
+                "value": "={{ $json.Content }}"
+              },
+              {
+                "name": "mode",
+                "value": "={{ $json.Mode }}"
+              },
+              {
+                "name": "length",
+                "value": "={{ $json.Length }}"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "x-rapidapi-host",
+                "value": "text-summarizer-ai.p.rapidapi.com"
+              },
+              {
+                "name": "x-rapidapi-key",
+                "value": "your key"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "8ead6257-5eba-4194-ba23-461a8e43b7c1",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          500,
+          -260
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "1dbef07d-c374-4d83-8410-e7f330b5debe",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                },
+                "leftValue": "={{ $json.summary }}",
+                "rightValue": ""
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "f46e4239-2fb0-4546-9b93-5708157a2e41",
+        "name": "Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1140,
+          -280
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Mode": "={{ $('On form submission').item.json.Mode }}",
+              "Title": "={{ $('On form submission').item.json.Title }}",
+              "Length": "={{ $('On form submission').item.json.Length }}",
+              "Summary": "={{ $json.summary }}",
+              "Generated date": "={{ $('On form submission').item.json.submittedAt }}"
+            },
+            "schema": [
+              {
+                "id": "Title",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mode",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Mode",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Length",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Length",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Summary",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Summary",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Generated date",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Generated date",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Title"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "appendOrUpdate",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          },
+          "authentication": "serviceAccount"
+        },
+        "credentials": {
+          "googleApi": {
+            "id": "qUtlCnYpk7bXXaYp",
+            "name": "Google Sheets account 3"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "a560e102-bc4d-418f-80c1-9546b3be37e9",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          740,
+          -340
+        ],
+        "webhookId": "2949f8d2-5f08-45d1-a491-070cb768718f",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "b296c61b-7144-4db0-955d-a945f7dcbdc0",
+        "name": "Google Sheets1",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1560,
+          60
+        ],
+        "parameters": {
+          "columns": {
+            "value": {
+              "Mode": "={{ $('On form submission').item.json.Mode }}",
+              "Title": "={{ $('On form submission').item.json.Title }}",
+              "Length": "={{ $('On form submission').item.json.Length }}",
+              "Summary": "=Error occured. Please Try later",
+              "Generated date": "={{ $('On form submission').item.json.submittedAt }}"
+            },
+            "schema": [
+              {
+                "id": "Title",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mode",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Mode",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Length",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "Length",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Summary",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Summary",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Generated date",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "Generated date",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "Title"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "appendOrUpdate",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          },
+          "authentication": "serviceAccount"
+        },
+        "credentials": {
+          "googleApi": {
+            "id": "qUtlCnYpk7bXXaYp",
+            "name": "Google Sheets account 3"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "8d01bee9-1037-4d16-a1df-6d5fa56bb498",
+        "name": "Wait1",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          880,
+          60
+        ],
+        "webhookId": "daf80dbc-1b65-4b25-a00f-10fdc7fc8af1",
+        "parameters": {},
+        "typeVersion": 1.1
+      },
+      {
+        "id": "9c0f5f35-ef11-45a8-9d8a-81f724a8a8e1",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1420,
+          -540
+        ],
+        "parameters": {
+          "width": 720,
+          "height": 1380,
+          "content": "# Text Summarizer\n\nThis workflow allows users to input a block of text via a web form and receive a summarized version of that text using a third-party API. The result is then recorded in Google Sheets—success or failure.\n\n---\n\n## 📌 Overview\n\n| Feature               | Description                                   |\n|----------------------|-----------------------------------------------|\n| **Form Inputs**       | Title, Content, Mode (Paragraph/Bullet), Length (Short/Medium/Long) |\n| **Summarization API** | RapidAPI Text Summarizer                      |\n| **Output**            | Google Sheets (Success or Error Logging)     |\n\n---\n\n## 🧩 Node Descriptions (Single-line)\n\n| Node Name            | Description                                                       |\n|----------------------|-------------------------------------------------------------------|\n| **On form submission** | Triggers the workflow when the user submits the text summarization form. |\n| **Mapping**            | Formats the input data to match the API requirements.             |\n| **HTTP Request**       | Sends the text, mode, and length to the external summarization API. |\n| **If**                 | Checks if a valid summary was returned from the API.              |\n| **Wait**               | Adds a short delay before storing successful summaries.           |\n| **Google Sheets**      | Logs successful summaries to a Google Sheet.                      |\n| **Wait1**              | Adds a short delay before storing error information.              |\n| **Google Sheets1**     | Logs an error message to the Google Sheet if summarization fails. |\n\n---\n\n## 🔄 Workflow Logic\n\n1. **User fills out a form** with the Title, Content, Mode, and Length.\n2. The **formTrigger node** starts the workflow and captures the inputs.\n3. The **Mapping node** transforms inputs:\n   - `Mode` to lowercase.\n   - `Length` to a number (1 = Short, 2 = Medium, 3 = Long).\n4. The transformed data is sent via **HTTP Request** to a summarization API.\n5. The **If node** checks if a `summary` was returned.\n6. If successful:\n   - Wait briefly (`Wait`).\n   - Log the summary to **Google Sheets**.\n7. If failed:\n   - Wait briefly (`Wait1`).\n   - Log the error message to **Google Sheets1**.\n\n---\n\n## ✅ Benefits\n\n- Automates summarization using AI.\n- Keeps structured logs in Google Sheets.\n- Handles success and failure cases gracefully.\n- Easy to customize for different use cases.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5755da22-4505-4150-a47a-1fa8e6966253",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -440,
+          -280
+        ],
+        "parameters": {
+          "height": 440,
+          "content": "### 1. **On form submission**\n- **Purpose:** Acts as the trigger node for the workflow.\n- **Function:** Presents a form to the user with fields like `Title`, `Content`, `Mode` (Paragraph or Bullet), and `Length` (Short, Medium, Long). The workflow starts once the form is submitted.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "65a0720f-f654-4c68-abc7-c3404c8ee40d",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -180,
+          -280
+        ],
+        "parameters": {
+          "height": 440,
+          "content": "### 2. **Mapping**\n- **Purpose:** Prepares and transforms input data for the API.\n- **Function:** Converts `Mode` to lowercase and maps `Length` to numeric values (`Short` → 1, `Medium` → 2, `Long` → 3). Also retains all original fields for downstream usage.\n\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "457c1715-76a2-404c-bad8-311432a130f4",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          80,
+          -280
+        ],
+        "parameters": {
+          "height": 440,
+          "content": "### 3. **HTTP Request**\n- **Purpose:** Sends a request to the Text Summarizer API.\n- **Function:** Performs a `POST` request using the `multipart/form-data` format to the external API on RapidAPI. It includes the user-submitted text, mode, and length. Headers are added for authentication.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "9d719cdb-5382-42bd-81fe-2e4e8435f5da",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          400,
+          -500
+        ],
+        "parameters": {
+          "height": 420,
+          "content": "\n### 4. **If**\n- **Purpose:** Decision point based on API response.\n- **Function:** Checks whether the API returned a `summary` field with non-empty content. If yes, the workflow proceeds with the success path; otherwise, it triggers the failure path.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "c083b712-b06a-4aa4-a35d-2266ae0c8d4c",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          680,
+          -520
+        ],
+        "parameters": {
+          "height": 300,
+          "content": "### 5. **Wait** (Success Path)\n- **Purpose:** Adds a pause before writing to the sheet (optional).\n- **Function:** Ensures proper data timing before updating the spreadsheet. May help in debugging or sequencing.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "60c471fd-4e59-4318-9e84-4a8b27cbf059",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1080,
+          -560
+        ],
+        "parameters": {
+          "height": 440,
+          "content": "### 6. **Google Sheets** (Success Path)\n- **Purpose:** Logs successful summary data.\n- **Function:** Appends or updates a row in a connected Google Sheet with the summary, title, selected mode, length, and the form submission date.\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "7ca7a3c2-82f9-4404-a554-fef3be31cabe",
+        "name": "Sticky Note7",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          760,
+          -120
+        ],
+        "parameters": {
+          "height": 340,
+          "content": "### 7. **Wait1** (Error Path)\n- **Purpose:** Adds a pause before writing to the sheet on error.\n- **Function:** Similar to the first wait node but used on the failure path to ensure consistency.\n\n"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "b7e262ce-ea85-473c-9677-31102bed30cd",
+        "name": "Sticky Note8",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1480,
+          -180
+        ],
+        "parameters": {
+          "height": 380,
+          "content": "### 8. **Google Sheets1** (Error Path)\n- **Purpose:** Logs an error message to the spreadsheet.\n- **Function:** Appends or updates the Google Sheet with the same user data, but sets the summary as `\"Error occurred. Please try later\"` to notify of a failed API response.\n"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait1": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mapping": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "On form submission": {
+        "main": [
+          [
+            {
+              "node": "Mapping",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 17,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.set": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 9
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 2
+      }
+    }
+  },
+  "user": {
+    "name": "Evoort Solutions",
+    "username": "evoortsolutions",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/d55712e8cb5fceec583c663f52fef1733aafd49367469fea940a52daa8d4fe96?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Demande HTTP",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Si",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "À la soumission du formulaire"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 35,
+      "name": "Extraction de documents"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    }
+  ],
+  "image": []
+}

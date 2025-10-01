@@ -1,0 +1,996 @@
+{
+  "id": 8984,
+  "name": "Automatisation des e-mails d'intégration client avec Google Sheets + Gemini + Gmail",
+  "views": 0,
+  "recentViews": 0,
+  "totalViews": 0,
+  "createdAt": "2025-09-26T19:24:31.340Z",
+  "description": "## Automatisation des e-mails d'intégration client avec Google Sheets + Gemini + Gmail  \n\nLorsque qu'un nouveau client remplit votre formulaire d'intégration, ce flux de travail crée automatiquement un e-mail de bienvenue personnalisé et l'envoie — en utilisant les détails qu'il a soumis.  \n\n## Avantages  \n- Se déclenche automatiquement à chaque nouvelle réponse au formulaire Google Sheets  \n- Utilise Google Gemini pour générer un e-mail de bienvenue amical et structuré  \n- Inclut une liste de contrôle des prochaines étapes pour le client  \n- Envoie l'e-mail directement via Gmail  \n- Gère les erreurs en toute sécurité afin que le flux de travail ne s'arrête jamais  \n\n## Comment ça fonctionne  \n1. Le déclencheur Google Sheets se déclenche lorsqu'une nouvelle ligne est ajoutée  \n2. Le flux de travail extrait le nom du client, l'e-mail, l'entreprise et les besoins en services  \n3. Charge une liste de contrôle standard d'intégration  \n4. Le modèle Gemini rédige un e-mail personnalisé en utilisant les informations du client + la liste de contrôle  \n5. Le nœud Gmail envoie l'e-mail avec un objet de bienvenue  \n6. Marque le flux de travail comme terminé ou enregistre l'échec s'il y a une erreur  \n\n## Pour qui est-ce  \n- Agences intégrant de nouveaux clients  \n- Coachs et consultants accueillant de nouveaux membres  \n- Entreprises SaaS ou de services envoyant des étapes de bienvenue structurées  \n\n## Configuration  \n- Connectez Google Sheets (utilisez la feuille de formulaire d'intégration)  \n- Ajoutez la clé API de Gemini (Google AI)  \n- Ajoutez les identifiants OAuth2 de Gmail  \n- Personnalisez les éléments de la liste de contrôle si nécessaire  \n- Testez avec une soumission de formulaire d'exemple avant de passer en direct  \n\n## ROI & Monétisation  \n- Économisez 1 à 2 heures par nouveau client sur les e-mails de bienvenue manuels  \n- Offrez aux clients une expérience d'intégration fluide et cohérente  \n- Transformez l'intégration en un point de contact automatisé et de marque  \n\n## Insights stratégiques  \nDans le guide complet, je montre comment :  \n- Construire une liste de contrôle d'intégration propre étape par étape  \n- Utiliser les invites de Gemini pour garder les e-mails courts et professionnels  \n- Ajouter la gestion des erreurs et la journalisation pour la fiabilité  \n- Étendre le flux de travail pour créer des tâches ou des notifications Slack pour votre équipe  \n\n## Découvrez ma chaîne  \n\nPour plus de systèmes d'automatisation AI qui font gagner du temps et améliorent l'expérience client, consultez [ma chaîne YouTube](https://www.youtube.com/@meakcodes) où je partage les stratégies exactes que j'utilise pour automatiser l'intégration, développer des systèmes clients et atteindre plus de 20 000 $ de revenus mensuels.",
+  "workflow": {
+    "meta": {
+      "instanceId": "0a25db4fd0692af64b58f35e01611f2ef0b5bb9d6654c57ef3741021e7d8cc11",
+      "templateId": "4448"
+    },
+    "nodes": [
+      {
+        "id": "fc6370ed-4336-4b79-ace5-d8237948f460",
+        "name": "Error Handler",
+        "type": "n8n-nodes-base.errorTrigger",
+        "position": [
+          2368,
+          1264
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "c2016a43-f619-48cd-98e5-84a4efd95594",
+        "name": "Execution Completed",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          3168,
+          1136
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "8e7e7958-ed6e-420f-aa4f-ae84ddb456fe",
+        "name": "Execution Failure",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          2592,
+          1264
+        ],
+        "parameters": {},
+        "typeVersion": 1
+      },
+      {
+        "id": "0e7be1c3-28cd-4747-a8e8-43666b762b80",
+        "name": "Client Checklist",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          2592,
+          1040
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c9c81e80-f2f2-436d-a6cf-48882b0f72ea",
+                "name": "=Checklist",
+                "type": "string",
+                "value": "=\"Checklist\": \"\n1. Account setup\n2. Welcome call scheduled\n3. Document collection\n4. Service configuration\n5. Onboarding session\n6. First milestone review"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "c80117c6-0d0d-43cc-b986-8996e03a60a2",
+        "name": "Google Gemini Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "position": [
+          2896,
+          1264
+        ],
+        "parameters": {
+          "options": {},
+          "modelName": "models/gemini-2.0-flash"
+        },
+        "credentials": {
+          "googlePalmApi": {
+            "id": "6a9OTOyTQOIKnKAq",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "557143d0-abaa-410d-9117-2b60fce3086e",
+        "name": "Trigger on New Client Form Submission",
+        "type": "n8n-nodes-base.googleSheetsTrigger",
+        "position": [
+          2144,
+          1040
+        ],
+        "parameters": {
+          "event": "rowAdded",
+          "options": {},
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": 1635870855,
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19Hvti1sX6SvjP1Kj8dWFEiksiqn1FJVBoMToP2X6xBw/edit#gid=1635870855",
+            "cachedResultName": "Form Responses 1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "19Hvti1sX6SvjP1Kj8dWFEiksiqn1FJVBoMToP2X6xBw",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19Hvti1sX6SvjP1Kj8dWFEiksiqn1FJVBoMToP2X6xBw/edit?usp=drivesdk",
+            "cachedResultName": "Onboarding"
+          }
+        },
+        "credentials": {
+          "googleSheetsTriggerOAuth2Api": {
+            "id": "ciFJ21F7Wq3VZJYU",
+            "name": "Google Sheets Trigger account"
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "de000539-7f90-49df-9b42-1ceed11b09be",
+        "name": "Extract and Structure Client Data",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          2368,
+          1040
+        ],
+        "parameters": {
+          "options": {},
+          "assignments": {
+            "assignments": [
+              {
+                "id": "7c333d8f-04cd-4987-9c30-4c7bc26baecb",
+                "name": "fields",
+                "type": "string",
+                "value": "=Name:  {{ $json['Client name'] }} \nEmail:  {{ $json[' email '] }}\nCompany: {{ $json['  Company Name  '] }}\nService Needed: {{ $json['  Services Needed  '] }}\nOther info: {{ $json['  Any other onboarding info  '] }}"
+              }
+            ]
+          }
+        },
+        "typeVersion": 3.4
+      },
+      {
+        "id": "f762750d-85c5-4932-97c7-a40817950af1",
+        "name": "Personalize Using Gemini",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          2816,
+          1040
+        ],
+        "parameters": {
+          "text": "=Give me an onboarding check list for an email to the client, give me only email body and don't generate extra text like \"Okay, here's an email template ...\" and start and end on new lines\nstart with:\nHi {{ $('Trigger on New Client Form Submission').item.json['Client name'] }}, \nand end with \nBest regards,\nYour {{ $('Trigger on New Client Form Submission').item.json['  Company Name  '] }} Team\n\n:\nAlso use information from checklist and Fields below\n {{ $json.Checklist }}\n\nFields: {{ $('Extract and Structure Client Data').item.json.fields }}",
+          "promptType": "define"
+        },
+        "typeVersion": 1.5
+      },
+      {
+        "id": "58f03de6-b01a-45bd-b3ce-85c74a17aef5",
+        "name": "Send Email to Client",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          3168,
+          944
+        ],
+        "webhookId": "2a07b507-23a6-4bfb-adff-997d30ea3dfa",
+        "parameters": {
+          "sendTo": "={{ $('Trigger on New Client Form Submission').item.json[' email '] }}",
+          "message": "= {{ $json.text }}",
+          "options": {},
+          "subject": "=Welcome to Our Service,  {{ $('Trigger on New Client Form Submission').item.json['Client name'] }} "
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "vdI9VLsEmuPzPxxo",
+            "name": "Gmail account"
+          }
+        },
+        "typeVersion": 2.1
+      },
+      {
+        "id": "b405a300-66ea-47b3-9a9f-7a146536764f",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2080,
+          768
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 288,
+          "height": 256,
+          "content": "## STEP 1 · Trigger & Intake\n**Google Sheets Trigger** fires on new form row.\n**Extract & Structure** maps fields into a single string (Name/Email/Company/Service/Notes).\nTip: Column keys include spaces (e.g. `\" email \"`, `\"  Company Name  \"`). Match them exactly."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "02ad7e7f-f94c-40dd-839c-ca7064eab2e2",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2480,
+          768
+        ],
+        "parameters": {
+          "color": 5,
+          "height": 224,
+          "content": "## STEP 2 · Checklist Context\n**Client Checklist (Set)** provides a default onboarding checklist.\nUsed together with the extracted fields to enrich the email prompt.\nEdit this list to fit your service offering."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "3e8be3db-0223-4b39-a6dd-9e8db01d801a",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2800,
+          688
+        ],
+        "parameters": {
+          "color": 6,
+          "height": 304,
+          "content": "## STEP 3 · Personalize with Gemini\n**Chain (Gemini)** generates the **email body only** (no extra wrapper text).\nPrompt forces greeting with client name and sign-off with company team.\nModel: Google Gemini via LLM node; output available as `{{ $json.text }}`."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "133ced0e-168a-4332-afd8-d0216b7b3a38",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3136,
+          672
+        ],
+        "parameters": {
+          "color": 7,
+          "height": 256,
+          "content": "## STEP 4 · Send & Run State\n**Gmail** sends to the form email, subject prefilled.\nIf body includes HTML, set Gmail node to HTML mode.\n**Execution Completed / Failure**: NoOps mark success/failure; **Error Trigger** catches unhandled errors."
+        },
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Error Handler": {
+        "main": [
+          [
+            {
+              "node": "Execution Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Client Checklist": {
+        "main": [
+          [
+            {
+              "node": "Personalize Using Gemini",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Personalize Using Gemini",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Personalize Using Gemini": {
+        "main": [
+          [
+            {
+              "node": "Send Email to Client",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Execution Completed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract and Structure Client Data": {
+        "main": [
+          [
+            {
+              "node": "Client Checklist",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Trigger on New Client Form Submission": {
+        "main": [
+          [
+            {
+              "node": "Extract and Structure Client Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 1,
+  "workflowInfo": {
+    "nodeCount": 13,
+    "nodeTypes": {
+      "n8n-nodes-base.set": {
+        "count": 2
+      },
+      "n8n-nodes-base.noOp": {
+        "count": 2
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.errorTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.chainLlm": {
+        "count": 1
+      },
+      "n8n-nodes-base.googleSheetsTrigger": {
+        "count": 1
+      },
+      "@n8n/n8n-nodes-langchain.lmChatGoogleGemini": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Meak",
+    "username": "meak",
+    "bio": "I help people build $5k+/month online by starting their own AI agency. Without BS.",
+    "verified": true,
+    "links": [
+      "https://www.youtube.com/@Meakbuilds"
+    ],
+    "avatar": "https://gravatar.com/avatar/513da11a3b75a839a43620ce5d2b1d17308de63444d2f4a20e4945e4b4725ef4?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 12,
+      "icon": "fa:bug",
+      "name": "n8n-nodes-base.errorTrigger",
+      "codex": {
+        "data": {
+          "details": "In n8n, when a workflow execution fails, it can start another workflow. This second workflow can be any arbitrary workflow on your n8n instance. Use the Error Trigger node as your Trigger in the Error workflow.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/creating-error-workflows-in-n8n/",
+                "icon": "🌪",
+                "label": "Creating Error Workflows in n8n"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.errortrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur d'erreur",
+        "color": "#0000FF"
+      },
+      "iconData": {
+        "icon": "bug",
+        "type": "icon"
+      },
+      "displayName": "Error Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "icon": "fa:arrow-right",
+      "name": "n8n-nodes-base.noOp",
+      "codex": {
+        "data": {
+          "alias": [
+            "nothing"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.noop/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Aucune opération, ne rien faire",
+        "color": "#b0b0b0"
+      },
+      "iconData": {
+        "icon": "arrow-right",
+        "type": "icon"
+      },
+      "displayName": "No Operation, do nothing",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "icon": "fa:pen",
+      "name": "n8n-nodes-base.set",
+      "codex": {
+        "data": {
+          "alias": [
+            "Set",
+            "JS",
+            "JSON",
+            "Filter",
+            "Transform",
+            "Map"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Modifier les champs"
+      },
+      "iconData": {
+        "icon": "pen",
+        "type": "icon"
+      },
+      "displayName": "Edit Fields (Set)",
+      "typeVersion": 3,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 841,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheetsTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/trigger-nodes/n8n-nodes-base.googlesheetstrigger/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Déclencheur Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 1123,
+      "icon": "fa:link",
+      "name": "@n8n/n8n-nodes-langchain.chainLlm",
+      "codex": {
+        "data": {
+          "alias": [
+            "LangChain"
+          ],
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.chainllm/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Chains",
+              "Root Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Chaîne LLM de base",
+        "color": "#909298"
+      },
+      "iconData": {
+        "icon": "link",
+        "type": "icon"
+      },
+      "displayName": "Basic LLM Chain",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "icon": "file:google.svg",
+      "name": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "codex": {
+        "data": {
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.lmchatgooglegemini/"
+              }
+            ]
+          },
+          "categories": [
+            "AI",
+            "Langchain"
+          ],
+          "subcategories": {
+            "AI": [
+              "Language Models",
+              "Root Nodes"
+            ],
+            "Language Models": [
+              "Chat Models (Recommended)"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Modèle de chat Google Gemini"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgNDggNDgiPjxkZWZzPjxwYXRoIGlkPSJhIiBkPSJNNDQuNSAyMEgyNHY4LjVoMTEuOEMzNC43IDMzLjkgMzAuMSAzNyAyNCAzN2MtNy4yIDAtMTMtNS44LTEzLTEzczUuOC0xMyAxMy0xM2MzLjEgMCA1LjkgMS4xIDguMSAyLjlsNi40LTYuNEMzNC42IDQuMSAyOS42IDIgMjQgMiAxMS44IDIgMiAxMS44IDIgMjRzOS44IDIyIDIyIDIyYzExIDAgMjEtOCAyMS0yMiAwLTEuMy0uMi0yLjctLjUtNCIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMCAzN1YxMWwxNyAxM3oiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im0wIDExIDE3IDEzIDctNi4xTDQ4IDE0VjBIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiMzNEE4NTMiIGQ9Im0wIDM3IDMwLTIzIDcuOSAxTDQ4IDB2NDhIMHoiIGNsaXAtcGF0aD0idXJsKCNiKSIvPjxwYXRoIGZpbGw9IiM0Mjg1RjQiIGQ9Ik00OCA0OCAxNyAyNGwtNC0zIDM1LTEweiIgY2xpcC1wYXRoPSJ1cmwoI2IpIi8+PC9zdmc+"
+      },
+      "displayName": "Google Gemini Chat Model",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 25,
+          "name": "AI"
+        },
+        {
+          "id": 26,
+          "name": "Langchain"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 31,
+      "name": "Création de contenu"
+    },
+    {
+      "id": 51,
+      "name": "IA multimodale"
+    }
+  ],
+  "image": []
+}

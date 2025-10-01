@@ -235,7 +235,7 @@ class ImportAutomations {
         console.log(unitalk)
 
         if (!help) {
-            await this._getAutomations();
+            await this._getAutomations(250);
         } else {
             this._help()
         }

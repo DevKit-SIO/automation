@@ -1,0 +1,562 @@
+{
+  "id": 6395,
+  "name": "Automatiser le scraping d'articles de presse avec ScrapegraphAI et les stocker dans Google Sheets",
+  "views": 493,
+  "recentViews": 1,
+  "totalViews": 493,
+  "createdAt": "2025-07-24T18:43:56.533Z",
+  "description": "*Ce workflow contient des nœuds communautaires qui ne sont compatibles qu'avec la version auto-hébergée de n8n.*\n\n## Scraping et analyse d'articles de presse avec intégration AI et Google Sheets\n\n\n### 🎯 Public Cible\n- Agrégateurs de nouvelles et curateurs de contenu\n- Professionnels de la surveillance des médias\n- Chercheurs de marché suivant les nouvelles de l'industrie\n- Professionnels des relations publiques surveillant les mentions de marque\n- Journalistes et créateurs de contenu\n- Analystes commerciaux suivant les nouvelles des concurrents\n- Chercheurs académiques collectant des données d'actualités\n\n### 🚀 Énoncé du Problème\nLa surveillance manuelle des nouvelles prend du temps et manque souvent des articles importants. Ce modèle résout le défi de la collecte, de la structuration et du stockage automatiques des articles de presse de n'importe quel site Web pour une analyse et un suivi complets.\n\n### 🔧 Comment ça Marche\n\nCe workflow scrape automatiquement des articles de presse à partir de sites Web en utilisant une extraction alimentée par l'IA et les stocke dans Google Sheets pour analyse et suivi.\n\n#### Composants Clés\n\n- **Déclencheur Programmé** : S'exécute automatiquement à des intervalles spécifiés pour collecter du contenu frais\n- **Scraping Alimenté par l'IA** : Utilise ScrapeGraphAI pour extraire intelligemment les titres d'articles, les URL et les catégories de n'importe quel site d'actualités\n- **Traitement des Données** : Formate les données extraites pour une compatibilité optimale avec les feuilles de calcul\n- **Stockage Automatisé** : Enregistre tous les articles dans Google Sheets avec des métadonnées pour un filtrage et une analyse faciles\n\n### 📊 Spécifications des Colonnes Google Sheets\n\nLe modèle crée les colonnes suivantes dans vos Google Sheets :\n\n| Colonne | Type de Donnée | Description | Exemple |\n|---------|----------------|-------------|---------|\n| **title** | Chaîne | Titre et en-tête de l'article | \"'Mon ami est mort juste devant moi' - Un étudiant décrit le moment où un jet de l'armée de l'air s'est écrasé dans l'école\" |\n| **url** | URL | Lien direct vers l'article | \"https://www.bbc.com/news/articles/cglzw8y5wy5o\" |\n| **category** | Chaîne | Catégorie ou section de l'article | \"Asie\" |\n\n### 🛠️ Instructions de Configuration\n\n**Temps de configuration estimé : 10-15 minutes**\n\n#### Prérequis\n- Instance n8n avec nœuds communautaires activés\n- Compte et identifiants API ScrapeGraphAI\n- Compte Google Sheets avec accès API\n\n#### Configuration Étape par Étape\n\n##### 1. Installer les Nœuds Communautaires\n```bash\n# Installer le nœud communautaire ScrapeGraphAI\nnpm install n8n-nodes-scrapegraphai\n```\n\n##### 2. Configurer les Identifiants ScrapeGraphAI\n- Accédez à Identifiants dans votre instance n8n\n- Ajoutez de nouveaux identifiants API ScrapeGraphAI\n- Entrez votre clé API depuis le tableau de bord ScrapeGraphAI\n- Testez la connexion pour vous assurer qu'elle fonctionne\n\n##### 3. Configurer la Connexion Google Sheets\n- Ajoutez des identifiants OAuth2 Google Sheets\n- Accordez les autorisations nécessaires pour l'accès à la feuille de calcul\n- Sélectionnez ou créez une feuille de calcul cible pour le stockage des données\n- Configurez le nom de la feuille (par défaut : \"Feuille1\")\n\n##### 4. Personnaliser les Paramètres de Source d'Actualités\n- Mettez à jour le paramètre `websiteUrl` dans le nœud ScrapeGraphAI\n- Modifiez l'URL du site d'actualités cible si nécessaire\n- Ajustez l'invite utilisateur pour extraire des champs supplémentaires si nécessaire\n- Testez d'abord avec un petit site avant de passer à des sites d'actualités plus grands\n\n##### 5. Configurer le Déclencheur de Planification\n- Définissez votre fréquence d'exécution préférée (quotidienne, horaire, etc.)\n- Choisissez les fuseaux horaires appropriés pour vos heures de travail\n- Tenez compte de la fréquence de mise à jour du site d'actualités lors de la définition des intervalles\n\n##### 6. Tester et Valider\n- Exécutez le workflow manuellement pour vérifier toutes les connexions\n- Vérifiez Google Sheets pour un formatage correct des données\n- Validez que tous les champs requis sont capturés\n\n### 🔄 Options de Personnalisation du Workflow\n\n#### Modifier les Sources d'Actualités\n- Changez l'URL du site Web pour cibler différentes sources d'actualités\n- Ajoutez plusieurs sites d'actualités pour une couverture complète\n- Implémentez des filtres pour des sujets ou catégories spécifiques\n\n#### Étendre la Collecte de Données\n- Modifiez l'invite utilisateur pour extraire des champs supplémentaires (auteur, date, résumé)\n- Ajoutez une analyse de sentiment pour le contenu des articles\n- Intégrez d'autres sources de données pour une analyse complète\n\n#### Personnalisation de la Sortie\n- Changez l'opération Google Sheets de \"ajouter\" à \"upsert\" pour la dé-duplication\n- Ajoutez des étapes de validation et de nettoyage des données\n- Implémentez une gestion des erreurs et une logique de réessai\n\n### 📈 Cas d'Utilisation\n\n- **Surveillance des Médias** : Suivez les mentions de votre marque, de vos concurrents ou des mots-clés de l'industrie\n- **Curation de Contenu** : Collectez automatiquement des articles pour des bulletins d'information ou une agrégation de contenu\n- **Recherche de Marché** : Surveillez les tendances de l'industrie et les activités des concurrents\n- **Agrégation de Nouvelles** : Créez des flux d'actualités personnalisés pour des sujets ou des sources spécifiques\n- **Recherche Académique** : Collectez des données d'actualités pour des projets de recherche et d'analyse\n- **Gestion de Crise** : Surveillez les nouvelles de dernière minute et les histoires émergentes\n\n### �� Notes Importantes\n\n- Respectez les conditions d'utilisation et le robots.txt du site Web cible\n- Envisagez d'implémenter des délais entre les requêtes pour de grands ensembles de données\n- Révisez et mettez régulièrement à jour vos paramètres de scraping\n- Surveillez l'utilisation de l'API pour gérer les coûts efficacement\n- Gardez vos identifiants sécurisés et faites-les tourner régulièrement\n\n### 🔧 Dépannage\n\n**Problèmes Courants :**\n- Erreurs de connexion ScrapeGraphAI : Vérifiez la clé API et l'état du compte\n- Erreurs de permission Google Sheets : Vérifiez la portée et les permissions OAuth2\n- Problèmes de formatage des données : Revoyez la logique JavaScript du nœud Code\n- Limitation de taux : Ajustez la fréquence de planification et implémentez des délais\n\n**Conseils Pro :**\n- Gardez des notes de configuration détaillées dans les notes autocollantes au sein du workflow\n- Testez d'abord avec un petit site avant de passer à des sites d'actualités plus grands\n- Envisagez d'ajouter des filtres dans le nœud Code pour exclure certains types ou catégories d'articles\n- Surveillez les journaux d'exécution pour tout problème et ajustez les paramètres en conséquence\n\n**Ressources de Support :**\n- Documentation et référence API de ScrapeGraphAI\n- Forums communautaires n8n pour l'assistance sur les workflows\n- Documentation API Google Sheets pour des configurations avancées\n",
+  "workflow": {
+    "id": "MIllJmbqayQrZM1F",
+    "meta": {
+      "instanceId": "521567c5f495f323b77849c4cfd0c9f4f2396c986e324e0e66c8425b6f124744",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Automate News Article Scraping with ScrapegraphAI and Store in Google Sheets",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "37df323b-5c75-495f-ba19-b8642c02d96f",
+        "name": "Automated News Collection Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          700,
+          820
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "efd61ca5-e248-4027-b705-6d9c5dabe820",
+        "name": "AI-Powered News Article Scraper",
+        "type": "n8n-nodes-scrapegraphai.scrapegraphAi",
+        "position": [
+          1380,
+          820
+        ],
+        "parameters": {
+          "userPrompt": "Extract all the articles from this site. Use the following schema for response {   \"request_id\": \"5a9de102-8a43-4e89-8aae-397c9ca80a9b\",   \"status\": \"completed\",   \"website_url\": \"https://www.bbc.com/\",   \"user_prompt\": \"Extract all the articles from this site.\",   \"title\": \"'My friend died right in front of me' - Student describes moment air force jet crashed into school\",   \"url\": \"https://www.bbc.com/news/articles/cglzw8y5wy5o\",   \"category\": \"Asia\" }",
+          "websiteUrl": "https://www.bbc.com/"
+        },
+        "credentials": {
+          "scrapegraphAIApi": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "976d9123-7585-4700-9972-5b2838571a44",
+        "name": "Google Sheets News Storage",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          2980,
+          820
+        ],
+        "parameters": {
+          "columns": {
+            "value": {},
+            "schema": [
+              {
+                "id": "title",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "title",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "url",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "url",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "category",
+                "type": "string",
+                "display": true,
+                "removed": false,
+                "required": false,
+                "displayName": "category",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "autoMapInputData",
+            "matchingColumns": []
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "url",
+            "value": ""
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "",
+            "name": ""
+          }
+        },
+        "typeVersion": 4.5
+      },
+      {
+        "id": "6d11ae64-e2f8-47ed-854a-c749881ce72c",
+        "name": "News Data Formatting and Processing",
+        "type": "n8n-nodes-base.code",
+        "notes": "Hey this is where \nyou \nformat results ",
+        "position": [
+          2140,
+          820
+        ],
+        "parameters": {
+          "jsCode": "// Get the input data\nconst inputData = $input.all()[0].json;\n\n// Extract articles array\nconst articles = inputData.result.articles;\n\n// Map each article and return only title, url, category\nreturn articles.map(article => ({\n  json: {\n    title: article.title,\n    url: article.url,\n    category: article.category\n  }\n}));"
+        },
+        "notesInFlow": true,
+        "typeVersion": 2
+      },
+      {
+        "id": "ca78baaf-0480-490d-aa9a-3663ca93f5d0",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1180,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 2: AI-Powered News Article Scraper 🤖\n\nThis is the core node which uses ScrapeGraphAI to intelligently extract news articles from any website.\n\n## How to Use\n- Configure the target news website URL\n- Use natural language to describe what data to extract\n- The AI will automatically parse and structure the results\n\n## Configuration\n- **Website URL**: Target news website (e.g., BBC, CNN, Reuters)\n- **User Prompt**: Natural language instructions for data extraction\n- **API Credentials**: ScrapeGraphAI API key required\n\n## Example\n- **Website**: BBC News homepage\n- **Instruction**: \"Extract all article titles, URLs, and categories\"\n\n⚠️ **Note**: This is a community node requiring self-hosting"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "51a1337b-6a50-43a5-8d6f-8345bc771c7b",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1920,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 3: News Data Formatting and Processing 🧱\n\nThis node transforms and structures the scraped news data for optimal Google Sheets compatibility.\n\n## What it does\n- Extracts articles array from ScrapeGraphAI response\n- Maps each article to standardized format\n- Ensures data consistency and structure\n- Prepares clean data for spreadsheet storage\n\n## Data Structure\n- **title**: Article headline and title\n- **url**: Direct link to the article\n- **category**: Article category or section\n\n## Customization\n- Modify the JavaScript code to extract additional fields\n- Add data validation and cleaning logic\n- Implement error handling for malformed data"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2e8cde8e-f534-4f37-a1f9-bcf0fe0b09f9",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          460,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 1: Automated News Collection Trigger ⏱️\n\nThis trigger automatically invokes the workflow at specified intervals to collect fresh news content.\n\n## Configuration Options\n- **Frequency**: Daily, hourly, or custom intervals\n- **Time Zone**: Configure for your business hours\n- **Execution Time**: Choose optimal times for news collection\n\n## Best Practices\n- Set appropriate intervals to respect rate limits\n- Consider news website update frequencies\n- Monitor execution logs for any issues\n- Adjust frequency based on your monitoring needs"
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "5606537c-a531-490a-b4ff-6d0dc5e642b4",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2680,
+          460
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 574.9363634768473,
+          "height": 530.4701664623029,
+          "content": "# Step 4: Google Sheets News Storage 📊\n\nThis node securely stores the processed news article data in your Google Sheets for analysis and tracking.\n\n## What it does\n- Connects to your Google Sheets account via OAuth2\n- Appends new article data as rows\n- Maintains historical data for trend analysis\n- Provides structured data for business intelligence\n\n## Configuration\n- **Spreadsheet**: Select or create target Google Sheets document\n- **Sheet Name**: Configure worksheet (default: Sheet1)\n- **Operation**: Append mode for continuous data collection\n- **Column Mapping**: Automatic mapping of title, url, category fields\n\n## Data Management\n- Each execution adds new article entries\n- Historical data preserved for analysis\n- Easy export and sharing capabilities\n- Built-in Google Sheets analytics and filtering"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "c2fee060-f99e-48aa-a280-ac5492715fd9",
+    "connections": {
+      "AI-Powered News Article Scraper": {
+        "main": [
+          [
+            {
+              "node": "News Data Formatting and Processing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Automated News Collection Trigger": {
+        "main": [
+          [
+            {
+              "node": "AI-Powered News Article Scraper",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "News Data Formatting and Processing": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets News Storage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 62,
+  "workflowInfo": {
+    "nodeCount": 8,
+    "nodeTypes": {
+      "n8n-nodes-base.code": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      },
+      "n8n-nodes-base.scheduleTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-scrapegraphai.scrapegraphAi": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "vinci-king-01",
+    "username": "vinci-king-01",
+    "bio": "",
+    "verified": true,
+    "links": [
+      ""
+    ],
+    "avatar": "https://gravatar.com/avatar/d939eeef03a5fcb5df08bee8196f12ccb248c38209487414e419032004f0c014?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Autocollante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 834,
+      "icon": "file:code.svg",
+      "name": "n8n-nodes-base.code",
+      "codex": {
+        "data": {
+          "alias": [
+            "cpde",
+            "Javascript",
+            "JS",
+            "Python",
+            "Script",
+            "Custom Code",
+            "Function"
+          ],
+          "details": "The Code node allows you to execute JavaScript in your workflow.",
+          "resources": {
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Code"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xMTcxXzQ0MSkiPgo8cGF0aCBkPSJNMTcwLjI4MyA0OEgxOTYuNUMyMDMuMTI3IDQ4IDIwOC41IDQyLjYyNzQgMjA4LjUgMzZWMTJDMjA4LjUgNS4zNzI1OCAyMDMuMTI3IDAgMTk2LjUgMEgxNzAuMjgzQzEyNi4xIDAgOTAuMjgzIDM1LjgxNzIgOTAuMjgzIDgwVjE3NkM5MC4yODMgMjA2LjkyOCA2NS4yMTA5IDIzMiAzNC4yODMgMjMySDIzQzE2LjM3MjYgMjMyIDExIDIzNy4zNzIgMTEgMjQ0VjI2OEMxMSAyNzQuNjI3IDE2LjM3MjQgMjgwIDIyLjk5OTYgMjgwTDM0LjI4MyAyODBDNjUuMjEwOSAyODAgOTAuMjgzIDMwNS4wNzIgOTAuMjgzIDMzNlY0NDBDOTAuMjgzIDQ3OS43NjQgMTIyLjUxOCA1MTIgMTYyLjI4MyA1MTJIMTk2LjVDMjAzLjEyNyA1MTIgMjA4LjUgNTA2LjYyNyAyMDguNSA1MDBWNDc2QzIwOC41IDQ2OS4zNzMgMjAzLjEyNyA0NjQgMTk2LjUgNDY0SDE2Mi4yODNDMTQ5LjAyOCA0NjQgMTM4LjI4MyA0NTMuMjU1IDEzOC4yODMgNDQwVjMzNkMxMzguMjgzIDMwOS4wMjIgMTI4LjAxMSAyODQuNDQzIDExMS4xNjQgMjY1Ljk2MUMxMDYuMTA5IDI2MC40MTYgMTA2LjEwOSAyNTEuNTg0IDExMS4xNjQgMjQ2LjAzOUMxMjguMDExIDIyNy41NTcgMTM4LjI4MyAyMDIuOTc4IDEzOC4yODMgMTc2VjgwQzEzOC4yODMgNjIuMzI2OSAxNTIuNjEgNDggMTcwLjI4MyA0OFoiIGZpbGw9IiNGRjk5MjIiLz4KPHBhdGggZD0iTTMwNSAzNkMzMDUgNDIuNjI3NCAzMTAuMzczIDQ4IDMxNyA0OEgzNDIuOTc5QzM2MC42NTIgNDggMzc0Ljk3OCA2Mi4zMjY5IDM3NC45NzggODBWMTc2QzM3NC45NzggMjAyLjk3OCAzODUuMjUxIDIyNy41NTcgNDAyLjA5OCAyNDYuMDM5QzQwNy4xNTMgMjUxLjU4NCA0MDcuMTUzIDI2MC40MTYgNDAyLjA5OCAyNjUuOTYxQzM4NS4yNTEgMjg0LjQ0MyAzNzQuOTc4IDMwOS4wMjIgMzc0Ljk3OCAzMzZWNDMyQzM3NC45NzggNDQ5LjY3MyAzNjAuNjUyIDQ2NCAzNDIuOTc5IDQ2NEgzMTdDMzEwLjM3MyA0NjQgMzA1IDQ2OS4zNzMgMzA1IDQ3NlY1MDBDMzA1IDUwNi42MjcgMzEwLjM3MyA1MTIgMzE3IDUxMkgzNDIuOTc5QzM4Ny4xNjEgNTEyIDQyMi45NzggNDc2LjE4MyA0MjIuOTc4IDQzMlYzMzZDNDIyLjk3OCAzMDUuMDcyIDQ0OC4wNTEgMjgwIDQ3OC45NzkgMjgwSDQ5MEM0OTYuNjI3IDI4MCA1MDIgMjc0LjYyOCA1MDIgMjY4VjI0NEM1MDIgMjM3LjM3MyA0OTYuNjI4IDIzMiA0OTAgMjMyTDQ3OC45NzkgMjMyQzQ0OC4wNTEgMjMyIDQyMi45NzggMjA2LjkyOCA0MjIuOTc4IDE3NlY4MEM0MjIuOTc4IDM1LjgxNzIgMzg3LjE2MSAwIDM0Mi45NzkgMEgzMTdDMzEwLjM3MyAwIDMwNSA1LjM3MjU4IDMwNSAxMlYzNloiIGZpbGw9IiNGRjk5MjIiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMTcxXzQ0MSI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
+      },
+      "displayName": "Code",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 839,
+      "icon": "fa:clock",
+      "name": "n8n-nodes-base.scheduleTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "Time",
+            "Scheduler",
+            "Polling",
+            "Cron",
+            "Interval"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"trigger\",\"schedule\"]",
+      "defaults": {
+        "name": "Déclencheur de Planification",
+        "color": "#31C49F"
+      },
+      "iconData": {
+        "icon": "clock",
+        "type": "icon"
+      },
+      "displayName": "Schedule Trigger",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Recherche de Marché"
+    },
+    {
+      "id": 49,
+      "name": "Résumé AI"
+    }
+  ],
+  "image": []
+}

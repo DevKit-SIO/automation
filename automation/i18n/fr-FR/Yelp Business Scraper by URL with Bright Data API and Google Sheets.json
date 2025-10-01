@@ -1,0 +1,1109 @@
+{
+  "id": 6373,
+  "name": "Yelp Business Scraper par URL avec l'API Bright Data et Google Sheets",
+  "views": 149,
+  "recentViews": 0,
+  "totalViews": 149,
+  "createdAt": "2025-07-24T09:22:25.419Z",
+  "description": "# Yelp Business Scraper par URL via l'API Bright Data avec stockage Google Sheets\n\n## Aperçu\n\nCe workflow n8n automatise le processus de collecte d'informations commerciales complètes à partir de Yelp en utilisant des URL de business individuelles. Il s'intègre à Bright Data pour le scraping web professionnel et à Google Sheets pour un stockage centralisé des données, fournissant des informations commerciales détaillées pour la recherche de marché, l'analyse de la concurrence et la génération de leads.\n\n## Composants du Workflow\n\n### 1. 📥 **Déclencheur de Formulaire**\n- **Type**: Déclencheur de Formulaire\n- **But**: Initie le workflow avec l'URL de business Yelp soumise par l'utilisateur\n- **Champs d'Entrée**:\n  - URL (URL de la page business Yelp)\n- **Fonction**: Capture l'URL de business cible pour commencer le processus de scraping\n\n### 2. 🔍 **Déclencheur de Scraping Bright Data**\n- **Type**: Requête HTTP (POST)\n- **But**: Envoie une demande de scraping à l'API Bright Data pour les données commerciales Yelp\n- **Point de terminaison**: `https://api.brightdata.com/datasets/v3/trigger`\n- **Paramètres**:\n  - ID du Dataset: `gd_lgugwl0519h1p14rwk`\n  - Inclure les erreurs: vrai\n  - Limiter les résultats multiples: 5\n  - Limiter par entrée: 20\n- **Fonction**: Initie l'extraction complète des données commerciales à partir de Yelp\n\n### 3. 📡 **Surveiller l'État de l'Aperçu**\n- **Type**: Requête HTTP (GET)\n- **But**: Surveille l'avancement du travail de scraping Yelp\n- **Point de terminaison**: `https://api.brightdata.com/datasets/v3/progress/{snapshot_id}`\n- **Fonction**: Vérifie si le scraping des données commerciales est terminé\n\n### 4. ⏳ **Attendre 30 Sec pour l'Aperçu**\n- **Type**: Noeud d'Attente\n- **But**: Met en œuvre un mécanisme de sondage intelligent\n- **Durée**: 30 secondes\n- **Fonction**: Met en pause le workflow avant de vérifier à nouveau l'état du scraping pour optimiser l'utilisation de l'API\n\n### 5. 🔁 **Réessayer Jusqu'à Prêt**\n- **Type**: Condition IF\n- **But**: Évalue l'état d'achèvement du scraping\n- **Condition**: `status === ",
+  "workflow": {
+    "id": "MTFFo3zU2JtQDbCy",
+    "meta": {
+      "instanceId": "bc8ca75c203589705ae2e446cad7181d6f2a7cc1766f958ef9f34810e53b8cb2",
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Yelp Business Scraper by URL via Bright Data API with Google Sheets-Based Centralized Storage",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "c79123e0-4c50-4b36-979c-0d396d722354",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -2440,
+          -840
+        ],
+        "parameters": {
+          "width": 220,
+          "height": 240,
+          "content": "Starts the workflow when the user submits a business Yelp URL through the form."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "01d3783f-5eb1-40a9-a5b0-dbe5898053d0",
+        "name": "📥 Form Trigger",
+        "type": "n8n-nodes-base.formTrigger",
+        "position": [
+          -2380,
+          -760
+        ],
+        "webhookId": "ae4aacb7-a062-4172-8817-f51716a841b7",
+        "parameters": {
+          "options": {},
+          "formTitle": "Yelp Service URL",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "URL"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "194283a3-8d99-48b0-8665-51a9675e298e",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -2200,
+          -840
+        ],
+        "parameters": {
+          "color": 3,
+          "width": 220,
+          "height": 240,
+          "content": "Sends the URL to Bright Data to begin scraping the Yelp business page."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "33669ea8-b06d-4741-8b47-bbb9d6641a80",
+        "name": "🔍 Trigger Bright Data Scrape",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -2140,
+          -760
+        ],
+        "parameters": {
+          "url": "https://api.brightdata.com/datasets/v3/trigger",
+          "method": "POST",
+          "options": {},
+          "jsonBody": "=[\n  {\n    \"url\": \"https://www.yelp.com/biz/the-round-hearth-caf%C3%A9-stowe?osq=Sandwiches\"\n  }\n]",
+          "sendBody": true,
+          "sendQuery": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "dataset_id",
+                "value": "gd_lgugwl0519h1p14rwk"
+              },
+              {
+                "name": "include_errors",
+                "value": "true"
+              },
+              {
+                "name": "limit_multiple_results",
+                "value": "5"
+              },
+              {
+                "name": "limit_per_input",
+                "value": "20"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BRIGHT_DATA_API_KEY"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "13a3a29b-054c-4232-b1d9-82042645ee6f",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1940,
+          -840
+        ],
+        "parameters": {
+          "color": 2,
+          "width": 220,
+          "height": 240,
+          "content": "Checks whether the Bright Data snapshot is finished processing."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f5489303-a94a-4499-88dc-953ca6a27bed",
+        "name": "📡 Monitor Snapshot Status",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -1880,
+          -760
+        ],
+        "parameters": {
+          "url": "=https://api.brightdata.com/datasets/v3/progress/{{ $json.snapshot_id }}",
+          "options": {},
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BRIGHT_DATA_API_KEY"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2,
+        "alwaysOutputData": true
+      },
+      {
+        "id": "258146e5-4d3b-444c-8379-d2b3e303b74c",
+        "name": "⏳ Wait 30 Sec for Snapshot",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          -1660,
+          -760
+        ],
+        "webhookId": "10b45556-5e91-4387-abd0-f9078b220286",
+        "parameters": {
+          "amount": 30
+        },
+        "typeVersion": 1.1
+      },
+      {
+        "id": "58ef3944-2c0a-4249-97a4-b51d3c5dcb60",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1700,
+          -840
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 200,
+          "height": 240,
+          "content": "Waits 30 seconds before re-checking the scrape status."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "2360c9bd-927e-49a1-9ac7-38d7c74208f9",
+        "name": "🔁 Retry Until Ready",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          -1420,
+          -760
+        ],
+        "parameters": {
+          "options": {},
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "or",
+            "conditions": [
+              {
+                "id": "35ed620d-b5d5-4e97-bcc5-52b283d85616",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "ready"
+              }
+            ]
+          }
+        },
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ead1165b-7665-49a4-9c0d-143dbfe085c8",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1480,
+          -840
+        ],
+        "parameters": {
+          "color": 5,
+          "width": 220,
+          "height": 240,
+          "content": "If Bright Data says the data is not ready, loops back to wait again. If ready, proceeds."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "fdc13050-dc51-4995-836c-83d775ffe23a",
+        "name": "📥 Fetch Scraped Business Data",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -1160,
+          -780
+        ],
+        "parameters": {
+          "url": "=https://api.brightdata.com/datasets/v3/snapshot/{{ $json.snapshot_id }}",
+          "options": {},
+          "sendQuery": true,
+          "sendHeaders": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "format",
+                "value": "json"
+              }
+            ]
+          },
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BRIGHT_DATA_API_KEY"
+              }
+            ]
+          }
+        },
+        "typeVersion": 4.2
+      },
+      {
+        "id": "c410d0a6-2d3c-4201-87dc-356b4ff015b7",
+        "name": "Sticky Note5",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1220,
+          -840
+        ],
+        "parameters": {
+          "color": 7,
+          "height": 240,
+          "content": "Retrieves structured business details from the ready snapshot."
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "f511c8d4-d8c6-4ab5-949a-ba47189553d9",
+        "name": "📊 Store to Google Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -900,
+          -780
+        ],
+        "parameters": {
+          "columns": {
+            "value": {},
+            "schema": [
+              {
+                "id": "name",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "name",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "overall_rating",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "overall_rating",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "reviews_count",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "reviews_count",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "url",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "url",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "images_videos_urls",
+                "type": "string",
+                "display": true,
+                "required": false,
+                "displayName": "images_videos_urls",
+                "defaultMatch": false,
+                "canBeUsedToMatch": true
+              }
+            ],
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {},
+          "operation": "append",
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gid=0",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0",
+            "cachedResultName": "Sheet1"
+          },
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "YOUR_GOOGLE_SHEET_ID",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk",
+            "cachedResultName": "Yelp scraper data by URL"
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+            "name": "Google Sheets OAuth2"
+          }
+        },
+        "typeVersion": 4.6
+      },
+      {
+        "id": "6f9084cf-3437-450e-99fc-147ee7443289",
+        "name": "Sticky Note6",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -960,
+          -880
+        ],
+        "parameters": {
+          "color": 4,
+          "width": 280,
+          "height": 280,
+          "content": "📊 Updates your Google Sheet with business data (name, website, phone, rating, address, etc.) under the 'Yelp scraper data by URL' sheet"
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "02404bee-4698-40fc-a884-85bb5ca751e7",
+    "connections": {
+      "📥 Form Trigger": {
+        "main": [
+          [
+            {
+              "node": "🔍 Trigger Bright Data Scrape",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔁 Retry Until Ready": {
+        "main": [
+          [
+            {
+              "node": "📥 Fetch Scraped Business Data",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "📡 Monitor Snapshot Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "⏳ Wait 30 Sec for Snapshot": {
+        "main": [
+          [
+            {
+              "node": "🔁 Retry Until Ready",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📡 Monitor Snapshot Status": {
+        "main": [
+          [
+            {
+              "node": "⏳ Wait 30 Sec for Snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "🔍 Trigger Bright Data Scrape": {
+        "main": [
+          [
+            {
+              "node": "📡 Monitor Snapshot Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "📥 Fetch Scraped Business Data": {
+        "main": [
+          [
+            {
+              "node": "📊 Store to Google Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 14,
+    "nodeTypes": {
+      "n8n-nodes-base.if": {
+        "count": 1
+      },
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 7
+      },
+      "n8n-nodes-base.formTrigger": {
+        "count": 1
+      },
+      "n8n-nodes-base.httpRequest": {
+        "count": 3
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Incrementors",
+    "username": "incrementors",
+    "bio": "",
+    "verified": true,
+    "links": [
+      "https://www.incrementors.com/"
+    ],
+    "avatar": "https://gravatar.com/avatar/e09b4b6a8c5a00f886a9eedf3be23a4af5a50cc216cd6b2aee2a12c2dfba99dd?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "icon": "file:httprequest.svg",
+      "name": "n8n-nodes-base.httpRequest",
+      "codex": {
+        "data": {
+          "alias": [
+            "API",
+            "Request",
+            "URL",
+            "Build",
+            "cURL"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/world-poetry-day-workflow/",
+                "icon": "📜",
+                "label": "Celebrating World Poetry Day with a daily poem in Telegram"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-designs-with-bannerbear-and-n8n/",
+                "icon": "🎨",
+                "label": "Automate Designs with Bannerbear and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/building-an-expense-tracking-app-in-10-minutes/",
+                "icon": "📱",
+                "label": "Building an expense tracking app in 10 minutes"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-use-the-http-request-node-the-swiss-army-knife-for-workflow-automation/",
+                "icon": "🧰",
+                "label": "How to use the HTTP Request Node - The Swiss Army Knife for Workflow Automation"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/a-low-code-bitcoin-ticker-built-with-questdb-and-n8n-io/",
+                "icon": "📈",
+                "label": "A low-code bitcoin ticker built with QuestDB and n8n.io"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-scheduled-text-affirmations-with-n8n/",
+                "icon": "🤟",
+                "label": "Creating scheduled text affirmations with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "HTTP Request",
+        "color": "#0004F5"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00MCAyMEM0MCA4Ljk1MzE0IDMxLjA0NjkgMCAyMCAwQzguOTUzMTQgMCAwIDguOTUzMTQgMCAyMEMwIDMxLjA0NjkgOC45NTMxNCA0MCAyMCA0MEMzMS4wNDY5IDQwIDQwIDMxLjA0NjkgNDAgMjBaTTIwIDM2Ljk0NThDMTguODg1MiAzNi45NDU4IDE3LjEzNzggMzUuOTY3IDE1LjQ5OTggMzIuNjk4NUMxNC43OTY0IDMxLjI5MTggMTQuMTk2MSAyOS41NDMxIDEzLjc1MjYgMjcuNjg0N0gyNi4xODk4QzI1LjgwNDUgMjkuNTQwMyAyNS4yMDQ0IDMxLjI5MDEgMjQuNTAwMiAzMi42OTg1QzIyLjg2MjIgMzUuOTY3IDIxLjExNDggMzYuOTQ1OCAyMCAzNi45NDU4Wk0xMi45MDY0IDIwQzEyLjkwNjQgMjEuNjA5NyAxMy4wMDg3IDIzLjE2NCAxMy4yMDAzIDI0LjYzMDVIMjYuNzk5N0MyNi45OTEzIDIzLjE2NCAyNy4wOTM2IDIxLjYwOTcgMjcuMDkzNiAyMEMyNy4wOTM2IDE4LjM5MDMgMjYuOTkxMyAxNi44MzYgMjYuNzk5NyAxNS4zNjk1SDEzLjIwMDNDMTMuMDA4NyAxNi44MzYgMTIuOTA2NCAxOC4zOTAzIDEyLjkwNjQgMjBaTTIwIDMuMDU0MTlDMjEuMTE0OSAzLjA1NDE5IDIyLjg2MjIgNC4wMzA3OCAyNC41MDAxIDcuMzAwMzlDMjUuMjA2NiA4LjcxNDA4IDI1LjgwNzIgMTAuNDA2NyAyNi4xOTIgMTIuMzE1M0gxMy43NTAxQzE0LjE5MzMgMTAuNDA0NyAxNC43OTQyIDguNzEyNTQgMTUuNDk5OCA3LjMwMDY0QzE3LjEzNzcgNC4wMzA4MyAxOC44ODUxIDMuMDU0MTkgMjAgMy4wNTQxOVpNMzAuMTQ3OCAyMEMzMC4xNDc4IDE4LjQwOTkgMzAuMDU0MyAxNi44NjE3IDI5LjgyMjcgMTUuMzY5NUgzNi4zMDQyQzM2LjcyNTIgMTYuODQyIDM2Ljk0NTggMTguMzk2NCAzNi45NDU4IDIwQzM2Ljk0NTggMjEuNjAzNiAzNi43MjUyIDIzLjE1OCAzNi4zMDQyIDI0LjYzMDVIMjkuODIyN0MzMC4wNTQzIDIzLjEzODMgMzAuMTQ3OCAyMS41OTAxIDMwLjE0NzggMjBaTTI2LjI3NjcgNC4yNTUxMkMyNy42MzY1IDYuMzYwMTkgMjguNzExIDkuMTMyIDI5LjM3NzQgMTIuMzE1M0gzNS4xMDQ2QzMzLjI1MTEgOC42NjggMzAuMTA3IDUuNzgzNDYgMjYuMjc2NyA0LjI1NTEyWk0xMC42MjI2IDEyLjMxNTNINC44OTI5M0M2Ljc1MTQ3IDguNjY3ODQgOS44OTM1MSA1Ljc4MzQxIDEzLjcyMzIgNC4yNTUxM0MxMi4zNjM1IDYuMzYwMjEgMTEuMjg5IDkuMTMyMDEgMTAuNjIyNiAxMi4zMTUzWk0zLjA1NDE5IDIwQzMuMDU0MTkgMjEuNjAzIDMuMjc3NDMgMjMuMTU3NSAzLjY5NDg0IDI0LjYzMDVIMTAuMTIxN0M5Ljk0NjE5IDIzLjE0MiA5Ljg1MjIyIDIxLjU5NDMgOS44NTIyMiAyMEM5Ljg1MjIyIDE4LjQwNTcgOS45NDYxOSAxNi44NTggMTAuMTIxNyAxNS4zNjk1SDMuNjk0ODRDMy4yNzc0MyAxNi44NDI1IDMuMDU0MTkgMTguMzk3IDMuMDU0MTkgMjBaTTI2LjI3NjYgMzUuNzQyN0MyNy42MzY1IDMzLjYzOTMgMjguNzExIDMwLjg2OCAyOS4zNzc0IDI3LjY4NDdIMzUuMTA0NkMzMy4yNTEgMzEuMzMyMiAzMC4xMDY4IDM0LjIxNzkgMjYuMjc2NiAzNS43NDI3Wk0xMy43MjM0IDM1Ljc0MjdDOS44OTM2OSAzNC4yMTc5IDYuNzUxNTUgMzEuMzMyNCA0Ljg5MjkzIDI3LjY4NDdIMTAuNjIyNkMxMS4yODkgMzAuODY4IDEyLjM2MzUgMzMuNjM5MyAxMy43MjM0IDM1Ljc0MjdaIiBmaWxsPSIjM0E0MkU5Ii8+Cjwvc3ZnPgo="
+      },
+      "displayName": "HTTP Request",
+      "typeVersion": 4,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "icon": "fa:map-signs",
+      "name": "n8n-nodes-base.if",
+      "codex": {
+        "data": {
+          "alias": [
+            "Router",
+            "Filter",
+            "Condition",
+            "Logic",
+            "Boolean",
+            "Branch"
+          ],
+          "details": "The IF node can be used to implement binary conditional logic in your workflow. You can set up one-to-many conditions to evaluate each item of data being inputted into the node. That data will either evaluate to TRUE or FALSE and route out of the node accordingly.\n\nThis node has multiple types of conditions: Bool, String, Number, and Date & Time.",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/create-a-toxic-language-detector-for-telegram/",
+                "icon": "🤬",
+                "label": "Create a toxic language detector for Telegram in 4 step"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/automation-for-maintainers-of-open-source-projects/",
+                "icon": "🏷️",
+                "label": "How to automatically manage contributions to open-source projects"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-set-up-a-ci-cd-pipeline-with-no-code/",
+                "icon": "🎡",
+                "label": "How to set up a no-code CI/CD pipeline with GitHub and TravisCI"
+              },
+              {
+                "url": "https://n8n.io/blog/benefits-of-automation-and-n8n-an-interview-with-hubspots-hugh-durkin/",
+                "icon": "🎖",
+                "label": "Benefits of automation and n8n: An interview with HubSpot's Hugh Durkin"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "If",
+        "color": "#408000"
+      },
+      "iconData": {
+        "icon": "map-signs",
+        "type": "icon"
+      },
+      "displayName": "If",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Wait",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Sticky Note",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 1225,
+      "icon": "file:form.svg",
+      "name": "n8n-nodes-base.formTrigger",
+      "codex": {
+        "data": {
+          "alias": [
+            "table",
+            "submit",
+            "post"
+          ],
+          "resources": {
+            "generic": [],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.formtrigger/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Other Trigger Nodes"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "On form submission"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NiIgaGVpZ2h0PSI0MCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwQjdCQyIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzQuOTc4IDM3LjczMmExLjU2IDEuNTYgMCAwIDEtMS41NjIgMS41NjNINi4yNmExLjU2IDEuNTYgMCAwIDEtMS41NjMtMS41NjNWOS42MDdjMC0uNDA1LjE1Ny0uNzk0LjQzOC0xLjA4Nmw2LjMwNC02LjUzMXY1LjM0NEg4LjIxM2ExLjE3MiAxLjE3MiAwIDEgMCAwIDIuMzQzaDQuNDNhMS4xNyAxLjE3IDAgMCAwIDEuMTcxLTEuMTcxVi4yMzJoMTkuNjAyYTEuNTYgMS41NiAwIDAgMSAxLjU2MiAxLjU2M3YxMC4zMjdsLTIuODYgMi44Ni04LjI1MiA4LjI3NmE0MTMuMDA2IDQxMy4wMDYgMCAwIDEtMS42NTQgMS42NjJsLS4zMzcuMzM3YTIgMiAwIDAgMC0uNTU3IDEuMDhMMjAuMyAzMS45MjJjLS4xMDguNjM4LS4yMTUgMS4wNzkuMjExIDEuNDE4LjQwMy4zMi45LjE3NCAxLjU0LjA2Nmw1LjQwOC0uOTI4YTIgMiAwIDAgMCAxLjA4LS41NTZsNi40NC02LjQyOXptLTI0LjAzLTIxLjI2NWExLjE4IDEuMTggMCAwIDAgMS4xNzEgMS4xNzJoMTMuMTYzYTEuMTcyIDEuMTcyIDAgMSAwIDAtMi4zNDRIMTIuMTE5YTEuMTcgMS4xNyAwIDAgMC0xLjE3MiAxLjE3Mm03LjI5NCAxNC43NjZhMS4xNyAxLjE3IDAgMCAwLTEuMTcyLTEuMTcySDEyLjEyYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNC45NTFhMS4xNyAxLjE3IDAgMCAwIDEuMTcyLTEuMTcybS44Ni03LjM5MWExLjE3IDEuMTcgMCAwIDAtMS4xNzItMS4xNzJoLTUuODExYTEuMTcyIDEuMTcyIDAgMSAwIDAgMi4zNDNoNS44MWExLjE2NCAxLjE2NCAwIDAgMCAxLjE3My0xLjE3MSIgY2xpcC1ydWxlPSJldmVub2RkIi8+PHBhdGggZmlsbD0iIzAwQjdCQyIgZD0ibTMzLjUzMiAxNi4zOTcgNC4yODktNC4yODkgMy43NTggMy43MSAxLjYxNy0xLjYxNiAyLjI1OCAyLjI1N2MuMjE4LjIxOC4zNC41MTMuMzQzLjgyLS4wMDIuMzExLS4xMjUuNjA4LS4zNDQuODNsLTYuODA0IDYuNzk2YTEuMTMgMS4xMyAwIDAgMS0uODI4LjM0MyAxLjE1IDEuMTUgMCAwIDEtLjgyOC0uMzQzIDEuMTggMS4xOCAwIDAgMSAwLTEuNjU3bDUuOTc2LTUuOTY4LTEuMzEyLTEuMzEzLTEuMzgzIDEuNDE0LTEzLjE0OSAxMy4xMjUtNC42MTcuNzgyLjc4Mi00LjYxNy4zMzYtLjMzNyAyLjU2MiAyLjU1NWExLjEgMS4xIDAgMCAwIC44MjguMzQ0Yy4zMTIuMDA1LjYxMi0uMTIuODI4LS4zNDRhMS4xOCAxLjE4IDAgMCAwIDAtMS42NTZsLTIuNTYyLTIuNTYyek00NC43MzYgMTIuMjRjMCAuNDE0LS4xNjMuODEtLjQ1NCAxLjEwMmwtLjkyMi45MTQtMy44NTItMy44MjguOTMtLjkzYTEuNTYzIDEuNTYzIDAgMCAxIDIuMjAzIDBsMS42NCAxLjY0MWMuMjkxLjI5My40NTUuNjkuNDU1IDEuMTAyIi8+PC9zdmc+"
+      },
+      "displayName": "n8n Form Trigger",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 32,
+      "name": "Market Research"
+    }
+  ],
+  "image": []
+}

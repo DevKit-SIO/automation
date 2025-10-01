@@ -1,0 +1,1009 @@
+{
+  "id": 6414,
+  "name": "Nurturing et Qualification Automatisés des Leads avec Gmail, Google Sheets et Slack",
+  "views": 35,
+  "recentViews": 0,
+  "totalViews": 35,
+  "createdAt": "2025-07-25T06:32:19.074Z",
+  "description": "### Comment ça fonctionne ⚙️\n\nCe flux de travail automatise l'ensemble du cycle de gestion des leads, de la capture initiale et de la qualification à l'attribution d'agents et au nurturing personnalisé, garantissant qu'aucun lead ne soit laissé pour compte et que les agents se concentrent sur les prospects à fort potentiel.\n\n1.  **0. Webhook / Déclencheur de Formulaire (Capture de Lead) :** 🚀 Le flux de travail s'initie immédiatement lorsqu'un nouveau lead soumet un formulaire de demande sur votre site web, une page de destination, ou via un webhook d'une source de lead externe (par exemple, Zillow, Realtor.com si intégré).\n2.  **1. Qualifier et Catégoriser le Lead (Fonction / Si) :** 📝 Ce nœud traite les données du lead entrant. Il peut :\n    * Valider les informations essentielles (par exemple, email/téléphone valide).\n    * Catégoriser le lead en fonction de la source, de l'intérêt pour la propriété, ou des mots-clés dans leur message (par exemple, \"Acheteur\", \"Vendeur\", \"Demande de Location\", \"Lead Chaud\").\n    * Attribuer un \"score de lead\" préliminaire si désiré.\n3.  **2. Mettre à Jour le CRM (HubSpot / Salesforce / Personnalisé) :** 📊 Les détails du lead, ainsi que leur catégorie et score attribués, sont immédiatement envoyés à votre système de Gestion de la Relation Client (CRM). Cela garantit une base de données centralisée et toujours à jour.\n4.  **3. Attribuer un Agent (Fonction / Recherche Google Sheets) :** 🧑‍💻 En fonction de la catégorie du lead (par exemple, intérêt de localisation, type de propriété, score de lead), ce nœud attribue dynamiquement le lead à l'agent le plus approprié de votre équipe. Cela peut impliquer de vérifier la disponibilité ou la spécialisation de l'agent à partir d'une feuille Google.\n5.  **4. Réponse Automatique Initiale (Gmail / SendGrid) :** 📧 Un email immédiat et personnalisé est envoyé au lead. Le contenu de cet email peut varier en fonction de la catégorie du lead (par exemple, un \"Merci pour votre demande\" pour un lead général, ou \"Voici plus d'infos sur [Nom de la Propriété]\" pour une demande de propriété spécifique).\n6.  **5. Notifier l'Agent Attribué (Slack / Gmail) :** 📢 L'agent nouvellement attribué reçoit une notification instantanée via Slack ou email avec tous les détails du lead et toutes les tâches ou prochaines étapes assignées.\n7.  **6. Démarrer la Séquence de Nurturing (Attendre / Gmail / Si) :** 🔄 En fonction de la catégorie et du score du lead, une séquence de nurturing en plusieurs étapes est initiée. Cela implique généralement :\n    * **Nœud d'Attente :** Pause pendant une période prédéfinie (par exemple, 3 jours, 7 jours).\n    * **Nœud d'Email :** Envoie un email de suivi avec des informations pertinentes (par exemple, propriétés similaires, guides de quartier).\n    * **Nœud Si :** Vérifie si le lead a répondu ou pris une action (par exemple, ouvert l'email précédent, cliqué sur un lien) pour décider de la prochaine étape dans la séquence, ou pour sortir de la séquence si le lead a été engagé par un agent. Cette partie peut être considérablement étendue.\n\n---\n\n### Comment Configurer 🛠️\n\nLa configuration de ce flux de travail complet nécessite une configuration minutieuse de chaque nœud et une compréhension de vos règles de gestion des leads.\n\n1.  **Importer le JSON du Flux de Travail :**\n    * Ouvrez votre instance n8n.\n    * Cliquez sur 'Flux de Travail' dans la barre latérale gauche.\n    * Cliquez sur le bouton '+' ou 'Nouveau' pour créer un nouveau flux de travail.\n    * Cliquez sur l'icône '...' (Plus d'Options) dans le coin supérieur droit.\n    * Sélectionnez 'Importer depuis JSON' et collez l'intégralité du code JSON pour ce flux de travail.\n\n2.  **Préparer Vos Sources de Données et Outils :**\n    * **Formulaire/Sources de Capture de Lead :** Assurez-vous que vos formulaires de site web ou sources de lead externes peuvent envoyer des données à un webhook ou sont accessibles via API.\n    * **Système CRM :** Ayez votre CRM (par exemple, HubSpot, Salesforce, ou une configuration personnalisée Google Sheet/Airtable) prêt pour l'intégration. Vous aurez besoin de clés/identifiants API.\n    * **Logique d'Attribution d'Agent (Google Sheet Optionnel) :** Si vous utilisez une attribution basée sur des règles, préparez une feuille Google listant les agents, leurs spécialités et zones.\n    * **Service d'Envoi d'Email :** Gmail, SendGrid, Mailchimp, etc., avec les identifiants nécessaires.\n    * **Outil de Communication Interne :** Slack ou un autre compte email pour les notifications des agents.\n\n3.  **Configurer 0. Webhook (Capture de Lead) :**\n    * Localisez le nœud '0. Webhook (Capture de Lead)'.\n    * Activez le flux de travail une fois qu'il est entièrement configuré. n8n fournira une 'URL Webhook' unique.\n    * **Étape Cruciale :** Configurez vos formulaires de site web ou sources de lead externes pour envoyer des données (généralement JSON) à cette 'URL Webhook' chaque fois qu'un nouveau lead est capturé.\n    * **Données de Test :** Soumettez un lead de test via votre formulaire pour voir la structure des données entrantes dans n8n. Cela est vital pour configurer avec précision les nœuds suivants.\n\n4.  **Configurer 1. Qualifier et Catégoriser le Lead (Fonction) :**\n    * Localisez le nœud '1. Qualifier et Catégoriser le Lead (Fonction)'.\n    * **Personnaliser la Logique :** Passez en revue le `functionCode` dans ce nœud.\n        * Ajustez `lead.name`, `lead.email`, `lead.phone`, `lead.message`, `lead.source` pour correspondre avec précision aux noms de champs provenant de votre déclencheur webhook.\n        * Implémentez ou affinez la logique de catégorisation simple (par exemple, `if (message.toLowerCase().includes('acheter'))`) pour s'adapter à vos types de leads spécifiques et critères de scoring.\n        * Produisez de nouveaux points de données comme `leadCategory` et `leadScore`.\n\n5.  **Configurer 2. Mettre à Jour le CRM (Google Sheets) :**\n    * Localisez le nœud '2. Mettre à Jour le CRM (Google Sheets)'.\n    * **Identifiants :** Configurez ou sélectionnez votre identifiant OAuth2 Google Sheets.\n    * **ID de Feuille de Calcul :** **Remplacez `YOUR_CRM_SPREADSHEET_ID`** par l'ID de votre feuille Google servant de CRM.\n    * **Nom de la Feuille :** Entrez le nom exact de la feuille (onglet) (par exemple, `Leads`).\n    * **Opération :** Assurez-vous qu'elle est définie sur `Ajouter`.\n    * **Mapper les Données :** Mappez les détails du lead extraits (`name`, `email`, `phone`, `message`, `source`, `leadCategory`, `leadScore`, `captureDate`, `assignedAgentEmail`, `assignedAgentName`, `Status`) aux en-têtes de colonnes correspondants dans votre feuille Google. **Assurez-vous que les noms de colonnes dans le JSON correspondent exactement à votre feuille.**\n\n6.  **Configurer 3. Attribuer un Agent (Fonction) :**\n    * Localisez le nœud '3. Attribuer un Agent (Fonction)'.\n    * **Personnaliser la Logique :** Passez en revue le `functionCode`.\n        * **Données d'Agent :** L'exemple utilise des agents codés en dur. Pour un système réel, vous récupéreriez probablement les agents d'une autre feuille Google (en utilisant un nœud `Google Sheets` *avant* cette fonction) ou d'une base de données interne.\n        * **Règles d'Attribution :** Modifiez la logique pour s'adapter aux règles d'attribution de votre équipe (par exemple, round-robin, en fonction de la catégorie de lead, de la localisation de la propriété, de la disponibilité de l'agent).\n        * Assurez-vous que la fonction produit `assignedAgentEmail` et `assignedAgentName`.\n\n7.  **Configurer 4. Réponse Automatique Initiale (Gmail) :**\n    * Localisez le nœud '4. Réponse Automatique Initiale (Gmail)'.\n    * **Identifiants :** Sélectionnez votre identifiant OAuth2 Gmail existant.\n    * **Email de l'Expéditeur :** **Remplacez `your-agency-email@example.com`** par votre véritable adresse email d'envoi.\n    * **Email du Destinataire :** `={{ $json.email }}` (l'email du lead provenant des données entrantes).\n    * **Objet & HTML :** Personnalisez l'objet et le corps de l'email. Utilisez des expressions comme `{{ $json.name }}` pour la personnalisation. **N'oubliez pas de remplacer `[YOUR_WEBSITE_LINK]` par votre véritable lien de site web.**\n\n8.  **Configurer 5. Notifier l'Agent Attribué (Slack) :**\n    * Localisez le nœud '5. Notifier l'Agent Attribué (Slack)'.\n    * **Identifiants :** Sélectionnez votre identifiant API Slack existant.\n    * **Canal :** **Remplacez `YOUR_SLACK_CHANNEL_ID_OR_NAME`** par le canal Slack où vous souhaitez recevoir des notifications (par exemple, `#new-leads` ou un canal spécifique à un agent si vous en avez un par agent).\n    * **Texte :** Personnalisez le message pour inclure tous les détails pertinents du lead pour l'agent. **N'oubliez pas de remplacer `[CRM_LINK_HERE]` par un lien direct vers votre CRM où l'agent peut consulter le lead.**\n\n9.  **Configurer 6. Séquence de Nurturing - Attendre 1 :**\n    * Localisez le nœud '6. Séquence de Nurturing - Attendre 1'.\n    * **Montant & Unité :** Ajustez `amount` (par exemple, 3) et `unit` (par exemple, `jours`) pour définir la période d'attente avant le premier email de nurturing.\n\n10. **Configurer 7. Séquence de Nurturing - Email 1 (Gmail) :**\n    * Localisez le nœud '7. Séquence de Nurturing - Email 1 (Gmail)'.\n    * **Identifiants :** Sélectionnez votre identifiant OAuth2 Gmail.\n    * **Email de l'Expéditeur :** **Remplacez `your-agency-email@example.com`** par votre véritable email d'envoi.\n    * **Email du Destinataire :** `={{ $json.email }}`.\n    * **Objet & HTML :** Personnalisez le contenu de l'email de suivi. C'est votre premier point de contact de nurturing. Utilisez des expressions comme `{{ $json.name }}`. Vous pouvez ajouter plus d'étapes de nurturing en ajoutant plus de nœuds 'Attendre' et 'Gmail', potentiellement avec des nœuds 'Si' pour se ramifier en fonction de l'engagement du lead.\n\n11. **Réviser et Activer :**\n    * Passez en revue minutieusement toutes les configurations des nœuds. **Assurez-vous que toutes les valeurs de remplacement (comme `YOUR_...` et les emails d'exemple) sont remplacées par vos informations réelles.**\n    * Cliquez sur le bouton 'Enregistrer' dans le coin supérieur droit.\n    * Enfin, basculez l'interrupteur 'Inactif' sur 'Actif' pour activer votre flux de travail. 🟢 Votre flux de travail \"Nurturing et Qualification des Leads Complet\" est maintenant en ligne !",
+  "workflow": {
+    "id": "AVOX7Cwp67PaJqYD",
+    "meta": {
+      "instanceId": "a287613f1596da776459594685fbf4e2b4a12124f80ab8c8772f5e37bff103ae"
+    },
+    "name": "Comprehensive Lead Nurturing & Qualification",
+    "tags": [],
+    "nodes": [
+      {
+        "id": "22e7a3bd-91fd-40c9-a3fb-a4250e94f859",
+        "name": "0. Webhook (Lead Capture)",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          -1280,
+          288
+        ],
+        "webhookId": "a6e061e4-b6ae-49e9-97f4-6da1a78fb2da",
+        "parameters": {},
+        "description": "Captures new lead data from forms or external sources.",
+        "typeVersion": 1
+      },
+      {
+        "id": "0b3ef33d-df99-40a2-acfc-04ea28e50a50",
+        "name": "1. Qualify & Categorize Lead (Function)",
+        "type": "n8n-nodes-base.function",
+        "position": [
+          -1024,
+          288
+        ],
+        "parameters": {},
+        "description": "Validates, categorizes, and scores incoming leads.",
+        "typeVersion": 1
+      },
+      {
+        "id": "f8988011-bff7-4c4a-af7d-19b62c933b96",
+        "name": "2. Update CRM (Google Sheets)",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          -768,
+          288
+        ],
+        "parameters": {},
+        "description": "Appends new lead data to your Google Sheets CRM.",
+        "typeVersion": 3
+      },
+      {
+        "id": "8b216c71-1ee8-4085-b63b-8b47d2052329",
+        "name": "3. Assign Agent (Function)",
+        "type": "n8n-nodes-base.function",
+        "position": [
+          -528,
+          288
+        ],
+        "parameters": {},
+        "description": "Assigns the lead to an agent based on defined rules.",
+        "typeVersion": 1
+      },
+      {
+        "id": "defdeb26-2b9d-427e-80cd-c6e9816818d8",
+        "name": "4. Initial Auto-Response (Gmail)",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          -256,
+          128
+        ],
+        "parameters": {},
+        "description": "Sends an immediate, personalized email to the lead.",
+        "typeVersion": 1
+      },
+      {
+        "id": "0fb779c2-4fb6-4a9f-a261-21d884704dff",
+        "name": "5. Notify Assigned Agent (Slack)",
+        "type": "n8n-nodes-base.slack",
+        "position": [
+          240,
+          448
+        ],
+        "parameters": {},
+        "description": "Alerts the assigned agent about the new lead.",
+        "typeVersion": 1
+      },
+      {
+        "id": "c882513f-0949-4577-b86a-6d3f9940b62a",
+        "name": "6. Nurturing Sequence - Wait 1",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          -16,
+          128
+        ],
+        "webhookId": "abe22285-ea99-4a44-b51f-c48ca74573d1",
+        "parameters": {},
+        "description": "Waits 3 days before sending the first nurturing email.",
+        "typeVersion": 1
+      },
+      {
+        "id": "212338f7-efd0-4871-96de-ba8e15046c31",
+        "name": "7. Nurturing Sequence - Email 1",
+        "type": "n8n-nodes-base.gmail",
+        "position": [
+          240,
+          128
+        ],
+        "parameters": {},
+        "description": "Sends the first follow-up nurturing email.",
+        "typeVersion": 1
+      },
+      {
+        "id": "89f7b5a0-0d3e-4814-9a5a-bbc164b90432",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1328,
+          224
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "d01bd20b-9630-4eb1-819b-f8c4992d8b2e",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          160,
+          384
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "94856d99-6950-4379-b6c5-cbf47110d56d",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -336,
+          64
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "0332f961-76cb-44fa-a563-2a02df6fbda9",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1328,
+          528
+        ],
+        "parameters": {
+          "content": ""
+        },
+        "typeVersion": 1
+      }
+    ],
+    "active": false,
+    "pinData": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "f8a64576-69ab-4ff4-9b19-0644fe17741e",
+    "connections": {
+      "0. Webhook (Lead Capture)": {
+        "main": [
+          [
+            {
+              "node": "1. Qualify & Categorize Lead (Function)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "3. Assign Agent (Function)": {
+        "main": [
+          [
+            {
+              "node": "4. Initial Auto-Response (Gmail)",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "5. Notify Assigned Agent (Slack)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "2. Update CRM (Google Sheets)": {
+        "main": [
+          [
+            {
+              "node": "3. Assign Agent (Function)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "6. Nurturing Sequence - Wait 1": {
+        "main": [
+          [
+            {
+              "node": "7. Nurturing Sequence - Email 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "4. Initial Auto-Response (Gmail)": {
+        "main": [
+          [
+            {
+              "node": "6. Nurturing Sequence - Wait 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "1. Qualify & Categorize Lead (Function)": {
+        "main": [
+          [
+            {
+              "node": "2. Update CRM (Google Sheets)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "lastUpdatedBy": 29,
+  "workflowInfo": {
+    "nodeCount": 12,
+    "nodeTypes": {
+      "n8n-nodes-base.wait": {
+        "count": 1
+      },
+      "n8n-nodes-base.gmail": {
+        "count": 2
+      },
+      "n8n-nodes-base.slack": {
+        "count": 1
+      },
+      "n8n-nodes-base.webhook": {
+        "count": 1
+      },
+      "n8n-nodes-base.function": {
+        "count": 2
+      },
+      "n8n-nodes-base.stickyNote": {
+        "count": 4
+      },
+      "n8n-nodes-base.googleSheets": {
+        "count": 1
+      }
+    }
+  },
+  "user": {
+    "name": "Marth",
+    "username": "marth",
+    "bio": "Simplifying Business with Smart Automation. I create and share user-friendly, highly efficient n8n workflow templates for SMEs, focusing on digital marketing, sales, and operational excellence. Get ready to automate, innovate, and elevate your business.\n\nConnect me on Linkedin for custom solutions.",
+    "verified": true,
+    "links": [
+      "https://www.linkedin.com/in/bhetamaranatha"
+    ],
+    "avatar": "https://gravatar.com/avatar/b171aefe1210cde17102cd98e0b287ee9ea093abef7da61644ae1d0a6c506894?r=pg&d=retro&size=200"
+  },
+  "nodes": [
+    {
+      "id": 14,
+      "icon": "fa:code",
+      "name": "n8n-nodes-base.function",
+      "codex": {
+        "data": {
+          "alias": [
+            "Code",
+            "Javascript",
+            "Custom Code",
+            "Script",
+            "cpde"
+          ],
+          "details": "The Function node allows you to execute JavaScript in your workflow. Unlike the Function Item node, this node does not operate on incoming node data per-item. Instead, you must iterate over multiple items of incoming data yourself. This can be useful if you're performing data transformation where you want to manipulate the number of items being outputted by the node (i.e. 1 item is inputted in with nested object, 10 items are outputted without any nested objects)",
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/2021-goals-level-up-your-vocabulary-with-vonage-and-n8n/",
+                "icon": "🎯",
+                "label": "2021 Goals: Level Up Your Vocabulary With Vonage and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-automate-your-factorys-incident-reporting-a-step-by-step-guide/",
+                "icon": "🏭",
+                "label": "Learn to Automate Your Factory's Incident Reporting: A Step by Step Guide"
+              },
+              {
+                "url": "https://n8n.io/blog/2021-the-year-to-automate-the-new-you-with-n8n/",
+                "icon": "☀️",
+                "label": "2021: The Year to Automate the New You with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/why-i-chose-n8n-over-zapier-in-2020/",
+                "icon": "😍",
+                "label": "Why I chose n8n over Zapier in 2020"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-host-virtual-coffee-breaks-with-n8n/",
+                "icon": "☕️",
+                "label": "How to host virtual coffee breaks with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-pulling-and-visualizing-data-with-n8n/",
+                "icon": "📈",
+                "label": "Automatically pulling and visualizing data with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/database-monitoring-and-alerting-with-n8n/",
+                "icon": "📡",
+                "label": "Database Monitoring and Alerting with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-uproc-scraped-a-multi-page-website-with-a-low-code-workflow/",
+                "icon": " 🕸️",
+                "label": "How uProc scraped a multi-page website with a low-code workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/tracking-time-spent-in-meetings-with-google-calendar-twilio-and-n8n/",
+                "icon": "🗓",
+                "label": "Tracking Time Spent in Meetings With Google Calendar, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-error-workflows-in-n8n/",
+                "icon": "🌪",
+                "label": "Creating Error Workflows in n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Data Transformation"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Fonction",
+        "color": "#FF9922"
+      },
+      "iconData": {
+        "icon": "code",
+        "type": "icon"
+      },
+      "displayName": "Function",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "icon": "file:googleSheets.svg",
+      "name": "n8n-nodes-base.googleSheets",
+      "codex": {
+        "data": {
+          "alias": [
+            "CSV",
+            "Sheet",
+            "Spreadsheet",
+            "GS"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/love-at-first-sight-ricardos-n8n-journey/",
+                "icon": "❤️",
+                "label": "Love at first sight: Ricardo’s n8n journey"
+              },
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/automatically-adding-expense-receipts-to-google-sheets-with-telegram-mindee-twilio-and-n8n/",
+                "icon": "🧾",
+                "label": "Automatically Adding Expense Receipts to Google Sheets with Telegram, Mindee, Twilio, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-triggers-for-n8n-workflows-using-polling/",
+                "icon": "⏲",
+                "label": "Creating triggers for n8n workflows using polling"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/migrating-community-metrics-to-orbit-using-n8n/",
+                "icon": "📈",
+                "label": "Migrating Community Metrics to Orbit using n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/how-honest-burgers-use-automation-to-save-100k-per-year/",
+                "icon": "🍔",
+                "label": "How Honest Burgers Use Automation to Save $100k per year"
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/sending-automated-congratulations-with-google-sheets-twilio-and-n8n/",
+                "icon": "🙌",
+                "label": "Sending Automated Congratulations with Google Sheets, Twilio, and n8n "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-membership-development-manager-automates-his-work-and-investments/",
+                "icon": "📈",
+                "label": "How a Membership Development Manager automates his work and investments"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Data & Storage",
+            "Productivity"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0"
+        }
+      },
+      "group": "[\"input\",\"output\"]",
+      "defaults": {
+        "name": "Google Sheets"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNS42OSAxIDUyIDE3LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0OC4yOTMgNjBIMTIuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDkgNTYuMzEyVjQuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTIuNzA3IDF6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM1LjY5IDEgNTIgMTcuMjI1SDM5LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzkuMjExIDE3LjIyNSA1MiAyMi40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTIwLjEyIDMxLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMS42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzEuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjxwYXRoIGZpbGw9IiMyOEI0NDYiIGQ9Ik0zNC42OSAwIDUxIDE2LjIyNXYzOS4wODdhMy42NyAzLjY3IDAgMCAxLTEuMDg0IDIuNjFBMy43IDMuNyAwIDAgMSA0Ny4yOTMgNTlIMTEuNzA3YTMuNyAzLjcgMCAwIDEtMi42MjMtMS4wNzhBMy42NyAzLjY3IDAgMCAxIDggNTUuMzEyVjMuNjg4YTMuNjcgMy42NyAwIDAgMSAxLjA4NC0yLjYxQTMuNyAzLjcgMCAwIDEgMTEuNzA3IDB6Ii8+PHBhdGggZmlsbD0iIzZBQ0U3QyIgZD0iTTM0LjY5IDAgNTEgMTYuMjI1SDM4LjM5N2MtMi4wNTQgMC0zLjcwNy0xLjgyOS0zLjcwNy0zLjg3MnoiLz48cGF0aCBmaWxsPSIjMjE5QjM4IiBkPSJNMzguMjExIDE2LjIyNSA1MSAyMS40OHYtNS4yNTV6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE5LjEyIDMwLjk3NWMwLS44MTcuNjYyLTEuNDc1IDEuNDgzLTEuNDc1aDE3Ljc5NGMuODIxIDAgMS40ODIuNjU4IDEuNDgyIDEuNDc1djE1LjQ4N2MwIC44MTgtLjY2MSAxLjQ3NS0xLjQ4MiAxLjQ3NUgyMC42MDNhMS40NzYgMS40NzYgMCAwIDEtMS40ODItMS40NzRWMzAuOTc0em0yLjIyNSAxLjQ3NWg2LjY3MnYyLjIxMmgtNi42NzJ6bTAgNS4xNjJoNi42NzJ2Mi4yMTNoLTYuNjcyem0wIDUuMTYzaDYuNjcydjIuMjEyaC02LjY3MnptOS42MzgtMTAuMzI1aDYuNjcydjIuMjEyaC02LjY3MnptMCA1LjE2Mmg2LjY3MnYyLjIxM2gtNi42NzJ6bTAgNS4xNjNoNi42NzJ2Mi4yMTJoLTYuNjcyeiIvPjwvZz48L3N2Zz4="
+      },
+      "displayName": "Google Sheets",
+      "typeVersion": 5,
+      "nodeCategories": [
+        {
+          "id": 3,
+          "name": "Data & Storage"
+        },
+        {
+          "id": 4,
+          "name": "Productivity"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "icon": "file:slack.svg",
+      "name": "n8n-nodes-base.slack",
+      "codex": {
+        "data": {
+          "alias": [
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-your-data-processing-pipeline-in-9-steps-with-n8n/",
+                "icon": "⚙️",
+                "label": "Automate your data processing pipeline in 9 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/build-your-own-virtual-assistant-with-n8n-a-step-by-step-guide/",
+                "icon": "👦",
+                "label": "Build your own virtual assistant with n8n: A step by step guide"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/automations-for-activists/",
+                "icon": "✨",
+                "label": "How Common Knowledge use workflow automation for activism"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/slack/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"output\"]",
+      "defaults": {
+        "name": "Slack"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB2aWV3Qm94PSIwIDAgMTUwLjg1MiAxNTAuODUyIj48dXNlIHhsaW5rOmhyZWY9IiNhIiB4PSIuOTI2IiB5PSIuOTI2Ii8+PHN5bWJvbCBpZD0iYSIgb3ZlcmZsb3c9InZpc2libGUiPjxnIHN0cm9rZS13aWR0aD0iMS44NTIiPjxwYXRoIGZpbGw9IiNlMDFlNWEiIHN0cm9rZT0iI2UwMWU1YSIgZD0iTTQwLjc0MSA5My41NWMwLTguNzM1IDYuNjA3LTE1Ljc3MiAxNC44MTUtMTUuNzcyczE0LjgxNSA3LjAzNyAxNC44MTUgMTUuNzcydjM4LjgyNGMwIDguNzM3LTYuNjA3IDE1Ljc3NC0xNC44MTUgMTUuNzc0cy0xNC44MTUtNy4wMzctMTQuODE1LTE1Ljc3MnoiLz48cGF0aCBmaWxsPSIjZWNiMjJkIiBzdHJva2U9IiNlY2IyMmQiIGQ9Ik05My41NSAxMDcuNDA4Yy04LjczNSAwLTE1Ljc3Mi02LjYwNy0xNS43NzItMTQuODE1czcuMDM3LTE0LjgxNSAxNS43NzItMTQuODE1aDM4LjgyNmM4LjczNSAwIDE1Ljc3MiA2LjYwNyAxNS43NzIgMTQuODE1cy03LjAzNyAxNC44MTUtMTUuNzcyIDE0LjgxNXoiLz48cGF0aCBmaWxsPSIjMmZiNjdjIiBzdHJva2U9IiMyZmI2N2MiIGQ9Ik03Ny43NzggMTUuNzcyQzc3Ljc3OCA3LjAzNyA4NC4zODUgMCA5Mi41OTMgMHMxNC44MTUgNy4wMzcgMTQuODE1IDE1Ljc3MnYzOC44MjZjMCA4LjczNS02LjYwNyAxNS43NzItMTQuODE1IDE1Ljc3MnMtMTQuODE1LTcuMDM3LTE0LjgxNS0xNS43NzJ6Ii8+PHBhdGggZmlsbD0iIzM2YzVmMSIgc3Ryb2tlPSIjMzZjNWYxIiBkPSJNMTUuNzcyIDcwLjM3MUM3LjAzNyA3MC4zNzEgMCA2My43NjMgMCA1NS41NTZzNy4wMzctMTQuODE1IDE1Ljc3Mi0xNC44MTVoMzguODI2YzguNzM1IDAgMTUuNzcyIDYuNjA3IDE1Ljc3MiAxNC44MTVzLTcuMDM3IDE0LjgxNS0xNS43NzIgMTQuODE1eiIvPjxnIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiPjxwYXRoIGZpbGw9IiNlY2IyMmQiIHN0cm9rZT0iI2VjYjIyZCIgZD0iTTc3Ljc3OCAxMzMuMzMzYzAgOC4yMDggNi42MDcgMTQuODE1IDE0LjgxNSAxNC44MTVzMTQuODE1LTYuNjA3IDE0LjgxNS0xNC44MTUtNi42MDctMTQuODE1LTE0LjgxNS0xNC44MTVINzcuNzc4eiIvPjxwYXRoIGZpbGw9IiMyZmI2N2MiIHN0cm9rZT0iIzJmYjY3YyIgZD0iTTEzMy4zMzQgNzAuMzcxaC0xNC44MTVWNTUuNTU2YzAtOC4yMDcgNi42MDctMTQuODE1IDE0LjgxNS0xNC44MTVzMTQuODE1IDYuNjA3IDE0LjgxNSAxNC44MTUtNi42MDcgMTQuODE1LTE0LjgxNSAxNC44MTV6Ii8+PHBhdGggZmlsbD0iI2UwMWU1YSIgc3Ryb2tlPSIjZTAxZTVhIiBkPSJNMTQuODE1IDc3Ljc3OEgyOS42M3YxNC44MTVjMCA4LjIwNy02LjYwNyAxNC44MTUtMTQuODE1IDE0LjgxNVMwIDEwMC44IDAgOTIuNTkzczYuNjA3LTE0LjgxNSAxNC44MTUtMTQuODE1eiIvPjxwYXRoIGZpbGw9IiMzNmM1ZjEiIHN0cm9rZT0iIzM2YzVmMSIgZD0iTTcwLjM3MSAxNC44MTVWMjkuNjNINTUuNTU2Yy04LjIwNyAwLTE0LjgxNS02LjYwNy0xNC44MTUtMTQuODE1UzQ3LjM0OCAwIDU1LjU1NiAwczE0LjgxNSA2LjYwNyAxNC44MTUgMTQuODE1eiIvPjwvZz48L2c+PC9zeW1ib2w+PC9zdmc+"
+      },
+      "displayName": "Slack",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "icon": "file:webhook.svg",
+      "name": "n8n-nodes-base.webhook",
+      "codex": {
+        "data": {
+          "alias": [
+            "HTTP",
+            "API",
+            "Build",
+            "WH"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/learn-how-to-automatically-cross-post-your-content-with-n8n/",
+                "icon": "✍️",
+                "label": "Learn how to automatically cross-post your content with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/running-n8n-on-ships-an-interview-with-maranics/",
+                "icon": "🛳",
+                "label": "Running n8n on ships: An interview with Maranics"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-build-a-low-code-self-hosted-url-shortener/",
+                "icon": "🔗",
+                "label": "How to build a low-code, self-hosted URL shortener in 3 steps"
+              },
+              {
+                "url": "https://n8n.io/blog/what-are-apis-how-to-use-them-with-no-code/",
+                "icon": " 🪢",
+                "label": "What are APIs and how to use them with no code"
+              },
+              {
+                "url": "https://n8n.io/blog/5-tasks-you-can-automate-with-notion-api/",
+                "icon": "⚡️",
+                "label": "5 tasks you can automate with the new Notion API "
+              },
+              {
+                "url": "https://n8n.io/blog/how-a-digital-strategist-uses-n8n-for-online-marketing/",
+                "icon": "💻",
+                "label": "How a digital strategist uses n8n for online marketing"
+              },
+              {
+                "url": "https://n8n.io/blog/the-ultimate-guide-to-automate-your-video-collaboration-with-whereby-mattermost-and-n8n/",
+                "icon": "📹",
+                "label": "The ultimate guide to automate your video collaboration with Whereby, Mattermost, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-automatically-give-kudos-to-contributors-with-github-slack-and-n8n/",
+                "icon": "👏",
+                "label": "How to automatically give kudos to contributors with GitHub, Slack, and n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/5-workflow-automations-for-mattermost-that-we-love-at-n8n/",
+                "icon": "🤖",
+                "label": "5 workflow automations for Mattermost that we love at n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/why-this-product-manager-loves-workflow-automation-with-n8n/",
+                "icon": "🧠",
+                "label": "Why this Product Manager loves workflow automation with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/creating-custom-incident-response-workflows-with-n8n/",
+                "label": "How to automate every step of an incident response workflow"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-to-build-powerful-api-endpoints-using-webhooks/",
+                "icon": "🧰",
+                "label": "Learn to Build Powerful API Endpoints Using Webhooks"
+              },
+              {
+                "url": "https://n8n.io/blog/learn-how-to-use-webhooks-with-mattermost-slash-commands/",
+                "icon": "🦄",
+                "label": "Learn how to use webhooks with Mattermost slash commands"
+              },
+              {
+                "url": "https://n8n.io/blog/how-goomer-automated-their-operations-with-over-200-n8n-workflows/",
+                "icon": "🛵",
+                "label": "How Goomer automated their operations with over 200 n8n workflows"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/"
+              }
+            ]
+          },
+          "categories": [
+            "Development",
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"trigger\"]",
+      "defaults": {
+        "name": "Webhook"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTM1IDM3Yy0yLjIgMC00LTEuOC00LTRzMS44LTQgNC00IDQgMS44IDQgNC0xLjggNC00IDQiLz48cGF0aCBmaWxsPSIjMzc0NzRmIiBkPSJNMzUgNDNjLTMgMC01LjktMS40LTcuOC0zLjdsMy4xLTIuNWMxLjEgMS40IDIuOSAyLjMgNC43IDIuMyAzLjMgMCA2LTIuNyA2LTZzLTIuNy02LTYtNmMtMSAwLTIgLjMtMi45LjdsLTEuNyAxTDIzLjMgMTZsMy41LTEuOSA1LjMgOS40YzEtLjMgMi0uNSAzLS41IDUuNSAwIDEwIDQuNSAxMCAxMFM0MC41IDQzIDM1IDQzIi8+PHBhdGggZmlsbD0iIzM3NDc0ZiIgZD0iTTE0IDQzQzguNSA0MyA0IDM4LjUgNCAzM2MwLTQuNiAzLjEtOC41IDcuNS05LjdsMSAzLjlDOS45IDI3LjkgOCAzMC4zIDggMzNjMCAzLjMgMi43IDYgNiA2czYtMi43IDYtNnYtMmgxNXY0SDIzLjhjLS45IDQuNi01IDgtOS44IDgiLz48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTQgMzdjLTIuMiAwLTQtMS44LTQtNHMxLjgtNCA0LTQgNCAxLjggNCA0LTEuOCA0LTQgNCIvPjxwYXRoIGZpbGw9IiMzNzQ3NGYiIGQ9Ik0yNSAxOWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0Ii8+PHBhdGggZmlsbD0iI2U5MWU2MyIgZD0ibTE1LjcgMzQtMy40LTIgNS45LTkuN2MtMi0xLjktMy4yLTQuNS0zLjItNy4zIDAtNS41IDQuNS0xMCAxMC0xMHMxMCA0LjUgMTAgMTBjMCAuOS0uMSAxLjctLjMgMi41bC0zLjktMWMuMS0uNS4yLTEgLjItMS41IDAtMy4zLTIuNy02LTYtNnMtNiAyLjctNiA2YzAgMi4xIDEuMSA0IDIuOSA1LjFsMS43IDF6Ii8+PC9zdmc+"
+      },
+      "displayName": "Webhook",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 5,
+          "name": "Development"
+        },
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "icon": "file:gmail.svg",
+      "name": "n8n-nodes-base.gmail",
+      "codex": {
+        "data": {
+          "alias": [
+            "email",
+            "human",
+            "form",
+            "wait",
+            "hitl",
+            "approval"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/why-business-process-automation-with-n8n-can-change-your-daily-life/",
+                "icon": "🧬",
+                "label": "Why business process automation with n8n can change your daily life"
+              },
+              {
+                "url": "https://n8n.io/blog/supercharging-your-conference-registration-process-with-n8n/",
+                "icon": "🎫",
+                "label": "Supercharging your conference registration process with n8n"
+              },
+              {
+                "url": "https://n8n.io/blog/no-code-ecommerce-workflow-automations/",
+                "icon": "store",
+                "label": "6 e-commerce workflows to power up your Shopify s"
+              },
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/automate-google-apps-for-productivity/",
+                "icon": "💡",
+                "label": "15 Google apps you can combine and automate to increase productivity"
+              },
+              {
+                "url": "https://n8n.io/blog/your-business-doesnt-need-you-to-operate/",
+                "icon": " 🖥️",
+                "label": "Hey founders! Your business doesn't need you to operate"
+              },
+              {
+                "url": "https://n8n.io/blog/using-automation-to-boost-productivity-in-the-workplace/",
+                "icon": "💪",
+                "label": "Using Automation to Boost Productivity in the Workplace"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/"
+              }
+            ],
+            "credentialDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/"
+              }
+            ]
+          },
+          "categories": [
+            "Communication",
+            "HITL"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "HITL": [
+              "Human in the Loop"
+            ]
+          }
+        }
+      },
+      "group": "[\"transform\"]",
+      "defaults": {
+        "name": "Gmail"
+      },
+      "iconData": {
+        "type": "file",
+        "fileBuffer": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMTkzIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTU4LjE4MiAxOTIuMDVWOTMuMTRMMjcuNTA3IDY1LjA3NyAwIDQ5LjUwNHYxMjUuMDkxYzAgOS42NTggNy44MjUgMTcuNDU1IDE3LjQ1NSAxNy40NTV6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTE5Ny44MTggMTkyLjA1aDQwLjcyN2M5LjY1OSAwIDE3LjQ1NS03LjgyNiAxNy40NTUtMTcuNDU1VjQ5LjUwNWwtMzEuMTU2IDE3LjgzNy0yNy4wMjYgMjUuNzk4eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Im01OC4xODIgOTMuMTQtNC4xNzQtMzguNjQ3IDQuMTc0LTM2Ljk4OUwxMjggNjkuODY4bDY5LjgxOC01Mi4zNjQgNC42NyAzNC45OTItNC42NyA0MC42NDRMMTI4IDE0NS41MDR6Ii8+PHBhdGggZmlsbD0iI0ZCQkMwNCIgZD0iTTE5Ny44MTggMTcuNTA0VjkzLjE0TDI1NiA0OS41MDRWMjYuMjMxYzAtMjEuNTg1LTI0LjY0LTMzLjg5LTQxLjg5LTIwLjk0NXoiLz48cGF0aCBmaWxsPSIjQzUyMjFGIiBkPSJtMCA0OS41MDQgMjYuNzU5IDIwLjA3TDU4LjE4MiA5My4xNFYxNy41MDRMNDEuODkgNS4yODZDMjQuNjEtNy42NiAwIDQuNjQ2IDAgMjYuMjN6Ii8+PC9zdmc+"
+      },
+      "displayName": "Gmail",
+      "typeVersion": 2,
+      "nodeCategories": [
+        {
+          "id": 6,
+          "name": "Communication"
+        },
+        {
+          "id": 28,
+          "name": "HITL"
+        }
+      ]
+    },
+    {
+      "id": 514,
+      "icon": "fa:pause-circle",
+      "name": "n8n-nodes-base.wait",
+      "codex": {
+        "data": {
+          "alias": [
+            "pause",
+            "sleep",
+            "delay",
+            "timeout"
+          ],
+          "resources": {
+            "generic": [
+              {
+                "url": "https://n8n.io/blog/how-to-get-started-with-crm-automation-and-no-code-workflow-ideas/",
+                "icon": "👥",
+                "label": "How to get started with CRM automation (with 3 no-code workflow ideas"
+              },
+              {
+                "url": "https://n8n.io/blog/aws-workflow-automation/",
+                "label": "7 no-code workflow automations for Amazon Web Services"
+              }
+            ],
+            "primaryDocumentation": [
+              {
+                "url": "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/"
+              }
+            ]
+          },
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers",
+              "Flow"
+            ]
+          }
+        }
+      },
+      "group": "[\"organization\"]",
+      "defaults": {
+        "name": "Attendre",
+        "color": "#804050"
+      },
+      "iconData": {
+        "icon": "pause-circle",
+        "type": "icon"
+      },
+      "displayName": "Wait",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    },
+    {
+      "id": 565,
+      "icon": "fa:sticky-note",
+      "name": "n8n-nodes-base.stickyNote",
+      "codex": {
+        "data": {
+          "alias": [
+            "Comments",
+            "Notes",
+            "Sticky"
+          ],
+          "categories": [
+            "Core Nodes"
+          ],
+          "nodeVersion": "1.0",
+          "codexVersion": "1.0",
+          "subcategories": {
+            "Core Nodes": [
+              "Helpers"
+            ]
+          }
+        }
+      },
+      "group": "[\"input\"]",
+      "defaults": {
+        "name": "Note Collante",
+        "color": "#FFD233"
+      },
+      "iconData": {
+        "icon": "sticky-note",
+        "type": "icon"
+      },
+      "displayName": "Sticky Note",
+      "typeVersion": 1,
+      "nodeCategories": [
+        {
+          "id": 9,
+          "name": "Core Nodes"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 38,
+      "name": "Nurturing des Leads"
+    }
+  ],
+  "image": []
+}
