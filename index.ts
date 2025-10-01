@@ -1,10 +1,10 @@
 import url from "url";
 import qs from "qs";
-import type {ApiWorkflowsParams, Category, Workflow} from "./src/_models";
+import type {ApiWorkflowsParams, Category, Workflow} from "./src/_models.ts";
 import figlet from "figlet";
 import {readdirSync, readFileSync, readJSONSync} from "fs-extra";
 import {join, resolve} from "node:path";
-import {openapiSpec} from "./src/openapi";
+import {openapiSpec} from "./src/openapi.ts";
 import swaggerDist from "swagger-ui-dist";
 
 let cli_params = {
