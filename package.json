@@ -6,7 +6,7 @@
     "start": "bun ./index.ts",
     "dev": "bun run start --dev",
     "rsync": "bun ./src/import-automations.ts",
-    "build": "Bun build ./index.ts ./src/openapi.ts --format esm --target node --outdir ./dist && mkdir ./dist/automation && cp -rf ./automation/* ./dist/automation"
+    "build": "Bun build ./index.ts ./src/openapi.ts --format esm --target node --outdir ./dist && find dist -type f -name \"*.js\" -exec sed -i '' 's/\\.ts/\\.js/g' {} + && mkdir ./dist/automation && cp -rf ./automation/* ./dist/automation"
   },
   "devDependencies": {
     "@types/bun": "latest",

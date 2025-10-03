@@ -23,7 +23,7 @@ const defaultConfig: Required<TranslateConfig> = {
 };
 
 const model = new ChatOpenAI({
-  temperature: 0,
+  temperature: 1,
   model: defaultConfig.modelName,
   apiKey: process.env.OPENAI_API_KEY,
   configuration: { baseURL: process.env.OPENAI_PROXY_URL },

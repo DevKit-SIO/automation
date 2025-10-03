@@ -155,7 +155,9 @@ class ImportAutomations {
                     try {
                         const {workflow} = await getWorkflow(w?.id);
 
-                        categories = [...new Set([...categories, ...this._getCategories(workflow)])];
+                        categories = categories.concat(this._getCategories(workflow))
+                        categories = Array.from(new Set(categories.map((category) => JSON.stringify(category))))
+                            .map((category) => JSON.parse(category));
 
                         const workflowFile: string = join(this.workflowsDir, `${this._sanitizeFileName(workflow.name)}.json`);
                         if (!existsSync(workflowFile) || refresh) {
